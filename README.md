@@ -117,6 +117,20 @@ results = client.get_result(response=response)
 
 ## 数据格式说明
 
+### Scope任务
+
+- `TaskName.S21PEAK`: S21参数峰值检测
+- `TaskName.OPTPIPULSE`: 最优π脉冲计算
+- `TaskName.RABI`: Rabi振荡分析
+- `TaskName.RABICOS`: Rabi振荡余弦拟合
+- `TaskName.S21VFLUX`: S21 vs Flux分析
+- `TaskName.SINGLESHOT`: 单次测量分析
+- `TaskName.SPECTRUM`: 频谱分析
+- `TaskName.T1FIT`: T1时间拟合
+- `TaskName.T2FIT`: T2时间拟合
+
+## 数据格式说明
+
 ### 输入格式
 
 依据功能不同，输入格式有所不同

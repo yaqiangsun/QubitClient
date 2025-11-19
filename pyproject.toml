@@ -1,6 +1,6 @@
 [project]
 name = "qubitclient"
-version = "0.1.0"
+version = "0.1.1"
 description = "qubit analysis client"
 authors = [
     { name = "Yaqiang Sun", email = "sunyaking@163.com" },

@@ -31,7 +31,6 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rabicos", batch_size
 
     for start_idx in range(0, total, batch_size):
         end_idx = min(start_idx + batch_size, total)
-        batch_files = file_names[start_idx:end_idx]
         batch_paths = file_path_list[start_idx:end_idx]
         batch_savenames = savenamelist[start_idx:end_idx]
 
@@ -43,17 +42,13 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rabicos", batch_size
             dict_list.append(content)
 
         response = client.request(file_list=dict_list, task_type=TaskName.RABICOS)
+        print(response)
 
-        if hasattr(response, 'parsed'):
-            response_data = response.parsed
-        elif isinstance(response, dict):
-            response_data = response
-        else:
-            response_data = {}
+        response_data = client.get_result(response)
+        threshold = 0.5
+        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.RABICOS.value)
 
         results = response_data.get("results")
-        if not results:
-            continue
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
             global_idx = start_idx + idx_in_batch
@@ -67,14 +62,14 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rabicos", batch_size
             save_path_png = save_path_prefix + ".png"
             save_path_html = save_path_prefix + ".html"
 
-            plt_plot_manager.plot_quantum_data(
+            fig_plt = plt_plot_manager.plot_quantum_data(
                 data_type='npy',
                 task_type=TaskName.RABICOS.value,
                 save_path=save_path_png,
                 result=result,
                 dict_param=dict_param
             )
-            ply_plot_manager.plot_quantum_data(
+            fig_ply = ply_plot_manager.plot_quantum_data(
                 data_type='npy',
                 task_type=TaskName.RABICOS.value,
                 save_path=save_path_html,
@@ -87,7 +82,7 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rabicos", batch_size
 def main():
     from config import API_URL, API_KEY
     base_dir = "data/rabi_in_group_test"
-    send_rabicos_npy_to_server(API_URL, API_KEY, base_dir, batch_size=5)
+    send_rabicos_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 
 if __name__ == "__main__":

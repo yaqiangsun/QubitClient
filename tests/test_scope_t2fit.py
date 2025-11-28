@@ -10,7 +10,7 @@ from qubitclient.draw.pltmanager import QuantumPlotPltManager
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 
 
-def send_t1fit_npy_to_server(url, api_key, dir_path="data/t2fit", batch_size=5):
+def send_t2fit_npy_to_server(url, api_key, dir_path="data/t2fit", batch_size=5):
     savenamelist = []
     file_names = os.listdir(dir_path)
     
@@ -36,20 +36,23 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t2fit", batch_size=5):
 
         print(f"Processing batch [{start_idx+1}-{end_idx}/{total}]")
 
-        dict_list = [load_npy_file(p) for p in batch_paths]
+        dict_list = []
+        for file_path in batch_paths:
+            content = load_npy_file(file_path)
+            dict_list.append(content)
 
         response = client.request(file_list=dict_list, task_type=TaskName.T2FIT)
+        print(response)
 
-        result_data = client.get_result(response)
-        if not result_data:
-            continue
+        response_data = client.get_result(response)
+        threshold = 0.5
+        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.T2FIT.value)
 
-        results = result_data.get("results", [])
-        if not results:
-            continue
+        results = response_data.get("results")
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
-            original_file = file_names[start_idx + idx_in_batch]
+            global_idx = start_idx + idx_in_batch
+            original_file = file_names[global_idx]
 
             if isinstance(result, dict) and result.get('status') == 'failed':
                 print(f"{original_file} failed: No image data available")
@@ -63,14 +66,14 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t2fit", batch_size=5):
             save_path_png = save_path_prefix + ".png"
             save_path_html = save_path_prefix + ".html"
 
-            plt_plot_manager.plot_quantum_data(
+            fig_plt = plt_plot_manager.plot_quantum_data(
                 data_type='npy',
                 task_type=TaskName.T2FIT.value,
                 save_path=save_path_png,
                 result=result,
                 dict_param=dict_param
             )
-            ply_plot_manager.plot_quantum_data(
+            fig_ply = ply_plot_manager.plot_quantum_data(
                 data_type='npy',
                 task_type=TaskName.T2FIT.value,
                 save_path=save_path_html,
@@ -82,7 +85,7 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t2fit", batch_size=5):
 
 def main():
     from config import API_URL, API_KEY
-    base_dir = "data/ramsey"
+    base_dir = "data/ramsey_test"
     send_t2fit_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

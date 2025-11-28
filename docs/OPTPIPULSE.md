@@ -45,25 +45,28 @@ x_array: 一维 np.ndarray，表示时间点
 
 ```python
 # 使用文件路径
-response = client.request(
-    file_list=["data/opt_pipulse/file1.npy", "data/opt_pipulse/file2.npy"],
-    task_type=TaskName.OPTPIPULSE
-)
+response = client.request(file_list=["data/opt_pipulse/file1.npy", "data/opt_pipulse/file2.npy"], task_type=TaskName.OPTPIPULSE)
 
-# 使用numpy数组
-import numpy as np
-data_ndarray = np.load("file1.npy", allow_pickle=True)
-response = client.request(
-    file_list=[data_ndarray],
-    task_type=TaskName.OPTPIPULSE
-)
+dict_list = []
+for file_path in file_path_list:
+    content = load_npy_file(file_path)
+    dict_list.append(content)
+
+# 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
+response = client.request(file_list=dict_list, task_type=TaskName.OPTPIPULSE)
 
 ```
 
 ### 获取结果
 
 ```python
-results = client.get_result(response=response)
+response_data = client.get_result(response)
+threshold = 0.5
+response_data_filtered = client.get_filtered_result(response, threshold, TaskName.OPTPIPULSE.value)
+
+results = response_data_filtered.get("results")
+# 或使用未过滤的原始结果
+# results = response_data.get("results")
 ```
 
 ## 返回值格式

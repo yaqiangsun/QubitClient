@@ -66,7 +66,13 @@ response = client.request(
 ### 获取结果
 
 ```python
-results = client.get_result(response=response)
+response_data = client.get_result(response)
+threshold = 0.5
+response_data_filtered = client.get_filtered_result(response, threshold, TaskName.T1FIT.value)
+
+results = response_data_filtered.get("results")
+# 或使用未过滤的原始结果
+# results = response_data.get("results")
 ```
 
 ## 返回值格式

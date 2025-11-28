@@ -4,8 +4,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from qubitclient import QubitScopeClient
-from qubitclient import TaskName
+from qubitclient import QubitScopeClient, TaskName
 from qubitclient.scope.utils.data_parser import load_npy_file
 from qubitclient.draw.pltmanager import QuantumPlotPltManager
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
@@ -32,29 +31,24 @@ def send_optpipulse_npy_to_server(url, api_key, dir_path="data/opt_pipulse", bat
 
     for start_idx in range(0, total, batch_size):
         end_idx = min(start_idx + batch_size, total)
-        batch_files = file_names[start_idx:end_idx]
         batch_paths = file_path_list[start_idx:end_idx]
         batch_savenames = savenamelist[start_idx:end_idx]
 
         print(f"Processing batch [{start_idx+1}-{end_idx}/{total}]")
-        
+
         dict_list = []
         for file_path in batch_paths:
             content = load_npy_file(file_path)
             dict_list.append(content)
 
         response = client.request(file_list=dict_list, task_type=TaskName.OPTPIPULSE)
+        print(response)
 
-        if hasattr(response, 'parsed'):
-            response_data = response.parsed
-        elif isinstance(response, dict):
-            response_data = response
-        else:
-            response_data = {}
+        response_data = client.get_result(response)
+        threshold = 0.5
+        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.OPTPIPULSE.value)
 
         results = response_data.get("results")
-        if not results:
-            continue
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
             global_idx = start_idx + idx_in_batch
@@ -68,14 +62,14 @@ def send_optpipulse_npy_to_server(url, api_key, dir_path="data/opt_pipulse", bat
             save_path_png = save_path_prefix + ".png"
             save_path_html = save_path_prefix + ".html"
 
-            plt_plot_manager.plot_quantum_data(
+            fig_plt = plt_plot_manager.plot_quantum_data(
                 data_type='npy',
                 task_type=TaskName.OPTPIPULSE.value,
                 save_path=save_path_png,
                 result=result,
                 dict_param=dict_param
             )
-            ply_plot_manager.plot_quantum_data(
+            fig_ply = ply_plot_manager.plot_quantum_data(
                 data_type='npy',
                 task_type=TaskName.OPTPIPULSE.value,
                 save_path=save_path_html,
@@ -87,8 +81,8 @@ def send_optpipulse_npy_to_server(url, api_key, dir_path="data/opt_pipulse", bat
 
 def main():
     from config import API_URL, API_KEY
-    base_dir = "data/opt_pipulse"
-    send_optpipulse_npy_to_server(API_URL, API_KEY, base_dir, batch_size=5)
+    base_dir = "data/opt_pipulse_test"
+    send_optpipulse_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 
 if __name__ == "__main__":

@@ -29,10 +29,11 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
             q_name_list.append(q_name)
         peaks_list = result['peaks']
         confs_list = result['confs']
+        freqs_list = result['freqs']
 
         nums = len(x_list)
-        row = (nums // 3) + 1 if nums % 3 != 0 else nums // 3
-        col = 3
+        row = (nums // 1) + 1 if nums % 1 != 0 else nums // 1
+        col = 1
 
         fig = plt.figure(figsize=(20, 20))
         for i in range(len(x_list)):
@@ -41,12 +42,16 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
             y2 = phi_list[i]
             peaks = peaks_list[i]
             confs = confs_list[i]
+            freqs = freqs_list[i]
 
             ax = fig.add_subplot(row, col, i + 1)
             ax.plot(x, y1, 'b-', label='Amp Curve', linewidth=2)
             ax.plot(x, y2, c='green', label='Phi Curve')
+            legend_handles = []
+            legend_labels = []
+            cmap = plt.cm.get_cmap('viridis', len(peaks))
             for j in range(len(peaks)):
-                ax.scatter(x[peaks[j]], y1[peaks[j]],
+                scatter = ax.scatter(x[peaks[j]], y1[peaks[j]],
                 color = 'red', marker = '*', s = 100,
                 label = f'peak (conf: {confs[j]:.2f})',
                 zorder = 5)
@@ -58,7 +63,13 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
                 label = f'(final (conf: {confs[j]:.2f})')
                 ax.axvline(x[peaks[j]], color="red", linestyle='--', alpha=0.8)
                 ax.set_title(f'{q_name_list[i]}', fontsize=14, fontweight='bold', pad=15)
+                legend_handles.append(scatter)
+                legend_labels.append(f'freq: {freqs[j] / 1e9:.2f}GHz)')
+
                 # ax.legend()
+            ax.legend(handles=legend_handles, labels=legend_labels,
+                      loc='upper left', bbox_to_anchor=(1, 1),
+                      fontsize=10)
             plt.tight_layout()
 
 

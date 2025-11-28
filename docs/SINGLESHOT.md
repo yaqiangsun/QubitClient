@@ -76,14 +76,14 @@ results = client.get_result(response=response_data)
 
 ```json
 [
-  {
-    "threshold_list": [float],     // 分类决策阈值
-    "sep_score_list": [float], // 每条线段的点坐标列表
-    "phi_list": [float],         // 信号投影的最佳角度或相位调整参数
-    "signal_list": [[[float]]],         // 有效信号的检测结果
-    "idle_list": [[[float]]],         // 空闲状态的检测结果
-    "params_list": [[[float]]],         //  模型拟合,信号处理过程中的参数
-    "std_list": [[float,float,float,float,[[float]],[[float]]]], // 数据的标准差信息
+   {
+    "threshold_list": [float],     // 分类决策阈值，在投影轴上的分类阈值以最小化分类误差
+    "sep_score_list": [float], // 分离程度 separation_degree
+    "phi_list": [float],         // 最佳投影方向的角度，使两组信号在该方向上具有最大可区分性，给出投影轴
+    "signal_list": [[[float]]],         // 信号投影，复数信号投影到一维实轴（投影轴）
+    "idle_list": [[[float]]],         // 空闲信号投影，复数信号投影到一维实轴（投影轴）
+    "params_list": [[[float]]],         //  椭圆拟合参数
+    "std_list": [[float,float,float,float,[[float]],[[float]]]], // 数据的标准差，方差，协方差信息
     "cdf_list": [[[float]]],         // 累积分布函数数据
   },
   ...
@@ -97,16 +97,16 @@ results = client.get_result(response=response_data)
 
 ### 字段说明
 
-| 字段名 | 类型 | 描述 |
-|--------|------|------|
-| threshold_list | [float] | 分类决策阈值 |
-| sep_score_list | [float] | 每条线段的点坐标列表 |
-| phi_list | [float] | 信号投影的最佳角度或相位调整参数 |
-| signal_list | [[[float]]] | 有效信号的检测结果 |
-| idle_list | [[[float]]] | 空闲状态的检测结果 |
-| params_list | [[[float]]] | 模型拟合,信号处理过程中的参数 |
-| std_list | [[float,float,float,float,[[float]],[[float]]]] | 数据的标准差信息 |
-| cdf_list | [[[float]]] | 累积分布函数数据 |
+| 字段名 | 类型 | 描述                                 |
+|--------|------|------------------------------------|
+| threshold_list | [float] | 分类决策阈值，在投影轴上的分类阈值以最小化分类误差          |
+| sep_score_list | [float] | 分离程度 separation_degree             |
+| phi_list | [float] | 最佳投影方向的角度，使两组信号在该方向上具有最大可区分性，给出投影轴 |
+| signal_list | [[[float]]] | 信号投影，复数信号投影到一维实轴（投影轴）              |
+| idle_list | [[[float]]] | 空闲信号投影，复数信号投影到一维实轴（投影轴）            |
+| params_list | [[[float]]] | 椭圆拟合参数                             |
+| std_list | [[float,float,float,float,[[float]],[[float]]]] | 数据的标准差，方差，协方差信息                    |
+| cdf_list | [[[float]]] | 累积分布函数数据                           |
 
 ### 示例结果
 

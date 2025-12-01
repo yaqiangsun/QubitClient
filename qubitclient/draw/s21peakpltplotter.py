@@ -29,7 +29,7 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
             q_name_list.append(q_name)
         peaks_list = result['peaks']
         confs_list = result['confs']
-        freqs_list = result['freqs']
+        freqs_list = result['freqs_list']
 
         nums = len(x_list)
         row = (nums // 1) + 1 if nums % 1 != 0 else nums // 1
@@ -49,27 +49,36 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
             ax.plot(x, y2, c='green', label='Phi Curve')
             legend_handles = []
             legend_labels = []
-            cmap = plt.cm.get_cmap('viridis', len(peaks))
+            color_palette = [
+                '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF',  # 红、绿、蓝、黄、紫
+                '#00FFFF', '#FFA500', '#800080', '#008000', '#FFC0CB',  # 青、橙、紫红、深绿、粉红
+                '#4B0082', '#FF4500', '#2E8B57', '#DA70D6', '#1E90FF',  # 靛蓝、橙红、海绿、兰紫、道奇蓝
+                '#32CD32', '#8A2BE2', '#DC143C', '#00CED1', '#FFD700',  # 酸橙、紫罗兰、深红、深青、金色
+                '#006400', '#8B4513'  # 深绿、鞍褐
+            ]
             for j in range(len(peaks)):
+                color = color_palette[j % len(color_palette)]
                 scatter = ax.scatter(x[peaks[j]], y1[peaks[j]],
-                color = 'red', marker = '*', s = 100,
+                color = color, marker = '*', s = 100,
                 label = f'peak (conf: {confs[j]:.2f})',
                 zorder = 5)
                 ax.annotate(f'{confs[j]:.2f}',
                 (x[peaks[j]], y1[peaks[j]]),
                 textcoords = "offset points",
                 xytext = (0, 15), ha = 'center',
-                fontsize = 10, color = 'darkred',
+                fontsize = 10, color = color,
                 label = f'(final (conf: {confs[j]:.2f})')
-                ax.axvline(x[peaks[j]], color="red", linestyle='--', alpha=0.8)
+                ax.axvline(x[peaks[j]], color=color, linestyle='--', alpha=0.8)
                 ax.set_title(f'{q_name_list[i]}', fontsize=14, fontweight='bold', pad=15)
                 legend_handles.append(scatter)
-                legend_labels.append(f'freq: {freqs[j] / 1e9:.2f}GHz)')
+                legend_labels.append(f'freq: {freqs[j] / 1e9:.2f}GHz')
 
                 # ax.legend()
             ax.legend(handles=legend_handles, labels=legend_labels,
                       loc='upper left', bbox_to_anchor=(1, 1),
-                      fontsize=10)
+                      fontsize=15)
+
+
             plt.tight_layout()
 
 

@@ -100,7 +100,7 @@ results = client.get_result(response=response)
 
 ### NNScope任务
 
-- `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/SPECTRUM2D.md)
+- `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/SPECTRUM2DNNScope.md)
 
 ### Scope任务
 

@@ -1,8 +1,8 @@
-# SPECTRUM2DNNScope 任务接口文档
+# NNScope.SPECTRUM2D 任务接口文档
 
 ## 概述
 
-SPECTRUM2DNNScope 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+NNScope.SPECTRUM2D 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
 
 ## 接口使用方式
 

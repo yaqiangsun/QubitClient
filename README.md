@@ -100,20 +100,20 @@ results = client.get_result(response=response)
 
 ### NNScope任务
 
-- `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/SPECTRUM2DNNScope.md)
+- `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/nnscope/SPECTRUM2D.md)
 
 ### Scope任务
 
-- `TaskName.S21PEAK`: S21参数峰值检测，详见 [S21PEAK详细文档](docs/S21PEAK.md)
-- `TaskName.OPTPIPULSE`: 最优π脉冲计算，详见 [OPTPIPULSE详细文档](docs/OPTPIPULSE.md)
-- `TaskName.RABICOS`: Rabi振荡余弦拟合，详见 [RABICOS详细文档](docs/RABICOS.md)
-- `TaskName.RAMSEY`: RAMSY衰减震荡余弦拟合，详见 [RAMSEY详细文档](docs/RABICOS.md)
-- `TaskName.S21VFLUX`: S21 vs Flux分析，详见 [S21VFLUX详细文档](docs/S21VFLUX.md)
-- `TaskName.SINGLESHOT`: 单次测量分析，详见 [SINGLESHOT详细文档](docs/SINGLESHOT.md)
-- `TaskName.SPECTRUM`: 频谱分析，详见 [SPECTRUM详细文档](docs/SPECTRUM.md)
-- `TaskName.T1FIT`: T1时间拟合，详见 [T1FIT详细文档](docs/T1FIT.md)
-- `TaskName.T2FIT`: T2时间拟合，详见 [T2FIT详细文档](docs/T2FIT.md)
-- `TaskName.POWERSHIFT`: 分析功率偏移曲线，详见 [POWERSHIFT详细文档](docs/POWERSHIFT.md)
+- `TaskName.S21PEAK`: S21参数峰值检测，详见 [S21PEAK详细文档](docs/scope/S21PEAK.md)
+- `TaskName.OPTPIPULSE`: 最优π脉冲计算，详见 [OPTPIPULSE详细文档](docs/scope/OPTPIPULSE.md)
+- `TaskName.RABICOS`: Rabi振荡余弦拟合，详见 [RABICOS详细文档](docs/scope/RABICOS.md)
+- `TaskName.RAMSEY`: RAMSY衰减震荡余弦拟合，详见 [RAMSEY详细文档](docs/scope/RABICOS.md)
+- `TaskName.S21VFLUX`: S21 vs Flux分析，详见 [S21VFLUX详细文档](docs/scope/S21VFLUX.md)
+- `TaskName.SINGLESHOT`: 单次测量分析，详见 [SINGLESHOT详细文档](docs/scope/SINGLESHOT.md)
+- `TaskName.SPECTRUM`: 频谱分析，详见 [SPECTRUM详细文档](docs/scope/SPECTRUM.md)
+- `TaskName.T1FIT`: T1时间拟合，详见 [T1FIT详细文档](docs/scope/T1FIT.md)
+- `TaskName.T2FIT`: T2时间拟合，详见 [T2FIT详细文档](docs/scope/T2FIT.md)
+- `TaskName.POWERSHIFT`: 分析功率偏移曲线，详见 [POWERSHIFT详细文档](docs/scope/POWERSHIFT.md)
 
 ## 数据格式说明
 

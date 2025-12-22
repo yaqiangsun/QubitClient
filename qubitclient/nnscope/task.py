@@ -168,7 +168,7 @@ class NNTaskName(Enum):
     # SPECTRUM = "spectrum"
     # T1FIT = "t1fit"
     # T2FIT = "t2fit"
-    SPECTRUM2DNNSCOPE = "spectrum2dnnscope"
+    SPECTRUM2D = "spectrum2dnnscope"
     S21VFLUX = "s21vfluxnnscope"
 
 

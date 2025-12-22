@@ -84,7 +84,7 @@
     # SPECTRUM = "spectrum"
     # T1FIT = "t1fit"
     # T2FIT = "t2fit"
-    SPECTRUM2DNNSCOPE = "spectrum2dnnscope"
+    SPECTRUM2D = "spectrum2dnnscope"
     
     
     scope/task.py

@@ -48,20 +48,20 @@ def send_spectrum2dnnscope_npz_to_server(url, api_key,dir_path = "data/33137"):
         dict_list.append(content)
 
     #使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    response = client.request(file_list=dict_list,task_type=NNTaskName.SPECTRUM2DNNSCOPE,curve_type=CurveType.COSINE)
+    response = client.request(file_list=dict_list,task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     # 从文件路径直接加载
-    # response = client.request(file_list=file_path_list,task_type=NNTaskName.SPECTRUM2DNNSCOPE,curve_type=CurveType.COSINE)
+    # response = client.request(file_list=file_path_list,task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
     threshold = 0.5
-    results_filtered = client.get_filtered_result(response,threshold,NNTaskName.SPECTRUM2DNNSCOPE.value)
+    results_filtered = client.get_filtered_result(response,threshold,NNTaskName.SPECTRUM2D.value)
 
-    save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2DNNSCOPE.value}_{savename}"
+    save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
     save_path_png = save_path_prefix + ".png"
     save_path_html = save_path_prefix + ".html"
     plot_manager = QuantumPlotPlyManager()
     plot_manager.plot_quantum_data(
         data_type='npz',
-        task_type=NNTaskName.SPECTRUM2DNNSCOPE.value,
+        task_type=NNTaskName.SPECTRUM2D.value,
         save_path=save_path_html,
         results=results_filtered,
         dict_list=dict_list,
@@ -70,7 +70,7 @@ def send_spectrum2dnnscope_npz_to_server(url, api_key,dir_path = "data/33137"):
     plot_manager = QuantumPlotPltManager()
     plot_manager.plot_quantum_data(
         data_type='npz',
-        task_type=NNTaskName.SPECTRUM2DNNSCOPE.value,
+        task_type=NNTaskName.SPECTRUM2D.value,
         save_path=save_path_png,
         results=results_filtered,
         dict_list=dict_list,
@@ -92,19 +92,19 @@ def send_spectrum2dnnscope_npy_to_server(url, api_key,file_path = "/home/sunyaqi
     import numpy as np
     data_ndarray = np.load(file_path, allow_pickle=True)
     # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.SPECTRUM2DNNSCOPE,curve_type=CurveType.COSINE)
+    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     # 2.从文件路径直接加载
-    # response = client.request(file_list=[file_path],task_type=NNTaskName.SPECTRUM2DNNSCOPE,curve_type=CurveType.COSINE)
+    # response = client.request(file_list=[file_path],task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
     threshold = 0.5
-    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2DNNSCOPE.value)
-    save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2DNNSCOPE.value}_{savename}"
+    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
+    save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
     save_path_png = save_path_prefix + ".png"
     save_path_html = save_path_prefix + ".html"
     plot_manager = QuantumPlotPlyManager()
     plot_manager.plot_quantum_data(
         data_type='npy',
-        task_type=NNTaskName.SPECTRUM2DNNSCOPE.value,
+        task_type=NNTaskName.SPECTRUM2D.value,
         save_path=save_path_html,
         results=results_filtered,
         data_ndarray=data_ndarray
@@ -113,7 +113,7 @@ def send_spectrum2dnnscope_npy_to_server(url, api_key,file_path = "/home/sunyaqi
     plot_manager = QuantumPlotPltManager()
     plot_manager.plot_quantum_data(
         data_type='npy',
-        task_type=NNTaskName.SPECTRUM2DNNSCOPE.value,
+        task_type=NNTaskName.SPECTRUM2D.value,
         save_path=save_path_png,
         results=results_filtered,
         data_ndarray=data_ndarray

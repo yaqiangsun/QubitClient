@@ -133,7 +133,11 @@ def main():
     # base_dir = "data/1829"
     # send_spectrum2dnnscope_npz_to_server(API_URL, API_KEY, base_dir)
     # 2. npy file.
+<<<<<<< HEAD
     file_path = "tmp/data/spectrum2d/tmp0bf97fdf.py_1536.npy"
+=======
+    file_path = "./tmp/spectrum2d/tmp8acb97b8.py_7152.npy"
+>>>>>>> 490866844bdd90363ccb8a5faa2f1b8d26e149e6
     send_spectrum2dnnscope_npy_to_server(API_URL, API_KEY, file_path)
 
 

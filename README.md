@@ -100,7 +100,7 @@ results = client.get_result(response=response)
 
 ### NNScope任务
 
-- `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/SPECTRUM2D.md)
+- `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/SPECTRUM2DNNScope.md)
 
 ### Scope任务
 
@@ -126,6 +126,7 @@ results = client.get_result(response=response)
 依据功能任务不同，输出格式有所不同
 
 ## 运行测试示例
+测试示例包含在 [tests](tests) 目录下，可依据文件名运行对应的测试代码
 
 ```bash
 # 运行NNScope测试

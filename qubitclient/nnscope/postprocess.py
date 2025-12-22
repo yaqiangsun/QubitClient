@@ -7,7 +7,7 @@ from typing import Dict, Callable
 
 
 def postprocess_result_spectrum2dnnscope(response, threshold):
-    logging.info("Result: %s", response.json())
+    logging.debug("Result: %s", response.json())
     result = response.json()
     results = result["result"]
 

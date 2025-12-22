@@ -44,7 +44,7 @@ class QubitScopeClient(object):
         return response
     def get_result(self,response):
         if response.status_code == 200:
-            logging.info("Result: %s", response.parsed)
+            logging.debug("Result: %s", response.parsed)
             result = response.parsed
             return result
         else:

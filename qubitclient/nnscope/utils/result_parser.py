@@ -8,9 +8,10 @@
 ########################################################################
 
 import math
-import cv2
+
 
 def parser_result(result, images):
+    import cv2
     result_images = []
     for i in range(len(result)):
         image = images[i]
@@ -27,7 +28,6 @@ def parser_result(result, images):
             for j in range(len(linepoints) - 1):
                 cv2.line(image, tuple([int(linepoints[j][0]*10),int(linepoints[j][1])]), tuple([int(linepoints[j + 1][0]*10),int(linepoints[j + 1][1])]), (0, 255, 0), 2)
         
-        # cv2.imwrite(f"tmp/client/result_{i}.jpg", image)
         result_images.append(image)
     return result_images
 

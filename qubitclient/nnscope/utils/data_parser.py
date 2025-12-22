@@ -9,7 +9,7 @@
 
 import os
 import numpy as np
-import cv2
+
 
 
 def load_npz_file(file_path):
@@ -17,6 +17,7 @@ def load_npz_file(file_path):
         content = dict(data)
     return content
 def convert_data_to_image(npz_content):
+    import cv2
     content = npz_content
     iq_avg = content["iq_avg"]
     rows, cols = iq_avg.shape
@@ -37,5 +38,4 @@ def load_npz_to_images(file_path_list):
         print(file_path)
         image = load_npz_to_image(file_path)
         images.append(image)
-        # cv2.imwrite("tmp/client/test.jpg",image)
     return images

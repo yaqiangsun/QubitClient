@@ -12,7 +12,7 @@ import numpy as np
 import io
 import os
 import numpy as np
-import cv2
+
 
 
 def load_npz_file(file_path):
@@ -26,6 +26,8 @@ def convert_data_to_image(npz_content):
     iq_avg_normalized = convert_complex_map__to_image(iq_avg=iq_avg)
     return iq_avg_normalized
 def convert_complex_map__to_image(iq_avg):
+    import cv2
+    
     # 检查并转置
     rows, cols = iq_avg.shape
     if rows < cols:

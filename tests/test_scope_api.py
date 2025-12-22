@@ -1,5 +1,5 @@
 import os
-# import cv2
+
 import numpy as np
 import sys
 # 获取当前文件的绝对路径，向上两层就是项目根目录

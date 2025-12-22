@@ -43,7 +43,7 @@ class QubitNNScopeClient(object):
         return response
     def get_result(self,response):
         if response.status_code == 200:
-            logging.info("Result: %s", response.json())
+            logging.debug("Result: %s", response.json())
             result = response.json()
             result = result["result"]
             return result

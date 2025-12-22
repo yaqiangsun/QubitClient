@@ -3,7 +3,7 @@ import numpy as np
 from typing import Dict, Callable
 
 def postprocess_result_s21vflux(response ,threshold):
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -47,7 +47,7 @@ def postprocess_result_s21vflux(response ,threshold):
 
 def postprocess_result_s21peak(response ,threshold):
 
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -88,7 +88,7 @@ def postprocess_result_s21peak(response ,threshold):
 
 
 def postprocess_result_spectrum2dscope(response, threshold):
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -143,7 +143,7 @@ def postprocess_result_spectrum2dscope(response, threshold):
     return response_data
 
 def postprocess_result_rabicos(response, threshold):
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -175,7 +175,7 @@ def postprocess_result_rabicos(response, threshold):
     return response_data
 
 def postprocess_result_optpipulse(response, threshold):
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -207,7 +207,7 @@ def postprocess_result_optpipulse(response, threshold):
     return response_data
 
 def postprocess_result_t1fit(response, threshold):
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -239,7 +239,7 @@ def postprocess_result_t1fit(response, threshold):
     response_data['results'] = results_filtered
     return response_data
 def postprocess_result_t2fit(response, threshold):
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []
@@ -276,7 +276,7 @@ def postprocess_result_ramsey(response, threshold):
     对 RAMSEY 结果按 R² 拟合优度进行过滤
     threshold: R² 阈值（如 0.8），低于此值的量子比特拟合结果将被过滤掉
     """
-    logging.info("Result: %s", response.parsed)
+    logging.debug("Result: %s", response.parsed)
     result = response.parsed
     results = result.get("results")
     results_filtered = []

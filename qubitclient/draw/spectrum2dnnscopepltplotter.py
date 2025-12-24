@@ -4,7 +4,7 @@ from .pltplotter import QuantumDataPltPlotter
 
 class Spectrum2DNNScopeDataPltPlotter(QuantumDataPltPlotter):
     def __init__(self):
-        super().__init__("spectrum2d")
+        super().__init__("spectrum2dnnscope")
 
     def plot_result_npy(self, **kwargs):
         results = kwargs.get('results')

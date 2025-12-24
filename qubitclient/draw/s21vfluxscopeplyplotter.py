@@ -5,10 +5,10 @@ from plotly.subplots import make_subplots
 
 from scipy.stats import norm
 
-class S21VfluxDataPlyPlotter(QuantumDataPlyPlotter):
+class S21VfluxScopeDataPlyPlotter(QuantumDataPlyPlotter):
 
     def __init__(self):
-        super().__init__("s21vflux")
+        super().__init__("s21vfluxscope")
 
     def plot_result_npy(self, **kwargs):
         result = kwargs.get('result')

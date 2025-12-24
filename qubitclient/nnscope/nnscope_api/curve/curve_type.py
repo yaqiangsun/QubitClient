@@ -13,3 +13,4 @@ from enum import Enum
 class CurveType(str, Enum):
     COSINE = "cosin"
     POLY = "poly"
+    AUTO = "auto"

@@ -3,14 +3,13 @@ import matplotlib.pyplot as plt
 from .pltplotter import QuantumDataPltPlotter
 
 
-class S21VfluxDataPltPlotter(QuantumDataPltPlotter):
+class S21VfluxScopeDataPltPlotter(QuantumDataPltPlotter):
     def __init__(self):
-        super().__init__("s21vflux")
+        super().__init__("s21vfluxscope")
 
     def plot_result_npy(self, **kwargs):
         result = kwargs.get('result')
         dict_param = kwargs.get('dict_param')
-
         data = dict_param.item()
         image = data["image"]
         q_list = image.keys()

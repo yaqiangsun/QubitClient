@@ -49,30 +49,30 @@ def send_spectrum2dscope_npy_to_server(url, api_key, dir_path="data/33137"):
         dict_list.append(content)
 
         # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    response = client.request(file_list=dict_list, task_type=TaskName.SPECTRUM2DSCOPE)
+    response = client.request(file_list=dict_list, task_type=TaskName.SPECTRUM2D)
     print(response)
 
     response_data = client.get_result(response)
     threshold = 0.5
-    response_data_filtered = client.get_filtered_result(response,threshold,TaskName.SPECTRUM2DSCOPE.value)
+    response_data_filtered = client.get_filtered_result(response,threshold,TaskName.SPECTRUM2D.value)
 
     results = response_data.get("results")
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()
     for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_prefix = f"./tmp/client/result_{TaskName.SPECTRUM2DSCOPE.value}_{savenamelist[idx]}"
+        save_path_prefix = f"./tmp/client/result_{TaskName.SPECTRUM2D.value}_{savenamelist[idx]}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
         plt_plot_manager.plot_quantum_data(
             data_type='npy',
-            task_type=TaskName.SPECTRUM2DSCOPE.value,
+            task_type=TaskName.SPECTRUM2D.value,
             save_path=save_path_png,
             result=result,
             dict_param=dict_param
         )
         ply_plot_manager.plot_quantum_data(
             data_type='npy',
-            task_type=TaskName.SPECTRUM2DSCOPE.value,
+            task_type=TaskName.SPECTRUM2D.value,
             save_path=save_path_html,
             result=result,
             dict_param=dict_param

@@ -133,7 +133,7 @@ def main():
     # base_dir = "data/1829"
     # send_spectrum2dnnscope_npz_to_server(API_URL, API_KEY, base_dir)
     # 2. npy file.
-    file_path = "/media/lining/d7a0fb11-79c9-4c24-8500-1384fde9fe6d/projects/quantum/client_1101/QubitClient_1101/tests/tmp/npyfile/tmp6d08e0e9.py_7157.npy"
+    file_path = "tmp/data/spectrum2d/tmpb5c7f62d.py_311.npy"
     send_spectrum2dnnscope_npy_to_server(API_URL, API_KEY, file_path)
 
 

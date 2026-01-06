@@ -156,6 +156,12 @@ def s21vfluxnnscope(files,url,api_key,curve_type):
     response = request_task(files,spectrum2d_url,api_key,curve_type)
     return response
 
+@task_register
+def powershiftnnscope(files,url,api_key,curve_type):
+    spectrum2d_url = url + "/api/v1/tasks/nnscope/powershift"
+    response = request_task(files,spectrum2d_url,api_key,curve_type)
+    return response
+
 from enum import Enum, unique
 @unique
 class NNTaskName(Enum):
@@ -170,7 +176,7 @@ class NNTaskName(Enum):
     # T2FIT = "t2fit"
     SPECTRUM2D = "spectrum2dnnscope"
     S21VFLUX = "s21vfluxnnscope"
-
+    POWERSHIFT = "powershiftnnscope"
 
 
 

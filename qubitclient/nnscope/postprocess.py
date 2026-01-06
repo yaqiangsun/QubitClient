@@ -73,13 +73,58 @@ def postprocess_result_s21vfluxnnscope(response, threshold):
         result_filtered['class_ids'] = filtered_class_ids
         result_filtered['curve_type'] = filtered_curve_type
 
+        results_filtered.append(result_filtered)
+
+    return results_filtered
+
+
+def postprocess_result_powershiftnnscope(response, threshold):
+    logging.debug("Result: %s", response.json())
+    result = response.json()
+    results = result.get("result", [])
+
+    results_filtered = []
+    for idx, result in enumerate(results):
+        result_filtered = {}
+        q_list = result.get('q_list', [])
+        keypoints_list = result.get('keypoints_list', [])
+        confs = result.get('confs', [])
+        class_num_list = result.get('class_num_list', [])
+
+        keypoints_arr = np.array(keypoints_list, dtype=object)
+        class_arr = np.array(class_num_list, dtype=object)
+        try:
+            confs_arr = np.array(confs, dtype=float)
+        except Exception:
+            confs_arr = np.array(confs, dtype=object)
+        q_arr = np.array(q_list, dtype=object)
+
+        if confs_arr.size > 0 and np.issubdtype(confs_arr.dtype, np.number):
+            mask = confs_arr >= threshold
+        else:
+            mask = np.ones(keypoints_arr.shape, dtype=bool)
+
+        filtered_q = q_arr[mask].tolist() if q_arr.size > 0 else []
+        filtered_keypoints = keypoints_arr[mask].tolist() if keypoints_arr.size > 0 else []
+        filtered_class = class_arr[mask].tolist() if class_arr.size > 0 else []
+        filtered_confs = confs_arr[mask].tolist() if confs_arr.size > 0 and np.issubdtype(confs_arr.dtype, np.number) else []
+
+        result_filtered['q_list'] = filtered_q
+        result_filtered['keypoints_list'] = filtered_keypoints
+        result_filtered['confs'] = filtered_confs
+        result_filtered['class_num_list'] = filtered_class
 
         results_filtered.append(result_filtered)
 
     return results_filtered
+
+    
+
+
 TASK_MAP: Dict[str, Callable] = {
     'spectrum2dnnscope': postprocess_result_spectrum2dnnscope,
-    's21vfluxnnscope': postprocess_result_s21vfluxnnscope
+    's21vfluxnnscope': postprocess_result_s21vfluxnnscope,
+    'powershiftnnscope': postprocess_result_powershiftnnscope
 }
 
 def run_postprocess(response, threshold, task_type):

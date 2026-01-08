@@ -17,6 +17,10 @@
 ```bash
 pip install qubitclient
 ```
+如果需要使用绘图等功能
+```bash
+pip install qubitclient[full]
+```
 
 或者从源码安装：
 

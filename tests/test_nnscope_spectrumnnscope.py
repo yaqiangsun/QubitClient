@@ -54,12 +54,16 @@ def send_spectrum_npy_to_server(url, api_key, dir_path="data/33137"):
     response = client.request(file_list=dict_list, task_type=NNTaskName.SPECTRUM,curve_type=CurveType.AUTO)
     results = client.get_result(response=response)
 
-    print("check results: ", results)
+    threshold = 0.3
+    print("before filter results: ", results)
+    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM.value)
+
+    print("------after filter \n: ", results_filtered)
 
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()
-    for idx, (result, item) in enumerate(zip(results, dict_list)):
 
+    for idx, (result, item) in enumerate(zip(results, dict_list)):
         if isinstance(result, dict) and \
                 result.get('status') == 'failed' and \
                 result.get('error') == "'image'":

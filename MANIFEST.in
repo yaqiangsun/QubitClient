@@ -1,0 +1,4 @@
+include README.rst
+include LICENSE
+global-exclude *.orig *.py[co] *.log *.swp
+recursive-include miniolite *.py

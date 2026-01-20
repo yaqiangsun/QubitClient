@@ -1,0 +1,30 @@
+[project]
+name = "qubitclient"
+version = "0.2.3"
+description = "qubit analysis client"
+authors = [
+    { name = "Yaqiang Sun", email = "sunyaking@163.com" },
+]
+license = {text = "GPL-3.0"}
+readme = "README.md"
+requires-python = ">=3.9, <=3.14"
+dependencies = [
+    "attrs>=25.4.0",
+    "httpx>=0.28.1",
+    "numpy>=2.0.0",
+    "requests>=2.32.5",
+]
+
+[project.optional-dependencies]
+full = [
+    "matplotlib>=3.9",
+    "opencv-python>=4.12",
+    "opencv-python-headless>=4.12",
+    "plotly>=6.4.0",
+    "scipy>=1.10",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["qubitclient*"]  # match qubitscope and qubitscope.*
+exclude = ["tests", "tests.*", "tmp", "tmp.*"]

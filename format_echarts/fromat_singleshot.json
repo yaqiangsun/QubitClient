@@ -1,0 +1,28 @@
+[
+  [
+    {
+        "data":[
+            [3.4+2j, 4.5+2j],//第一个对应的复数s1,第一个对应的复数s2
+            [4.2v, 2.3+2j],
+            [1+2j, 3+2j],
+            [8+2j, 1+2j],
+            [2+2j, 2+2j],
+            [12+2j, 4+2j]
+            ],
+        "label":[
+            {
+                    "threshold_list": float,     // 分类决策阈值
+                    "sep_score_list": float, // 每条线段的点坐标列表
+                    "phi_list": float,         // 信号投影的最佳角度或相位调整参数
+                    "signal_list": [[float]],         // 有效信号的检测结果
+                    "idle_list": [[float]],         // 空闲状态的检测结果
+                    "params_list": [[float]],         //  模型拟合,信号处理过程中的参数
+                    "std_list": [float,float,float,float,[[float]],[[float]]], // 数据的标准差信息
+                    "cdf_list": [[float]]]        // 累积分布函数数据
+            }
+        ]
+    }, //单个npy文件的单个通道
+    ...
+  ]// 单个npy文件的所有通道
+  ...
+] // 所有npy文件的所有通道

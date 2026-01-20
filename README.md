@@ -107,6 +107,7 @@ results = client.get_result(response=response)
 - `NNTaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/nnscope/SPECTRUM2D.md)
 - `NNTaskName.POWERSHIFT`: 功率偏移曲线分割，详见 [POWERSHIFT详细文档](docs/nnscope/POWERSHIFT.md)
 - `NNTaskName.S21VFLUX`: S21 vs Flux参数曲线分割，详见 [S21VFLUX详细文档](docs/nnscope/S21VFLUX.md)
+- `NNTaskName.SPECTRUM`: 频谱分析，详见 [SPECTRUM详细文档](docs/nnscope/SPECTRUM.md)
 
 ### Scope任务
 

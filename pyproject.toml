@@ -1,6 +1,6 @@
 [project]
 name = "qubitclient"
-version = "0.2.5"
+version = "0.2.6"
 description = "qubit analysis client"
 authors = [
     { name = "Yaqiang Sun", email = "sunyaking@163.com" },
@@ -11,7 +11,7 @@ requires-python = ">=3.9, <=3.14"
 dependencies = [
     "attrs>=25.4.0",
     "httpx>=0.28.1",
-    "numpy>=2.0.0",
+    "numpy>=1.26.4",
     "requests>=2.32.5",
 ]
 

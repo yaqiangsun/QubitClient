@@ -17,7 +17,7 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
         x_list = []
         amp_list = []
         phi_list = []
-        q_name_list =[]
+        q_name_list = []
         for idx, q_name in enumerate(q_list):
             image_q = image[q_name]
             x = image_q[0]
@@ -45,8 +45,12 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
             freqs = freqs_list[i]
 
             ax = fig.add_subplot(row, col, i + 1)
-            ax.plot(x, y1, 'b-', label='Amp Curve', linewidth=2)
-            ax.plot(x, y2, c='green', label='Phi Curve')
+
+            ax2 = ax.twinx()
+
+            line1 = ax.plot(x, y1, 'b-', label='Amp Curve', linewidth=2)
+            line2 = ax2.plot(x, y2, c='green', label='Phi Curve')
+
             legend_handles = []
             legend_labels = []
             color_palette = [
@@ -59,29 +63,35 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
             for j in range(len(peaks)):
                 color = color_palette[j % len(color_palette)]
                 scatter = ax.scatter(x[peaks[j]], y1[peaks[j]],
-                color = color, marker = '*', s = 100,
-                label = f'peak (conf: {confs[j]:.2f})',
-                zorder = 5)
+                                     color=color, marker='*', s=100,
+                                     label=f'peak (conf: {confs[j]:.2f})',
+                                     zorder=5)
                 ax.annotate(f'{confs[j]:.2f}',
-                (x[peaks[j]], y1[peaks[j]]),
-                textcoords = "offset points",
-                xytext = (0, 15), ha = 'center',
-                fontsize = 10, color = color,
-                label = f'(final (conf: {confs[j]:.2f})')
+                            (x[peaks[j]], y1[peaks[j]]),
+                            textcoords="offset points",
+                            xytext=(0, 15), ha='center',
+                            fontsize=10, color=color,
+                            label=f'(final (conf: {confs[j]:.2f})')
                 ax.axvline(x[peaks[j]], color=color, linestyle='--', alpha=0.8)
-                ax.set_title(f'{q_name_list[i]}', fontsize=14, fontweight='bold', pad=15)
+
                 legend_handles.append(scatter)
                 legend_labels.append(f'freq: {freqs[j] / 1e9:.2f}GHz')
 
-                # ax.legend()
-            ax.legend(handles=legend_handles, labels=legend_labels,
-                      loc='upper left', bbox_to_anchor=(1, 1),
-                      fontsize=15)
+            ax.set_ylabel('Amplitude', color='b')
+            ax2.set_ylabel('Phase', color='green')
 
+            ax.set_title(f'{q_name_list[i]}', fontsize=14, fontweight='bold', pad=15)
 
-            plt.tight_layout()
+            lines1, labels1 = ax.get_legend_handles_labels()
+            lines2, labels2 = ax2.get_legend_handles_labels()
+            ax.legend(lines1 + lines2, labels1 + labels2,
+                      loc='upper left', bbox_to_anchor=(0, 1),
+                      fontsize=12)
 
+            if legend_handles:
+                ax.legend(handles=legend_handles, labels=legend_labels,
+                          loc='upper left', bbox_to_anchor=(1, 1),
+                          fontsize=15)
 
-
+        plt.tight_layout()
         return fig
-

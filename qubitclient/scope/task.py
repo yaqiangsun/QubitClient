@@ -8,7 +8,7 @@ from .scope_api.api.defined_tasks import s21vflux_api_v1_tasks_scope_s21vflux_po
 from .scope_api.api.defined_tasks import singleshot_api_v1_tasks_scope_singleshot_post
 from .scope_api.api.defined_tasks import spectrum_api_v1_tasks_scope_spectrum_post
 from .scope_api.api.defined_tasks import t1fit_api_v1_tasks_scope_t1fit_post
-from .scope_api.api.defined_tasks import t1fit_api_v1_tasks_scope_t2fit_post
+from .scope_api.api.defined_tasks import t2fit_api_v1_tasks_scope_t2fit_post
 from .scope_api.api.defined_tasks import spectrum2d_api_v1_tasks_scope_spectrum2d_post
 from .scope_api.api.defined_tasks import powershift_api_v1_tasks_scope_powershift_post
 
@@ -129,7 +129,7 @@ def t1fit(client,files: File):
 @task_register
 def t2fit(client,files: File):
     body: BodyT2FitApiV1TasksScopeT2FitPost = BodyT2FitApiV1TasksScopeT2FitPost(files=files)
-    response: Response[BodyT2FitApiV1TasksScopeT2FitPost] = t1fit_api_v1_tasks_scope_t2fit_post.sync_detailed(client=client,body=body)
+    response: Response[BodyT2FitApiV1TasksScopeT2FitPost] = t2fit_api_v1_tasks_scope_t2fit_post.sync_detailed(client=client,body=body)
     return response
 
 @task_register

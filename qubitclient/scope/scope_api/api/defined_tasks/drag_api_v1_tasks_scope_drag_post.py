@@ -5,15 +5,15 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_rabi_api_v1_tasks_scope_rabi_post import BodyRabiApiV1TasksScopeRabiPost
+from ...models.body_drag_api_v1_tasks_scope_drag_post import BodyDragApiV1TasksScopeDragPost
 from ...models.http_validation_error import HTTPValidationError
 from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
+    body: BodyDragApiV1TasksScopeDragPost,
+    type_: Union[Unset, str] = "drag",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -25,7 +25,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/tasks/scope/rabi",
+        "url": "/api/v1/tasks/scope/drag",
         "params": params,
     }
 
@@ -67,23 +67,23 @@ def _build_response(
 def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
+    body: BodyDragApiV1TasksScopeDragPost,
+    type_: Union[Unset, str] = "drag",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    r"""Rabi
+    r"""Drag
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     powershift
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"powershift\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'drag'.
+        body (BodyDragApiV1TasksScopeDragPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -108,23 +108,23 @@ def sync_detailed(
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
+    body: BodyDragApiV1TasksScopeDragPost,
+    type_: Union[Unset, str] = "drag",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    r"""Rabi
+    r"""Drag
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     powershift
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"powershift\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'drag'.
+        body (BodyDragApiV1TasksScopeDragPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -144,23 +144,23 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
+    body: BodyDragApiV1TasksScopeDragPost,
+    type_: Union[Unset, str] = "drag",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    r"""Rabi
+    r"""Drag
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     powershift
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"powershift\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'drag'.
+        body (BodyDragApiV1TasksScopeDragPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -183,23 +183,23 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
+    body: BodyDragApiV1TasksScopeDragPost,
+    type_: Union[Unset, str] = "drag",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    r"""Rabi
+    r"""Drag
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     powershift
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"powershift\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'drag'.
+        body (BodyDragApiV1TasksScopeDragPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

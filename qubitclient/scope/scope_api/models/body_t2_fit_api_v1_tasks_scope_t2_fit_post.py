@@ -8,11 +8,11 @@ from attrs import field as _attrs_field
 from .. import types
 from ..types import File
 
-T = TypeVar("T", bound="BodyT1FitApiV1TasksScopeT2FitPost")
+T = TypeVar("T", bound="BodyT2FitApiV1TasksScopeT2FitPost")
 
 
 @_attrs_define
-class BodyT1FitApiV1TasksScopeT2FitPost:
+class BodyT2FitApiV1TasksScopeT2FitPost:
     """
     Attributes:
         files (list[File]):
@@ -59,12 +59,12 @@ class BodyT1FitApiV1TasksScopeT2FitPost:
 
             files.append(files_item)
 
-        body_t1_fit_api_v1_tasks_scope_t2_fit_post = cls(
+        body_t2_fit_api_v1_tasks_scope_t2_fit_post = cls(
             files=files,
         )
 
-        body_t1_fit_api_v1_tasks_scope_t2_fit_post.additional_properties = d
-        return body_t1_fit_api_v1_tasks_scope_t2_fit_post
+        body_t2_fit_api_v1_tasks_scope_t2_fit_post.additional_properties = d
+        return body_t2_fit_api_v1_tasks_scope_t2_fit_post
 
     @property
     def additional_keys(self) -> list[str]:

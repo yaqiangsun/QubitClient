@@ -21,7 +21,7 @@ from .scope_api.models import BodyS21VfluxApiV1TasksScopeS21VfluxPost
 from .scope_api.models import BodySingleshotApiV1TasksScopeSingleshotPost
 from .scope_api.models import BodySpectrumApiV1TasksScopeSpectrumPost
 from .scope_api.models import BodyT1FitApiV1TasksScopeT1FitPost
-from .scope_api.models import BodyT1FitApiV1TasksScopeT2FitPost
+from .scope_api.models import BodyT2FitApiV1TasksScopeT2FitPost
 from .scope_api.models import BodySpectrum2DApiV1TasksScopeSpectrum2DPost
 from .scope_api.models import BodyPowershiftApiV1TasksScopePowershiftPost
 
@@ -128,8 +128,8 @@ def t1fit(client,files: File):
     return response
 @task_register
 def t2fit(client,files: File):
-    body: BodyT1FitApiV1TasksScopeT2FitPost = BodyT1FitApiV1TasksScopeT2FitPost(files=files)
-    response: Response[BodyT1FitApiV1TasksScopeT2FitPost] = t1fit_api_v1_tasks_scope_t2fit_post.sync_detailed(client=client,body=body)
+    body: BodyT2FitApiV1TasksScopeT2FitPost = BodyT2FitApiV1TasksScopeT2FitPost(files=files)
+    response: Response[BodyT2FitApiV1TasksScopeT2FitPost] = t1fit_api_v1_tasks_scope_t2fit_post.sync_detailed(client=client,body=body)
     return response
 
 @task_register

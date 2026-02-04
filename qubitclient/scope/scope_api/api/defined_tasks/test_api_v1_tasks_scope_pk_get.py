@@ -5,33 +5,18 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_rabi_api_v1_tasks_scope_rabi_post import BodyRabiApiV1TasksScopeRabiPost
 from ...models.http_validation_error import HTTPValidationError
-from ...types import UNSET, Response, Unset
+from ...types import Response
 
 
 def _get_kwargs(
-    *,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
+    pk: int,
 ) -> dict[str, Any]:
-    headers: dict[str, Any] = {}
-
-    params: dict[str, Any] = {}
-
-    params["type"] = type_
-
-    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
     _kwargs: dict[str, Any] = {
-        "method": "post",
-        "url": "/api/v1/tasks/scope/rabi",
-        "params": params,
+        "method": "get",
+        "url": f"/api/v1/tasks/scope/{pk}",
     }
 
-    _kwargs["files"] = body.to_multipart()
-
-    _kwargs["headers"] = headers
     return _kwargs
 
 
@@ -65,25 +50,14 @@ def _build_response(
 
 
 def sync_detailed(
+    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    r"""Rabi
-
-     rabi fit,其实是ramsy，后续逐渐废弃
+    """Test
 
     Args:
-        files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
-
-    Returns:
-        dict: 包含检测结果的字典
-
-    Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        pk (int): 任务结果 ID
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -94,8 +68,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        body=body,
-        type_=type_,
+        pk=pk,
     )
 
     response = client.get_httpx_client().request(
@@ -106,25 +79,14 @@ def sync_detailed(
 
 
 def sync(
+    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    r"""Rabi
-
-     rabi fit,其实是ramsy，后续逐渐废弃
+    """Test
 
     Args:
-        files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
-
-    Returns:
-        dict: 包含检测结果的字典
-
-    Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        pk (int): 任务结果 ID
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -135,32 +97,20 @@ def sync(
     """
 
     return sync_detailed(
+        pk=pk,
         client=client,
-        body=body,
-        type_=type_,
     ).parsed
 
 
 async def asyncio_detailed(
+    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    r"""Rabi
-
-     rabi fit,其实是ramsy，后续逐渐废弃
+    """Test
 
     Args:
-        files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
-
-    Returns:
-        dict: 包含检测结果的字典
-
-    Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        pk (int): 任务结果 ID
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -171,8 +121,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        body=body,
-        type_=type_,
+        pk=pk,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -181,25 +130,14 @@ async def asyncio_detailed(
 
 
 async def asyncio(
+    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: Union[Unset, str] = "rabi",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    r"""Rabi
-
-     rabi fit,其实是ramsy，后续逐渐废弃
+    """Test
 
     Args:
-        files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
-
-    Returns:
-        dict: 包含检测结果的字典
-
-    Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        pk (int): 任务结果 ID
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -211,8 +149,7 @@ async def asyncio(
 
     return (
         await asyncio_detailed(
+            pk=pk,
             client=client,
-            body=body,
-            type_=type_,
         )
     ).parsed

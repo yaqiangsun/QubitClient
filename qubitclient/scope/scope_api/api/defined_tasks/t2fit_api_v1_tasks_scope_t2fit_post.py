@@ -5,18 +5,33 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.body_t2_fit_api_v1_tasks_scope_t2_fit_post import BodyT2FitApiV1TasksScopeT2FitPost
 from ...models.http_validation_error import HTTPValidationError
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
-    pk: int,
+    *,
+    body: BodyT2FitApiV1TasksScopeT2FitPost,
+    type_: Union[Unset, str] = "t2fit",
 ) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
+
+    params: dict[str, Any] = {}
+
+    params["type"] = type_
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": f"/api/v1/tasks/scope/{pk}",
+        "method": "post",
+        "url": "/api/v1/tasks/scope/t2fit",
+        "params": params,
     }
 
+    _kwargs["files"] = body.to_multipart()
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
@@ -50,14 +65,25 @@ def _build_response(
 
 
 def sync_detailed(
-    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
+    body: BodyT2FitApiV1TasksScopeT2FitPost,
+    type_: Union[Unset, str] = "t2fit",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    """获取任务结果详情
+    r"""T2Fit
+
+     t2 fit
 
     Args:
-        pk (int): 任务结果 ID
+        files: 上传的.npy文件列表
+        type: 任务类型，默认为\"s21peak\"
+
+    Returns:
+        dict: 包含检测结果的字典
+
+    Args:
+        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
+        body (BodyT2FitApiV1TasksScopeT2FitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -68,7 +94,8 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        pk=pk,
+        body=body,
+        type_=type_,
     )
 
     response = client.get_httpx_client().request(
@@ -79,14 +106,25 @@ def sync_detailed(
 
 
 def sync(
-    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
+    body: BodyT2FitApiV1TasksScopeT2FitPost,
+    type_: Union[Unset, str] = "t2fit",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    """获取任务结果详情
+    r"""T2Fit
+
+     t2 fit
 
     Args:
-        pk (int): 任务结果 ID
+        files: 上传的.npy文件列表
+        type: 任务类型，默认为\"s21peak\"
+
+    Returns:
+        dict: 包含检测结果的字典
+
+    Args:
+        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
+        body (BodyT2FitApiV1TasksScopeT2FitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -97,20 +135,32 @@ def sync(
     """
 
     return sync_detailed(
-        pk=pk,
         client=client,
+        body=body,
+        type_=type_,
     ).parsed
 
 
 async def asyncio_detailed(
-    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
+    body: BodyT2FitApiV1TasksScopeT2FitPost,
+    type_: Union[Unset, str] = "t2fit",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    """获取任务结果详情
+    r"""T2Fit
+
+     t2 fit
 
     Args:
-        pk (int): 任务结果 ID
+        files: 上传的.npy文件列表
+        type: 任务类型，默认为\"s21peak\"
+
+    Returns:
+        dict: 包含检测结果的字典
+
+    Args:
+        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
+        body (BodyT2FitApiV1TasksScopeT2FitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -121,7 +171,8 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        pk=pk,
+        body=body,
+        type_=type_,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -130,14 +181,25 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    pk: int,
     *,
     client: Union[AuthenticatedClient, Client],
+    body: BodyT2FitApiV1TasksScopeT2FitPost,
+    type_: Union[Unset, str] = "t2fit",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    """获取任务结果详情
+    r"""T2Fit
+
+     t2 fit
 
     Args:
-        pk (int): 任务结果 ID
+        files: 上传的.npy文件列表
+        type: 任务类型，默认为\"s21peak\"
+
+    Returns:
+        dict: 包含检测结果的字典
+
+    Args:
+        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
+        body (BodyT2FitApiV1TasksScopeT2FitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -149,7 +211,8 @@ async def asyncio(
 
     return (
         await asyncio_detailed(
-            pk=pk,
             client=client,
+            body=body,
+            type_=type_,
         )
     ).parsed

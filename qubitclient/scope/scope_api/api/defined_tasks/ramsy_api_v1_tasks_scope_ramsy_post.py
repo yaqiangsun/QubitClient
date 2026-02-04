@@ -5,15 +5,15 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_t1_fit_api_v1_tasks_scope_t2_fit_post import BodyT1FitApiV1TasksScopeT2FitPost
+from ...models.body_ramsy_api_v1_tasks_scope_ramsy_post import BodyRamsyApiV1TasksScopeRamsyPost
 from ...models.http_validation_error import HTTPValidationError
 from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    body: BodyT1FitApiV1TasksScopeT2FitPost,
-    type_: Union[Unset, str] = "t2fit",
+    body: BodyRamsyApiV1TasksScopeRamsyPost,
+    type_: Union[Unset, str] = "ramsy",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -25,7 +25,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/tasks/scope/t2fit",
+        "url": "/api/v1/tasks/scope/ramsy",
         "params": params,
     }
 
@@ -67,23 +67,23 @@ def _build_response(
 def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyT1FitApiV1TasksScopeT2FitPost,
-    type_: Union[Unset, str] = "t2fit",
+    body: BodyRamsyApiV1TasksScopeRamsyPost,
+    type_: Union[Unset, str] = "ramsy",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    r"""T1Fit
+    r"""Ramsy
 
-     t2 fit
+     ramsy fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"ramsy\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
-        body (BodyT1FitApiV1TasksScopeT2FitPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'ramsy'.
+        body (BodyRamsyApiV1TasksScopeRamsyPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -108,23 +108,23 @@ def sync_detailed(
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyT1FitApiV1TasksScopeT2FitPost,
-    type_: Union[Unset, str] = "t2fit",
+    body: BodyRamsyApiV1TasksScopeRamsyPost,
+    type_: Union[Unset, str] = "ramsy",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    r"""T1Fit
+    r"""Ramsy
 
-     t2 fit
+     ramsy fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"ramsy\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
-        body (BodyT1FitApiV1TasksScopeT2FitPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'ramsy'.
+        body (BodyRamsyApiV1TasksScopeRamsyPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -144,23 +144,23 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyT1FitApiV1TasksScopeT2FitPost,
-    type_: Union[Unset, str] = "t2fit",
+    body: BodyRamsyApiV1TasksScopeRamsyPost,
+    type_: Union[Unset, str] = "ramsy",
 ) -> Response[Union[Any, HTTPValidationError]]:
-    r"""T1Fit
+    r"""Ramsy
 
-     t2 fit
+     ramsy fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"ramsy\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
-        body (BodyT1FitApiV1TasksScopeT2FitPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'ramsy'.
+        body (BodyRamsyApiV1TasksScopeRamsyPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -183,23 +183,23 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
-    body: BodyT1FitApiV1TasksScopeT2FitPost,
-    type_: Union[Unset, str] = "t2fit",
+    body: BodyRamsyApiV1TasksScopeRamsyPost,
+    type_: Union[Unset, str] = "ramsy",
 ) -> Optional[Union[Any, HTTPValidationError]]:
-    r"""T1Fit
+    r"""Ramsy
 
-     t2 fit
+     ramsy fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"ramsy\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 't2fit'.
-        body (BodyT1FitApiV1TasksScopeT2FitPost):
+        type_ (Union[Unset, str]): 任务类型 Default: 'ramsy'.
+        body (BodyRamsyApiV1TasksScopeRamsyPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

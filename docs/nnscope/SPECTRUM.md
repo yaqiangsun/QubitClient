@@ -17,12 +17,11 @@ client = QubitNNScopeClient(url=url,api_key=api_key)
 
 ### 请求参数
 
-
-| 参数名 | 类型 | 必需 | 描述                                         |
-|--------|------|------|-----------|
-| file_list | list[str\|dict[str,np.ndarray]\| np.ndarray]  | 是 | 数据文件列表，支持.npy或numpy数组 |
-| task_type | NNTaskName | 是 | 任务类型，固定为`NNTaskName.POWERSHIFT`|
-| curve_type | CurveType | 是 | 任务类型，固定为`CurveType.AUTO(返回poly和cosine的最优解)`|
+| 参数名     | 类型                                         | 必需 | 描述                                                          |
+| ---------- | -------------------------------------------- | ---- | ------------------------------------------------------------- |
+| file_list  | list[str\|dict[str,np.ndarray]\| np.ndarray] | 是   | 数据文件列表，支持.npy或numpy数组                             |
+| task_type  | NNTaskName                                   | 是   | 任务类型，固定为 `NNTaskName.POWERSHIFT`                    |
+| curve_type | CurveType                                    | 是   | 任务类型，固定为 `CurveType.AUTO(返回poly和cosine的最优解)` |
 
 ### 数据格式
 
@@ -39,10 +38,10 @@ client = QubitNNScopeClient(url=url,api_key=api_key)
             ...
         }
     }
-    ```
+   ```
+
 x: 一维 np.ndarray,shape(A,),表示频率数据
 y: 一维 np.ndarray,shape(B,),表示读取强度amp
-
 
 每个量子比特对应一个键（如 "Q0"），值为 [x, y,...] 的列表
 
@@ -79,49 +78,44 @@ results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SP
 返回的结果是一个字典：
 
 ```json
-{
-    "type":"spectrum",
-    "results":[
-        {
-            "peaks_list":[[float,float,...], ...],\
-            "peak_start":[[float,float,...], ...],\
-            "peak_end":[[float,float,...], ...],\
-            "confidences_list":[[float,float,...], ...],\
-            "mean_cut_widths_list":[[float,float,...], ...],\
-            "status":"success" | "failed"
-        }]
-}, 
-```
+[
+	{
+		"peaks_list":[[float,float,...], ...],\
+		"peak_start":[[float,float,...], ...],\
+		"peak_end":[[float,float,...], ...],\
+		"confidences_list":[[float,float,...], ...],\
+		"mean_cut_widths_list":[[float,float,...], ...],\
+		"status":"success" | "failed"
+	}
+]
 
+```
 
 ### 字段说明
 
-| 字段名 | 类型                                 | 描述 |
-|--------|------------------------------------|------|
-| peaks_list | List[float]     | 每个npy文件所有波的所有峰的x值 |
-| peak_start | List[float] | 每个npy文件所有波的所有峰的起点x值 |
-| peak_end | List[float] | 每个npy文件所有波的所有峰的终点x值 |
-| confidences_list | List[float]        | 每个npy文件所有波的所有峰的置信度 |
-| mean_cut_widths_list | List[float]      | 每个npy文件所有波的所有峰的宽度 |
-
-
+| 字段名               | 类型        | 描述                               |
+| -------------------- | ----------- | ---------------------------------- |
+| peaks_list           | List[float] | 每个npy文件所有波的所有峰的x值     |
+| peak_start           | List[float] | 每个npy文件所有波的所有峰的起点x值 |
+| peak_end             | List[float] | 每个npy文件所有波的所有峰的终点x值 |
+| confidences_list     | List[float] | 每个npy文件所有波的所有峰的置信度  |
+| mean_cut_widths_list | List[float] | 每个npy文件所有波的所有峰的宽度    |
 
 ### 示例结果
 
 ```python
-{
-    "type":"spectrum",
-    "results":
-    [ //一个npy文件中多个波
-		{'peaks_list': [[4431999999.99993, 4431999999.99993], [4293999999.9999456]],  //一个波有多个峰
+[ 
+	{
+		'peaks_list': [[4431999999.99993, 4431999999.99993], [4293999999.9999456]],  //一个波有多个峰
 		'confidences_list': [[0.44802555441856384, 0.15026916563510895], [0.685797929763794]], 
 		'mean_cut_widths_list': [[34666666.67, 28000000.0], [54666666.67]], 
 		'peak_start': [[4402666666.67, 4410666666.67], [4262666666.67]], 
 		'peak_end': [[4437333333.33, 4438666666.67], [4317333333.33]], 
 		'status': 'success'
-		}
-	]
-}
+	}，
+	//一个npy文件中其他波
+]
+
 ```
 
 ## 可视化
@@ -139,7 +133,7 @@ for idx, (result, item) in enumerate(zip(results, dict_list)):
     save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM.value}_{savenamelist[idx]}"
     save_path_png = save_path_prefix + ".png"
     save_path_html = save_path_prefix + ".html"
-    
+  
     # 绘图
     plt_plot_manager.plot_quantum_data(
         data_type='npy',

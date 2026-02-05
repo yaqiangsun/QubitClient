@@ -308,6 +308,48 @@ def postprocess_result_ramsey(response, threshold):
     response_data['results'] = results_filtered
     return response_data
 
+def postprocess_result_drag(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+    results = result.get("results")
+    results_filtered = []
+    for idx, result in enumerate(results):
+        result_filtered = {}
+        x_pred_list = result['x_pred_list']
+        y0_pred_list = result['y0_pred_list']
+        y1_pred_list = result['y1_pred_list']
+        intersections_list = result['intersections_list']
+        intersections_confs_list = result['intersections_confs_list']
+        status = result['status']
+
+        intersections_list_filtered = []
+        intersections_confs_list_filtered = []
+
+        for i in range(len(intersections_confs_list)):
+            intersections = np.array(intersections_list[i])
+            intersections_confs = np.array(intersections_confs_list[i])
+
+            mask = intersections_confs >= threshold
+
+            filtered_intersections = intersections[mask].tolist()
+            filtered_intersections_confs = intersections_confs[mask].tolist()
+
+
+            intersections_list_filtered.append(filtered_intersections)
+            intersections_confs_list_filtered.append(filtered_intersections_confs)
+
+
+        result_filtered['x_pred_list'] = x_pred_list
+        result_filtered['y0_pred_list'] = y0_pred_list
+        result_filtered['y1_pred_list'] = y1_pred_list
+
+        result_filtered['intersections_list'] = intersections_list_filtered
+        result_filtered['intersections_confs_list'] = intersections_confs_list_filtered
+        result_filtered['status'] = status
+        results_filtered.append(result_filtered)
+    response_data = {}
+    response_data['results'] = results_filtered
+    return response_data
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
     's21vfluxscope': postprocess_result_s21vfluxscope,
@@ -318,6 +360,7 @@ TASK_MAP: Dict[str, Callable] = {
     't1fit': postprocess_result_t1fit,
     't2fit': postprocess_result_t2fit,
     'ramsey': postprocess_result_ramsey,
+    'drag': postprocess_result_drag,
 }
 
 def run_postprocess(response, threshold, task_type):

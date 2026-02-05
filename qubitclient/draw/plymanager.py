@@ -19,6 +19,7 @@ from .t2fitplyplotter import T2FitDataPlyPlotter
 from .rabicosplyplotter import RabiCosDataPlyPlotter
 from .s21peakplyplotter import S21PeakDataPlyPlotter
 from .powershiftplyplotter import PowerShiftDataPlyPlotter
+from .dragplyplotter import DragDataPlyPlotter
 
 class QuantumPlotPlyManager:
 
@@ -45,6 +46,7 @@ class QuantumPlotPlyManager:
         self.plotters["ramsey"] = RamseyDataPlyPlotter()
         self.plotters["s21peak"] = S21PeakDataPlyPlotter()
         self.plotters["powershift"] = PowerShiftDataPlyPlotter()
+        self.plotters["drag"] = DragDataPlyPlotter()
 
     def get_plotter(self, task_type: str) -> QuantumDataPlyPlotter:
 

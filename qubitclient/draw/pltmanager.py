@@ -16,7 +16,7 @@ from .t1fitpltplotter import T1FitDataPltPlotter
 from .t2fitpltplotter import T2FitDataPltPlotter
 from .rabicospltplotter import RabiCosDataPltPlotter
 from .powershiftpltplotter import PowerShiftDataPltPlotter
-
+from .dragpltplotter import DragDataPltPlotter
 class QuantumPlotPltManager:
     def __init__(self):
         self.plotters: Dict[str, QuantumDataPltPlotter] = {}
@@ -39,6 +39,7 @@ class QuantumPlotPltManager:
         self.plotters["ramsey"] = RamseyDataPltPlotter()
         self.plotters["s21peak"] = S21PeakDataPltPlotter()
         self.plotters["powershift"] = PowerShiftDataPltPlotter()
+        self.plotters["drag"] = DragDataPltPlotter()
 
     def get_plotter(self, task_type: str) -> QuantumDataPltPlotter:
         if task_type not in self.plotters:

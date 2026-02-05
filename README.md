@@ -122,6 +122,7 @@ results = client.get_result(response=response)
 - `TaskName.T2FIT`: T2时间拟合，详见 [T2FIT详细文档](docs/scope/T2FIT.md)
 - `TaskName.POWERSHIFT`: 分析功率偏移曲线，详见 [POWERSHIFT详细文档](docs/scope/POWERSHIFT.md)
 - `TaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/scope/SPECTRUM2D.md)
+- `TaskName.DRAG`: DRAG免交叉点，详见 [DRAG详细文档](docs/scope/DRAG.md)
 
 ## 数据格式说明
 

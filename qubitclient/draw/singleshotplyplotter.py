@@ -47,10 +47,12 @@ class SingleShotDataPlyPlotter(QuantumDataPlyPlotter):
         num_qubits = len(s0_list)
 
         # 创建子图布局 - 每行最多3个量子比特，每个量子比特2个子图
-        rows = (num_qubits + 2) // 3  # 每行最多3个量子比特
-        cols = 6  # 每个量子比特2列
 
+        nums = len(s0_list) * 2
+        rows = (nums // 2) + 1 if nums % 2 != 0 else nums // 2
+        cols = 2
         # 创建子图
+
         fig = make_subplots(
             rows=rows,
             cols=cols,
@@ -71,8 +73,8 @@ class SingleShotDataPlyPlotter(QuantumDataPlyPlotter):
             phi  = phi_list[i]
 
             # 计算行和列位置
-            row_pos = (i // 3) + 1
-            col_pos_left = (i % 3) * 2 + 1
+            row_pos = (i) + 1
+            col_pos_left =  1
             col_pos_right = col_pos_left + 1
 
             # 子图1：复平面图

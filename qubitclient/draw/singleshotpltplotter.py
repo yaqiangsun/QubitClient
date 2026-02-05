@@ -45,8 +45,8 @@ class SingleShotDataPltPlotter(QuantumDataPltPlotter):
         cdf_list = result['cdf_list']
         hotThresh = 10000  # 切换为热力图模式的样本数阈值
         nums = len(s0_list) * 2
-        row = (nums // 6) + 1 if nums % 6 != 0 else nums // 6
-        col = 6
+        row = (nums // 2) + 1 if nums % 2 != 0 else nums // 2
+        col = 2
         fig = plt.figure(figsize=(20, 20))  # 创建Figure
         for i in range(len(s0_list)):
             s0 = s0_list[i]

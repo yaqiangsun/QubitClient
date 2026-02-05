@@ -77,7 +77,6 @@
     class NNTaskName(Enum):
     # S21PEAK = "s21peak"
     # OPTPIPULSE = "optpipulse"
-    # RABI = "rabi"
     # RABICOS = "rabicos"
     # S21VFLUX = "s21vflux"
     # SINGLESHOT = "singleshot"

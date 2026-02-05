@@ -155,7 +155,7 @@ from enum import Enum, unique
 class TaskName(Enum):
     S21PEAK = "s21peak"
     OPTPIPULSE = "optpipulse"
-    RABI = "rabi"
+    # RABI = "rabi"
     RAMSEY = "ramsey"
     RABICOS = "rabicos"
     S21VFLUX = "s21vfluxscope"

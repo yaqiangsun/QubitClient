@@ -59,7 +59,7 @@ def nnspectrum(image):
 def rabi(image):
     client = QubitScopeClient(url=API_URL, api_key=API_KEY)
     data_ndarray = image
-    response = client.request(file_list=[data_ndarray], task_type=TaskName.RABI)
+    response = client.request(file_list=[data_ndarray], task_type=TaskName.RABICOS)
     results = client.get_result(response=response)
     logging.debug(f"results:{results}")
     return results

@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-full = [
+plot = [
     "matplotlib>=3.9",
     "opencv-python>=4.12",
     "opencv-python-headless>=4.12",
@@ -25,6 +25,9 @@ full = [
 ]
 mcp = [
     "langchain-mcp-adapters>=0.2.1",
+]
+full = [
+    "qubitclient[plot,mcp]",
 ]
 
 [tool.setuptools.packages.find]

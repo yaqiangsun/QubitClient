@@ -1510,6 +1510,7 @@ dependencies = [
 
 [package.optional-dependencies]
 full = [
+    { name = "langchain-mcp-adapters" },
     { name = "matplotlib" },
     { name = "opencv-python" },
     { name = "opencv-python-headless" },
@@ -1520,21 +1521,30 @@ full = [
 mcp = [
     { name = "langchain-mcp-adapters" },
 ]
+plot = [
+    { name = "matplotlib" },
+    { name = "opencv-python" },
+    { name = "opencv-python-headless" },
+    { name = "plotly" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "scipy", version = "1.16.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "attrs", specifier = ">=25.4.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "langchain-mcp-adapters", marker = "extra == 'mcp'", specifier = ">=0.2.1" },
-    { name = "matplotlib", marker = "extra == 'full'", specifier = ">=3.9" },
+    { name = "matplotlib", marker = "extra == 'plot'", specifier = ">=3.9" },
     { name = "numpy", specifier = ">=1.26.4" },
-    { name = "opencv-python", marker = "extra == 'full'", specifier = ">=4.12" },
-    { name = "opencv-python-headless", marker = "extra == 'full'", specifier = ">=4.12" },
-    { name = "plotly", marker = "extra == 'full'", specifier = ">=6.4.0" },
+    { name = "opencv-python", marker = "extra == 'plot'", specifier = ">=4.12" },
+    { name = "opencv-python-headless", marker = "extra == 'plot'", specifier = ">=4.12" },
+    { name = "plotly", marker = "extra == 'plot'", specifier = ">=6.4.0" },
+    { name = "qubitclient", extras = ["plot", "mcp"], marker = "extra == 'full'" },
     { name = "requests", specifier = ">=2.32.5" },
-    { name = "scipy", marker = "extra == 'full'", specifier = ">=1.10" },
+    { name = "scipy", marker = "extra == 'plot'", specifier = ">=1.10" },
 ]
-provides-extras = ["full", "mcp"]
+provides-extras = ["plot", "mcp", "full"]
 
 [[package]]
 name = "referencing"

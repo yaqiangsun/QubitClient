@@ -50,6 +50,44 @@ def get_path(report,basepath,name):
     title_new_fig = title_new + 'ai.png'
     png_path = basepath_ai / title_new_fig
     return png_path
+def plot_template(report,basepath,name,task_type=TaskName.S21PEAK):
+    save_path = get_path(report,basepath,name)
+    results = report.analysis
+    other_infomation = report.other_infomation
+
+
+    if type(results)==dict:
+        results = results.get("results")
+    image = other_infomation
+    # image = np.array(other_infomation)
+    dict_list = [np.array(image)]
+
+    ply_plot_manager = QuantumPlotPlyManager()
+    plt_plot_manager = QuantumPlotPltManager()
+    print("plotting ai image...")
+    print(save_path)
+
+    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
+        save_path_png = str(save_path)
+        save_path_html = save_path_png.replace("png",".html")
+        fig_plt = plt_plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=task_type.value,
+            save_path=save_path_png,
+            result=result,
+            dict_param=dict_param
+        )
+        fig_ply = ply_plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=task_type.value,
+            save_path=save_path_html,
+            result=result,
+            dict_param=dict_param
+        )
+    logging.info(f"Saving ai image to:{save_path}")
+
+
+####################################################################################
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nnplot_spectrum2d(report,basepath,name):
@@ -115,391 +153,74 @@ def nnplot_spectrum2d(report,basepath,name):
     logging.info(f"Saving ai image to:{save_path}")
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def plot_s21(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
-
-
-    results = results.get("results")
-    image = other_infomation
-    # image = np.array(other_infomation)
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-    print(save_path)
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.S21PEAK.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.S21PEAK.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to:{save_path}")
-
-@control_api_execution(enable_api=ENABLE_API)
-@handle_exceptions
 def nnplot_powershift(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
-
-    results = results.get("results")
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-    print(save_path)
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=NNTaskName.POWERSHIFT.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=NNTaskName.POWERSHIFT.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to:{save_path}")
-
-
+    plot_template(report,basepath,name,NNTaskName.POWERSHIFT)
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nnplot_spectrum(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
+    plot_template(report,basepath,name,NNTaskName.SPECTRUM)
 
-    results = results.get("results")
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-    print(save_path)
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=NNTaskName.SPECTRUM.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=NNTaskName.SPECTRUM.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to:{save_path}")
-
+####################################################################################
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def plot_s21(report,basepath,name):
+    plot_template(report,basepath,name,TaskName.S21PEAK)
     
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_rabi(report, basepath, name):
     other_infomation, _= report.other_infomation
     report.other_infomation = other_infomation
-    save_path = get_path(report, basepath, name)
-    results = report.analysis
-    other_infomation = report.other_infomation
-
-    results = results.get("results")
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png", ".html")
-        
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.RABICOS.value,          
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.RABICOS.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to: {save_path}")
+    plot_template(report,basepath,name,TaskName.RABICOS)
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_ramsey(report, basepath, name):
-    save_path = get_path(report, basepath, name)
-    results = report.analysis.get("results")
-    other_infomation = report.other_infomation
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png", ".html")
-        
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.RAMSEY.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.RAMSEY.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to: {save_path}")
+    other_infomation, _, _, _, _= report.other_infomation
+    report.other_infomation = other_infomation
+    plot_template(report,basepath,name,TaskName.RAMSEY)
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_t1fit(report, basepath, name):
-    save_path = get_path(report, basepath, name)
-    results = report.analysis.get("results")
-    other_infomation = report.other_infomation
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png", ".html")
-
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.T1FIT.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.T1FIT.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to: {save_path}")
+    plot_template(report,basepath,name,TaskName.T1FIT)
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_t2fit(report, basepath, name):
-    save_path = get_path(report, basepath, name)
-    results = report.analysis.get("results")
-    other_infomation = report.other_infomation
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png", ".html")
-        
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.T2FIT.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.T2FIT.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to: {save_path}")
+    plot_template(report,basepath,name,TaskName.T2FIT)
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_optpipulse(report, basepath, name):
     other_infomation, _= report.other_infomation
     report.other_infomation = other_infomation
-    save_path = get_path(report, basepath, name)
-    results = report.analysis.get("results")
-    other_infomation = report.other_infomation
-    image = other_infomation
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png", ".html")
-        
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.OPTPIPULSE.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.OPTPIPULSE.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to: {save_path}")
+    plot_template(report,basepath,name,TaskName.OPTPIPULSE)
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_spectrum(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
-
-
-    results = results.get("results")
-    image = other_infomation
-    # image = np.array(other_infomation)
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-    print(save_path)
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.SPECTRUM.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.SPECTRUM.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to:{save_path}")
+    plot_template(report,basepath,name,TaskName.SPECTRUM)
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_powershift(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
-
-
-    results = results.get("results")
-    image = other_infomation
-    # image = np.array(other_infomation)
-    dict_list = [np.array(image)]
-
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-    print(save_path)
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.POWERSHIFT.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.POWERSHIFT.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to:{save_path}")   
+    plot_template(report,basepath,name,TaskName.POWERSHIFT)
 
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_s21vsflux(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
+    plot_template(report,basepath,name,TaskName.S21VFLUX)
 
 
-    results = results.get("results")
-    image = other_infomation
-    # image = np.array(other_infomation)
-    dict_list = [np.array(image)]
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def plot_allxy_drag(report,basepath,name):
+    plot_template(report,basepath,name,TaskName.DRAG)
 
-    ply_plot_manager = QuantumPlotPlyManager()
-    plt_plot_manager = QuantumPlotPltManager()
-    print("plotting ai image...")
-    print(save_path)
-
-    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
-        fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.S21VFLUX.value,
-            save_path=save_path_png,
-            result=result,
-            dict_param=dict_param
-        )
-        fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
-            task_type=TaskName.S21VFLUX.value,
-            save_path=save_path_html,
-            result=result,
-            dict_param=dict_param
-        )
-    logging.info(f"Saving ai image to:{save_path}")   
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def plot_singleshot(report,basepath,name):
+    other_infomation, _= report.other_infomation
+    report.other_infomation = other_infomation
+    plot_template(report,basepath,name,TaskName.SINGLESHOT)

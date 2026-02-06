@@ -12,123 +12,102 @@ from qubitclient import NNTaskName,TaskName,CurveType
 from .config import API_URL,API_KEY,ENABLE_API
 import logging
 from .wrapper_handler import handle_exceptions, control_api_execution
+def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
+
+    client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
+    data_ndarray = image
+    response = client.request(file_list=[data_ndarray],task_type=task_type,curve_type=CurveType.COSINE)
+    results = client.get_result(response=response)
+    logging.debug(f"results:{results}")
+    return results
+def scope_template(image,task_type=TaskName.SPECTRUM2D):
+    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
+    data_ndarray = image
+    response = client.request(file_list=[data_ndarray],task_type=task_type)
+    results = client.get_result(response=response)
+    logging.debug(f"results:{results}")
+    return results
+####################################################################################
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nnspectrum2d(image):
 
-    client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
-    return results
-
-@control_api_execution(enable_api=ENABLE_API)
-@handle_exceptions
-def s21(image):
-    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=TaskName.S21PEAK)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = nnscope_template(image,task_type=NNTaskName.SPECTRUM2D)
     return results
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nnpowershift(image):
-    client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.POWERSHIFT)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = nnscope_template(image,task_type=NNTaskName.POWERSHIFT)
     return results
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nnspectrum(image):
-    client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.SPECTRUM)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = nnscope_template(image,task_type=NNTaskName.SPECTRUM)
     return results
 
+
+####################################################################################
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def s21(image):
+    results = scope_template(image,task_type=TaskName.S21PEAK)
+    return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def rabi(image):
-    client = QubitScopeClient(url=API_URL, api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray], task_type=TaskName.RABICOS)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.RABI)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def ramsey(image):
-    client = QubitScopeClient(url=API_URL, api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray], task_type=TaskName.RAMSEY)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.RAMSEY)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def t1fit(image):
-    client = QubitScopeClient(url=API_URL, api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray], task_type=TaskName.T1FIT)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.T1FIT)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def t2fit(image):
-    client = QubitScopeClient(url=API_URL, api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray], task_type=TaskName.T2FIT)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.T2FIT)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def optpipulse(image):
-    client = QubitScopeClient(url=API_URL, api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray], task_type=TaskName.OPTPIPULSE)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.OPTPIPULSE)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def spectrum(image):
-    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=TaskName.SPECTRUM)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.SPECTRUM)
     return results
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def powershift(image):
-    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=TaskName.POWERSHIFT)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.POWERSHIFT)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def s21vsflux(image):
-    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
-    data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=TaskName.S21VFLUX)
-    results = client.get_result(response=response)
-    logging.debug(f"results:{results}")
+    results = scope_template(image,task_type=TaskName.S21VFLUX)
+    return results
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def allxy_drag(image):
+    results = scope_template(image,task_type=TaskName.DRAG)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def singleshot(image):
+    results = scope_template(image,task_type=TaskName.SINGLESHOT)
     return results

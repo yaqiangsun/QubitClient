@@ -13,7 +13,7 @@
 
 import functools
 import logging
-
+import traceback
 
 def handle_exceptions(func):
     """
@@ -30,7 +30,10 @@ def handle_exceptions(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
+            # 记录错误消息
             logging.error(f"Error occurred in {func.__name__}: {str(e)}")
+            # 打印完整的错误堆栈跟踪
+            logging.error(f"Exception traceback:\n{traceback.format_exc()}")
             # 返回None或者可以根据需要返回默认值
             return None
     return wrapper

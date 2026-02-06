@@ -124,6 +124,9 @@ results = client.get_result(response=response)
 - `TaskName.SPECTRUM2D`: 二维频谱数据曲线分割，详见 [SPECTRUM2D详细文档](docs/scope/SPECTRUM2D.md)
 - `TaskName.DRAG`: DRAG免交叉点，详见 [DRAG详细文档](docs/scope/DRAG.md)
 
+### Ctrl任务
+- `s21`: S21腔频测量实验.
+
 ## 数据格式说明
 
 ### 输入格式
@@ -148,6 +151,7 @@ python tests/test_scope.py
 ## 更新日志
 
 近期更新:
+- **增加Ctrl功能包**: 基于MCP协议的测量任务(20260206)
 - **增加DRAG分析功能**: 增加DRAG任务数据分析(20260205)
 - **增加scope功能包**: 增加多种任务功能(20251022)
 - **增加曲线类型**: 增加余弦类型曲线拟合(20250606)

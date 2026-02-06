@@ -11,7 +11,7 @@ import os
 import sys
 
 # 获取当前文件的绝对路径，向上两层就是项目根目录
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -27,7 +27,7 @@ from plotly.subplots import make_subplots
 import numpy as np
 
 
-def send_singleshot_npy_to_server(url, api_key, dir_path="data/33137"):
+def send_s21vflux_npy_to_server(url, api_key, dir_path="data/33137"):
     # get all file in dir
     savenamelist = []
     file_names = os.listdir(dir_path)
@@ -43,56 +43,49 @@ def send_singleshot_npy_to_server(url, api_key, dir_path="data/33137"):
 
     client = QubitScopeClient(url=url, api_key=api_key)
 
-    npy_list = []
+    dict_list = []
     for file_path in file_path_list:
         content = load_npy_file(file_path)
-        npy_list.append(content)
+        dict_list.append(content)
 
-    # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    dict_list = [content.item() for content in npy_list]
-    response = client.request(file_list=dict_list, task_type=TaskName.SINGLESHOT)
+        # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
+    response = client.request(file_list=dict_list, task_type=TaskName.S21VFLUX)
     print(response)
 
-    # === 解析结果并绘图（每个文件单独生成 HTML）===
+    response_data = client.get_result(response)
 
-    # 1. 解析服务器返回
-    if hasattr(response, 'parsed'):
-        response_data = response.parsed
-    elif isinstance(response, dict):
-        response_data = response
-    else:
-        response_data = {}
+    threshold = 0.5
+    response_data_filtered = client.get_filtered_result(response,threshold,TaskName.S21VFLUX.value)
 
-    results = response_data.get("results")
+    results = response_data_filtered.get("results")
+
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()
-    for idx, (result, dict_param) in enumerate(zip(results, npy_list)):
-        save_path_prefix = f"./tmp/client/result_{TaskName.SINGLESHOT.value}_{savenamelist[idx]}"
+    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
+        save_path_prefix = f"./tmp/client/result_{TaskName.S21VFLUX.value}_{savenamelist[idx]}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
-        fig_plt = plt_plot_manager.plot_quantum_data(
+        plt_plot_manager.plot_quantum_data(
             data_type='npy',
-            task_type=TaskName.SINGLESHOT.value,
+            task_type=TaskName.S21VFLUX.value,
             save_path=save_path_png,
             result=result,
             dict_param=dict_param
         )
-        fig_ply = ply_plot_manager.plot_quantum_data(
+        ply_plot_manager.plot_quantum_data(
             data_type='npy',
-            task_type=TaskName.SINGLESHOT.value,
+            task_type=TaskName.S21VFLUX.value,
             save_path=save_path_html,
             result=result,
             dict_param=dict_param
         )
-        # if want to show plot like plt.show(), you can use this
-        # fig_plt.show()
 
 
 def main():
     from config import API_URL, API_KEY
 
-    base_dir = "./tmp/singleshot"
-    send_singleshot_npy_to_server(API_URL, API_KEY, base_dir)
+    base_dir = "./tmp/s21vlux"
+    send_s21vflux_npy_to_server(API_URL, API_KEY, base_dir)
 
 
 if __name__ == "__main__":

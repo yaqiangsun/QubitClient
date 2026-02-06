@@ -1,6 +1,6 @@
 import os
 import sys
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -10,7 +10,7 @@ from qubitclient.draw.pltmanager import QuantumPlotPltManager
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 
 
-def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
+def send_optpipulse_npy_to_server(url, api_key, dir_path="data/opt_pipulse", batch_size=5):
     savenamelist = []
     file_names = os.listdir(dir_path)
     
@@ -41,12 +41,12 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
             content = load_npy_file(file_path)
             dict_list.append(content)
 
-        response = client.request(file_list=dict_list, task_type=TaskName.T1FIT)
+        response = client.request(file_list=dict_list, task_type=TaskName.OPTPIPULSE)
         print(response)
 
         response_data = client.get_result(response)
         threshold = 0.5
-        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.T1FIT.value)
+        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.OPTPIPULSE.value)
 
         results = response_data.get("results")
 
@@ -58,24 +58,20 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
                 print(f"{original_file} failed: No image data available")
                 continue
 
-            if isinstance(result, dict) and not result.get("params_list"):
-                print(f"{original_file} failed: No image data available")
-                continue
-
-            save_path_prefix = f"./tmp/client/result_{TaskName.T1FIT.value}_{batch_savenames[idx_in_batch]}"
+            save_path_prefix = f"./tmp/client/result_{TaskName.OPTPIPULSE.value}_{batch_savenames[idx_in_batch]}"
             save_path_png = save_path_prefix + ".png"
             save_path_html = save_path_prefix + ".html"
 
             fig_plt = plt_plot_manager.plot_quantum_data(
                 data_type='npy',
-                task_type=TaskName.T1FIT.value,
+                task_type=TaskName.OPTPIPULSE.value,
                 save_path=save_path_png,
                 result=result,
                 dict_param=dict_param
             )
             fig_ply = ply_plot_manager.plot_quantum_data(
                 data_type='npy',
-                task_type=TaskName.T1FIT.value,
+                task_type=TaskName.OPTPIPULSE.value,
                 save_path=save_path_html,
                 result=result,
                 dict_param=dict_param
@@ -85,8 +81,8 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
 
 def main():
     from config import API_URL, API_KEY
-    base_dir = "data/t1_1d_test"
-    send_t1fit_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
+    base_dir = "data/opt_pipulse_test"
+    send_optpipulse_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 
 if __name__ == "__main__":

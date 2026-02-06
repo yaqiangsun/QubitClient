@@ -125,7 +125,7 @@ results = client.get_result(response=response)
 - `TaskName.DRAG`: DRAG免交叉点，详见 [DRAG详细文档](docs/scope/DRAG.md)
 
 ### Ctrl任务
-- `s21`: S21腔频测量实验.
+- `CtrlTaskName.S21`: S21腔频测量实验.
 
 ## 数据格式说明
 

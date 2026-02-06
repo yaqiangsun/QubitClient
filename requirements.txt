@@ -1,11 +1,15 @@
-matplotlib==3.10.1
-numpy==2.2.3
-opencv-python==4.11.0.86
-opencv-python-headless==4.11.0.86
-pillow==11.1.0
-PyYAML==6.0.2
-pyzmq==26.4.0
-requests==2.32.3
-scipy==1.15.2
-httpx
-attrs
+# Core dependencies
+attrs>=25.4.0
+httpx>=0.28.1
+numpy>=1.26.4
+requests>=2.32.5
+
+# Plot dependencies
+matplotlib>=3.9
+opencv-python>=4.12
+opencv-python-headless>=4.12
+plotly>=6.4.0
+scipy>=1.10
+
+# MCP dependencies
+langchain-mcp-adapters>=0.2.1

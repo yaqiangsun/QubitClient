@@ -30,6 +30,9 @@ full = [
     "qubitclient[plot,mcp]",
 ]
 
+[tool.uv]
+index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["qubitclient*"]  # match qubitscope and qubitscope.*

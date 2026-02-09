@@ -61,8 +61,8 @@ class DragDataPltPlotter(QuantumDataPltPlotter):
             ax.plot(x, y1, color='blue', label='Data', linestyle='-', marker='o', markersize=4,
                     alpha=0.7)
 
-            # ax.plot(x_pred, y0_pred, color='red', label='Data', linestyle='-', marker='o', markersize=4, alpha=0.7)
-            # ax.plot(x_pred, y1_pred, color='red', label='Data', linestyle='-', marker='o', markersize=4, alpha=0.7)
+            ax.plot(x_pred, y0_pred, color='red', label='Data', linestyle='-', marker='o', markersize=4, alpha=0.7)
+            ax.plot(x_pred, y1_pred, color='red', label='Data', linestyle='-', marker='o', markersize=4, alpha=0.7)
             if intersections:
                 intersection_x = [point[0] for point in intersections]
                 intersection_y = [point[1] for point in intersections]

@@ -33,8 +33,8 @@ client = QubitScopeClient(url=url, api_key=api_key)
     ```python
     {
         "image": {
-            "Q0": [*,*,x,[y0,y1]],   
-            "Q1": [*,*,x,[y0,y1]],
+            "Q0": [x,[y0,y1],*,[*,*]],   
+            "Q1": [x,[y0,y1],*,[*,*]],
             ...
         }
     }
@@ -44,7 +44,7 @@ x: 一维 np.ndarray,shape(A,),表示横坐标
 y0: 一维 np.ndarray,shape(A,),表示第一组数据纵坐标
 y1: 一维 np.ndarray,shape(A,),表示第二组数据纵坐标
 
-每个量子比特对应一个键（如 "Q0"），值为 [*,*,x,[y0,y1]] 的列表
+每个量子比特对应一个键（如 "Q0"），值为 [x,[y0,y1],*,[*,*]] 的列表
 
 #### 调用示例
 

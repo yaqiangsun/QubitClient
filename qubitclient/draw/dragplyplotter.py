@@ -79,7 +79,27 @@ class DragDataPlyPlotter(QuantumDataPlyPlotter):
                 ),
                 row=r, col=c
             )
+            fig.add_trace(
+                go.Scatter(
+                    x=x, y=y0,
+                    mode='lines',
+                    marker=dict(color='green', size=6, opacity=0.7),
+                    name=f'Data Y0 #{ii + 1}',
+                    showlegend=False
+                ),
+                row=r, col=c
+            )
 
+            fig.add_trace(
+                go.Scatter(
+                    x=x, y=y1,
+                    mode='lines',
+                    marker=dict(color='blue', size=6, opacity=0.7),
+                    name=f'Data Y1 #{ii + 1}',
+                    showlegend=False
+                ),
+                row=r, col=c
+            )
             fig.add_trace(
                 go.Scatter(
                     x=x_pred, y=y0_pred,
@@ -95,7 +115,7 @@ class DragDataPlyPlotter(QuantumDataPlyPlotter):
                 go.Scatter(
                     x=x_pred, y=y1_pred,
                     mode='lines',
-                    line=dict(color='orange', width=2),
+                    line=dict(color='red', width=2),
                     name=f'Fit Y1 #{ii + 1}',
                     showlegend=False
                 ),

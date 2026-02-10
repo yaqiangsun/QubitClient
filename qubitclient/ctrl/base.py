@@ -40,7 +40,14 @@ class AsyncMCPClient(MultiServerMCPClient):
         if target_tool is None:
             logging.warning(f"Tool named '{method}' not found.")
             return
-        result = await target_tool.ainvoke(*args, **kwargs)
+        # Combine args and kwargs into a single input dictionary
+        # For now, we'll pass kwargs as the input since args are typically empty in our use case
+        input_data = kwargs if kwargs else {}
+        if args:
+            # If there are positional arguments, we need to handle them appropriately
+            # Since our current usage doesn't have positional args, we'll log a warning
+            logger.warning(f"Positional arguments detected in call to {method}: {args}")
+        result = await target_tool.ainvoke(input_data)
         return result
 
 

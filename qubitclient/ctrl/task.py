@@ -12,7 +12,7 @@ from qubitclient.ctrl import MCPClient
 
 def call_mcp(task_type:str,*args,**kwargs):
     mcp = MCPClient(mcpServers=None)
-    result = mcp.call("s21",*args,**kwargs)
+    result = mcp.call(task_type,*args,**kwargs)
     return result
 
 DEFINED_TASKS = {}

@@ -45,8 +45,11 @@ class AsyncMCPClient(MultiServerMCPClient):
         input_data = kwargs if kwargs else {}
         if args:
             # If there are positional arguments, we need to handle them appropriately
-            # Since our current usage doesn't have positional args, we'll log a warning
-            logger.warning(f"Positional arguments detected in call to {method}: {args}")
+            for arg in args:
+                if type(arg) == dict:
+                    input_data.update(arg)
+                else:
+                    logging.warning(f"Unexpected argument type: {type(arg)}")
         result = await target_tool.ainvoke(input_data)
         return result
 

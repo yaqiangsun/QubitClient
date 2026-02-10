@@ -49,11 +49,12 @@ class QuantumPlotPltManager:
     def list_available_tasks(self) -> List[str]:
         return list(self.plotters.keys())
 
-    def plot_quantum_data(self, data_type: str, task_type: str, save_path, **kwargs):
+    def plot_quantum_data(self, data_type: str, task_type: str, save_path:str=None, **kwargs):
         plotter = self.get_plotter(task_type)
         if data_type=='npy':
             fig = plotter.plot_result_npy(**kwargs)
         if data_type=='npz':
             fig = plotter.plot_result_npz(**kwargs)
-        plotter.save_plot(fig,save_path)
+        if save_path:
+            plotter.save_plot(fig,save_path)
         return fig

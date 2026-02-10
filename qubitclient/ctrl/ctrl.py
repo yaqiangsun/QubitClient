@@ -14,9 +14,8 @@ import numpy as np
 
 
 class QubitCtrlClient(object):
-    def __init__(self, url, api_key):
-        self.url = url
-        self.api_key = api_key
+    def __init__(self,*args,**kwargs):
+        pass
 
     def run(self,task_type:str="s21peak",*args,**kwargs):
         return run_task(task_type,*args,**kwargs)

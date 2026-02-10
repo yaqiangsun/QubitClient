@@ -149,6 +149,7 @@ print(result)
 
 - `CtrlTaskName.S21`: S21腔频测量实验，测量指定量子比特在频率范围内的S21响应，详见 [S21详细文档](docs/ctrl/S21.md)
 - `CtrlTaskName.DRAG`: DRAG免交叉点测量，优化量子比特的DRAG参数，详见 [DRAG详细文档](docs/ctrl/DRAG.md)
+- `CtrlTaskName.DELTA`: 频率偏移校准测量，确定量子比特的最佳工作频率偏移量，详见 [DELTA详细文档](docs/ctrl/DELTA.md)
 - `CtrlTaskName.OPT_PIPULSE`: 最优π脉冲测量，寻找最佳的π脉冲幅度，详见 [OPT_PIPULSE详细文档](docs/ctrl/OPT_PIPULSE.md)
 - `CtrlTaskName.POWERSHIFT`: 功率偏移曲线测量，分析不同功率下的量子比特响应，详见 [POWERSHIFT详细文档](docs/ctrl/POWERSHIFT.md)
 - `CtrlTaskName.RABI`: Rabi振荡测量，观察量子比特在驱动场下的振荡行为，详见 [RABI详细文档](docs/ctrl/RABI.md)

@@ -26,6 +26,7 @@ from enum import Enum, unique
 class CtrlTaskName(Enum):
     S21 = "s21"
     DRAG = "drag"
+    DELTA = "delta"
     OPT_PIPULSE = "opt_pipulse"
     POWERSHIFT = "powershift"
     RABI = "rabi"
@@ -64,7 +65,13 @@ def drag(qubits:list[str], lamb:list[float], stage:int=1, N_repeat:int=1, pulseP
                       pulsePair=pulsePair
                       )
     return result
-
+@task_register
+def delta(qubits:list[str], stage:int=1, *args, **kwargs):
+    result = call_mcp("delta",
+                      qubits=qubits,
+                      stage=stage
+                      )
+    return result
 @task_register
 def opt_pipulse(qubits:list[str], stage:int=1, *args, **kwargs):
     result = call_mcp("opt_pipulse",

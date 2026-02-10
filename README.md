@@ -11,6 +11,7 @@
 - **灵活的数据输入**: 支持文件路径、NumPy数组、字典等多种数据格式作为输入
 - **批量处理**: 支持同时处理多个数据文件
 - **易于集成**: 提供简洁明了的API接口，方便快速集成到现有项目中
+- **MCP协议支持**: 基于MCP协议的实时量子测量任务控制
 
 ## 安装
 
@@ -100,6 +101,26 @@ response = client.request(
 results = client.get_result(response=response)
 ```
 
+#### Ctrl功能（MCP协议测量任务）
+
+```python
+from qubitclient.ctrl import QubitCtrlClient, CtrlTaskName
+
+# 初始化客户端
+client = QubitCtrlClient()
+
+# 执行S21腔频测量实验
+result = client.run(
+    task_type=CtrlTaskName.S21,
+    qubits_use=["Q0", "Q1"],
+    frequency_start=-40e6,
+    frequency_end=40e6,
+    frequency_sample_num=101
+)
+
+print(result)
+```
+
 ## 支持的任务类型
 
 ### NNScope任务
@@ -125,7 +146,18 @@ results = client.get_result(response=response)
 - `TaskName.DRAG`: DRAG免交叉点，详见 [DRAG详细文档](docs/scope/DRAG.md)
 
 ### Ctrl任务
-- `CtrlTaskName.S21`: S21腔频测量实验.
+
+- `CtrlTaskName.S21`: S21腔频测量实验，测量指定量子比特在频率范围内的S21响应，详见 [S21详细文档](docs/ctrl/S21.md)
+- `CtrlTaskName.DRAG`: DRAG免交叉点测量，优化量子比特的DRAG参数，详见 [DRAG详细文档](docs/ctrl/DRAG.md)
+- `CtrlTaskName.OPT_PIPULSE`: 最优π脉冲测量，寻找最佳的π脉冲幅度，详见 [OPT_PIPULSE详细文档](docs/ctrl/OPT_PIPULSE.md)
+- `CtrlTaskName.POWERSHIFT`: 功率偏移曲线测量，分析不同功率下的量子比特响应，详见 [POWERSHIFT详细文档](docs/ctrl/POWERSHIFT.md)
+- `CtrlTaskName.RABI`: Rabi振荡测量，观察量子比特在驱动场下的振荡行为，详见 [RABI详细文档](docs/ctrl/RABI.md)
+- `CtrlTaskName.RAMSEY`: Ramsey干涉测量，测量量子比特的退相干时间，详见 [RAMSEY详细文档](docs/ctrl/RAMSEY.md)
+- `CtrlTaskName.S21VSFLUX`: S21 vs Flux测量，分析磁通量对量子比特频率的影响，详见 [S21VSFLUX详细文档](docs/ctrl/S21VSFLUX.md)
+- `CtrlTaskName.SINGLESHOT`: 单次测量分析，评估量子比特的读出保真度，详见 [SINGLESHOT详细文档](docs/ctrl/SINGLESHOT.md)
+- `CtrlTaskName.SPECTRUM`: 频谱分析测量，扫描量子比特的能级结构，详见 [SPECTRUM详细文档](docs/ctrl/SPECTRUM.md)
+- `CtrlTaskName.SPECTRUM_2D`: 二维频谱测量，同时扫描频率和偏置参数，详见 [SPECTRUM_2D详细文档](docs/ctrl/SPECTRUM_2D.md)
+- `CtrlTaskName.T1`: T1弛豫时间测量，测量量子比特的能量弛豫时间，详见 [T1详细文档](docs/ctrl/T1.md)
 
 ## 数据格式说明
 
@@ -146,6 +178,9 @@ python tests/test_nnscope.py
 
 # 运行Scope测试
 python tests/test_scope.py
+
+# 运行Ctrl测试
+python tests/test_ctrl_mcp.py
 ```
 
 ## 更新日志

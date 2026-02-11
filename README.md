@@ -184,6 +184,9 @@ python tests/test_scope.py
 python tests/test_ctrl_mcp.py
 ```
 
+## 格式转换及其他工具集成
+参考 [resources](resources) 目录下不同工具对应的代码
+
 ## 更新日志
 
 近期更新:

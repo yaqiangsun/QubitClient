@@ -35,6 +35,7 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
     plt_plot_manager = QuantumPlotPltManager()
     print("plotting ai image...")
     print(save_path)
+    fig_list = []
 
     for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
         save_path_png = str(save_path)
@@ -46,6 +47,7 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
             result=result,
             dict_param=dict_param
         )
+        fig_list.append(fig_plt)
         fig_ply = ply_plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=task_type.value,
@@ -54,7 +56,9 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
             dict_param=dict_param
         )
     logging.info(f"Saving ai image to:{save_path}")
+    return fig_list
 
 def plot_optpipulse(data,results,save_path):
     data = optpipulse_convert(data)
-    plot_template(data,results,save_path,task_type=TaskName.OPTPIPULSE)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.OPTPIPULSE)
+    return fig_list

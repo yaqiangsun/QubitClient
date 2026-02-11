@@ -32,8 +32,9 @@ def get_pkl_content(pkl_file_path):
         print(f"❌ 读取失败：{str(e)}")
         return None
 def main(task_key="Opt"):
-    for pkl_path in os.listdir("tmp/rid"):
-        pkl_path = os.path.join("tmp/rid", pkl_path)
+    base_dir = "tmp/data"
+    for pkl_path in os.listdir(base_dir):
+        pkl_path = os.path.join(base_dir, pkl_path)
         result = get_pkl_content(pkl_path)
         if result is None:
             continue

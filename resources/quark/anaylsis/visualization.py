@@ -20,7 +20,7 @@ from pathlib import Path
 import os
 import logging
 from .config import API_URL,API_KEY,ENABLE_API
-from .wrapper_handler import handle_exceptions, control_api_execution
+from qubitclient import handle_exceptions, control_api_execution
 
 from .format import optpipulse_convert
 

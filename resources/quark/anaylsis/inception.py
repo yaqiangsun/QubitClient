@@ -12,6 +12,7 @@ from qubitclient import NNTaskName,TaskName,CurveType
 from .config import API_URL,API_KEY,ENABLE_API
 import logging
 from .wrapper_handler import handle_exceptions, control_api_execution
+from .format import optpipulse_convert
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
@@ -81,6 +82,7 @@ def t2fit(image):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def optpipulse(image):
+    image = optpipulse_convert(image)
     results = scope_template(image,task_type=TaskName.OPTPIPULSE)
     return results
 

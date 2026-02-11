@@ -11,7 +11,7 @@ from qubitclient import QubitNNScopeClient,QubitScopeClient
 from qubitclient import NNTaskName,TaskName,CurveType
 from .config import API_URL,API_KEY,ENABLE_API
 import logging
-from .wrapper_handler import handle_exceptions, control_api_execution
+from qubitclient import handle_exceptions, control_api_execution
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)

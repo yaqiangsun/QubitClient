@@ -41,10 +41,10 @@ def main(task_key="Opt"):
             continue
         if "name" not in result["meta"].keys():
             continue
-        if task_key in result["meta"]["name"]:
+        if task_key.lower() in result["meta"]["name"].lower():
             if len(result["meta"]["other"]["qubits"])>1:
                 from resources.quark.anaylsis.format import optpipulse_convert
                 formated_result = optpipulse_convert(result)
     pass
 if __name__ == "__main__":
-    main(task_key="Opt")
+    main(task_key="opt")

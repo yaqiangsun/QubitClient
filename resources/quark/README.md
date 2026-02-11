@@ -26,5 +26,6 @@ results = optpipulse(data)
 3. 绘图
 ```python
 from analysis.visualization import plot_optpipulse
-plot_optpipulse(data,analysis_result,save_path='./tmp/vis/opt_pipulse.png')
+fig_list = plot_optpipulse(data,analysis_result,save_path='./tmp/vis/opt_pipulse.png')
+# fig_list[0].show()
 ```

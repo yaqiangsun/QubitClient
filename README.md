@@ -134,7 +134,7 @@ print(result)
 
 - `TaskName.S21PEAK`: S21参数峰值检测，详见 [S21PEAK详细文档](docs/scope/S21PEAK.md)
 - `TaskName.OPTPIPULSE`: 最优π脉冲计算，详见 [OPTPIPULSE详细文档](docs/scope/OPTPIPULSE.md)
-- `TaskName.RABICOS`: Rabi振荡余弦拟合，详见 [RABICOS详细文档](docs/scope/RABICOS.md)
+- `TaskName.RABICOS`: Rabi振荡余弦第一峰检测，详见 [RABICOS详细文档](docs/scope/RABICOS.md)
 - `TaskName.RAMSEY`: RAMSY衰减震荡余弦拟合，详见 [RAMSEY详细文档](docs/scope/RABICOS.md)
 - `TaskName.S21VFLUX`: S21 vs Flux分析，详见 [S21VFLUX详细文档](docs/scope/S21VFLUX.md)
 - `TaskName.SINGLESHOT`: 单次测量分析，详见 [SINGLESHOT详细文档](docs/scope/SINGLESHOT.md)

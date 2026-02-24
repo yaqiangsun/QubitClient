@@ -51,7 +51,7 @@ def send_spectrum_npy_to_server(url, api_key, dir_path="data/33137"):
         dict_list.append(content)
 
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    response = client.request(file_list=dict_list, task_type=NNTaskName.SPECTRUM,curve_type=CurveType.AUTO)
+    response = client.request(file_list=dict_list, task_type=NNTaskName.SPECTRUM)
     results = client.get_result(response=response)
 
     threshold = 0.3

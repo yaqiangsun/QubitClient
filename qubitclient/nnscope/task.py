@@ -158,15 +158,15 @@ def s21vfluxnnscope(files,url,api_key,curve_type):
     return response
 
 @task_register
-def powershiftnnscope(files,url,api_key,curve_type):
+def powershiftnnscope(files,url,api_key,*args,**kwargs):
     spectrum2d_url = url + "/api/v1/tasks/nnscope/powershift"
-    response = request_task(files,spectrum2d_url,api_key,curve_type)
+    response = request_task(files,spectrum2d_url,api_key)
     return response
 
 @task_register
-def spectrumnnscope(files,url,api_key,curve_type):
+def spectrumnnscope(files,url,api_key,*args,**kwargs):
     spectrum_url = url + "/api/v1/tasks/nnscope/spectrum"
-    response = request_task(files,spectrum_url,api_key,curve_type)
+    response = request_task(files,spectrum_url,api_key)
     return response
 
 from enum import Enum, unique

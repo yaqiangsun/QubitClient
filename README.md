@@ -1,4 +1,14 @@
-# QubitClient
+<h1>QubitClient: 面向量子系统的AI客户端</h1>
+
+<p align="center">
+    <br>
+    <img src="asset/qubitclient.png" width="200"/>
+    <br>
+<p>
+<p align="center">
+中文文档 | <a href="README.en.md">English Doc</a>
+<br>
+</p>
 
 ## 介绍
 
@@ -6,7 +16,7 @@
 
 ## 功能特性
 
-- **曲线分割功能**: 支持多项式(POLY)和余弦(COSINE)类型的曲线拟合
+- **二维数据分析功能**: 二维能谱分析、功率偏移曲线分析等
 - **多种任务支持**: 包括S21峰值检测、最优π脉冲、Rabi振荡、T1/T2拟合等多种量子计算任务
 - **灵活的数据输入**: 支持文件路径、NumPy数组、字典等多种数据格式作为输入
 - **批量处理**: 支持同时处理多个数据文件

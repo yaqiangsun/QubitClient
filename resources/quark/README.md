@@ -2,7 +2,7 @@
 
 
 ## 配置
-1. 将analysis目录复制到QuLab根目录下；
+1. 将analysis目录复制到quark项目根目录下；
 2. 将`config.py.example`拷贝为`config.py`,并配置相关参数
 
 ## 使用

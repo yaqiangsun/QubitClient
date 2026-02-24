@@ -9,6 +9,7 @@
 <a href="README.md">中文文档</a> | English Doc
 <br>
 </p>
+
 ## Introduction
 
 **QubitClient** is a Python client library for interacting with Qubit services. It provides rich APIs supporting various quantum computing related tasks, including curve segmentation, parameter fitting, and other functions.

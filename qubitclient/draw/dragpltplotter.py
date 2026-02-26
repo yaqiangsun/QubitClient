@@ -1,12 +1,7 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from .pltplotter import QuantumDataPltPlotter
-
-
 class DragDataPltPlotter(QuantumDataPltPlotter):
     def __init__(self):
         super().__init__("drag")
-
     def plot_result_npy(self,**kwargs):
         result_param = kwargs.get('result')
         dict_param = kwargs.get('dict_param')
@@ -36,16 +31,16 @@ class DragDataPltPlotter(QuantumDataPltPlotter):
 
         intersections_confs_list = result_param['intersections_confs_list']
 
-        nums = len(x_list)
-        col = 3
-        row = (nums // col) + (1 if nums % col != 0 else 0)
 
-        fig, axes = plt.subplots(row, col, figsize=(20, 10 * row))
 
-        axes = axes.flatten()  # Flatten in case of multiple rows
+        n_plots = len(x_list)
+        fig, axes, rows, cols = self.create_subplots(n_plots)
+        axs = axes.flatten()
 
-        for ii in range(nums):
-            ax = axes[ii]
+
+
+        for ii in range(n_plots):
+            ax = axs[ii]
 
             x = x_list[ii]
             y0 = y0_list[ii]
@@ -56,31 +51,23 @@ class DragDataPltPlotter(QuantumDataPltPlotter):
             intersections = intersections_list[ii]
             intersections_confs = intersections_confs_list[ii]
 
-            ax.plot(x, y0, color='green', label='Data', linestyle='-', marker='o', markersize=4,
-                    alpha=0.7)
-            ax.plot(x, y1, color='blue', label='Data', linestyle='-', marker='o', markersize=4,
-                    alpha=0.7)
 
-            ax.plot(x_pred, y0_pred, color='red', label='Data', linestyle='-', marker='o', markersize=4, alpha=0.7)
-            ax.plot(x_pred, y1_pred, color='red', label='Data', linestyle='-', marker='o', markersize=4, alpha=0.7)
+            self.add_line(ax,x, y0,color_index=0,line_style_index=0)
+            self.add_line(ax,x, y1,color_index=1,line_style_index=0)
+            self.add_line(ax, x_pred, y0_pred, color_index=2, line_style_index=0)
+            self.add_line(ax, x_pred, y1_pred, color_index=2, line_style_index=0)
+
             if intersections:
                 intersection_x = [point[0] for point in intersections]
                 intersection_y = [point[1] for point in intersections]
-                ax.scatter(intersection_x, intersection_y, color='green', s=100, zorder=5,
-                           marker='o', edgecolors='black', linewidth=1,
-                           label=f'Intersections ({len(intersections)} points)')
 
+                self.add_scatter(ax,intersection_x, intersection_y,color_index=0,marker_index=0)
                 for i, (x_int, y_int) in enumerate(intersections):
-                    ax.annotate(f'({x_int:.2f}, {y_int:.2f}),conf:{intersections_confs[i]:.2f}',
-                                (x_int, y_int),
-                                xytext=(10, 10),
-                                textcoords='offset points',
-                                bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow', alpha=0.7),
-                                arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0'))
+                    self.add_annotation(ax,f'({x_int:.2f}, {y_int:.2f}),conf:{intersections_confs[i]:.2f}',
+                                (x_int, y_int),color_index=0)
 
-        for jj in range(nums, len(axes)):
-            fig.delaxes(axes[jj])
-
+            self.configure_axis(ax, title=qname_list[ii],
+                                xlabel='x', ylabel='y')
         fig.tight_layout()
         return fig
 

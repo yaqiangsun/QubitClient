@@ -1,8 +1,5 @@
-import numpy as np
-import matplotlib.pyplot as plt
+
 from .plyplotter import QuantumDataPlyPlotter
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 class DragDataPlyPlotter(QuantumDataPlyPlotter):
     def __init__(self):
@@ -34,18 +31,17 @@ class DragDataPlyPlotter(QuantumDataPlyPlotter):
         intersections_list = result_param['intersections_list']
 
         intersections_confs_list = result_param['intersections_confs_list']
-        nums = len(x_list)
-        col = 2
-        row = (nums // col) + (1 if nums % col != 0 else 0)
 
-        fig = make_subplots(
-            rows=row, cols=col,
-            subplot_titles=[f"Dataset {i + 1}" for i in range(nums)],
-            vertical_spacing=0.01,
-            horizontal_spacing=0.01
-        )
 
-        for ii in range(nums):
+
+        n_plots = len(x_list)
+
+        titles = [f"{qname_list[i]}" for i in range(n_plots)]
+        # 创建子图布局
+        second_y = True
+        fig, row, col = self.create_subplots(n_plots, titles, second_y=second_y)
+
+        for ii in range(n_plots):
             r = (ii // col) + 1
             c = (ii % col) + 1
 
@@ -58,104 +54,28 @@ class DragDataPlyPlotter(QuantumDataPlyPlotter):
             intersections = intersections_list[ii]
             intersections_confs = intersections_confs_list[ii]
 
-            fig.add_trace(
-                go.Scatter(
-                    x=x, y=y0,
-                    mode='markers',
-                    marker=dict(color='green', size=6, opacity=0.7),
-                    name=f'Data Y0 #{ii + 1}',
-                    showlegend=False
-                ),
-                row=r, col=c
-            )
+            self.add_scatter(fig, x=x, y=y0, name=f'Data Y0 #{ii + 1}', row=r,
+                                    col=c, color_index=0)
+            self.add_scatter(fig, x=x, y=y1, name=f'Data Y1 #{ii + 1}', row=r,
+                                    col=c, color_index=1)
+            self.add_line(fig,x=x, y=y0,row=r, col=c,color_index=0,line_style_index=0,\
+                          name=f'Data Y0 #{ii + 1}')
+            self.add_line(fig, x=x, y=y1, row=r, col=c, color_index=1, line_style_index=0, \
+                          name=f'Data Y1 #{ii + 1}')
+            self.add_line(fig, x=x_pred, y=y0_pred, row=r, col=c, color_index=2, line_style_index=0, \
+                          name=f'Fit Y0 #{ii + 1}')
+            self.add_line(fig,x=x_pred, y=y1_pred, row=r, col=c, color_index=2, line_style_index=0, \
+                          name=f'Fit Y1 #{ii + 1}')
 
-            fig.add_trace(
-                go.Scatter(
-                    x=x, y=y1,
-                    mode='markers',
-                    marker=dict(color='blue', size=6, opacity=0.7),
-                    name=f'Data Y1 #{ii + 1}',
-                    showlegend=False
-                ),
-                row=r, col=c
-            )
-            fig.add_trace(
-                go.Scatter(
-                    x=x, y=y0,
-                    mode='lines',
-                    marker=dict(color='green', size=6, opacity=0.7),
-                    name=f'Data Y0 #{ii + 1}',
-                    showlegend=False
-                ),
-                row=r, col=c
-            )
-
-            fig.add_trace(
-                go.Scatter(
-                    x=x, y=y1,
-                    mode='lines',
-                    marker=dict(color='blue', size=6, opacity=0.7),
-                    name=f'Data Y1 #{ii + 1}',
-                    showlegend=False
-                ),
-                row=r, col=c
-            )
-            fig.add_trace(
-                go.Scatter(
-                    x=x_pred, y=y0_pred,
-                    mode='lines',
-                    line=dict(color='red', width=2),
-                    name=f'Fit Y0 #{ii + 1}',
-                    showlegend=False
-                ),
-                row=r, col=c
-            )
-
-            fig.add_trace(
-                go.Scatter(
-                    x=x_pred, y=y1_pred,
-                    mode='lines',
-                    line=dict(color='red', width=2),
-                    name=f'Fit Y1 #{ii + 1}',
-                    showlegend=False
-                ),
-                row=r, col=c
-            )
 
             if intersections:
-                intersection_x = [point[0] for point in intersections]
-                intersection_y = [point[1] for point in intersections]
+                for j in range(len(intersections)):
+                    self.add_annotation(fig, x=intersections[j][0],
+                                        y=intersections[j][1],
+                                        text=f"conf:{intersections_confs[j]:.2f}", row=r,
+                                        col=c)
 
-                fig.add_trace(
-                    go.Scatter(
-                        x=intersection_x, y=intersection_y,
-                        mode='markers+text',
-                        marker=dict(
-                            color='purple',
-                            size=12,
-                            symbol='circle',
-                            line=dict(color='black', width=2)
-                        ),
-                        name=f'Intersections #{ii + 1}',
-                        showlegend=False,
-                        text=[f'Conf: {conf:.2f}'
-                              for (x_int, y_int), conf in zip(intersections, intersections_confs)],
-                        textposition="top center",
-                        textfont=dict(size=12, color='black'),
-                        hovertemplate='%{text}<extra></extra>'
-                    ),
-                    row=r, col=c
-                )
+        self.update_layout(fig, row, col)
+        self.configure_axis(fig, row, col, xlable="x", ylable="y")
 
-        fig.update_layout(
-            height=300 * row,
-            showlegend=False,
-            hovermode='closest',
-            font=dict(size=12)
-        )
-
-        for i in range(1, row + 1):
-            for j in range(1, col + 1):
-                fig.update_xaxes(title_text="X Values", row=i, col=j)
-                fig.update_yaxes(title_text="Y Values", row=i, col=j)
         return fig

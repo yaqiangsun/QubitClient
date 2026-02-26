@@ -83,10 +83,10 @@ results = client.get_result(response=response_data)
 ```json
 [
   {
-    "params": [[[[float]]]],     // 表示余弦曲线点集合
+    "params": [[[float]]],     // 表示余弦曲线点集合
     "confs": [[float]],     // 表示余弦曲线置信度
     "coscompress_list": [[float]],     // 表示余弦曲线压缩程度
-    "lines_list": [[[[float]]]],     // 表示直线点集合
+    "lines_list": [[[float]]],     // 表示直线点集合
     "lineconfs_list":[[float]]     // 表示直线置信度
   },
   ...
@@ -100,10 +100,10 @@ results = client.get_result(response=response_data)
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| params | [[[[float]]]] | 表示余弦曲线点集合 |
+| params | [[[float]]] | 表示余弦曲线点集合 |
 | confs | [[float]] | 表示余弦曲线置信度 |
 | coscompress_list | [[float]] | 表示余弦曲线压缩程度 |
-| lines_list | [[[[float]]]] | 表示直线点集合 |
+| lines_list | [[[float]]] | 表示直线点集合 |
 | lineconfs_list | [[float]] | 表示直线置信度 |
 
 

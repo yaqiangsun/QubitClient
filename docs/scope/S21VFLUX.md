@@ -85,9 +85,9 @@ results = client.get_result(response=response_data)
 ```json
 [
   {
-    "coscurves_list": [[[[float]]]],     // 表示余弦曲线点集合
+    "coscurves_list": [[[float]]],     // 表示余弦曲线点集合
     "cosconfs_list": [[float]],     // 表示余弦曲线置信度
-    "lines_list": [[[[float]]]],     // 表示直线点集合
+    "lines_list": [[[float]]],     // 表示直线点集合
     "lineconfs_list":[[float]]     // 表示直线置信度
   },
   ...
@@ -101,9 +101,9 @@ results = client.get_result(response=response_data)
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| coscurves_list | [[[[float]]]] | 表示余弦曲线点集合 |
+| coscurves_list | [[[float]]] | 表示余弦曲线点集合 |
 | cosconfs_list | [[float]] | 表示余弦曲线置信度 |
-| lines_list | [[[[float]]]] | 表示直线点集合 |
+| lines_list | [[[float]]] | 表示直线点集合 |
 | lineconfs_list | [[float]] | 表示直线置信度 |
 
 

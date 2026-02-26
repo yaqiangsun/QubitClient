@@ -52,6 +52,7 @@ def send_spectrum2dnnscope_npz_to_server(url, api_key,dir_path = "data/33137"):
     # 从文件路径直接加载
     # response = client.request(file_list=file_path_list,task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
+    results = results.get("results")
     threshold = 0.5
     results_filtered = client.get_filtered_result(response,threshold,NNTaskName.SPECTRUM2D.value)
 

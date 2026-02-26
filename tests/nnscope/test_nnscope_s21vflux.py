@@ -43,6 +43,7 @@ def send_s21vflux_npy_to_server(url, api_key,file_path = "/home/sunyaqiang/work/
     # 2.从文件路径直接加载
     # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
+    results = results.get("results")
     threshold = 0.5
     results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
     save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VFLUX.value}_{savename}"

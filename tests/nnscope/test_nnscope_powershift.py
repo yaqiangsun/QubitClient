@@ -43,6 +43,7 @@ def send_powershift_npy_to_server(url, api_key, file_path = "/home/sunyaqiang/wo
     # 2.从文件路径直接加载
     # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
+    results = results.get("results")
 
     threshold = 0.7
     logging.info("results in test_powershift.py : %s", results)

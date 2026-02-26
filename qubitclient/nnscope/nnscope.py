@@ -45,7 +45,7 @@ class QubitNNScopeClient(object):
         if response.status_code == 200:
             logging.debug("Result: %s", response.json())
             result = response.json()
-            result = result["result"]
+            # result = result["result"]
             return result
         else:
             logging.error("Error: %s %s", response.status_code, response.text)

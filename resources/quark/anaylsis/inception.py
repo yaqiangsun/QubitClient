@@ -99,6 +99,7 @@ def t2fit(image):
 def optpipulse(image):
     image = optpipulse_convert(image)
     results = scope_template(image,task_type=TaskName.OPTPIPULSE)
+    # optpipulse_update(image,results)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)

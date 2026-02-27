@@ -90,67 +90,9 @@ def plot_template(report,basepath,name,task_type=TaskName.S21PEAK):
 ####################################################################################
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def nnplot_spectrum2d(report,basepath,name):
-    save_path = get_path(report,basepath,name)
-    results = report.analysis
-    other_infomation = report.other_infomation
-
-    results = results
-    data_ndarray = other_infomation
-    path = save_path
-
-    nums = len(results)
-    row = (nums // 3) + 1 if nums % 3 != 0 else nums // 3
-    col = min(nums, 3)
-
-    fig = plt.figure(figsize=(5 * col, 4 * row))
-    data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    data_dict = data_dict['image']
-    dict_list = []
-    q_list = data_dict.keys()
-
-    for idx, q_name in enumerate(q_list):
-        npz_dict = {}
-        image_q = data_dict[q_name]
-        data = image_q[0]
-        if data.ndim != 2:
-            raise ValueError("数据格式无效，data不是二维数组")
-        data = np.array(data)
-        data = np.abs(data)
-        npz_dict['bias'] = image_q[1]
-        npz_dict['frequency'] = image_q[2]
-        npz_dict['iq_avg'] = data
-        npz_dict['name'] = q_name
-        dict_list.append(npz_dict)
-
-    for index in range(nums):
-        ax = fig.add_subplot(row, col, index + 1)
-        result = results[index]
-
-        points_list = []
-        for i in range(len(result["linepoints_list"])):
-            points_list.append(result["linepoints_list"][i])
-
-        plt.pcolormesh(dict_list[index]["bias"], dict_list[index]["frequency"],  dict_list[index]["iq_avg"], shading='auto', cmap='viridis')
-        plt.colorbar(label='IQ Average')  # 添加颜色条
-        colors = plt.cm.rainbow(np.linspace(0, 1, len(result["linepoints_list"])))
-        for i in range(len(points_list)):
-            reflection_points = points_list[i]
-            reflection_points = np.array(reflection_points)
-            xy_x = reflection_points[:, 0]  # 提取 x 坐标
-            xy_y = reflection_points[:, 1]  # 提取 y 坐标
-            plt.scatter(xy_x, xy_y, color=colors[i], label=f'XY Points{i}-conf:{round(result["confidence_list"][i],2)}', s=5, alpha=0.1)  # 绘制散点图
-        # 图形设置
-        file_name = dict_list[index]["name"]
-        plt.title(f"File: {file_name}")
-
-        plt.xlabel("Bias")
-        plt.ylabel("Frequency (GHz)")
-        plt.legend()
-    fig.tight_layout()
-    save_path = path
-    fig.savefig(save_path)
-    logging.info(f"Saving ai image to:{save_path}")
+def plot_nnspectrum2d(data,results,save_path):
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM2D)
+    return fig_list
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nnplot_powershift(report,basepath,name):

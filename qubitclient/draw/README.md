@@ -1,4 +1,4 @@
-# Quantum Data Visualization Tool
+_# Quantum Data Visualization Tool
 
 # 项目概述‌ 
 这是一个基于Plotly和matplotlib的量子数据可视化工具包，用于处理和分析量子计算相关的结果，提供二维图，以及一维数据的可视化功能。以下以Plotly工具为例说明代码架构，使用方法‌，新任务的扩展开发，注意事项‌。Plotly同理。
@@ -62,8 +62,8 @@
         data_type='npy',           # 数据格式：npy或npz
         task_type='spectrum2d',    # 任务类型
         save_path="result.html",        # 保存路径
-        results=results_data,      # 绘图数据
-        data_ndarray=quantum_data  # 绘图数据
+        result=result,      # 绘图数据
+        dict_param=data_ndarray  # 绘图数据
     )
 ```
 
@@ -117,8 +117,8 @@
         data_type='npy',
         task_type=NNTaskName.SPECTRUM2D.value,
         save_path=save_path_html,
-        results=results,
-        data_ndarray=data_ndarray
+        result=result,
+        dict_param=dict_param
     )
 
     plot_manager = QuantumPlotPltManager()
@@ -126,9 +126,10 @@
         data_type='npy',
         task_type=NNTaskName.SPECTRUM2D.value,
         save_path=save_path_png,
-        results=results,
-        data_ndarray=data_ndarray
+        result=result,
+        dict_param=dict_param
     )
 ```
 1. 对于plt 和 ply画图，参数只有save_path不同，其余无需更改。
-2. results=results,data_ndarray=data_ndarray，是通过**kwargs 接收的具体关键字参数，需要适配不同的任务
+2. result=result,dict_param=dict_param，是通过**kwargs 接收的具体关键字参数，需要适配不同的任务_,
+3. ！！！需要注意result=result,dict_param=dict_param  关键字需要固定为result,和 dict_param

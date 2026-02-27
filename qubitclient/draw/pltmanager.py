@@ -1,22 +1,25 @@
 from typing import Dict, List
 from .pltplotter import QuantumDataPltPlotter
-from .powershiftnnscopepltplotter import PowershiftNNScopeDataPltPlotter
-from .spectrumnnscopepltplotter import SpectrumNNscopeDataPltPlotter
-from .spectrum2dnnscopepltplotter import Spectrum2DNNScopeDataPltPlotter
-from .s21vfluxscopepltplotter import S21VfluxScopeDataPltPlotter
-from .s21vfluxnnscopepltplotter import S21VfluxNNScopeDataPltPlotter
-from .singleshotpltplotter import SingleShotDataPltPlotter
-from .spectrum2dscopepltplotter import Spectrum2DScopeDataPltPlotter
-from .spectrumpltplotter import SpectrumDataPltPlotter
-from .s21peakpltplotter import S21PeakDataPltPlotter
 
-from .optpipulsepltplotter import OptPiPulseDataPltPlotter
-from .ramseypltplotter import RamseyDataPltPlotter
-from .t1fitpltplotter import T1FitDataPltPlotter
-from .t2fitpltplotter import T2FitDataPltPlotter
-from .rabicospltplotter import RabiCosDataPltPlotter
-from .powershiftpltplotter import PowerShiftDataPltPlotter
-from .dragpltplotter import DragDataPltPlotter
+from qubitclient.draw.nnscope.powershiftnnscopepltplotter import PowershiftNNScopeDataPltPlotter
+from qubitclient.draw.nnscope.spectrumnnscopepltplotter import SpectrumNNscopeDataPltPlotter
+from qubitclient.draw.nnscope.spectrum2dnnscopepltplotter import Spectrum2DNNScopeDataPltPlotter
+from qubitclient.draw.scope.s21vfluxscopepltplotter import S21VfluxScopeDataPltPlotter
+from qubitclient.draw.nnscope.s21vfluxnnscopepltplotter import S21VfluxNNScopeDataPltPlotter
+from qubitclient.draw.scope.singleshotpltplotter import SingleShotDataPltPlotter
+from qubitclient.draw.scope.spectrum2dscopepltplotter import Spectrum2DScopeDataPltPlotter
+from qubitclient.draw.scope.spectrumpltplotter import SpectrumDataPltPlotter
+from qubitclient.draw.scope.s21peakpltplotter import S21PeakDataPltPlotter
+
+from qubitclient.draw.scope.optpipulsepltplotter import OptPiPulseDataPltPlotter
+from qubitclient.draw.scope.ramseypltplotter import RamseyDataPltPlotter
+from qubitclient.draw.scope.t1fitpltplotter import T1FitDataPltPlotter
+from qubitclient.draw.scope.t2fitpltplotter import T2FitDataPltPlotter
+from qubitclient.draw.scope.rabicospltplotter import RabiCosDataPltPlotter
+from qubitclient.draw.scope.powershiftpltplotter import PowerShiftDataPltPlotter
+from qubitclient.draw.scope.dragpltplotter import DragDataPltPlotter
+
+
 class QuantumPlotPltManager:
     def __init__(self):
         self.plotters: Dict[str, QuantumDataPltPlotter] = {}
@@ -55,6 +58,7 @@ class QuantumPlotPltManager:
             fig = plotter.plot_result_npz(**kwargs)
         else: # data_type=='npy':
             fig = plotter.plot_result_npy(**kwargs)
+
         if save_path:
             plotter.save_plot(fig,save_path)
         return fig

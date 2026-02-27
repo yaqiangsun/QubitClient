@@ -27,8 +27,7 @@ class QuantumDataPltPlotter(ABC):
         rows = (n_plots // cols) + 1 if n_plots % cols != 0 else n_plots // cols
         figsize = self.style.get_figure_size(rows, cols)
         fig, axes = plt.subplots(rows, cols, figsize=figsize)
-        for i in range(n_plots, len(axes)):
-            axes[i].axis('off')
+
         # 确保axes是二维数组
         if rows == 1 and cols == 1:
             axes = np.array([[axes]])
@@ -37,7 +36,9 @@ class QuantumDataPltPlotter(ABC):
         for ax in axes.flat:
             ax.set_aspect('auto')  # 取消正方形约束
             ax.autoscale(enable=True, axis='y', tight=True)
-
+        all_axes=axes.flat
+        for i in range(n_plots, len(all_axes)):
+            all_axes[i].axis('off')
 
         plt.subplots_adjust(hspace=self.style.subplot_hspace,
                             wspace=self.style.subplot_wspace,

@@ -1,25 +1,25 @@
 
 from typing import Dict, List
 
-from .powershiftnnscopeplyplotter import PowershiftNNScopeDataPlyPlotter
-from .spectrumnnscopeplyplotter import SpectrumNNScopeDataPlyPlotter
+from qubitclient.draw.nnscope.powershiftnnscopeplyplotter import PowershiftNNScopeDataPlyPlotter
+from qubitclient.draw.nnscope.spectrumnnscopeplyplotter import SpectrumNNScopeDataPlyPlotter
 from .plyplotter import QuantumDataPlyPlotter
-from .spectrum2dnnscopeplyplotter import Spectrum2DNNScopeDataPlyPlotter
-from .s21vfluxscopeplyplotter import S21VfluxScopeDataPlyPlotter
-from .s21vfluxnnscopeplyplotter import S21VfluxNNScopeDataPlyPlotter
+from qubitclient.draw.nnscope.spectrum2dnnscopeplyplotter import Spectrum2DNNScopeDataPlyPlotter
+from qubitclient.draw.scope.s21vfluxscopeplyplotter import S21VfluxScopeDataPlyPlotter
+from qubitclient.draw.nnscope.s21vfluxnnscopeplyplotter import S21VfluxNNScopeDataPlyPlotter
 
-from .singleshotplyplotter import SingleShotDataPlyPlotter
-from .spectrum2dscopeplyplotter import Spectrum2DScopeDataPlyPlotter
-from .spectrumplyplotter import SpectrumDataPlyPlotter
+from qubitclient.draw.scope.singleshotplyplotter import SingleShotDataPlyPlotter
+from qubitclient.draw.scope.spectrum2dscopeplyplotter import Spectrum2DScopeDataPlyPlotter
+from qubitclient.draw.scope.spectrumplyplotter import SpectrumDataPlyPlotter
 
-from .optpipulseplyplotter import OptPiPulseDataPlyPlotter
-from .ramseyplyplotter import RamseyDataPlyPlotter
-from .t1fitplyplotter import T1FitDataPlyPlotter
-from .t2fitplyplotter import T2FitDataPlyPlotter
-from .rabicosplyplotter import RabiCosDataPlyPlotter
-from .s21peakplyplotter import S21PeakDataPlyPlotter
-from .powershiftplyplotter import PowerShiftDataPlyPlotter
-from .dragplyplotter import DragDataPlyPlotter
+from qubitclient.draw.scope.optpipulseplyplotter import OptPiPulseDataPlyPlotter
+from qubitclient.draw.scope.ramseyplyplotter import RamseyDataPlyPlotter
+from qubitclient.draw.scope.t1fitplyplotter import T1FitDataPlyPlotter
+from qubitclient.draw.scope.t2fitplyplotter import T2FitDataPlyPlotter
+from qubitclient.draw.scope.rabicosplyplotter import RabiCosDataPlyPlotter
+from qubitclient.draw.scope.s21peakplyplotter import S21PeakDataPlyPlotter
+from qubitclient.draw.scope.powershiftplyplotter import PowerShiftDataPlyPlotter
+from qubitclient.draw.scope.dragplyplotter import DragDataPlyPlotter
 
 class QuantumPlotPlyManager:
 

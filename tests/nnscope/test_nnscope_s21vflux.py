@@ -38,34 +38,38 @@ def send_s21vflux_npy_to_server(url, api_key,file_path = "/home/sunyaqiang/work/
     # 1.使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     import numpy as np
     data_ndarray = np.load(file_path, allow_pickle=True)
+
     # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.AUTO)
+    dict_list=[data_ndarray]
+    response = client.request(file_list=dict_list,task_type=NNTaskName.S21VFLUX,curve_type=CurveType.AUTO)
     # 2.从文件路径直接加载
     # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
-    results = results.get("results")
     threshold = 0.5
     results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
-    save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VFLUX.value}_{savename}"
-    save_path_png = save_path_prefix + ".png"
-    save_path_html = save_path_prefix + ".html"
-    plot_manager = QuantumPlotPlyManager()
-    plot_manager.plot_quantum_data(
-        data_type='npy',
-        task_type=NNTaskName.S21VFLUX.value,
-        save_path=save_path_html,
-        results=results_filtered,
-        data_ndarray=data_ndarray
-    )
+    results_filtered = results_filtered.get("results")
 
-    plot_manager = QuantumPlotPltManager()
-    plot_manager.plot_quantum_data(
-        data_type='npy',
-        task_type=NNTaskName.S21VFLUX.value,
-        save_path=save_path_png,
-        results=results_filtered,
-        data_ndarray=data_ndarray
-    )
+    for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
+        save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VFLUX.value}_{savename}"
+        save_path_png = save_path_prefix + ".png"
+        save_path_html = save_path_prefix + ".html"
+        plot_manager = QuantumPlotPlyManager()
+        plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=NNTaskName.S21VFLUX.value,
+            save_path=save_path_html,
+            result=result,
+            dict_param=dict_param
+        )
+
+        plot_manager = QuantumPlotPltManager()
+        plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=NNTaskName.S21VFLUX.value,
+            save_path=save_path_png,
+            result=result,
+            dict_param=dict_param
+        )
 
     print(results)
 

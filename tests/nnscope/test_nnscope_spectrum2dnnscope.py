@@ -8,7 +8,6 @@
 ########################################################################
 
 import os
-import os
 import sys
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
@@ -52,31 +51,32 @@ def send_spectrum2dnnscope_npz_to_server(url, api_key,dir_path = "data/33137"):
     # 从文件路径直接加载
     # response = client.request(file_list=file_path_list,task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
-    results = results.get("results")
     threshold = 0.5
     results_filtered = client.get_filtered_result(response,threshold,NNTaskName.SPECTRUM2D.value)
-
-    save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
-    save_path_png = save_path_prefix + ".png"
-    save_path_html = save_path_prefix + ".html"
-    plot_manager = QuantumPlotPlyManager()
-    plot_manager.plot_quantum_data(
-        data_type='npz',
-        task_type=NNTaskName.SPECTRUM2D.value,
-        save_path=save_path_html,
-        results=results_filtered,
-        dict_list=dict_list,
-        file_names = file_names
-    )
-    plot_manager = QuantumPlotPltManager()
-    plot_manager.plot_quantum_data(
-        data_type='npz',
-        task_type=NNTaskName.SPECTRUM2D.value,
-        save_path=save_path_png,
-        results=results_filtered,
-        dict_list=dict_list,
-        file_names=file_names
-    )
+    results_filtered = results_filtered.get("results")
+    dict_list = [dict_list]
+    for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
+        save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
+        save_path_png = save_path_prefix + ".png"
+        save_path_html = save_path_prefix + ".html"
+        plot_manager = QuantumPlotPlyManager()
+        plot_manager.plot_quantum_data(
+            data_type='npz',
+            task_type=NNTaskName.SPECTRUM2D.value,
+            save_path=save_path_html,
+            results=result,
+            dict_list=dict_param,
+            file_names = file_names
+        )
+        plot_manager = QuantumPlotPltManager()
+        plot_manager.plot_quantum_data(
+            data_type='npz',
+            task_type=NNTaskName.SPECTRUM2D.value,
+            save_path=save_path_png,
+            results=result,
+            dict_list=dict_param,
+            file_names=file_names
+        )
     # print(results)
 
 
@@ -92,35 +92,40 @@ def send_spectrum2dnnscope_npy_to_server(url, api_key,file_path = "/home/sunyaqi
     # 1.使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     import numpy as np
     data_ndarray = np.load(file_path, allow_pickle=True)
+
+    dict_list=[data_ndarray]
     # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
+    response = client.request(file_list=dict_list,task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     # 2.从文件路径直接加载
     # response = client.request(file_list=[file_path],task_type=NNTaskName.SPECTRUM2D,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
     threshold = 0.5
     results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
-    save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
-    save_path_png = save_path_prefix + ".png"
-    save_path_html = save_path_prefix + ".html"
-    plot_manager = QuantumPlotPlyManager()
-    plot_manager.plot_quantum_data(
-        data_type='npy',
-        task_type=NNTaskName.SPECTRUM2D.value,
-        save_path=save_path_html,
-        results=results_filtered,
-        data_ndarray=data_ndarray
-    )
+    results_filtered = results_filtered.get("results")
 
-    plot_manager = QuantumPlotPltManager()
-    plot_manager.plot_quantum_data(
-        data_type='npy',
-        task_type=NNTaskName.SPECTRUM2D.value,
-        save_path=save_path_png,
-        results=results_filtered,
-        data_ndarray=data_ndarray
-    )
+    for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
+        save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
+        save_path_png = save_path_prefix + ".png"
+        save_path_html = save_path_prefix + ".html"
+        plot_manager = QuantumPlotPlyManager()
+        plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=NNTaskName.SPECTRUM2D.value,
+            save_path=save_path_html,
+            result=result,
+            dict_param=dict_param
+        )
 
-    # print(results)
+        plot_manager = QuantumPlotPltManager()
+        plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=NNTaskName.SPECTRUM2D.value,
+            save_path=save_path_png,
+            result=result,
+            dict_param=dict_param
+        )
+
+        # print(results)
 
 
 
@@ -131,10 +136,10 @@ def main():
     from config import API_URL, API_KEY
 
     # 1. npz file.
-    # base_dir = "data/1829"
+    # base_dir = "tmp/data/1829"
     # send_spectrum2dnnscope_npz_to_server(API_URL, API_KEY, base_dir)
     # 2. npy file.
-    file_path = "tmp/data/spectrum2d/tmpb5c7f62d.py_311.npy"
+    file_path = "tmp/spectrum2dscope/tmp0ffc025b.py_4905.npy"
     send_spectrum2dnnscope_npy_to_server(API_URL, API_KEY, file_path)
 
 

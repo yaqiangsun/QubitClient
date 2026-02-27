@@ -22,7 +22,7 @@ import logging
 from .config import API_URL,API_KEY,ENABLE_API
 from qubitclient import handle_exceptions, control_api_execution
 
-from .format import optpipulse_convert
+from .format import optpipulse_convert,s21_convert,s21vsflux_convert,drag_convert,singleshot_convert,nnspectrum2d_convert,nns21vsflux_convert,spectrum2d_convert
 
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
@@ -39,7 +39,7 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
     for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
         save_path_png = str(save_path)
-        save_path_html = save_path_png.replace("png",".html")
+        save_path_html = save_path_png.replace("png","html")
         fig_plt = plt_plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=task_type.value,
@@ -61,4 +61,38 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 def plot_optpipulse(data,results,save_path):
     data = optpipulse_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.OPTPIPULSE)
+
+    return fig_list
+def plot_s21(data,results,save_path):
+    data = s21_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAK)
+
+    return fig_list
+
+def plot_s21vsflux(data,results,save_path):
+    data = s21vsflux_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.S21VFLUX)
+    return fig_list
+def plot_nns21vsflux(data,results,save_path):
+    data = nns21vsflux_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21VFLUX)
+    return fig_list
+def plot_drag(data,results,save_path):
+    data = drag_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.DRAG)
+    return fig_list
+
+def plot_singleshot(data,results,save_path):
+    data = singleshot_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.SINGLESHOT)
+    return fig_list
+
+def plot_nnspectrum2d(data,results,save_path):
+    data = nnspectrum2d_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM2D)
+    return fig_list
+
+def plot_spectrum2d(data,results,save_path):
+    data = spectrum2d_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.SPECTRUM2D)
     return fig_list

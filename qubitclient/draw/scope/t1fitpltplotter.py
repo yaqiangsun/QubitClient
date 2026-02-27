@@ -1,5 +1,5 @@
 # src/draw/t1fitpltplotter.py
-from qubitclient.draw.pltplotter import QuantumDataPltPlotter
+from ..pltplotter import QuantumDataPltPlotter
 import matplotlib.pyplot as plt
 import numpy as np
 

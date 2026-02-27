@@ -1,6 +1,6 @@
 
 
-from qubitclient.draw.pltplotter import QuantumDataPltPlotter
+from ..pltplotter import QuantumDataPltPlotter
 
 
 

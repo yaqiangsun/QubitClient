@@ -1,4 +1,4 @@
-from qubitclient.draw.plyplotter import QuantumDataPlyPlotter
+from ..plyplotter import QuantumDataPlyPlotter
 import numpy as np
 
 class Spectrum2DNNScopeDataPlyPlotter(QuantumDataPlyPlotter):

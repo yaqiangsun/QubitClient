@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from qubitclient.draw.plyplotter import QuantumDataPlyPlotter
+from ..plyplotter import QuantumDataPlyPlotter
 
 class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
 

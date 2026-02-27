@@ -1,4 +1,4 @@
-from qubitclient.draw.plyplotter import QuantumDataPlyPlotter
+from ..plyplotter import QuantumDataPlyPlotter
 
 class S21VfluxScopeDataPlyPlotter(QuantumDataPlyPlotter):
 

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from qubitclient.draw.pltplotter import QuantumDataPltPlotter
+from ..pltplotter import QuantumDataPltPlotter
 
 class SpectrumNNscopeDataPltPlotter(QuantumDataPltPlotter):
 

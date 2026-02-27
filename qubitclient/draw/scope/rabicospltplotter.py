@@ -1,4 +1,4 @@
-from qubitclient.draw.pltplotter import QuantumDataPltPlotter
+from ..pltplotter import QuantumDataPltPlotter
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D

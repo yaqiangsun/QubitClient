@@ -1,5 +1,5 @@
 import numpy as np
-from qubitclient.draw.pltplotter import QuantumDataPltPlotter
+from ..pltplotter import QuantumDataPltPlotter
 from scipy.stats import norm
 
 class SingleShotDataPltPlotter(QuantumDataPltPlotter):

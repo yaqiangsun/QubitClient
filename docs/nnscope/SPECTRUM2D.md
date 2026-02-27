@@ -52,8 +52,9 @@ response = client.request(
 # 使用numpy数组
 import numpy as np
 data_ndarray = np.load("file.npz", allow_pickle=True)
+dict_list=[data_ndarray]
 response = client.request(
-    file_list=[data_ndarray],
+    file_list=dict_list,
     task_type=NNTaskName.SPECTRUM2D,
     curve_type=CurveType.COSINE
 )
@@ -77,7 +78,8 @@ response = client.request(
 results = client.get_result(response=response)
 threshold = 0.5
 results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
-# results 和 results_filtered 分别是阈值筛选前和筛选后的结果
+results_filtered = results_filtered.get("results")
+
 
 
 ```
@@ -88,12 +90,21 @@ results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SP
 
 ```json
 [
-  {
-    "params_list": [[float, ...], ...],     // 每条线段的多项式参数列表
-    "linepoints_list": [[[int, int], ...], ...], // 每条线段的点坐标列表
-    "confidence_list": [float, ...]         // 每条线段的置信度
-  },
-  ...
+  [
+     {
+       "params_list": [[float, ...], ...],     // 第一个Q比特的每条线段的多项式参数列表
+       "linepoints_list": [[[int, int], ...], ...], // 第一个Q比特的每条线段的点坐标列表
+       "confidence_list": [float, ...] ,        // 第一个Q比特的每条线段的置信度
+        "curve_type": [str, ...]// 第一个Q比特的每条线段的拟合类型
+     },
+     {
+       "params_list": [[float, ...], ...],     // 第二个Q比特的每条线段的多项式参数列表
+       "linepoints_list": [[[int, int], ...], ...], // 第二个Q比特的每条线段的点坐标列表
+       "confidence_list": [float, ...] ,        // 第二个Q比特的每条线段的置信度
+        "curve_type": [str, ...]// 第二个Q比特的每条线段的拟合类型
+     }
+     ...
+  ],
 ]
 ```
 
@@ -104,22 +115,39 @@ results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SP
 | params_list | List[List[float]] | 每条检测到的线段的拟合参数列表 |
 | linepoints_list | List[List[[row_index, col_index]]] | 每条线段的点坐标列表，每个点包含行索引和列索引 |
 | confidence_list | List[float] | 每条线段的置信度，表示检测的可靠性 |
-
+|curve_type| List[str, ...] // 每条线段的拟合类型
 ### 示例结果
 
 ```python
 [
-  {
-    "params_list": [
-      [1.2, 3.4, 5.6],
-      [2.1, 4.3, 6.5]
-    ],
-    "linepoints_list": [
-      [[10, 15], [10, 16], [10, 17]],
-      [[20, 30], [20, 31], [20, 32]]
-    ],
-    "confidence_list": [0.95, 0.87]
-  }
+   [
+     {
+       "params_list": [
+         [1.2, 3.4, 5.6],
+         [2.1, 4.3, 6.5]
+       ],
+       "linepoints_list": [
+         [[10, 15], [10, 16], [10, 17]],
+         [[20, 30], [20, 31], [20, 32]]
+       ],
+       "confidence_list": [0.95, 0.87],
+        "curve_type": ["poly", "cos"]
+     }
+   ],
+   [
+     {
+       "params_list": [
+         [1.2, 3.4, 5.6],
+         [2.1, 4.3, 6.5]
+       ],
+       "linepoints_list": [
+         [[10, 15], [10, 16], [10, 17]],
+         [[20, 30], [20, 31], [20, 32]]
+       ],
+       "confidence_list": [0.95, 0.87],
+        "curve_type": ["poly", "cos"]
+     }
+   ]
 ]
 ```
 
@@ -139,8 +167,8 @@ plot_manager.plot_quantum_data(
   data_type='npy',
   task_type=NNTaskName.SPECTRUM2D.value,
   save_path=save_path_png,
-  results=results,
-  data_ndarray=data_ndarray
+  result=results,
+  dict_param=data_ndarray
 )
 
 plot_manager = QuantumPlotPltManager()
@@ -148,7 +176,7 @@ plot_manager.plot_quantum_data(
   data_type='npy',
   task_type=NNTaskName.SPECTRUM2D.value,
   save_path=save_path_html,
-  results=results,
-  data_ndarray=data_ndarray
+  result=results,
+  dict_param=data_ndarray
 )
 ```

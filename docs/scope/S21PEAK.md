@@ -72,9 +72,8 @@ response_data = client.get_result(response)
 threshold = 0.5
 response_data_filtered = client.get_filtered_result(response,threshold,TaskName.S21PEAK.value)
 
-results = client.get_result(response=response_data)  
-#results = client.get_result(response=response_data_filtered)
-# response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
+results = response_data_filtered.get("results")
+
 ```
 
 ## 返回值格式
@@ -85,7 +84,9 @@ results = client.get_result(response=response_data)
 [
   {
     "peaks": [[int]],     // 表示峰值位置
-    "confs": [[int]] // 表示峰值置信度
+    "confs": [[float]] // 表示峰值置信度
+     "freqs_list": [[float]] // 表示峰值横坐标
+
   },
   ...
 ]
@@ -96,10 +97,11 @@ results = client.get_result(response=response_data)
 
 ### 字段说明
 
-| 字段名 | 类型 | 描述 |
-|--------|------|------|
-| peaks | [[int]] | 表示峰值位置 |
-| confs | [[int]] | 表示峰值置信度 |
+| 字段名 | 类型        | 描述      |
+|--------|-----------|---------|
+| peaks | [[int]]   | 表示峰值位置  |
+| confs | [[float]] | 表示峰值置信度 |
+| freqs_list | [[float]]   | 表示峰值横坐标 |
 
 ### 示例结果
 
@@ -107,7 +109,8 @@ results = client.get_result(response=response_data)
 [
   {
     "peaks": [[10,41,20],[22,34]],
-    "confs": [[0.3,0.4,0.1],[0.6,0.5]]
+    "confs": [[0.3,0.4,0.1],[0.6,0.5]],
+    "freqs_list": [[0.3e9,0.4e9,0.1e9],[0.6e9,0.5e9]]
   }
 ]
 ```

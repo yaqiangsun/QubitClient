@@ -67,15 +67,10 @@ response = client.request(file_list=dict_list, task_type=TaskName.DRAG)
 ### 获取结果
 
 ```python
-
-
 response_data = client.get_result(response)
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response,threshold,TaskName.S21VFLUX.value)
-
-results = client.get_result(response=response_data)  
-#results = client.get_result(response=response_data_filtered)
-# response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
+response_data_filtered = client.get_filtered_result(response,threshold,TaskName.DRAG.value)
+results = response_data.get("results")
 ```
 
 ## 返回值格式

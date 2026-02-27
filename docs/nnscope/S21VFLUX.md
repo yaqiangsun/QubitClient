@@ -71,14 +71,10 @@ response = client.request(file_list=dict_list,task_type=NNTaskName.S21VFLUX,curv
 ```python
 
 
-response_data = client.get_result(response)
+results = client.get_result(response=response)
 threshold = 0.5
 results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
-
-
-results = client.get_result(response=response_data)  
-#results = client.get_result(response=response_data_filtered)
-# response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
+results_filtered = results_filtered.get("results")
 ```
 
 ## 返回值格式
@@ -87,15 +83,29 @@ results = client.get_result(response=response_data)
 
 ```json
 [
-  {
-    "params_list": [[float, ...], ...],     // 每条线段的多项式参数列表
-    "linepoints_list": [[[int, int], ...], ...], // 每条线段的点坐标列表
-    "confidence_list": [float, ...],         // 每条线段的置信度
-    "class_ids": [float, ...],         // 每条线段的分割标签（{0:"cos_light",1:"cos_dark",2:"line_light",3:"line_dark"}）
-    "curve_type": [str, ...],         // 每条线段的拟合方式（cosine,或poly）
-  },
-  ...
+   [
+     {
+       "params_list": [[float, ...], ...],     // 第一个Q比特每条线段的多项式参数列表
+       "linepoints_list": [[[int, int], ...], ...], // 第一个Q比特每条线段的点坐标列表
+       "confidence_list": [float, ...],         // 第一个Q比特每条线段的置信度
+       "class_ids": [int, ...],         // 第一个Q比特每条线段的分割标签（{0:"cos_light",1:"cos_dark",2:"line_light",3:"line_dark"}）
+       "curve_type": [str, ...],         // 第一个Q比特每条线段的拟合方式（cosine,或poly）
+     },
+     ...
+   ]，
+   [
+     {
+       "params_list": [[float, ...], ...],     // 第二个Q比特每条线段的多项式参数列表
+       "linepoints_list": [[[int, int], ...], ...], // 第二个Q比特每条线段的点坐标列表
+       "confidence_list": [float, ...],         // 第二个Q比特每条线段的置信度
+       "class_ids": [int, ...],         // 第二个Q比特每条线段的分割标签（{0:"cos_light",1:"cos_dark",2:"line_light",3:"line_dark"}）
+       "curve_type": [str, ...],         // 第二个Q比特每条线段的拟合方式（cosine,或poly）
+     },
+     ...
+   ]，
+   ...
 ]
+
 ```
 
 
@@ -117,19 +127,37 @@ results = client.get_result(response=response_data)
 
 ```python
 [
-  {
-    "params_list": [
-      [1.2, 3.4, 5.6],
-      [2.1, 4.3, 6.5]
-    ],
-    "linepoints_list": [
-      [[10, 15], [10, 16], [10, 17]],
-      [[20, 30], [20, 31], [20, 32]]
-    ],
-    "confidence_list": [0.95, 0.87],
-    "class_ids": [1.0, 2.0],
-    "curve_type": ["cosine", "poly"]
-  }
+   [
+     {
+       "params_list": [
+         [1.2, 3.4, 5.6],
+         [2.1, 4.3, 6.5]
+       ],
+       "linepoints_list": [
+         [[10, 15], [10, 16], [10, 17]],
+         [[20, 30], [20, 31], [20, 32]]
+       ],
+       "confidence_list": [0.95, 0.87],
+       "class_ids": [1.0, 2.0],
+       "curve_type": ["cosine", "poly"]
+     }
+   ],
+   [
+     {
+       "params_list": [
+         [1.2, 3.4, 5.6],
+         [2.1, 4.3, 6.5]
+       ],
+       "linepoints_list": [
+         [[10, 15], [10, 16], [10, 17]],
+         [[20, 30], [20, 31], [20, 32]]
+       ],
+       "confidence_list": [0.95, 0.87],
+       "class_ids": [1.0, 2.0],
+       "curve_type": ["cosine", "poly"]
+     }
+   ],
+   ...
 ]
 ```
 
@@ -146,8 +174,8 @@ plot_manager.plot_quantum_data(
     data_type='npy',
     task_type=NNTaskName.S21VFLUX.value,
     save_path=save_path_html,
-    results=results_filtered,
-    data_ndarray=data_ndarray
+    result=results_filtered,
+    dict_param=data_ndarray
 )
 
 plot_manager = QuantumPlotPltManager()
@@ -155,8 +183,8 @@ plot_manager.plot_quantum_data(
     data_type='npy',
     task_type=NNTaskName.S21VFLUX.value,
     save_path=save_path_png,
-    results=results_filtered,
-    data_ndarray=data_ndarray
+    result=results_filtered,
+    dict_param=data_ndarray
 )
 
 ```

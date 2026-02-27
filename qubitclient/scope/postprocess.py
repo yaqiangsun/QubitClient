@@ -350,6 +350,12 @@ def postprocess_result_drag(response, threshold):
     response_data = {}
     response_data['results'] = results_filtered
     return response_data
+
+def postprocess_result_singleshot(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+
+    return result
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
     's21vfluxscope': postprocess_result_s21vfluxscope,
@@ -361,6 +367,7 @@ TASK_MAP: Dict[str, Callable] = {
     't2fit': postprocess_result_t2fit,
     'ramsey': postprocess_result_ramsey,
     'drag': postprocess_result_drag,
+    'singleshot': postprocess_result_singleshot,
 }
 
 def run_postprocess(response, threshold, task_type):

@@ -10,7 +10,7 @@ def postprocess_result_spectrum2dnnscope(response, threshold):
     logging.debug("Result: %s", response.json())
     result = response.json()
     results = result["result"]
-
+    results = results[0]
     results_filtered = []
     for idx, result in enumerate(results):
         result_filtered = {}
@@ -37,15 +37,16 @@ def postprocess_result_spectrum2dnnscope(response, threshold):
         result_filtered['curve_type'] = curve_type
 
         results_filtered.append(result_filtered)
-
-    return results_filtered
+    response_data = {}
+    response_data['results'] = [results_filtered]
+    return response_data
 
 
 def postprocess_result_s21vfluxnnscope(response, threshold):
     logging.debug("Result: %s", response.json())
     result = response.json()
     results = result["result"]
-
+    results = results[0]
     results_filtered = []
     for idx, result in enumerate(results):
         result_filtered = {}
@@ -60,7 +61,8 @@ def postprocess_result_s21vfluxnnscope(response, threshold):
         confidence_list = np.array(confidence_list)
         class_ids = np.array(class_ids)
         curve_type = np.array(curve_type)
-
+        if isinstance(curve_type, np.ndarray) and curve_type.ndim == 0:
+            curve_type = np.array([curve_type.item()])
         mask = confidence_list >= threshold
         filtered_params_list = params_list[mask].tolist()
         filtered_linepoints_list = linepoints_list[mask].tolist()
@@ -75,8 +77,9 @@ def postprocess_result_s21vfluxnnscope(response, threshold):
         result_filtered['curve_type'] = filtered_curve_type
 
         results_filtered.append(result_filtered)
-
-    return results_filtered
+    response_data = {}
+    response_data['results'] = [results_filtered]
+    return response_data
 
 
 def postprocess_result_powershiftnnscope(response, threshold):

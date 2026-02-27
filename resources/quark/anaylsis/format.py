@@ -19,29 +19,19 @@ def optpipulse_convert(result):
         dict: 符合服务器要求的格式数据
     """
 
-    # 提取量子比特名称
-    qubit_name_list = result["meta"]["other"]["qubits"]
-    data_formated = {
-        "image": {
-        }
-    }
-    for index,qubit_name in enumerate(qubit_name_list):
-        qubit_name = qubit_name.strip()
-        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+    # 初始化返回数据结构
+    data_formated = {"image": {}}
 
-        # 提取AMP幅值轴x_array
-        x_array = np.array(result["meta"]["axis"]["amp"]["def"], dtype=np.float64)
-        assert x_array.ndim == 1, "AMP轴需为一维数组"
-        amp_points = len(x_array)
-
-        # 处理Population波形
-        waveforms = np.array(result["data"]["population"][:,:,-1], dtype=np.float64)
-                
-        # 最终格式校验
-        assert waveforms.ndim == 2, "waveforms需为(m, n)二维数组, m为波形数量"
-        assert waveforms.shape[1] == amp_points, "waveforms点数需与AMP轴一致"
-        assert x_array.ndim == 1 and len(x_array) == amp_points, "AMP轴格式错误"
+    # 量子比特列表、AMP轴和Population原始数据提取
+    qubit_name_list = [q.strip() for q in result["meta"]["other"]["qubits"] if q.strip()]
+    x_array = np.array(result["meta"]["axis"]["amp"]["def"], dtype=np.float64)
+    population_arr = np.array(result["data"]["population"], dtype=np.float64)
     
-        # 转换成所需的标准格式
-        data_formated["image"][qubit_name] =  (waveforms, x_array)
+    # 遍历每个有效比特处理波形
+    for index, qubit_name in enumerate(qubit_name_list):
+        # 提取当前比特的所有波形：(n_waveforms, amp_points)
+        waveforms = population_arr[:, :, index]      
+        # 存入对应比特的波形数据
+        data_formated["image"][qubit_name] = (waveforms, x_array)
+    
     return data_formated

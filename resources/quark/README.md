@@ -29,3 +29,10 @@ from analysis.visualization import plot_optpipulse
 fig_list = plot_optpipulse(data,analysis_result,save_path='./tmp/vis/opt_pipulse.png')
 # fig_list[0].show()
 ```
+4. 更新参数
+```python
+from analysis.update import optpipulse_update
+image = optpipulse_convert(image)
+results = scope_template(image,task_type=TaskName.OPTPIPULSE)
+optpipulse_update(image,results)
+```

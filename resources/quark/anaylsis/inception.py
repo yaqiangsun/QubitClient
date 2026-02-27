@@ -32,10 +32,8 @@ def scope_template(image,task_type=TaskName.SPECTRUM2D):
     threshold = 0.3
     results = client.get_filtered_result(response, threshold, task_type = task_type.value)
     logging.debug(f"results:{results}")
-
-
-
     return results
+
 ####################################################################################
 
 @control_api_execution(enable_api=ENABLE_API)

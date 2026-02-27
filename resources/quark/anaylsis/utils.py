@@ -27,3 +27,10 @@ def get_pkl_content(pkl_file_path):
     except Exception as e:
         print(f"❌ 读取失败：{str(e)}")
         return None
+
+def update_param(key:str, value):
+    from quark.app import s
+    s.update(key, value)
+def query_param(key:str):
+    from quark.app import s
+    return s.query(key)

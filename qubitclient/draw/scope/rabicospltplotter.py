@@ -1,7 +1,5 @@
 from ..pltplotter import QuantumDataPltPlotter
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.lines import Line2D
 
 
 class RabiCosDataPltPlotter(QuantumDataPltPlotter):
@@ -9,66 +7,83 @@ class RabiCosDataPltPlotter(QuantumDataPltPlotter):
         super().__init__("rabicos")
 
     def plot_result_npy(self, **kwargs):
-        result     = kwargs.get('result')
+        result = kwargs.get('result')
         dict_param = kwargs.get('dict_param')
-
-        if not result or not dict_param:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No data", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
 
         data = dict_param.item() if isinstance(dict_param, np.ndarray) else dict_param
         image_dict = data.get("image", {})
         qubit_names = list(image_dict.keys())
-        if not qubit_names:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No qubits", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
 
-        cols = min(3, len(qubit_names))
-        rows = (len(qubit_names) + cols - 1) // cols
-
-        fig = plt.figure(figsize=(5.8 * cols, 4.5 * rows))
-        fig.suptitle("RabiCos Peak Detection", fontsize=14, y=0.96)
+        fig, axes, n_rows, n_cols = self.create_subplots(len(qubit_names))
+        axs = axes.flatten()
 
         peaks_list = result.get("peaks", [])
         confs_list = result.get("confs", [])
 
         for q_idx, q_name in enumerate(qubit_names):
-            ax = fig.add_subplot(rows, cols, q_idx + 1)
+            ax = axs[q_idx]
             item = image_dict[q_name]
             if not isinstance(item, (list, tuple)) or len(item) < 2:
+                ax.axis('off')
                 continue
 
-            x = np.asarray(item[0])
+            x = np.asarray(item[0])     
             y = np.asarray(item[1])
 
-            ax.plot(x, y, 'b-', alpha=0.7, linewidth=1.5)
-            legend_elements = [Line2D([0], [0], color='blue', lw=1.5, label='Signal')]
+            signal_line, _ = self.add_line(
+                ax, x, y,
+                label='Signal',
+                color_index=0,
+                line_style_index=0
+            )
 
-            if q_idx < len(peaks_list):
+            legend_handles = [signal_line[0]]
+            legend_labels = ['Signal']
+
+            has_peak = False
+            if q_idx < len(peaks_list) and peaks_list[q_idx]:
+                has_peak = True
                 peaks = peaks_list[q_idx]
-                confs = confs_list[q_idx] if q_idx < len(confs_list) else []
-                for p_idx, (p, c) in enumerate(zip(peaks, confs)):
+                confs = confs_list[q_idx] if q_idx < len(confs_list) else [0.0] * len(peaks)
+
+                for p, c in zip(peaks, confs):
                     idx = np.argmin(np.abs(x - p))
-                    ax.scatter(x[idx], y[idx], color='red', s=80, zorder=5)
-                    ax.axvline(p, color='red', linestyle='--', alpha=0.8, linewidth=1.2)
-                    ax.annotate(f"x={p:.4f}\nconf={c:.3f}",
-                                (x[idx], y[idx]),
-                                xytext=(8, 8), textcoords='offset points',
-                                fontsize=8, color='darkred',
-                                bbox=dict(boxstyle="round,pad=0.3", facecolor="yellow", alpha=0.7))
-                    if p_idx == 0:
-                        legend_elements.append(Line2D([0], [0], color='red', linestyle='--', lw=1.2, label='Peak'))
+                    px = x[idx]
+                    py = y[idx]
 
-            ax.set_title(q_name, fontsize=11, pad=10)
-            ax.set_xlabel("Time (µs)")
-            ax.set_ylabel("P(|1>)")
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.legend(handles=legend_elements, fontsize=8, loc='upper right', framealpha=0.9)
+                    self.add_vline(ax, px)
 
-        plt.tight_layout(rect=[0, 0, 1, 0.94])
-        plt.close(fig)
+                    if not has_peak:  
+                        continue
+                    scatter = self.add_scatter(
+                        ax, [px], [py],
+                        color_index=0,
+                        marker_index=1
+                    )
+
+                    if len(legend_handles) == 1: 
+                        legend_handles.append(scatter)
+                        legend_labels.append('Peak')
+
+                    annot_text = f"x = {px:.3f}\nconf = {c:.3f}"
+                    self.add_annotation(
+                        ax,
+                        annot_text,
+                        xy=(px, py),
+                        annotation_xytext=(10, 10),
+                        color_index=0
+                    )
+
+            if legend_handles:
+                self.add_legend(
+                    ax=ax,
+                    handles=legend_handles,
+                    labels=legend_labels,
+                )
+
+            xlabel = "Time"
+            ylabel = "Amp"
+            self.configure_axis(ax, title=q_name, xlabel=xlabel, ylabel=ylabel)
+
+        fig.tight_layout()
         return fig

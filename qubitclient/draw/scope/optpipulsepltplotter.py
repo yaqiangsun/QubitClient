@@ -1,5 +1,4 @@
 from ..pltplotter import QuantumDataPltPlotter
-import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -8,70 +7,107 @@ class OptPiPulseDataPltPlotter(QuantumDataPltPlotter):
         super().__init__("optpipulse")
 
     def plot_result_npy(self, **kwargs):
-        result     = kwargs.get('result')
-        dict_param = kwargs.get('dict_param')      
-
-        if not result or not dict_param:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No data", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
+        result = kwargs.get('result')
+        dict_param = kwargs.get('dict_param')
 
         data = dict_param.item() if isinstance(dict_param, np.ndarray) else dict_param
         image_dict = data.get("image", {})
         qubit_names = list(image_dict.keys())
-        if not qubit_names:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No qubits", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
 
-        cols = min(3, len(qubit_names))
-        rows = (len(qubit_names) + cols - 1) // cols
-
-        fig = plt.figure(figsize=(5.8 * cols, 4.5 * rows))
-        fig.suptitle("Opt-Pi-Pulse", fontsize=14, y=0.96)
-
-        wave_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-                       '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
+        fig, axes, n_rows, n_cols = self.create_subplots(len(qubit_names))
+        axs = axes.flatten()
 
         params_list = result.get("params", [])
         confs_list  = result.get("confs", [])
 
         for q_idx, q_name in enumerate(qubit_names):
-            ax = fig.add_subplot(rows, cols, q_idx + 1)
+            ax = axs[q_idx]
             item = image_dict[q_name]
             if not isinstance(item, (list, tuple)) or len(item) < 2:
+                ax.axis('off')
                 continue
 
-            waveforms = np.asarray(item[0])
-            x_axis    = np.asarray(item[1])
+            waveforms = np.asarray(item[0])     # shape: (n_waveforms, n_points)
+            t_axis    = np.asarray(item[1])
 
-            for w_idx, wave in enumerate(waveforms):
-                ax.plot(x_axis, wave,
-                        color=wave_colors[w_idx % len(wave_colors)],
-                        linewidth=1.2)
+            legend_handles = []
+            legend_labels = []
 
-            if q_idx < len(params_list):
+            if len(waveforms) > 0:
+                first_wave_line, _ = self.add_line(
+                    ax,
+                    x=t_axis,
+                    y=waveforms[0],
+                    label="Waveform",
+                    color_index=0,
+                    line_style_index=0,
+                )
+                legend_handles.append(first_wave_line[0])
+                legend_labels.append("Waveform")
+
+                for w_idx in range(1, len(waveforms)):
+                    self.add_line(
+                        ax,
+                        x=t_axis,
+                        y=waveforms[w_idx],
+                        color_index=w_idx % len(self.style.line_colors),
+                        line_style_index=0,
+                    )
+
+            if q_idx < len(params_list) and params_list[q_idx]:
                 peaks = params_list[q_idx]
-                confs = confs_list[q_idx] if q_idx < len(confs_list) else []
-                for p_idx, (peak, conf) in enumerate(zip(peaks, confs)):
-                    ax.axvline(peak, color='red', linestyle='--', linewidth=1.8)
-                    ax.annotate(f"x={peak:.4f}\nconf:{conf:.3f}",
-                                (peak, ax.get_ylim()[1]),
-                                xytext=(0, 8), textcoords='offset points',
-                                ha='center', va='bottom',
-                                fontsize=8, color='red',
-                                bbox=dict(boxstyle="round,pad=0.3", facecolor="yellow", alpha=0.8))
+                confs = confs_list[q_idx] if q_idx < len(confs_list) else [0.0] * len(peaks)
 
-            ax.set_title(q_name, fontsize=11, pad=10)
-            ax.set_xlabel("Time")
-            ax.set_ylabel("Amp")
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.legend(['wave', 'peak'], fontsize=8, loc='upper right', framealpha=0.9)
+                if peaks:
+                    first_peak_x = peaks[0]
+                    idx = np.argmin(np.abs(t_axis - first_peak_x))
+                    px = t_axis[idx]
+                    py = waveforms[-1][idx] if len(waveforms) > 0 else 0.0
 
-        plt.tight_layout(rect=[0, 0, 1, 0.94])
-        # plt.close(fig)
-        # fig.show()
-        # plt.show(block=True)
+                    self.add_vline(ax, px)
+                    scatter = self.add_scatter(
+                        ax,
+                        x=[px],
+                        y=[py],
+                        marker_index=1,
+                        color_index=0,
+                    )
+
+                    legend_handles.append(scatter)
+                    legend_labels.append("Peak")
+
+                    for p, conf in zip(peaks, confs):
+                        idx = np.argmin(np.abs(t_axis - p))
+                        px = t_axis[idx]
+                        py = waveforms[-1][idx] if len(waveforms) > 0 else 0.0
+
+                        self.add_vline(ax, px)
+                        self.add_scatter(
+                            ax,
+                            x=[px],
+                            y=[py],
+                            marker_index=1,
+                            color_index=0,
+                        )
+
+                        text_str = f"x = {px:.4f}\nconf = {conf:.3f}"
+                        self.add_annotation(
+                            ax,
+                            text_str,
+                            xy=(px, py),
+                            annotation_xytext=(10, 10),
+                            color_index=0
+                        )
+            if legend_handles:
+                self.add_legend(
+                    ax=ax,
+                    handles=legend_handles,
+                    labels=legend_labels,
+                )
+
+            xlabel = "X"
+            ylabel = "Amp"
+            self.configure_axis(ax, title=q_name, xlabel=xlabel, ylabel=ylabel)
+
+        fig.tight_layout()
         return fig

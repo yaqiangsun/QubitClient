@@ -1,6 +1,4 @@
-# src/draw/t1fitpltplotter.py
 from ..pltplotter import QuantumDataPltPlotter
-import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -9,68 +7,106 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
         super().__init__("t1fit")
 
     def plot_result_npy(self, **kwargs):
-        result     = kwargs.get('result')
-        dict_param = kwargs.get('dict_param')      # 唯一原始数据参数
-
-        if not result or not dict_param:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No data", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
+        result = kwargs.get('result')
+        dict_param = kwargs.get('dict_param')
 
         data = dict_param.item() if isinstance(dict_param, np.ndarray) else dict_param
         image_dict = data.get("image", {})
         qubit_names = list(image_dict.keys())
-        if not qubit_names:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No qubits", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
 
-        cols = min(3, len(qubit_names))
-        rows = (len(qubit_names) + cols - 1) // cols
-
-        fig = plt.figure(figsize=(5.8 * cols, 4.5 * rows))
-        fig.suptitle("T1-Fit", fontsize=14, y=0.96)
+        fig, axes, rows, cols = self.create_subplots(len(qubit_names))
+        axs = axes.flatten()
 
         params_list   = result.get("params_list", [])
         r2_list       = result.get("r2_list", [])
         fit_data_list = result.get("fit_data_list", [])
 
         for q_idx, q_name in enumerate(qubit_names):
-            ax = fig.add_subplot(rows, cols, q_idx + 1)
+            ax = axs[q_idx]
             item = image_dict[q_name]
+
             if not isinstance(item, (list, tuple)) or len(item) < 2:
+                ax.axis('off')
                 continue
 
             x_raw = np.asarray(item[0])
             y_raw = np.asarray(item[1])
 
-            # 原始数据点
-            ax.plot(x_raw, y_raw, 'o', color='orange', markersize=4,
-                    label='Data', alpha=0.7)
+            # 绘制原始数据（散点）
+            data_scatter = self.add_scatter(
+                ax,
+                x_raw,
+                y_raw,
+                label="Data",
+                marker_index=1,           # 'o'
+                color_index=6,            # 橙色
+                alpha=0.7
+            )
 
-            # 拟合曲线
-            if q_idx < len(fit_data_list):
+            # 绘制拟合曲线
+            has_fit = False
+            fit_line = None
+            if q_idx < len(fit_data_list) and fit_data_list[q_idx] is not None:
                 fit_y = np.asarray(fit_data_list[q_idx])
-                ax.plot(x_raw, fit_y, '-', color='blue', linewidth=2,
-                        label='Fit')
+                fit_line, _ = self.add_line(
+                    ax,
+                    x_raw,
+                    fit_y,
+                    label="Fit",
+                    color_index=0,            # 蓝色
+                    line_style_index=0
+                )
+                has_fit = True
 
-            # 参数文字
-            if q_idx < len(params_list):
+            # 构建当前子图的图例 handles 和 labels
+            legend_handles = [data_scatter]
+            legend_labels = ["Data"]
+
+            if has_fit and fit_line is not None:
+                legend_handles.append(fit_line[0])
+                legend_labels.append("Fit")
+
+            # 添加图例（每个子图独立）
+            if legend_handles:
+                self.add_legend(
+                    ax=ax,
+                    handles=legend_handles,
+                    labels=legend_labels,
+                )
+
+            # 添加拟合参数文本（左上角，axes fraction 坐标）
+            if q_idx < len(params_list) and params_list[q_idx]:
                 A, T1, B = params_list[q_idx]
                 r2 = r2_list[q_idx] if q_idx < len(r2_list) else 0.0
-                txt = f"A={A:.3f}\nT1={T1:.1f}µs\nB={B:.3f}\nR²={r2:.3f}"
-                ax.text(0.05, 0.95, txt, transform=ax.transAxes,
-                        verticalalignment='top', fontsize=8,
-                        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
-            ax.set_title(q_name, fontsize=11, pad=10)
-            ax.set_xlabel("Time")
-            ax.set_ylabel("Amp")
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.legend(fontsize=8, loc='upper right', framealpha=0.9)
+                text_str = (
+                    f"A  = {A:.3f}\n"
+                    f"T₁ = {T1:.1f} µs\n"
+                    f"B  = {B:.3f}\n"
+                    f"R² = {r2:.3f}"
+                )
 
-        plt.tight_layout(rect=[0, 0, 1, 0.94])
-        plt.close(fig)
+                self.add_annotation(
+                    ax,
+                    text_str,
+                    xy=(0, 1),                 
+                    annotation_textcoords="axes fraction",
+                    annotation_xytext=(0, 1),
+                    color_index=0,
+                    showarrow=False,
+                    ha='left',                      # 文字左对齐
+                    va='top'                      # 文字顶部对齐
+                )
+
+            # 设置标题和坐标轴标签
+            xlabel = "Time"
+            ylabel = "Amp"
+            self.configure_axis(
+                ax,
+                title=q_name,               
+                xlabel=xlabel,
+                ylabel=ylabel
+            )
+
+        fig.tight_layout()
         return fig

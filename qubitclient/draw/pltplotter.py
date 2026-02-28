@@ -21,31 +21,37 @@ class QuantumDataPltPlotter(ABC):
         """绘制npz格式结果"""
         return self.plot_result_npy(**kwargs)
 
-    def create_subplots(self, n_plots: int,**kwargs) -> Tuple[plt.Figure, np.ndarray, int, int]:
-        """创建统一风格的子图布局"""
+    def create_subplots(self, n_plots: int, **kwargs) -> Tuple[plt.Figure, np.ndarray, int, int]:
+        """创建统一风格的子图布局，返回标准化后的二维 axes 数组"""
+        if n_plots < 1:
+            raise ValueError("n_plots must be at least 1")
+
         cols = min(n_plots, self.style.max_cols)
-        rows = (n_plots // cols) + 1 if n_plots % cols != 0 else n_plots // cols
+        rows = (n_plots + cols - 1) // cols   # 向上取整
+
         figsize = self.style.get_figure_size(rows, cols)
-        fig, axes = plt.subplots(rows, cols, figsize=figsize)
+        fig, axes = plt.subplots(rows, cols, figsize=figsize, squeeze=False)
 
-        # 确保axes是二维数组
-        if rows == 1 and cols == 1:
-            axes = np.array([[axes]])
-        elif rows == 1 or cols == 1:
-            axes = axes.reshape(rows, cols)
+        # squeeze=False 强制返回 (rows, cols) 形状的二维数组，即使 rows=1 或 cols=1
+        # 把多余的 axes 关掉（如果有）
+        for i in range(n_plots, rows * cols):
+            axes[i // cols, i % cols].axis('off')
+
+        # 统一处理 axes 为二维数组（已经保证了）
+        axes = np.asarray(axes).reshape(rows, cols)
+
         for ax in axes.flat:
-            ax.set_aspect('auto')  # 取消正方形约束
+            ax.set_aspect('auto')
             ax.autoscale(enable=True, axis='y', tight=True)
-        all_axes=axes.flat
-        for i in range(n_plots, len(all_axes)):
-            all_axes[i].axis('off')
 
-        plt.subplots_adjust(hspace=self.style.subplot_hspace,
-                            wspace=self.style.subplot_wspace,
-                            left=self.style.subplot_left,
-                            right=self.style.subplot_right,
-                            top=self.style.subplot_top,
-                            bottom=self.style.subplot_bottom)
+        plt.subplots_adjust(
+            hspace=self.style.subplot_hspace,
+            wspace=self.style.subplot_wspace,
+            left=self.style.subplot_left,
+            right=self.style.subplot_right,
+            top=self.style.subplot_top,
+            bottom=self.style.subplot_bottom
+        )
 
         return fig, axes, rows, cols
 

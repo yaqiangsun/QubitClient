@@ -180,11 +180,55 @@ def postprocess_result_spectrumnnscope(response, threshold):
     return results_filtered
 
 
+def postprocess_result_s21peaknnscope(response ,threshold):
+    # result = response.parsed
+    result = response.json()
+
+    results = result.get("result")
+    results_filtered = []
+
+    for idx, result in enumerate(results):
+        result_filtered = {}
+        peaks_list = result['peaks']
+        confs_list = result['confs']
+        freqs_list = result['freqs_list']
+        status = result['status']
+        peaks_list_filtered = []
+        confs_list_filtered = []
+        freqs_list_filtered = []
+
+        for i in range(len(peaks_list)):
+            peaks = np.array(peaks_list[i])
+            confs = np.array(confs_list[i])
+            freqs = np.array(freqs_list[i])
+
+            mask = confs >= threshold
+            filtered_peaks = peaks[mask].tolist()
+            filtered_confs = confs[mask].tolist()
+            filtered_freqs = freqs[mask].tolist()
+
+            peaks_list_filtered.append(filtered_peaks)
+            confs_list_filtered.append(filtered_confs)
+            freqs_list_filtered.append(filtered_freqs)
+
+        result_filtered['peaks'] = peaks_list_filtered
+        result_filtered['confs'] = confs_list_filtered
+        result_filtered['freqs_list'] = freqs_list_filtered
+
+        result_filtered['status'] = status
+        results_filtered.append(result_filtered)
+    response_data ={}
+    response_data['results'] = results_filtered
+
+    return response_data
+
+
 TASK_MAP: Dict[str, Callable] = {
     'spectrum2dnnscope': postprocess_result_spectrum2dnnscope,
     's21vfluxnnscope': postprocess_result_s21vfluxnnscope,
     'powershiftnnscope': postprocess_result_powershiftnnscope,
     'spectrumnnscope': postprocess_result_spectrumnnscope,
+    's21peaknnscope': postprocess_result_s21peaknnscope
 }
 
 def run_postprocess(response, threshold, task_type):

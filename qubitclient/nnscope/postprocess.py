@@ -4,8 +4,6 @@ from typing import Dict, Callable
 
 
 
-
-
 def postprocess_result_spectrum2dnnscope(response, threshold):
     logging.debug("Result: %s", response.json())
     result = response.json()
@@ -120,7 +118,11 @@ def postprocess_result_powershiftnnscope(response, threshold):
 
         results_filtered.append(result_filtered)
 
-    return results_filtered
+    response_data ={}
+    response_data['results'] = results_filtered
+
+    return response_data
+
 
 
 def postprocess_result_spectrumnnscope(response, threshold):
@@ -176,8 +178,10 @@ def postprocess_result_spectrumnnscope(response, threshold):
         result_filtered['status'] = 'success'
 
         results_filtered.append(result_filtered)
+    response_data ={}
+    response_data['results'] = results_filtered
 
-    return results_filtered
+    return response_data
 
 
 def postprocess_result_s21peaknnscope(response ,threshold):

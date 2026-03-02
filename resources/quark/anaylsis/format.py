@@ -304,3 +304,110 @@ def spectrum2d_convert(result):
         # 转换成所需的标准格式
         data_formated["image"][qubit_name] = (s.T, bias, freq)
     return data_formated
+
+
+def rabicos_convert(result):
+    """
+    将 quark 格式的 Rabi 幅度扫描数据转换为 qubitclient 所需格式
+    Args:
+        result (dict): 原始实验数据字典（需包含 meta/data 核心字段）
+    Returns:
+        dict: 符合服务器要求的格式数据 {"image": {qubit_name: (x_array, amp_array)}}
+    """
+    # 提取量子比特名称
+    qubit_name_list = result["meta"]["other"]["qubits"]
+    data_formated = {"image": {}}
+    
+    for index, qubit_name in enumerate(qubit_name_list):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        # 提取驱动幅度轴 x_array
+        x_array = np.array(result["meta"]["axis"]["drive_amp"]["def"], dtype=np.float64)
+        assert x_array.ndim == 1, "drive_amp 轴需为一维数组"
+
+        # 获取 IQ 数据并计算幅度
+        iq_data = result["data"]["iq_avg"]
+        assert iq_data.shape[1] == len(qubit_name_list), \
+            f"iq_avg 的 qubit 维度 {iq_data.shape[1]} 与 qubits 数量不匹配"
+
+        # 计算幅度（Rabi 通常使用幅度）
+        amp_array = np.abs(iq_data[:, index])   # shape: (n_amp,)
+
+        # 最终格式校验
+        assert amp_array.ndim == 1, "amp_array 应为一维数组"
+        assert amp_array.shape[0] == x_array.shape[0], \
+            f"{qubit_name} 的 amp_array 长度与 drive_amp 不匹配"
+
+        # 转换成所需的标准格式
+        data_formated["image"][qubit_name] = (x_array, amp_array)
+    
+    return data_formated
+
+
+def t1fit_convert(result):
+    """
+    将 quark 格式的 T1 弛豫数据转换为 qubitclient 所需格式
+    Args:
+        result (dict): 原始实验数据字典（需包含 meta/data 核心字段）
+    Returns:
+        dict: 符合服务器要求的格式数据 {"image": {qubit_name: (delay_array, population_array)}}
+    """
+    # 提取量子比特名称
+    qubit_name_list = result["meta"]["other"]["qubits"]
+    data_formated = {"image": {}}
+    
+    for index, qubit_name in enumerate(qubit_name_list):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        # 提取延迟时间轴 x_array
+        delay_array = np.array(result["meta"]["axis"]["delay"]["def"], dtype=np.float64)
+        assert delay_array.ndim == 1, "delay 轴需为一维数组"
+
+        # 处理 population 波形（最常用字段）
+        population = np.array(result["data"]["population"][:, index], dtype=np.float64)
+        
+        # 最终格式校验
+        assert population.ndim == 1, "population 应为一维数组"
+        assert population.shape[0] == delay_array.shape[0], \
+            f"{qubit_name} 的 population 长度与 delay 轴不匹配"
+
+        # 转换成所需的标准格式
+        data_formated["image"][qubit_name] = (delay_array, population)
+    
+    return data_formated
+
+
+def t2fit_convert(result):
+    """
+    将 quark 格式的 T2/Ramsey 数据转换为 qubitclient 所需格式
+    Args:
+        result (dict): 原始实验数据字典（需包含 meta/data 核心字段）
+    Returns:
+        dict: 符合服务器要求的格式数据 {"image": {qubit_name: (delay_array, population_array)}}
+    """
+    # 提取量子比特名称
+    qubit_name_list = result["meta"]["other"]["qubits"]
+    data_formated = {"image": {}}
+    
+    for index, qubit_name in enumerate(qubit_name_list):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        # 提取延迟时间轴 x_array
+        delay_array = np.array(result["meta"]["axis"]["delay"]["def"], dtype=np.float64)
+        assert delay_array.ndim == 1, "delay 轴需为一维数组"
+
+        # 处理 population 波形（Ramsey 实验中最常用的字段）
+        population = np.array(result["data"]["population"][:, index], dtype=np.float64)
+        
+        # 最终格式校验
+        assert population.ndim == 1, "population 应为一维数组"
+        assert population.shape[0] == delay_array.shape[0], \
+            f"{qubit_name} 的 population 长度与 delay 轴不匹配"
+
+        # 转换成所需的标准格式
+        data_formated["image"][qubit_name] = (delay_array, population)
+    
+    return data_formated

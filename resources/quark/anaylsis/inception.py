@@ -12,7 +12,7 @@ from qubitclient import NNTaskName,TaskName,CurveType
 from .config import API_URL,API_KEY,ENABLE_API
 import logging
 from qubitclient import handle_exceptions, control_api_execution
-from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert
+from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert,t1fit_convert,t2fit_convert,rabicos_convert
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
@@ -72,25 +72,29 @@ def s21(image):
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def rabi(image):
-    results = scope_template(image,task_type=TaskName.RABI)
+def rabicos(image):
+    image = rabicos_convert(image)
+    results = scope_template(image,task_type=TaskName.RABICOS)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def ramsey(image):
+    image = t2fit_convert(image) # ramsey is the same as t2fit
     results = scope_template(image,task_type=TaskName.RAMSEY)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def t1fit(image):
+    image = t1fit_convert(image)
     results = scope_template(image,task_type=TaskName.T1FIT)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def t2fit(image):
+    image = t2fit_convert(image)
     results = scope_template(image,task_type=TaskName.T2FIT)
     return results
 

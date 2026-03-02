@@ -1,13 +1,15 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from ..pltplotter import QuantumDataPltPlotter
+
 
 class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
 
     def __init__(self):
+        # 调用父类初始化，指定任务类型
         super().__init__("powershift")
 
     def plot_result_npy(self, **kwargs):
+        """实现基类的抽象方法，绘制powershift结果"""
         result = kwargs.get('result')
         dict_param = kwargs.get('dict_param')
 
@@ -43,25 +45,18 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
         class_num_list = result['class_num_list']
         keypoints_list = result['keypoints_list']
 
-        # 合并所有item的图像到一张图中（多行多列布局）
+        # 合并所有item的图像到一张图中（使用父类的create_subplots方法）
         num_items = len(items)
         if num_items == 0:
             raise ValueError("没有可合并的item数据")
         
-        # 配置每行最多显示的子图数量
-        max_cols = 4
-        # 计算需要的行数和列数
-        rows = (num_items + max_cols - 1) // max_cols  # 向上取整计算行数
-        cols = min(num_items, max_cols)                # 列数不超过max_cols
-        
-        # 创建多行多列布局的画布
-        fig, axes = plt.subplots(rows, cols, figsize=(6 * cols, 6 * rows))
-        # 将axes转换为一维数组（方便统一处理单一行/列的情况）
-        axes = axes.flatten() if rows * cols > 1 else [axes]
-        
+        # 使用父类方法创建子图布局（自动适配style配置）
+        fig, axes, rows, cols = self.create_subplots(num_items)
+        axs = axes.flatten()
+
         # 为每个item绘制内容
         for i, item in enumerate(items):
-            ax = axes[i]
+            ax = axs[i]
             x = item["x"]
             y = item["y"]
             values = item["value"]
@@ -70,19 +65,22 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
             class_num = item["class_num"]
             conf = item["conf"]
             
-            # 绘制原始图像
-            im = ax.pcolormesh(x, y, values, cmap='viridis', shading='auto')
+            # 绘制原始图像（使用父类的add_2dmap方法）
+            im = self.add_2dmap(ax, x, y, values, shading_index=0, cmap_index=0)
             fig.colorbar(im, ax=ax)
             
-            # 绘制关键点
+            # 绘制关键点（使用父类的add_scatter和add_line方法）
             if keypoints:
                 sorted_keypoints = sorted(keypoints, key=lambda p: (-p[1], p[0]))
                 kp_x = [p[0] for p in sorted_keypoints]
                 kp_y = [p[1] for p in sorted_keypoints]
-                ax.scatter(kp_x, kp_y, color='red', s=50, marker='*', label='Key Points')
-                ax.plot(kp_x, kp_y, 'r--', linewidth=2)
+                
+                # 添加散点
+                self.add_scatter(ax, kp_x, kp_y, label='Key Points', marker_index=0, color_index=0)
+                # 添加连线
+                self.add_line(ax, kp_x, kp_y, label='Key Line', line_style_index=0, color_index=0)
             
-            # 添加class和confs信息
+            # 组装信息文本
             info_text = f"Qubit: {q_name}\n"
             if class_num is not None:
                 info_text += f"Class: {class_num}\n"
@@ -90,19 +88,33 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
                 # 格式化置信度为两位小数
                 info_text += f"Confidence: {conf:.2f}"
             
-            # 在图中添加文本信息
-            ax.text(0.05, 0.95, info_text, transform=ax.transAxes,
-                    verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+            # 添加文本注释（使用父类的add_annotation方法）
+            self.add_annotation(
+                ax, 
+                info_text, 
+                xy=(0.05, 0.95),
+                annotation_textcoords="axes fraction",  # 基于轴坐标的文本位置
+                annotation_xytext=(0, 0),
+                showarrow=False  # 不显示箭头
+            )
             
-            ax.set_title('Original Image')
-            ax.set_xlabel('X')
-            ax.set_ylabel('Y')
-            ax.legend()
+            # 配置坐标轴（使用父类的configure_axis方法）
+            self.configure_axis(
+                ax,
+                title=f"{q_name}",
+                xlabel="X",
+                ylabel="Y",
+                show_legend=True
+            )
+            
+            # 添加图例（使用父类的add_legend方法）
+            handles, labels = ax.get_legend_handles_labels()
+            self.add_legend(ax, handles, labels)
         
         # 隐藏多余的子图
-        for i in range(num_items, rows * cols):
-            axes[i].axis('off')
+        for i in range(num_items, len(axs)):
+            axs[i].axis('off')
         
         # 调整布局
-        plt.tight_layout()
+        fig.tight_layout()
         return fig

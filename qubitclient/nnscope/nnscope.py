@@ -56,4 +56,8 @@ class QubitNNScopeClient(object):
             return []
     def get_filtered_result(self, response, threshold, task_type: str = "s21peak"):
         result = run_postprocess(response, threshold, task_type)
+        if "result" in result.keys():
+            result["results"] = result["result"]
+        elif "results" in result.keys():
+            result["result"] = result["results"]
         return result

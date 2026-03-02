@@ -46,6 +46,10 @@ class QubitScopeClient(object):
         if response.status_code == 200:
             logging.debug("Result: %s", response.parsed)
             result = response.parsed
+            if "result" in result.keys():
+                result["results"] = result["result"] # add results keys
+            elif "results" in result.keys(): # add result keys
+                result["result"] = result["results"]
             return result
         else:
             logging.error("Error: %s %s", response.status_code, response.parsed)
@@ -53,4 +57,8 @@ class QubitScopeClient(object):
 
     def get_filtered_result(self, response, threshold, task_type: str = "s21peak"):
         result = run_postprocess(response, threshold, task_type)
+        if "result" in result.keys():
+            result["results"] = result["result"]
+        elif "results" in result.keys():
+            result["result"] = result["results"]
         return result

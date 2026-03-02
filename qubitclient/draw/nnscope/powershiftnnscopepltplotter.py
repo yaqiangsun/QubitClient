@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ..pltplotter import QuantumDataPltPlotter
 import cv2
+import logging
 
 
 def convert_complex_map_to_image(iq_avg):
@@ -89,27 +90,21 @@ class PowershiftNNScopeDataPltPlotter(QuantumDataPltPlotter):
         super().__init__("powershitnnscope")
 
     def plot_result_npy(self, **kwargs):
-        powershift_labels = {0:"cos_light", 1:"cos_dark", 2:"line_light", 3:"line_dark"}
-
+        # logging.warning("plt----------- kwargs: %s", kwargs)
         result = kwargs.get('result')
         data_ndarray = kwargs.get('dict_param')
         data = data_ndarray.item()
+
+        powershift_labels = {0:"cos_light", 1:"cos_dark", 2:"line_light", 3:"line_dark"}
+
         image = data["image"]
         q_list = list(image.keys())
-
-        # 虽然dict变list但是每次都是单个文件画图
-        result = result[0]
-
-        # 之前result = {'q_list': ['Q1', 'Q2', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9'], 'keypoints_list': [[[[25.755, 6.516], [25.755, 10.325]]], [[[25.086, 0.89], [24.974, 14.963]]], [[[25.755, 13.48], [24.926, 21.0]]], [[[25.309, 4.842], [25.612, 15.401]]], [[[25.787, 13.512], [25.484, 20.875]]], [[[25.755, 3.025], [25.755, 10.277]]], [[[25.787, 13.911], [25.707, 20.852]]]], 'confs': [0.6827890276908875, 0.5798720121383667, 0.7707597613334656, 0.5687557458877563, 0.7479773163795471, 0.7710826396942139, 0.7577250599861145], 'class_num_list': [1, 1, 1, 1, 1, 1, 1]}
-        # 目前result =  [{'q_list': ['Q0', 'Q1'], 'confs': [0.418, 0.683], 'class_num_list': [3, 1], 'keypoints_list': [[[17.3, 0.7], [23.9, 12.4], [23.9, 21.0]], [[25.755, 6.516], [25.755, 10.325]]]}, {'q_list': ['Q0']......}]
 
         # 数据提取
         items = []
         for q_name in q_list:
             image_q = image[q_name]
-
-            # x, y = image_q[0], image_q[1]
-            value = image_q[2]
+            x, y, value = image_q[0], image_q[1], image_q[2]
 
             value = np.squeeze(value)
             data = image_q[2]
@@ -117,7 +112,7 @@ class PowershiftNNScopeDataPltPlotter(QuantumDataPltPlotter):
             data = cv2.flip(data, 0)
 
             iq_avg_normalized = convert_complex_map_to_image(iq_avg=data)
-
+            
             # 获取当前量子比特对应的关键点、类别和配置
             idx = q_list.index(q_name)
             keypoints = result['keypoints_list'][idx] if idx < len(result['keypoints_list']) else []
@@ -126,6 +121,8 @@ class PowershiftNNScopeDataPltPlotter(QuantumDataPltPlotter):
             
             items.append({
                 'iq_avg_normalized': iq_avg_normalized,
+                'x': x,
+                'y': y,
                 'value': value,
                 'keypoints': keypoints,
                 'q_name': q_name,
@@ -143,59 +140,79 @@ class PowershiftNNScopeDataPltPlotter(QuantumDataPltPlotter):
         if num_items == 0:
             raise ValueError("没有可合并的item数据")
         
-        # 配置每行最多显示的子图数量
-        max_cols = 4
-        # 计算需要的行数和列数
-        rows = (num_items + max_cols - 1) // max_cols  # 向上取整计算行数
-        cols = min(num_items, max_cols)                # 列数不超过max_cols
-        
-        # 创建多行多列布局的画布
-        fig, axes = plt.subplots(rows, cols, figsize=(6 * cols, 6 * rows))
-        # 将axes转换为一维数组（方便统一处理单一行/列的情况）
-        axes = axes.flatten() if rows * cols > 1 else [axes]
-        
+        # 使用父类方法创建子图布局（自动适配style配置）
+        fig, axes, rows, cols = self.create_subplots(num_items)
+        axs = axes.flatten()
+
         # 为每个item绘制内容
         for i, item in enumerate(items):
-            ax = axes[i]
+            ax = axs[i]
+            x = item["x"]
+            y = item["y"]
             values = item["value"]
             keypoints = item["keypoints"]
             q_name = item["q_name"]
             class_num = item["class_num"]
             conf = item["conf"]
             iq_avg_normalized = item["iq_avg_normalized"]
+            height = iq_avg_normalized.shape[0]
             
-            # 绘制原始图像：使用归一化后的 IQ RGB 图像代替 pcolormesh
-            # 使用 extent 将图像映射到 x/y 物理坐标范围，origin='lower' 保持与 pcolormesh 相同的方向
+            # x范围与关键点不一致
+            # im = self.add_2dmap(ax, x, y, values, shading_index=0, cmap_index=0)
+            # fig.colorbar(im, ax=ax)
+
             x_min, x_max = (0, iq_avg_normalized.shape[1])
             y_min, y_max = (0, iq_avg_normalized.shape[0])
-            im = ax.imshow(iq_avg_normalized, extent=(x_min, x_max, y_min, y_max), origin='lower', aspect='auto')
+            im = ax.imshow(iq_avg_normalized, extent=(x_min, x_max, y_min, y_max), origin='upper', aspect='auto')
 
+            
+            # 绘制关键点（使用父类的add_scatter和add_line方法）
             if keypoints:
                 sorted_keypoints = sorted(keypoints, key=lambda p: (-p[1], p[0]))
                 kp_x = [p[0] for p in sorted_keypoints]
-                kp_y = [p[1] for p in sorted_keypoints]
-                ax.scatter(kp_x, kp_y, color='red', s=80, marker='*', label='Key Points')
-                ax.plot(kp_x, kp_y, 'r--', linewidth=2)
+                # kp_y = [p[1] for p in sorted_keypoints]
+                kp_y = [height - p[1] for p in sorted_keypoints]
+                
+                # 添加散点
+                self.add_scatter(ax, kp_x, kp_y, label='Key Points', marker_index=0, color_index=0)
+                # 添加连线
+                self.add_line(ax, kp_x, kp_y, label='Key Line', line_style_index=0, color_index=0)
             
+            # 组装信息文本
             info_text = f"Qubit: {q_name}\n"
             if class_num is not None:
                 info_text += f"Class: {class_num}\n"
             if conf is not None:
+                # 格式化置信度为两位小数
                 info_text += f"Confidence: {conf:.2f}"
             
-            ax.text(0.05, 0.95, info_text, transform=ax.transAxes,
-                    verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+            # 添加文本注释（使用父类的add_annotation方法）
+            self.add_annotation(
+                ax, 
+                info_text, 
+                xy=(0.05, 0.95),
+                annotation_textcoords="axes fraction",  # 基于轴坐标的文本位置
+                annotation_xytext=(0, 0),
+                showarrow=False  # 不显示箭头
+            )
             
-            ax.set_title('Original Image')
-            ax.set_xlabel('X')
-            ax.set_ylabel('Y')
+            # 配置坐标轴（使用父类的configure_axis方法）
+            self.configure_axis(
+                ax,
+                title=f"{q_name}",
+                xlabel="X",
+                ylabel="Y",
+                show_legend=True
+            )
+            
+            # 添加图例（使用父类的add_legend方法）
             handles, labels = ax.get_legend_handles_labels()
-            if labels:
-                ax.legend()
+            self.add_legend(ax, handles, labels)
         
         # 隐藏多余的子图
-        for i in range(num_items, rows * cols):
-            axes[i].axis('off')
+        for i in range(num_items, len(axs)):
+            axs[i].axis('off')
         
-        plt.tight_layout()
+        # 调整布局
+        fig.tight_layout()
         return fig

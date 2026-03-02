@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 import cv2
 from scipy.stats import norm
 import os
-
+import logging
 
 
 def convert_complex_map_to_image(iq_avg):
@@ -63,13 +63,14 @@ class PowershiftNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
         super().__init__("powershitnnscope")
 
     def plot_result_npy(self, **kwargs):
-        result = kwargs.get('result')
+        # logging.warning("ply---------- kwargs: %s", kwargs)
         data_ndarray = kwargs.get('dict_param')
-
-        # 虽然dict变list但是每次都是单个文件画图
-        result = result[0]
-
         data = data_ndarray.item()
+        result = kwargs.get('result')
+
+        # data是array({'image': {'q1': [x, y, value], 'q2': [x, y, value], ...}})转为dict型
+        data = data.item() if isinstance(data, np.ndarray) else data
+
         image = data["image"]
         q_list = list(image.keys())
 
@@ -79,8 +80,7 @@ class PowershiftNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
         items = []
         for q_name in q_list:
             image_q = image[q_name]
-            # x, y = image_q[0], image_q[1]
-            value = image_q[2]
+            x, y, value = image_q[0], image_q[1], image_q[2]
             
             idx = q_list.index(q_name)
             keypoints = result['keypoints_list'][idx] if idx < len(result['keypoints_list']) else []
@@ -88,25 +88,25 @@ class PowershiftNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
             conf = result['confs'][idx] if idx < len(result['confs']) else None
             
             # 数据格式处理
-            # x = np.squeeze(x)
-            # y = np.squeeze(y)
-
-            # value对于后面有用
+            x = np.squeeze(x)
+            y = np.squeeze(y)
             value = np.squeeze(value)
+
             data = image_q[2]
             data = np.array(data)
             data = cv2.flip(data, 0)
 
             iq_avg_normalized = convert_complex_map_to_image(iq_avg=data)
-
             
             # 热力图网格与坐标匹配处理
-            # if value.shape[0] == len(y) - 1 and value.shape[1] == len(x) - 1:
-            #     pass
-            # else:
-            #     value = value[:len(y), :len(x)]
+            if value.shape[0] == len(y) - 1 and value.shape[1] == len(x) - 1:
+                pass
+            else:
+                value = value[:len(y), :len(x)]
             
             items.append({
+                'x': x,
+                'y': y,
                 'iq_avg_normalized': iq_avg_normalized,
                 'value': value,
                 'keypoints': keypoints,
@@ -119,24 +119,6 @@ class PowershiftNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
         max_cols = 4  # 保持每行4个子图，平衡宽度和可读性
         rows = (num_items + max_cols - 1) // max_cols
         cols = min(num_items, max_cols)
-
-        # 1. 增大子图基础尺寸，按数量动态调整（优先保证显示完整）
-        base_size = 320  # 基础尺寸从250提升到320，显著增大子图
-        if num_items > 30:
-            base_size = 280  # 30个以上子图适当缩小，但仍比之前200大
-        elif num_items > 15:
-            base_size = 300  # 15-30个子图微调
-            
-        fig_height = base_size * rows
-        fig_width = base_size * cols
-
-        # 2. 调整间距：增大垂直/水平间距，避免内容挤压
-        vertical_spacing = 0.08  # 从0.02提升到0.06，增加上下子图间隙
-        horizontal_spacing = 0.08  # 从0.03提升到0.08，增加左右子图间隙
-        # 子图数量过多时，间距适度缩小（但仍大于之前的最小间距）
-        if num_items > 35:
-            vertical_spacing = 0.06
-            horizontal_spacing = 0.06
         
         subplot_titles = []
         for item in items:
@@ -158,92 +140,88 @@ class PowershiftNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
             # 拼接所有部分为最终标题
             subplot_titles.append("_".join(title_parts))
 
-        # 创建子图
-        fig = make_subplots(
-            rows=rows, cols=cols,
-            subplot_titles=subplot_titles,
-            vertical_spacing=vertical_spacing,
-            horizontal_spacing=horizontal_spacing,
-            shared_yaxes=False,
-            shared_xaxes=False
+        # 复用父类创建子图的方法
+        fig, rows, cols = self.create_subplots(
+            n_plots=num_items,
+            titles=subplot_titles
         )
 
-        # 统一颜色条范围
+        # 统一颜色条范围：预处理所有value数据
         all_values = np.concatenate([item['value'].flatten() for item in items])
         z_min, z_max = np.min(all_values), np.max(all_values)
 
+        # 遍历数据项绘制子图
         for i, item in enumerate(items):
             row = (i // cols) + 1
             col = (i % cols) + 1
-
+            x = item["x"]
+            y = item["y"]
+            values = item["value"]
             keypoints = item["keypoints"]
-            q_name = item["q_name"]
-            class_num = item["class_num"]
-            conf = item["conf"]
             iq_avg_normalized = item["iq_avg_normalized"]
 
-            # debug_dir = "debug"
-            # os.makedirs(debug_dir, exist_ok=True)
-            # debug_path = os.path.join(debug_dir, f"{q_name}_iq_avg_normalized.png")
-            # cv2.imwrite(debug_path, cv2.cvtColor(iq_avg_normalized, cv2.COLOR_RGB2BGR))
-
-            # 显示归一化后的 IQ 图像（RGB）
+            # 归一化value值以实现统一颜色映射（解决add_2dmap无法传zmin/zmax的问题）
+            norm_values = (values - z_min) / (z_max - z_min) if z_max != z_min else values
+            
+            # 调用父类方法添加热力图
+            # self.add_2dmap(
+            #     fig=fig,
+            #     z=norm_values,
+            #     x=x,
+            #     y=y,
+            #     row=row,
+            #     col=col,
+            #     showscale=(i == num_items - 1),  # 仅最后一个子图显示颜色条
+            #     colorscale_index=0  # 使用Viridis配色（对应父类color_scale[0]）
+            # )
             fig.add_trace(go.Image(z=iq_avg_normalized), row=row, col=col)
 
-            # 示例keypoints=[[[18.4, 0.7], [24.3, 9.3], [24.3, 21.0]], [[21.1, 0.1], [21.1, 10.3], [26.5, 15.9], [26.5, 21.0]]]
 
+            # 关键点绘制
             if keypoints and len(keypoints) > 0:
-                # flat = _flatten_kps(keypoints)
-                # mapped = _map_kps_to_coords(flat, x, y)
-                if keypoints:
-                    sorted_keypoints = sorted(keypoints, key=lambda p: (-p[1], p[0]))
-                    kp_x = [float(p[0]) for p in sorted_keypoints]
-                    kp_y = [float(p[1]) for p in sorted_keypoints]
-       
-                    scatter = go.Scatter(
-                        x=kp_x, y=kp_y,
-                        mode='markers',
-                        marker=dict(color='red', size=9, symbol='star', line=dict(width=1.2, color='white')),
-                        name='Key Points',
+                keypoints = np.array(keypoints).reshape(-1, 2)
+                # 按y从高到低排序关键点
+                sorted_keypoints = sorted(keypoints, key=lambda p: (-p[1], p[0]))
+                kp_x = [p[0] for p in sorted_keypoints]
+                kp_y = [p[1] for p in sorted_keypoints]
+
+                # 调用父类方法添加关键点散点
+                self.add_scatter(
+                    fig=fig,
+                    x=kp_x,
+                    y=kp_y,
+                    row=row,
+                    col=col,
+                    color_index=0,  # 红色（对应父类marker_color_palette[0]）
+                    marker_index=0,  # 星形标记（对应父类marker_styles[0]）
+                    name='Key Points',
+                    showlegend=False
+                )
+
+                # 关键点连接线（调用父类add_line方法）
+                if len(kp_x) > 1:
+                    self.add_line(
+                        fig=fig,
+                        x=kp_x,
+                        y=kp_y,
+                        row=row,
+                        col=col,
+                        color_index=0,  # 红色线条
+                        line_style_index=1,  # 虚线样式（对应父类line_styles[1]）
+                        name='Key Points Line',
                         showlegend=False
                     )
-                    fig.add_trace(scatter, row=row, col=col)
 
-                    # 关键点连接线（加粗线条）
-                    if len(kp_x) > 1:
-                        line = go.Scatter(
-                            x=kp_x, y=kp_y,
-                            mode='lines',
-                            line=dict(color='red', dash='dash', width=1.8),
-                            showlegend=False
-                        )
-                        fig.add_trace(line, row=row, col=col)
-
-            # 4. 坐标轴优化：增大字体，避免刻度/标题看不清
-            # fig.update_xaxes(
-            #     title_text="X",
-            #     row=row, col=col,
-            #     range=[np.min(x), np.max(x)],
-            #     title_font=dict(size=11),  # 轴标题字体增大
-            #     tickfont=dict(size=9),     # 刻度字体增大
-            #     ticklen=4  # 增大刻度长度，提升可读性
-            # )
-            # fig.update_yaxes(
-            #     title_text="Y",
-            #     row=row, col=col,
-            #     range=[np.min(y), np.max(y)],
-            #     title_font=dict(size=11),
-            #     tickfont=dict(size=9),
-            #     ticklen=4
-            # )
-
-        # 整体布局优化：增大边距，避免边缘内容被截断
-        fig.update_layout(
-            height=fig_height,
-            width=fig_width,
-            title_text="Power Shift Data Visualization",
-            title_font=dict(size=16, weight='bold'),
-            margin=dict(l=40, r=60, t=60, b=40)  # 增大右/上/左/下边距，适配颜色条和标题
-        )
+        # 配置坐标轴
+        self.configure_axis(fig, rows, cols, xlable="X", ylable="Y")
         
+        # 更新整体布局
+        self.update_layout(
+            fig=fig,
+            rows=rows,
+            cols=cols,
+            title_text="Power Shift Data Visualization",
+            title_font=dict(size=16, weight='bold')
+        )
+
         return fig

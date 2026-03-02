@@ -10,6 +10,7 @@
 import os
 import os
 import sys
+import numpy as np
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 if project_root not in sys.path:
@@ -36,19 +37,17 @@ def send_powershift_npy_to_server(url, api_key, file_path = "/home/sunyaqiang/wo
     client = QubitNNScopeClient(url=url,api_key=api_key)
     
     # 1.使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    import numpy as np
     data_ndarray = np.load(file_path, allow_pickle=True)
-    # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    response = client.request(file_list=[data_ndarray],task_type=NNTaskName.POWERSHIFT)
-    # 2.从文件路径直接加载
-    # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.COSINE)
+    dict_list = [data_ndarray]
+    response = client.request(file_list=dict_list,task_type=NNTaskName.POWERSHIFT)
+
     results = client.get_result(response=response)
-    results = results.get("result")
+    logging.info("results after get_result  : %s", results)
 
     threshold = 0.7
-    logging.info("results in test_powershift.py : %s", results)
-
+    # logging.info("results in test_powershift.py : %s", results)
     results_filtered = client.get_filtered_result(response, threshold, NNTaskName.POWERSHIFT.value)
+    results_filtered = results_filtered.get("results")
 
     save_path_prefix = f"./tmp/client/result_{NNTaskName.POWERSHIFT.value}_{savename}"
     save_path_png = save_path_prefix + ".png"
@@ -56,29 +55,30 @@ def send_powershift_npy_to_server(url, api_key, file_path = "/home/sunyaqiang/wo
 
     plot_manager = QuantumPlotPlyManager()
 
-    # html
-    plot_manager.plot_quantum_data(
-        data_type='npy',
-        task_type=NNTaskName.POWERSHIFT.value,
-        save_path=save_path_html,
-        results=results,
-        data_ndarray=data_ndarray
-    )
+    for idx, (result_filter, dict_param) in enumerate(zip(results_filtered, dict_list)):
+        # html
+        plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=NNTaskName.POWERSHIFT.value,
+            save_path=save_path_html,
+            result=result_filter,
+            dict_param=dict_param
+        )
 
-    plot_manager = QuantumPlotPltManager()
-    # png
-    plot_manager.plot_quantum_data(
-        data_type='npy',
-        task_type=NNTaskName.POWERSHIFT.value,
-        save_path=save_path_png,
-        results=results,
-        data_ndarray=data_ndarray
-    )
+        plot_manager = QuantumPlotPltManager()
+        # png
+        plot_manager.plot_quantum_data(
+            data_type='npy',
+            task_type=NNTaskName.POWERSHIFT.value,
+            save_path=save_path_png,
+            result=result_filter,
+            dict_param=dict_param
+        )
 
 
 def main():
     from config import API_URL, API_KEY
-    file_path = "./tmp/powershift/tmp9ceffec4.py_514.npy"
+    file_path = "./tmp/powershift/tmp71f11e2f.py_673.npy"
     send_powershift_npy_to_server(API_URL, API_KEY, file_path)
 
 

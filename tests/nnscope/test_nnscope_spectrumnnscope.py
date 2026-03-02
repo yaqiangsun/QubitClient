@@ -54,23 +54,19 @@ def send_spectrum_npy_to_server(url, api_key, dir_path="data/33137"):
     response = client.request(file_list=dict_list, task_type=NNTaskName.SPECTRUM)
     results = client.get_result(response=response)
 
-    results = results.get("result")
+    # results = results.get("result")
 
-    threshold = 0.3
+    threshold = 0.5
     print("before filter results: ", results)
     results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM.value)
+    results_filtered = results_filtered.get("results")
 
     print("------after filter \n: ", results_filtered)
 
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()
 
-    for idx, (result, item) in enumerate(zip(results, dict_list)):
-        if isinstance(result, dict) and \
-                result.get('status') == 'failed' and \
-                result.get('error') == "'image'":
-            print(f"the task of idx {idx} failed: No image data available")
-            continue  # 跳过本次
+    for idx, (result_filtered, item) in enumerate(zip(results_filtered, dict_list)):
         save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM.value}_{savenamelist[idx]}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
@@ -80,14 +76,14 @@ def send_spectrum_npy_to_server(url, api_key, dir_path="data/33137"):
             data_type='npy',
             task_type=NNTaskName.SPECTRUM.value,
             save_path=save_path_png,
-            result=result,
+            result=result_filtered,
             dict_param=item
         )
         ply_plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=NNTaskName.SPECTRUM.value,
             save_path=save_path_html,
-            result=result,
+            result=result_filtered,
             dict_param=item
         )
          

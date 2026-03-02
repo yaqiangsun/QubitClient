@@ -59,7 +59,7 @@ def send_s21peak_npy_to_server(url, api_key, dir_path="data/33137"):
     threshold = 0.5
     response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAK.value)
 
-    results = response_data_filtered.get("results")
+    results = response_data_filtered.get("result")
     logging.info(f"Filtered results: {results}")
 
     ply_plot_manager = QuantumPlotPlyManager()

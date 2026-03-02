@@ -47,7 +47,7 @@ def send_s21vflux_npy_to_server(url, api_key,file_path = "/home/sunyaqiang/work/
     results = client.get_result(response=response)
     threshold = 0.5
     results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
-    results_filtered = results_filtered.get("results")
+    results_filtered = results_filtered.get("result")
 
     for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
         save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VFLUX.value}_{savename}"

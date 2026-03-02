@@ -53,7 +53,7 @@ def send_spectrum2dnnscope_npz_to_server(url, api_key,dir_path = "data/33137"):
     results = client.get_result(response=response)
     threshold = 0.5
     results_filtered = client.get_filtered_result(response,threshold,NNTaskName.SPECTRUM2D.value)
-    results_filtered = results_filtered.get("results")
+    results_filtered = results_filtered.get("result")
     dict_list = [dict_list]
     for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
         save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"

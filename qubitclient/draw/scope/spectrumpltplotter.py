@@ -1,10 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from ..pltplotter import QuantumDataPltPlotter
 
 class SpectrumDataPltPlotter(QuantumDataPltPlotter):
 
     def __init__(self):
+        # 调用父类初始化，指定任务类型为spectrum
         super().__init__("spectrum")
 
     def plot_result_npy(self, **kwargs):
@@ -23,8 +23,8 @@ class SpectrumDataPltPlotter(QuantumDataPltPlotter):
 
         for q_name in q_list:
             image_q = image[q_name]
-            x = image_q[0]  # 假设这里是x轴数据（如频率）
-            amp = image_q[1]  # 假设这里是幅度数据
+            x = image_q[0]  # x轴数据（如频率）
+            amp = image_q[1]  # 幅度数据
             
             x_list.append(x)
             amp_list.append(amp)
@@ -34,73 +34,65 @@ class SpectrumDataPltPlotter(QuantumDataPltPlotter):
         peaks_list = result['peaks_list']
         confidences_list = result['confidences_list']
 
-        max_cols = 5
-        cols = min(num_qubits, max_cols)  # 列数不超过max_cols
-        rows = (num_qubits + cols - 1) // cols  # 计算需要的行数（向上取整）
-
-        fig_width = 6 * cols
-        fig_height = 4 * rows
-        fig, axes = plt.subplots(rows, cols, figsize=(fig_width, fig_height))
-        
-        # 处理单元素或一维数组的axes，统一转为二维数组便于索引
-        if num_qubits == 1:
-            axes = np.array([[axes]])
-        elif rows == 1 or cols == 1:
-            axes = axes.reshape(rows, cols)
+        # 调用父类方法创建子图布局（统一风格）
+        n_plots = num_qubits
+        fig, axes, rows, cols = self.create_subplots(n_plots)
+        axs = axes.flatten()
 
         # 为每个 qubit 绘制子图
         for idx, (x, amp, q_name) in enumerate(zip(x_list, amp_list, q_name_list)):
-            row = idx // cols  # 计算当前子图所在行
-            col = idx % cols   # 计算当前子图所在列
-            ax = axes[row, col]
+            ax = axs[idx]
 
-            # 绘制信号曲线
-            ax.plot(x, amp, label='Signal', color='blue')
+            # 1. 调用父类方法添加信号曲线（统一风格的线条）
+            self.add_line(ax, x, amp, label='Signal', color_index=0, line_style_index=0)
             
             # 获取当前 qubit 的峰值和置信度
             peaks = peaks_list[idx] if idx < len(peaks_list) else []
             confidences = confidences_list[idx] if idx < len(confidences_list) else None
 
-            # 绘制峰值
+            # 绘制峰值（调用父类散点方法）
             if peaks:
                 if confidences is None:
                     confidences = [None] * len(peaks)
                 elif len(confidences) != len(peaks):
                     raise ValueError(f"q_name {q_name} 的peaks和confidences长度不一致")
                 
-                # 计算峰值对应的幅度（找到最接近的x值）
+                # 计算峰值对应的幅度
                 peak_amps = [amp[np.argmin(np.abs(x - p))] for p in peaks]
-                ax.scatter(peaks, peak_amps, color='red', s=50, zorder=3, label='Peak')
                 
-                # 添加置信度标注
-                for peak, conf in zip(peaks, confidences):
-                    amp_val = amp[np.argmin(np.abs(x - peak))]
+                # 2. 调用父类方法添加峰值散点（统一风格）
+                self.add_scatter(ax, peaks, peak_amps, label='Peak', 
+                                 marker_index=1, color_index=1)
+                
+                # 添加置信度标注（调用父类注释方法）
+                for peak, conf, peak_amp in zip(peaks, confidences, peak_amps):
                     if conf is not None:
-                        ax.annotate(f'conf: {conf:.4f}',
-                                    xy=(peak, amp_val),
-                                    xytext=(5, 5), 
-                                    textcoords='offset points',
-                                    fontsize=8,
-                                    bbox=dict(boxstyle="round,pad=0.3", fc="yellow", alpha=0.5))
+                        self.add_annotation(ax, f'conf: {conf:.4f}', 
+                                           xy=(peak, peak_amp),
+                                           annotation_xytext=(5, 5),
+                                           color_index=1,
+                                           showarrow=True)
                     else:
-                        ax.annotate(f'{peak:.4f}',
-                                    xy=(peak, amp_val),
-                                    xytext=(5, 5), 
-                                    textcoords='offset points')
+                        self.add_annotation(ax, f'{peak:.4f}', 
+                                           xy=(peak, peak_amp),
+                                           annotation_xytext=(5, 5),
+                                           color_index=1,
+                                           showarrow=False)
             
-            # 设置子图标题和坐标轴标签
-            ax.set_title(f'Spectrum for {q_name}')
-            ax.set_xlabel('Frequency')
-            ax.set_ylabel('Amplitude')
-            ax.grid(True, linestyle='--', alpha=0.7)
-            ax.legend()
+            # 3. 调用父类方法配置坐标轴（统一风格）
+            self.configure_axis(ax,
+                               title=f'Spectrum for {q_name}',
+                               xlabel='Frequency',
+                               ylabel='Amplitude',
+                               show_legend=True)
+            
+            # 4. 调用父类方法添加图例（统一风格）
+            handles, labels = ax.get_legend_handles_labels()
+            self.add_legend(ax, handles, labels)
 
-        # 移除多余的子图（当 qubit 数量不足行列乘积时）
-        for idx in range(num_qubits, rows * cols):
-            row = idx // cols
-            col = idx % cols
-            fig.delaxes(axes[row, col])
+        # 隐藏多余的子图
+        for i in range(num_qubits, len(axs)):
+            axs[i].axis('off')
 
-        # 调整子图间距
-        plt.tight_layout()
+        fig.tight_layout()
         return fig

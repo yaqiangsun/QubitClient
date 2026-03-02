@@ -139,6 +139,8 @@ print(result)
 - `NNTaskName.POWERSHIFT`: 功率偏移曲线分割，详见 [POWERSHIFT详细文档](docs/nnscope/POWERSHIFT.md)
 - `NNTaskName.S21VFLUX`: S21 vs Flux参数曲线分割，详见 [S21VFLUX详细文档](docs/nnscope/S21VFLUX.md)
 - `NNTaskName.SPECTRUM`: 频谱分析，详见 [SPECTRUM详细文档](docs/nnscope/SPECTRUM.md)
+[S21PEAK详细文档](docs/nnscope/S21PEAK.md)
+- `NNTaskName.S21PEAK`: 频谱分析，详见 [S21PEAK详细文档](docs/nnscope/S21PEAK.md)
 
 ### Scope任务
 

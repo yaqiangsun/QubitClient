@@ -46,6 +46,10 @@ class QubitNNScopeClient(object):
             logging.debug("Result: %s", response.json())
             result = response.json()
             # result = result["result"]
+            if "result" in result.keys():
+                result["results"] = result["result"] # add results keys
+            elif "results" in result.keys(): # add result keys
+                result["result"] = result["results"]
             return result
         else:
             logging.error("Error: %s %s", response.status_code, response.text)

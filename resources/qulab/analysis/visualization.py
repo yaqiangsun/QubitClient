@@ -57,7 +57,10 @@ def plot_template(report,basepath,name,task_type=TaskName.S21PEAK):
 
 
     if type(results)==dict:
-        results = results.get("results")
+        if "results" not in results.keys:
+            results = results.get("results")
+        elif "result" in results.keys():
+            results = results.get("result")
     image = other_infomation
     # image = np.array(other_infomation)
     dict_list = [np.array(image)]

@@ -411,3 +411,38 @@ def t2fit_convert(result):
         data_formated["image"][qubit_name] = (delay_array, population)
     
     return data_formated
+
+def nnspectrum_convert(result):
+    """
+    将quark格式数据转换为qubitclient所需格式（一维频谱专用）
+    Args:
+        result (dict): 原始实验数据字典（需包含meta/data核心字段）
+    Returns:
+        dict: 服务器要求的格式数据
+    """
+
+    # 提取量子比特名称
+    qubit_name_list = result["meta"]["other"]["qubits"]
+    data_formated = {
+        "image": {
+        }
+    }
+    for index, qubit_name in enumerate(qubit_name_list):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        # 提取频率轴数据
+        freq_key = f"$gate.R.{qubit_name}.params.frequency"
+        freq = np.array(result["meta"]["axis"]["freq"].get(freq_key, result["meta"]["axis"]["freq"]["def"]), dtype=np.float64)
+        assert freq.ndim == 1, "freq轴需为一维数组"
+        
+        # 处理IQ均值波形
+        s = np.array(result["data"]["iq_avg"][:, index], dtype=np.complex64)
+        # 一维频谱分析取复数幅值
+        s = np.abs(s)  
+
+        assert s.ndim == 1, "s为一维"
+        assert s.shape[0] == freq.shape[0], "s的点数需与freq轴一致"
+
+        data_formated["image"][qubit_name] = [freq, s]  
+    return data_formated

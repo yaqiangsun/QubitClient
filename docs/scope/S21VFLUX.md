@@ -86,9 +86,9 @@ results = response_data_filtered.get("results")
 ```json
 [
   {
-    "coscurves_list": [[[[float]]]],     // 表示余弦曲线点集合
+    "coscurves_list": [[[float]]],     // 表示余弦曲线点集合
     "cosconfs_list": [[float]],     // 表示余弦曲线置信度
-    "lines_list": [[[[float]]]],     // 表示直线点集合
+    "lines_list": [[[float]]],     // 表示直线点集合
     "lineconfs_list":[[float]]     // 表示直线置信度
   },
   ...
@@ -102,9 +102,9 @@ results = response_data_filtered.get("results")
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| coscurves_list | [[[[float]]]] | 表示余弦曲线点集合 |
+| coscurves_list | [[[float]]] | 表示余弦曲线点集合 |
 | cosconfs_list | [[float]] | 表示余弦曲线置信度 |
-| lines_list | [[[[float]]]] | 表示直线点集合 |
+| lines_list | [[[float]]] | 表示直线点集合 |
 | lineconfs_list | [[float]] | 表示直线置信度 |
 
 
@@ -115,7 +115,7 @@ results = response_data_filtered.get("results")
 ```python
 [
   {
-    "coscurves_list": [[[[-1,6.843e9],[-0.9,6.844e9],...]],[[[-0.8,6.833e9],[-1,6.847e9],...]]],
+    "coscurves_list": [[[-1,6.843e9],[-0.9,6.844e9],...],[[-0.8,6.833e9],[-1,6.847e9],...]],
     "cosconfs_list": [[0.6],[0.6]]，
     "lines_list": [[[[-1,6.943e9],[-0.9,6.94e9],...]],[[[-0.8,6.933e9],[-1,6.847e9],...]]],
     "lineconfs_list": [[0.5],[0.6]]

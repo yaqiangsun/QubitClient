@@ -1,8 +1,4 @@
-from importlib.metadata import version
-try:
-    __version__ = version("qubitclient")
-except Exception:
-    __version__ = "unknown"
+__version__ = "0.4.2"
 
 from .nnscope.nnscope_api.curve.curve_type import CurveType  # noqa: F401
 from .scope.scope import QubitScopeClient

@@ -173,7 +173,7 @@ def create_subplots(self, n_plots: int,**kwargs) -> Tuple[plt.Figure, np.ndarray
 · **kwargs
 
 
-### add_2dmap - 添加热力图
+### add_hist - 添加直方图
 
 ```python
 def add_histogram(self, ax: plt.Axes, x, bins,xrange,
@@ -223,11 +223,8 @@ def add_line(self, ax: plt.Axes, x, y,
 参数：
 1. 位置参数
 · ax: matplotlib的Axes对象
-
 · x: X轴坐标数组
 · y: Y轴坐标数组
-· row: 子图行号
-· col: 子图列号
 2. 默认值参数
 · label: 数据标签
 · line_style_index: 线条样式索引
@@ -274,7 +271,9 @@ def add_vline(self, ax: plt.Axes, x: float, label=None,**kwargs)
 · **kwargs
 
 
-### update_layout - 更新布局
+### add_legend - 更新布局
+　　他们在冰岛玩了两天，打卡了气势磅礴的黄金瀑布，探索了冰岛冬日限定蓝冰世界，还去参观了电影《白日梦想家》的取景地斯蒂基斯霍尔米。江望依旧表现得风度翩翩，与当地人谈笑风生，偶尔流露出的风流仿佛是他的本能，许归忆则保持着她一贯的自由随性，对新鲜事物充满好奇，神色阳光爽朗。
+
 
 ```python
 def add_legend(self, ax: plt.Axes, handles=None, labels=None, twinx: bool = False)

@@ -70,14 +70,14 @@ def load_from_npz_path(file_path_list:list[str]):
 #     return files
 def load_from_npy_path(file_path_list:list[str]):
     files = []
-    for file_path in file_path_list:
+    for index,file_path in enumerate(file_path_list):
         if file_path.endswith('.npy'):
             data = np.load(file_path, allow_pickle=True)
             data = data.item() if isinstance(data, np.ndarray) else data
             with io.BytesIO() as buffer:
                 np.save(buffer, data)
                 bytes_obj = buffer.getvalue()
-            files.append(("request", ("None.npy", bytes_obj, "application/octet-stream")))
+            files.append(("request", (f"None_{index}.npy", bytes_obj, "application/octet-stream")))
     return files
 def load_from_npz_dict(dict_list:list[dict]):
     files = []
@@ -94,11 +94,11 @@ def load_from_npz_dict(dict_list:list[dict]):
     return files
 def load_from_npy_dict(dict_list:list[dict]):
     files = []
-    for dict_obj in dict_list:
+    for index,dict_obj in enumerate(dict_list):
         with io.BytesIO() as buffer:
             np.save(buffer, dict_obj)
             bytes_obj = buffer.getvalue()
-        files.append(("request", ("None.npy",bytes_obj, "application/octet-stream")))
+        files.append(("request", (f"None_{index}.npy",bytes_obj, "application/octet-stream")))
     return files
 def request_task(files,url,api_key,curve_type:str=None):
     headers = {'Authorization': f'Bearer {api_key}'}  # 添加API密钥到请求头

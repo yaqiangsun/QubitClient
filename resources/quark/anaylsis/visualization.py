@@ -27,7 +27,7 @@ from .format import optpipulse_convert,s21_convert,s21vsflux_convert,drag_conver
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
     if type(results)==dict:
-        if "results" not in results.keys:
+        if "results" not in results.keys():
             results = results.get("results")
         elif "result" in results.keys():
             results = results.get("result")

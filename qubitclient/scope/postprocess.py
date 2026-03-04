@@ -356,6 +356,17 @@ def postprocess_result_singleshot(response, threshold):
     result = response.parsed
 
     return result
+def postprocess_result_spectrum(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+
+    return result
+def postprocess_result_powershift(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+
+    return result
+
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
     's21vfluxscope': postprocess_result_s21vfluxscope,
@@ -368,6 +379,8 @@ TASK_MAP: Dict[str, Callable] = {
     'ramsey': postprocess_result_ramsey,
     'drag': postprocess_result_drag,
     'singleshot': postprocess_result_singleshot,
+    'spectrum': postprocess_result_spectrum,
+    'powershift': postprocess_result_powershift,
 }
 
 def run_postprocess(response, threshold, task_type):

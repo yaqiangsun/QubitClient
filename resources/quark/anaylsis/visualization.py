@@ -22,7 +22,10 @@ import logging
 from .config import API_URL,API_KEY,ENABLE_API
 from qubitclient import handle_exceptions, control_api_execution
 
-from .format import optpipulse_convert,s21_convert,s21vsflux_convert,drag_convert,singleshot_convert,nnspectrum2d_convert,nns21vsflux_convert,spectrum2d_convert,t1fit_convert,t2fit_convert,rabicos_convert
+from .format import optpipulse_convert,s21_convert,s21vsflux_convert,\
+                    drag_convert,singleshot_convert,nnspectrum2d_convert,\
+                    nns21vsflux_convert,spectrum2d_convert,t1fit_convert,\
+                    t2fit_convert,rabicos_convert,nnspectrum_convert
 
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
@@ -113,4 +116,8 @@ def plot_t2fit(data,results,save_path):
 def plot_rabicos(data,results,save_path):
     data = rabicos_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.RABICOS)
+    return fig_list
+def plot_nnspectrum(data,results,save_path):
+    data = nnspectrum_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM)
     return fig_list

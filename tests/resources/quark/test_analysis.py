@@ -7,6 +7,39 @@
 # Created Time: 2026/02/11 11:48:16
 ########################################################################
 
+"""
+⚠️ DEPRECATED - 此文件已废弃
+
+本文件已被拆分为多个独立的测试文件，每个测试函数现在位于单独的文件中。
+请使用以下新的测试文件：
+
+- test_optpipulse.py      : optpipulse 测试
+- test_s21peak.py         : s21peak 测试
+- test_s21vsflux.py       : s21vsflux 测试
+- test_nns21vsflux.py     : nns21vsflux 测试
+- test_singleshot.py      : singleshot 测试
+- test_nnspectrum2d.py    : nnspectrum2d 测试
+- test_spectrum2d.py      : spectrum2d 测试
+- test_drag.py            : drag 测试
+- test_rabicos.py         : rabicos 测试
+- test_t1fit.py           : t1fit 测试
+- test_t2fit.py           : t2fit 测试
+- test_nnspectrum.py      : nnspectrum 测试
+
+此文件将在未来的版本中被删除。
+"""
+
+import warnings
+import sys
+import os
+
+# 发出弃用警告
+warnings.warn(
+    "test_analysis.py is deprecated. Please use the individual test files instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 
 
 import os
@@ -268,9 +301,10 @@ def main():
     # task_key = "s21"
     # base_dir = "tmp/s21"
     # test_s21peak(task_key,base_dir)
-    task_key = "spectrum"
-    base_dir = "tmp/data/spectrum"
-    test_nnspectrum(task_key,base_dir)
+
+    # task_key = "spectrum"
+    # base_dir = "tmp/data/spectrum"
+    # test_nnspectrum(task_key,base_dir)
 
     # task_key = "spectrum"
     # base_dir = "tmp/data/nnspectrum2d"
@@ -288,6 +322,13 @@ def main():
     # task_key = "opt"
     # base_dir = "data/opt_pipulse_q"
     # test_optpipulse(task_key,base_dir)
+    """已弃用的主函数，请参考各个独立文件中的 main 函数"""
+    warnings.warn(
+        "main() in test_analysis.py is deprecated. Please run individual test files directly.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+
 
 if __name__ == "__main__":
     main()

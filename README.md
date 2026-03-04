@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/pypi/v/qubitclient?style=flat-square&logo=pypi&logoColor=white" alt="PyPI version">
   </a>
   <a href="https://www.python.org/downloads/">
-    <img src="https://img.shields.io/pypi/pyversions/qubitclient?style=flat-square&logo=python&logoColor=white" alt="Python versions">
+    <img src="https://img.shields.io/pypi/pyversions/qubitclient?style=flat-square&logoColor=white&logo=python" alt="Python versions">
   </a>
   <a href="https://pypi.org/project/qubitclient/">
     <img src="https://img.shields.io/pypi/dm/qubitclient?style=flat-square&logo=pypi&logoColor=white" alt="PyPI Downloads">

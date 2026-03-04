@@ -233,9 +233,13 @@ def test_t2fit(task_key, base_dir):
 
     
 def main():
-    task_key = "flux"
-    base_dir = "tmp/data/s21vsflux"
-    test_nns21vsflux(task_key,base_dir)
+    # task_key = "flux"
+    # base_dir = "tmp/data/s21vsflux"
+    # test_nns21vsflux(task_key,base_dir)
+
+    task_key = "s21"
+    base_dir = "tmp/s21"
+    test_s21peak(task_key,base_dir)
 
     # task_key = "spectrum"
     # base_dir = "tmp/data/nnspectrum2d"

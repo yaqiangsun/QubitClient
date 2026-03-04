@@ -449,3 +449,6 @@ def nnspectrum_convert(result):
 
         data_formated["image"][qubit_name] = [freq, s]  
     return data_formated
+
+def spectrum_convert(result):
+    return nnspectrum_convert(result)

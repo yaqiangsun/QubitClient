@@ -14,7 +14,8 @@ import logging
 from qubitclient import handle_exceptions, control_api_execution
 from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,\
                     s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert,\
-                    t1fit_convert,t2fit_convert,rabicos_convert,nnspectrum_convert
+                    t1fit_convert,t2fit_convert,rabicos_convert,nnspectrum_convert,\
+                    spectrum_convert
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
@@ -112,6 +113,7 @@ def optpipulse(image):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def spectrum(image):
+    image = spectrum_convert(image)
     results = scope_template(image,task_type=TaskName.SPECTRUM)
     return results
 @control_api_execution(enable_api=ENABLE_API)

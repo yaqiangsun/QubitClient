@@ -225,7 +225,7 @@ def test_t2fit(task_key, base_dir):
                 if task_key in ["t2fit", "t2", "ramsey", "echo"]:
                     print(f"正在测试 t2fit 文件: {pkl_path}")
                     analysis_result = t2fit(data)
-                    print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
+                    # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
                     fig_list = plot_t2fit(data, analysis_result, save_path='./tmp/vis/t2fit.png')
                     if fig_list and len(fig_list) > 0:
                         fig_list[0].show()

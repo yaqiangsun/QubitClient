@@ -11,12 +11,35 @@
   <a href="https://www.python.org/downloads/">
     <img src="https://img.shields.io/pypi/pyversions/qubitclient?style=flat-square&logo=python&logoColor=white" alt="Python versions">
   </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/yaqiangsun/qubitclient?style=flat-square" alt="License">
+  <a href="https://pypi.org/project/qubitclient/">
+    <img src="https://img.shields.io/pypi/dm/qubitclient?style=flat-square&logo=pypi&logoColor=white" alt="PyPI Downloads">
   </a>
+  <!-- <a href="https://github.com/yaqiangsun/qubitclient/stargazers">
+    <img src="https://img.shields.io/github/stars/yaqiangsun/qubitclient?style=flat-square&logo=github" alt="GitHub Stars">
+  </a> -->
+  <!-- <a href="https://github.com/yaqiangsun/qubitclient/fork">
+    <img src="https://img.shields.io/github/forks/yaqiangsun/qubitclient?style=flat-square&logo=github" alt="GitHub Forks">
+  </a> -->
+  <!-- <a href="https://github.com/yaqiangsun/qubitclient/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/yaqiangsun/qubitclient?style=flat-square&logo=github" alt="Contributors">
+  </a> -->
   <a href="https://github.com/yaqiangsun/qubitclient/issues">
     <img src="https://img.shields.io/github/issues/yaqiangsun/qubitclient?style=flat-square" alt="Issues">
   </a>
+  <!-- <a href="https://github.com/yaqiangsun/qubitclient/pulls">
+    <img src="https://img.shields.io/github/issues-pr/yaqiangsun/qubitclient?style=flat-square" alt="Pull Requests">
+  </a> -->
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/yaqiangsun/qubitclient?style=flat-square" alt="License">
+  </a>
+  <a href="https://github.com/yaqiangsun/qubitclient/commits/main">
+    <img src="https://img.shields.io/github/last-commit/yaqiangsun/qubitclient?style=flat-square&logo=github" alt="Last Commit">
+  </a>
+  <!-- <a href="https://github.com/yaqiangsun/qubitclient/releases">
+    <img src="https://img.shields.io/github/v/release/yaqiangsun/qubitclient?style=flat-square&logo=github" alt="GitHub Release">
+  </a> -->
+  <img src="https://img.shields.io/badge/Quantum-Computing-blue?style=flat-square&logo=ibm" alt="Quantum Computing">
+  <img src="https://img.shields.io/badge/Machine_Learning-AI-green?style=flat-square&logo=machinelearn" alt="AI/ML">
   <br>
   <a href="#-介绍">介绍</a> •
   <a href="#-功能特性">功能特性</a> •

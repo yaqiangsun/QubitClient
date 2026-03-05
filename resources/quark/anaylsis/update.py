@@ -20,12 +20,14 @@ def optpipulse_update(data_converted, result: dict, file_idx: int = 0):
         result: 服务器返回的OptPi分析结果
         file_idx: 处理第几个文件的结果（默认0，单文件场景）
     """
+    update_dict = {}
+
     if "results" not in result or not isinstance(result["results"], list):
         logging.error("OptPi结果格式错误，无有效results字段")
-        return
+        return update_dict
     if file_idx < 0 or file_idx >= len(result["results"]):
         logging.error(f"OptPi file_idx={file_idx} 越界，有效范围0~{len(result['results'])-1}")
-        return
+        return update_dict
     
     # 提取共峰位置和置信度
     all_params = result["results"][file_idx].get("params", [])
@@ -56,12 +58,14 @@ def optpipulse_update(data_converted, result: dict, file_idx: int = 0):
         if original_amp is not None:
             final_amp = original_amp * best_peak_pos
             # 实际使用 update_param(f"gate.R.{qubit}.params.amp", final_amp)
+            update_dict[f"gate.R.{qubit}.params.amp"] = final_amp
             logging.info(
                 f"OptPi更新 | 比特：{qubit} | 共峰位置：{best_peak_pos:.5f} | "
                 f"置信度：{best_conf:.4f} | 最终AMP：{final_amp:.5f}"
             )
         else:
             logging.warning(f"{qubit} 原始AMP参数未设置")
+    return update_dict
 
 def drag_update(data_converted, result: dict, file_idx: int = 0):
     """
@@ -72,12 +76,14 @@ def drag_update(data_converted, result: dict, file_idx: int = 0):
         file_idx: 处理第几个文件的结果（默认0，单文件场景）
     """
 
+    update_dict = {}
+
     if "results" not in result or not isinstance(result["results"], list):
         logging.error("Drag结果格式错误，无有效results字段")
-        return
+        return update_dict
     if file_idx < 0 or file_idx >= len(result["results"]):
         logging.error(f"Drag file_idx={file_idx} 越界，有效范围0~{len(result['results'])-1}")
-        return
+        return update_dict
     
     # 提取交点坐标和置信度
     intersections = result["results"][file_idx].get("intersections_list", [])
@@ -109,12 +115,14 @@ def drag_update(data_converted, result: dict, file_idx: int = 0):
         if original_beta is not None:
             final_beta = original_beta + beta_offset
             # update_param(f'gate.R.{qubit}.params.beta', final_beta)
+            update_dict[f'gate.R.{qubit}.params.beta'] = final_beta
             logging.info(
                 f"Drag更新 | 比特：{qubit} | 原始beta：{original_beta:.6e} | "
                 f"偏差：{beta_offset:.6e} | 最终beta：{final_beta:.6e} | 置信度：{best_conf:.2f}"
             )
         else:
             logging.warning(f"{qubit} 原始beta参数未设置")
+    return update_dict
 
 def s21_update(data_converted, result: dict, file_idx: int = 0):
     """
@@ -125,12 +133,14 @@ def s21_update(data_converted, result: dict, file_idx: int = 0):
         file_idx: 处理第几个文件的结果（默认0，单文件场景）
     """
 
+    update_dict = {}
+
     if "results" not in result or not isinstance(result["results"], list):
         logging.error("S21PEAK结果格式错误，无有效results字段")
-        return
+        return update_dict
     if file_idx < 0 or file_idx >= len(result["results"]):
         logging.error(f"S21PEAK file_idx={file_idx} 越界，有效范围0~{len(result['results'])-1}")
-        return
+        return update_dict
     
     # 提取波谷核心数据
     s21_result = result["results"][file_idx] if len(result["results"]) > 0 else {}
@@ -163,12 +173,14 @@ def s21_update(data_converted, result: dict, file_idx: int = 0):
         original_read_freq = query_param(f'gate.Measure.{qubit}.params.frequency')
         if original_read_freq is not None:
             # 实际更新操作：update_param(f'gate.Measure.{qubit}.params.frequency', best_valley_freq)
+            update_dict[f'gate.Measure.{qubit}.params.frequency'] = best_valley_freq
             logging.info(
                 f"S21更新 | 比特：{qubit} | 原始读取腔频率：{original_read_freq*1e-9:.4f} GHz | "
                 f"新读取腔频率：{best_valley_freq*1e-9:.4f} GHz | 置信度：{best_valley_conf:.2f}"
             )
         else:
             logging.warning(f"{qubit} 原始读取腔频率参数未设置，无法更新")
+    return update_dict
 
 def singleshot_update(data_converted, result: dict, file_idx: int = 0):
     """
@@ -179,6 +191,9 @@ def singleshot_update(data_converted, result: dict, file_idx: int = 0):
         file_idx: 处理第几个文件的结果（默认0，单文件场景）
     """
     print("singleshot_update函数") # 这个似乎不用更新
+    
+    update_dict = {}
+    return update_dict
 
 def spectrum_update(data_converted, result: list, file_idx: int = 0):
     """
@@ -188,20 +203,24 @@ def spectrum_update(data_converted, result: list, file_idx: int = 0):
         result: 服务器返回的SPECTRUM分析结果（list类型）
         file_idx: 处理第几个文件的结果（默认0，单文件场景）
     """
+    
+    update_dict = {}
+
     if not isinstance(result, list):
         logging.error("SPECTRUM结果格式错误，非list类型")
-        return
+        return update_dict
     if file_idx < 0 or file_idx >= len(result):
         logging.error(f"SPECTRUM file_idx={file_idx} 越界，有效范围0~{len(result)-1}")
-        return
+        return update_dict
     
     # 提取峰值和置信度
     result_dict = result[file_idx]  # 单个文件对应一个结果，取指定索引的元素
     peaks_list = result_dict.get("peaks_list", [])
     confidences_list = result_dict.get("confidences_list", [])
+
     if not peaks_list or not confidences_list:
         logging.warning("SPECTRUM结果中无峰值或置信度数据")
-        return
+        return update_dict
 
     # 遍历每个量子比特，按顺序匹配结果
     qubits = list(data_converted["image"].keys())  
@@ -230,6 +249,7 @@ def spectrum_update(data_converted, result: list, file_idx: int = 0):
         original_freq = query_param(f'gate.R.{qubit}.params.frequency')
         if original_freq is not None: # 更新没有依赖到原本的比特频率，所以这儿其实可以不用读取原本的比特频率（对实验有影响 但是对更新没影响）
             # update_param(f'gate.R.{qubit}.params.frequency', best_peak_freq)  # 实际更新操作
+            update_dict[f'gate.R.{qubit}.params.frequency'] = best_peak_freq
             logging.info(
                 f"✅ SPECTRUM频率更新 | 比特：{qubit} | "
                 f"原始频率：{original_freq*1e-9:.4f} GHz | "
@@ -238,3 +258,4 @@ def spectrum_update(data_converted, result: list, file_idx: int = 0):
             )
         else:
             logging.warning(f"{qubit} 原始频率参数未设置，无法更新")
+    return update_dict

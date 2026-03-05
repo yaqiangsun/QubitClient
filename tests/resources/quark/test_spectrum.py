@@ -24,6 +24,10 @@ import matplotlib.pyplot as plt
 def test_spectrum(task_key, base_dir):
     for pkl_path in os.listdir(base_dir):
         pkl_path = os.path.join(base_dir, pkl_path)
+
+        # 提取文件名前缀
+        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
+        
         data = get_pkl_content(pkl_path)
         if data is None:
             continue
@@ -41,9 +45,10 @@ def test_spectrum(task_key, base_dir):
                 if task_key in "spectrum":
                     analysis_result = spectrum(data)
                     logging.info(f"-----spectrum analysis result: {analysis_result}")
-                    fig_list = plot_spectrum(data, analysis_result, save_path='./tmp/vis/spectrum.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    fig_list = plot_spectrum(data, analysis_result, save_path=f'./tmp/vis/spectrum_{pure_name}_allqubits.png')
+                    # fig_list[0].show()
+                    # plt.show(block=True)
+
 
 
 def main():

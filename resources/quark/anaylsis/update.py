@@ -51,7 +51,8 @@ def optpipulse_update(data_converted, result: dict, file_idx: int = 0):
         best_conf = qubit_confs[best_conf_idx]
         
         # 计算最终AMP值
-        original_amp = 0.2 # 测试用，实际替换为query_param(f"gate.R.{qubit}.params.amp")
+        # original_amp = 0.2 # 测试用，实际替换为query_param(f"gate.R.{qubit}.params.amp")
+        original_amp = query_param(f"gate.R.{qubit}.params.amp")
         if original_amp is not None:
             final_amp = original_amp * best_peak_pos
             # 实际使用 update_param(f"gate.R.{qubit}.params.amp", final_amp)
@@ -103,7 +104,8 @@ def drag_update(data_converted, result: dict, file_idx: int = 0):
         best_conf = qubit_confs[best_conf_idx]
         
         # 计算最终beta值
-        original_beta = 0.0 # 测试用，实际替换为query_param(f'gate.R.{qubit}.params.beta')
+        # original_beta = 0.0 # 测试用，实际替换为query_param(f'gate.R.{qubit}.params.beta')
+        original_beta = query_param(f'gate.R.{qubit}.params.beta')
         if original_beta is not None:
             final_beta = original_beta + beta_offset
             # update_param(f'gate.R.{qubit}.params.beta', final_beta)
@@ -157,7 +159,8 @@ def s21_update(data_converted, result: dict, file_idx: int = 0):
         
         # 查询原始读取腔频率并更新
         # 实际项目中替换为：original_read_freq = s.query(f'gate.Measure.{qubit}.params.frequency')
-        original_read_freq = 4.432e9  # 测试用（读取腔典型频率）
+        # original_read_freq = 4.432e9  # 测试用（读取腔典型频率）
+        original_read_freq = query_param(f'gate.Measure.{qubit}.params.frequency')
         if original_read_freq is not None:
             # 实际更新操作：update_param(f'gate.Measure.{qubit}.params.frequency', best_valley_freq)
             logging.info(
@@ -223,7 +226,8 @@ def spectrum_update(data_converted, result: list, file_idx: int = 0):
         
         # 查询原始频率并更新 
         # original_freq = s.query(f'gate.R.{qubit}.params.frequency')  # 实际项目中替换为真实函数
-        original_freq = 4.1e9 # 测试用，实际替换为query_param(f'gate.R.{qubit}.params.frequency')
+        # original_freq = 4.1e9 # 测试用，实际替换为query_param(f'gate.R.{qubit}.params.frequency')
+        original_freq = query_param(f'gate.R.{qubit}.params.frequency')
         if original_freq is not None: # 更新没有依赖到原本的比特频率，所以这儿其实可以不用读取原本的比特频率（对实验有影响 但是对更新没影响）
             # update_param(f'gate.R.{qubit}.params.frequency', best_peak_freq)  # 实际更新操作
             logging.info(

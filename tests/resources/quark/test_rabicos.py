@@ -16,7 +16,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from resources.quark.anaylsis.utils import get_pkl_content
-from resources.quark.anaylsis.inception import rabicos
+from resources.quark.anaylsis.inception import rabi
 from resources.quark.anaylsis.visualization import plot_rabicos
 import matplotlib.pyplot as plt
 
@@ -39,7 +39,7 @@ def test_rabicos(task_key, base_dir):
                 found_files += 1
                 print(f"正在测试 Rabi 文件 ({found_files}): {pkl_path}")
   
-                analysis_result = rabicos(data)
+                analysis_result = rabi(data)
                 fig_list = plot_rabicos(data, analysis_result, save_path='./tmp/vis/rabicos.png')
                 if fig_list and len(fig_list) > 0:
                     fig_list[0].show()

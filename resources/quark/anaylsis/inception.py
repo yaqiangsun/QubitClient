@@ -43,13 +43,11 @@ def scope_template(image,task_type=TaskName.SPECTRUM2D):
 @handle_exceptions
 def nnspectrum2d(image):
     image = nnspectrum2d_convert(image)
-
     results = nnscope_template(image,task_type=NNTaskName.SPECTRUM2D)
     return results
 
 def spectrum2d(image):
     image = spectrum2d_convert(image)
-
     results = scope_template(image,task_type=TaskName.SPECTRUM2D)
     return results
 
@@ -76,7 +74,7 @@ def s21(image):
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def rabicos(image):
+def rabi(image):
     image = rabicos_convert(image)
     results = scope_template(image,task_type=TaskName.RABICOS)
     return results
@@ -143,6 +141,5 @@ def allxy_drag(image):
 @handle_exceptions
 def singleshot(image):
     image = singleshot_convert(image)
-
     results = scope_template(image,task_type=TaskName.SINGLESHOT)
     return results

@@ -8,7 +8,7 @@
 ########################################################################
 
 from qubitclient import QubitNNScopeClient,QubitScopeClient
-from qubitclient import NNTaskName,TaskName,CurveType
+from qubitclient import NNTaskName,TaskName
 from .config import API_URL,API_KEY,ENABLE_API
 import logging
 from qubitclient import handle_exceptions, control_api_execution
@@ -16,7 +16,7 @@ def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
     data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=task_type,curve_type=CurveType.COSINE)
+    response = client.request(file_list=[data_ndarray],task_type=task_type)
     results = client.get_result(response=response)
     logging.debug(f"results:{results}")
     return results

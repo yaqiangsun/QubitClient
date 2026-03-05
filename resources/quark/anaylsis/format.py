@@ -88,6 +88,11 @@ def s21_convert(result):
         data_formated["image"][qubit_name] = (x_array, amp,phi)
     return data_formated
 
+
+def nns21_convert(result):
+    data_formated = s21_convert(result)
+    return data_formated
+
 def drag_convert(result):
     """
     将quark格式数据转换为qubitclient所需格式

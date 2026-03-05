@@ -126,3 +126,8 @@ def plot_spectrum(data,results,save_path):
     data = spectrum_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM)
     return fig_list
+
+def plot_ramsey(data,results,save_path):
+    data = t2fit_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.RAMSEY)
+    return fig_list

@@ -187,47 +187,47 @@ print(result)
 
 ### 🧠 NNScope 任务
 
-| 任务名称 | 描述 | 详细文档 |
-|---------|------|---------|
-| `NNTaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/nnscope/SPECTRUM2D.md) |
-| `NNTaskName.POWERSHIFT` | 功率偏移曲线分割 | [文档](docs/nnscope/POWERSHIFT.md) |
-| `NNTaskName.S21VFLUX` | S21 vs Flux 参数曲线分割 | [文档](docs/nnscope/S21VFLUX.md) |
-| `NNTaskName.SPECTRUM` | 频谱分析 | [文档](docs/nnscope/SPECTRUM.md) |
-| `NNTaskName.S21PEAK` | S21 峰值检测 | [文档](docs/nnscope/S21PEAK.md) |
+| 任务名称 | 描述 | 文档 | 状态 |
+|---------|------|---------|---------|
+| `NNTaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/nnscope/SPECTRUM2D.md) | ✅
+| `NNTaskName.POWERSHIFT` | 功率偏移曲线分割 | [文档](docs/nnscope/POWERSHIFT.md) | ⏸️
+| `NNTaskName.S21VFLUX` | S21 vs Flux 参数曲线分割 | [文档](docs/nnscope/S21VFLUX.md) | ⏸️
+| `NNTaskName.SPECTRUM` | 频谱分析 | [文档](docs/nnscope/SPECTRUM.md) | ⏸️
+| `NNTaskName.S21PEAK` | S21 峰值检测 | [文档](docs/nnscope/S21PEAK.md) | ⏸️
 
 ### 🔬 Scope 任务
 
-| 任务名称 | 描述 | 详细文档 |
-|---------|------|---------|
-| `TaskName.S21PEAK` | S21 参数峰值检测 | [文档](docs/scope/S21PEAK.md) |
-| `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) |
-| `TaskName.RABICOS` | Rabi 振荡余弦第一峰检测 | [文档](docs/scope/RABICOS.md) |
-| `TaskName.RAMSEY` | RAMSY 衰减震荡余弦拟合 | [文档](docs/scope/RAMSEY.md) |
-| `TaskName.S21VFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VFLUX.md) |
-| `TaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/scope/SINGLESHOT.md) |
-| `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) |
-| `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) |
-| `TaskName.T2FIT` | T2 时间拟合 | [文档](docs/scope/T2FIT.md) |
-| `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) |
-| `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) |
-| `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) |
+| 任务名称 | 描述 | 文档 | 状态 |
+|---------|------|---------|---------|
+| `TaskName.S21PEAK` | S21 参数峰值检测 | [文档](docs/scope/S21PEAK.md) | ⏸️
+| `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) | ✅
+| `TaskName.RABICOS` | Rabi 振荡余弦第一峰检测 | [文档](docs/scope/RABICOS.md) | ✅
+| `TaskName.RAMSEY` | RAMSY 衰减震荡余弦拟合 | [文档](docs/scope/RAMSEY.md) | ✅
+| `TaskName.S21VFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VFLUX.md) | ⏸️
+| `TaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/scope/SINGLESHOT.md) | ✅
+| `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ✅
+| `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ✅
+| `TaskName.T2FIT` | T2 时间拟合 | [文档](docs/scope/T2FIT.md) | ✅
+| `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ⏸️
+| `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) | ⏸️
+| `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) | ✅
 
 ### 🤖 Ctrl 任务
 
-| 任务名称 | 描述 | 详细文档 |
-|---------|------|---------|
-| `CtrlTaskName.S21` | S21 腔频测量实验 | [文档](docs/ctrl/S21.md) |
-| `CtrlTaskName.DRAG` | DRAG 免交叉点测量 | [文档](docs/ctrl/DRAG.md) |
-| `CtrlTaskName.DELTA` | 频率偏移校准测量 | [文档](docs/ctrl/DELTA.md) |
-| `CtrlTaskName.OPT_PIPULSE` | 最优 π 脉冲测量 | [文档](docs/ctrl/OPT_PIPULSE.md) |
-| `CtrlTaskName.POWERSHIFT` | 功率偏移曲线测量 | [文档](docs/ctrl/POWERSHIFT.md) |
-| `CtrlTaskName.RABI` | Rabi 振荡测量 | [文档](docs/ctrl/RABI.md) |
-| `CtrlTaskName.RAMSEY` | Ramsey 干涉测量 | [文档](docs/ctrl/RAMSEY.md) |
-| `CtrlTaskName.S21VSFLUX` | S21 vs Flux 测量 | [文档](docs/ctrl/S21VSFLUX.md) |
-| `CtrlTaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/ctrl/SINGLESHOT.md) |
-| `CtrlTaskName.SPECTRUM` | 频谱分析测量 | [文档](docs/ctrl/SPECTRUM.md) |
-| `CtrlTaskName.SPECTRUM_2D` | 二维频谱测量 | [文档](docs/ctrl/SPECTRUM_2D.md) |
-| `CtrlTaskName.T1` | T1 弛豫时间测量 | [文档](docs/ctrl/T1.md) |
+| 任务名称 | 描述 | 详细文档 | 状态 |
+|---------|------|---------|---------|
+| `CtrlTaskName.S21` | S21 腔频测量实验 | [文档](docs/ctrl/S21.md) | ⏸️
+| `CtrlTaskName.DRAG` | DRAG 免交叉点测量 | [文档](docs/ctrl/DRAG.md) | ⏸️
+| `CtrlTaskName.DELTA` | 频率偏移校准测量 | [文档](docs/ctrl/DELTA.md) | ⏸️
+| `CtrlTaskName.OPT_PIPULSE` | 最优 π 脉冲测量 | [文档](docs/ctrl/OPT_PIPULSE.md) | ⏸️
+| `CtrlTaskName.POWERSHIFT` | 功率偏移曲线测量 | [文档](docs/ctrl/POWERSHIFT.md) | ⏸️
+| `CtrlTaskName.RABI` | Rabi 振荡测量 | [文档](docs/ctrl/RABI.md) | ⏸️
+| `CtrlTaskName.RAMSEY` | Ramsey 干涉测量 | [文档](docs/ctrl/RAMSEY.md) | ⏸️
+| `CtrlTaskName.S21VSFLUX` | S21 vs Flux 测量 | [文档](docs/ctrl/S21VSFLUX.md) | ⏸️
+| `CtrlTaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/ctrl/SINGLESHOT.md) | ⏸️
+| `CtrlTaskName.SPECTRUM` | 频谱分析测量 | [文档](docs/ctrl/SPECTRUM.md) | ⏸️
+| `CtrlTaskName.SPECTRUM_2D` | 二维频谱测量 | [文档](docs/ctrl/SPECTRUM_2D.md) | ⏸️
+| `CtrlTaskName.T1` | T1 弛豫时间测量 | [文档](docs/ctrl/T1.md) | ⏸️
 
 ## 📁 数据格式说明
 

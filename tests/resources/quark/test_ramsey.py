@@ -17,13 +17,15 @@ if project_root not in sys.path:
 
 from resources.quark.anaylsis.utils import get_pkl_content
 from resources.quark.anaylsis.inception import ramsey
-from resources.quark.anaylsis.visualization import plot_t2fit
+from resources.quark.anaylsis.visualization import plot_ramsey
 import matplotlib.pyplot as plt
 
 
 def test_ramsey(task_key, base_dir):
     for pkl_path in os.listdir(base_dir):
         pkl_path = os.path.join(base_dir, pkl_path)
+        # 提取文件名前缀
+        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
         data = get_pkl_content(pkl_path)
         if data is None:
             continue
@@ -34,10 +36,10 @@ def test_ramsey(task_key, base_dir):
         if "t2" or "ramsey" in data["meta"]["name"].lower():
             if len(data["meta"]["other"]["qubits"]) >= 1:
                 if task_key in ["t2fit", "t2", "ramsey", "echo"]:
-                    print(f"正在测试 t2fit 文件：{pkl_path}")
+                    print(f"正在测试 ramsey 文件：{pkl_path}")
                     analysis_result = ramsey(data)
                     # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
-                    fig_list = plot_t2fit(data, analysis_result, save_path='./tmp/vis/t2fit.png')
+                    fig_list = plot_ramsey(data, analysis_result, save_path=f'./tmp/vis/ramsey_{pure_name}.png')
                     if fig_list and len(fig_list) > 0:
                         fig_list[0].show()
                     plt.show(block=True)
@@ -45,7 +47,7 @@ def test_ramsey(task_key, base_dir):
 
 def main():
     task_key = "ramsey"
-    base_dir = "data/ramsey"
+    base_dir = "./tmp/data/ramsey"
     test_ramsey(task_key, base_dir)
 
 

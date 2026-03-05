@@ -112,7 +112,7 @@ API_KEY = "your-api-key"
 
 ### 2️⃣ 使用示例
 
-#### 🧠 NNScope 功能（曲线分割）
+#### 🧠 NNScope 功能（SPECTRUM2D）
 
 ```python
 from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
@@ -142,7 +142,7 @@ response = client.request(
 results = client.get_result(response=response)
 ```
 
-#### 🔬 Scope 功能（参数拟合）
+#### 🔬 Scope 功能（OPTPIPULSE）
 
 ```python
 from qubitclient import QubitScopeClient, TaskName
@@ -164,7 +164,7 @@ response = client.request(
 results = client.get_result(response=response)
 ```
 
-#### 🤖 Ctrl 功能（MCP 协议测量任务）
+#### 🤖 Ctrl 功能（MCP 协议测量S21）
 
 ```python
 from qubitclient.ctrl import QubitCtrlClient, CtrlTaskName
@@ -185,7 +185,7 @@ print(result)
 
 ## 📋 支持的任务类型
 
-### 🧠 NNScope 任务（曲线分割）
+### 🧠 NNScope 任务
 
 | 任务名称 | 描述 | 详细文档 |
 |---------|------|---------|
@@ -195,7 +195,7 @@ print(result)
 | `NNTaskName.SPECTRUM` | 频谱分析 | [文档](docs/nnscope/SPECTRUM.md) |
 | `NNTaskName.S21PEAK` | S21 峰值检测 | [文档](docs/nnscope/S21PEAK.md) |
 
-### 🔬 Scope 任务（参数拟合）
+### 🔬 Scope 任务
 
 | 任务名称 | 描述 | 详细文档 |
 |---------|------|---------|
@@ -212,7 +212,7 @@ print(result)
 | `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) |
 | `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) |
 
-### 🤖 Ctrl 任务（MCP 协议）
+### 🤖 Ctrl 任务
 
 | 任务名称 | 描述 | 详细文档 |
 |---------|------|---------|

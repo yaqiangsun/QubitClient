@@ -36,8 +36,8 @@ def test_drag(task_key, base_dir):
                 if task_key in "drag":
                     analysis_result = allxy_drag(data)
                     fig_list = plot_drag(data, analysis_result, save_path='./tmp/vis/drag.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

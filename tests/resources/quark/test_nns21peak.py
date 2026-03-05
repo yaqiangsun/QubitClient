@@ -39,14 +39,14 @@ def test_s21peak(task_key, base_dir):
             if len(data["meta"]["other"]["qubits"]) >= 1:
                 if task_key in "s21peak":
                     analysis_result = nns21(data)
-                    fig_list = plot_nns21(data, analysis_result, save_path=f'./tmp/vis/nns21peak_{pure_name}_allqubits.png')
+                    fig_list = plot_nns21(data, analysis_result, save_path=f'./tmp/vis/nns21peak_{pure_name}.png')
                     # fig_list[0].show()
                     # plt.show(block=True)
 
 
 def main():
     task_key = "s21"
-    base_dir = "tmp/s21"
+    base_dir = "tmp/data/s21"
     test_s21peak(task_key, base_dir)
 
 

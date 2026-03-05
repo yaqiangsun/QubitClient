@@ -36,8 +36,8 @@ def test_spectrum2d(task_key, base_dir):
                 if task_key in "spectrum2d":
                     analysis_result = spectrum2d(data)
                     fig_list = plot_spectrum2d(data, analysis_result, save_path='./tmp/vis/spectrum2d.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

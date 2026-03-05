@@ -36,8 +36,8 @@ def test_nns21vsflux(task_key, base_dir):
                 if task_key in "nns21vsflux":
                     analysis_result = nns21vsflux(data)
                     fig_list = plot_nns21vsflux(data, analysis_result, save_path='./tmp/vis/nns21vsflux.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

@@ -40,9 +40,9 @@ def test_ramsey(task_key, base_dir):
                     analysis_result = ramsey(data)
                     # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
                     fig_list = plot_ramsey(data, analysis_result, save_path=f'./tmp/vis/ramsey_{pure_name}.png')
-                    if fig_list and len(fig_list) > 0:
-                        fig_list[0].show()
-                    plt.show(block=True)
+                    # if fig_list and len(fig_list) > 0:
+                    #     fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

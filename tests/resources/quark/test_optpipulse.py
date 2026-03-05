@@ -36,13 +36,13 @@ def test_optpipulse(task_key, base_dir):
                 if task_key in "opt_pipulse":
                     analysis_result = optpipulse(data)
                     fig_list = plot_optpipulse(data, analysis_result, save_path='./tmp/vis/optpipulse.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():
     task_key = "opt"
-    base_dir = "data/opt_pipulse_q"
+    base_dir = "tmp/data/opt_pipulse"
     test_optpipulse(task_key, base_dir)
 
 

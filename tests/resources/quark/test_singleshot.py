@@ -36,8 +36,8 @@ def test_singleshot(task_key, base_dir):
                 if task_key in "singleshot":
                     analysis_result = singleshot(data)
                     fig_list = plot_singleshot(data, analysis_result, save_path='./tmp/vis/singleshot.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

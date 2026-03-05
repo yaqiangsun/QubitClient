@@ -36,13 +36,13 @@ def test_nnspectrum2d(task_key, base_dir):
                 if task_key in "nnspectrum2d":
                     analysis_result = nnspectrum2d(data)
                     fig_list = plot_nnspectrum2d(data, analysis_result, save_path='./tmp/vis/nnspectrum2d.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():
     task_key = "spectrum"
-    base_dir = "tmp/data/nnspectrum2d"
+    base_dir = "tmp/data/spectrum2d"
     test_nnspectrum2d(task_key, base_dir)
 
 

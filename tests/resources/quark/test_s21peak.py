@@ -36,13 +36,13 @@ def test_s21peak(task_key, base_dir):
                 if task_key in "s21peak":
                     analysis_result = s21(data)
                     fig_list = plot_s21(data, analysis_result, save_path='./tmp/vis/s21.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():
     task_key = "s21"
-    base_dir = "tmp/s21"
+    base_dir = "tmp/data/s21"
     test_s21peak(task_key, base_dir)
 
 

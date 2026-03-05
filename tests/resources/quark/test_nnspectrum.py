@@ -42,8 +42,8 @@ def test_nnspectrum(task_key, base_dir):
                     analysis_result = nnspectrum(data)
                     logging.info(f"-----nnspectrum analysis result: {analysis_result}")
                     fig_list = plot_nnspectrum(data, analysis_result, save_path='./tmp/vis/nnspectrum.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

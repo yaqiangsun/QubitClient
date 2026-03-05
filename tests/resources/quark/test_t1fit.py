@@ -38,14 +38,14 @@ def test_t1fit(task_key, base_dir):
                     analysis_result = t1fit(data)
                     #print("第一个 qubit 的 results 示例：", analysis_result.get("results", [{}])[0])                                        
                     fig_list = plot_t1fit(data, analysis_result, save_path='./tmp/vis/t1fit.png')
-                    if fig_list and len(fig_list) > 0:
-                        fig_list[0].show()
-                    plt.show(block=True)
+                    # if fig_list and len(fig_list) > 0:
+                    #     fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():
     task_key = "t1"
-    base_dir = "data/t1_data_q"
+    base_dir = "./tmp/data/t1"
     test_t1fit(task_key, base_dir)
 
 

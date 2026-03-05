@@ -36,8 +36,8 @@ def test_s21vsflux(task_key, base_dir):
                 if task_key in "s21vflux":
                     analysis_result = s21vsflux(data)
                     fig_list = plot_s21vsflux(data, analysis_result, save_path='./tmp/vis/s21vsflux.png')
-                    fig_list[0].show()
-                    plt.show(block=True)
+                    # fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():

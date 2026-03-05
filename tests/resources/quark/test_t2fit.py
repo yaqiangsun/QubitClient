@@ -38,14 +38,14 @@ def test_t2fit(task_key, base_dir):
                     analysis_result = t2fit(data)
                     # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
                     fig_list = plot_t2fit(data, analysis_result, save_path='./tmp/vis/t2fit.png')
-                    if fig_list and len(fig_list) > 0:
-                        fig_list[0].show()
-                    plt.show(block=True)
+                    # if fig_list and len(fig_list) > 0:
+                    #     fig_list[0].show()
+                    # plt.show(block=True)
 
 
 def main():
     task_key = "t2"
-    base_dir = "data/t2_data_q"
+    base_dir = "./tmp/data/t2"
     test_t2fit(task_key, base_dir)
 
 

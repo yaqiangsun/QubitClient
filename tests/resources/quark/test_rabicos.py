@@ -41,14 +41,14 @@ def test_rabicos(task_key, base_dir):
   
                 analysis_result = rabi(data)
                 fig_list = plot_rabicos(data, analysis_result, save_path='./tmp/vis/rabicos.png')
-                if fig_list and len(fig_list) > 0:
-                    fig_list[0].show()
-                plt.show(block=True)
+                # if fig_list and len(fig_list) > 0:
+                #     fig_list[0].show()
+                # plt.show(block=True)
 
 
 def main():
     task_key = "rabi"
-    base_dir = "data/rabi_in_group_q"
+    base_dir = "data/rabi"
     test_rabicos(task_key, base_dir)
 
 

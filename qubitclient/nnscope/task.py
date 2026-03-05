@@ -7,7 +7,7 @@ import numpy as np
 
 
 from qubitclient.nnscope.utils.data_convert import convert_spectrum_npy2npz,convert_spectrum_dict2npz
-
+from qubitclient import CurveType
 # load from npz file path
 def load_from_npz_path(file_path_list:list[str]):
     files = []
@@ -146,13 +146,13 @@ def test(files):
     return "hello"
 
 @task_register
-def spectrum2dnnscope(files,url,api_key,curve_type):
+def spectrum2dnnscope(files,url,api_key,curve_type=CurveType.COSINE,*args,**kwargs):
     spectrum2d_url = url + "/api/v1/tasks/nnscope/seglines"
     response = request_task(files,spectrum2d_url,api_key,curve_type)
     return response
 
 @task_register
-def s21vfluxnnscope(files,url,api_key,curve_type):
+def s21vfluxnnscope(files,url,api_key,curve_type=CurveType.COSINE,*args,**kwargs):
     spectrum2d_url = url + "/api/v1/tasks/nnscope/s21vflux"
     response = request_task(files,spectrum2d_url,api_key,curve_type)
     return response
@@ -164,7 +164,7 @@ def powershiftnnscope(files,url,api_key,*args,**kwargs):
     return response
 
 @task_register
-def s21peaknnscope(files,url,api_key):
+def s21peaknnscope(files,url,api_key,*args,**kwargs):
     s21peak_url = url + "/api/v1/tasks/nnscope/s21peak"
     response = request_task(files, s21peak_url, api_key)
     return response

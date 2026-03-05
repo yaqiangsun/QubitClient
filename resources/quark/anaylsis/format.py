@@ -76,8 +76,8 @@ def s21_convert(result):
         amp = np.abs(iq_avg)
         phi = np.angle(iq_avg)
         phi = np.unwrap(np.angle(iq_avg))
-        # import scipy
-        # phi = scipy.signal.detrend(phi, type='linear')
+        import scipy
+        phi = scipy.signal.detrend(phi, type='linear')
         # 最终格式校验
         assert iq_avg.ndim == 1, "iq_avg为一维"
 

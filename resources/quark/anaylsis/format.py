@@ -430,7 +430,7 @@ def powershift_convert(result):
     """
     将quark格式数据转换为qubitclient所需格式
     Args:
-        result (dict): 原始实验数据字典（需包含meta/data核心字段）
+    result (dict): 原始实验数据字典（需包含meta/data核心字段）
     Returns:
         dict: 符合服务器要求的格式数据
     """
@@ -458,8 +458,8 @@ def powershift_convert(result):
         assert abs_s.shape[0] == power.shape[0], "s的第一维度点数需与power轴一致"
         assert abs_s.shape[1] == freq.shape[0], "s的第二维度点数需与freq轴一致"
         # 转换成所需的标准格式
-        abs_s = abs_s.T
-        data_formated["image"][qubit_name] = (power, freq, abs_s)
+        #abs_s = abs_s.T
+        data_formated["image"][qubit_name] = (freq, power, abs_s)
     return data_formated
 
 def nnspectrum_convert(result):

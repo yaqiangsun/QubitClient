@@ -27,6 +27,10 @@ def test_rabicos(task_key, base_dir):
         if not filename.endswith('.pkl'):
             continue
         pkl_path = os.path.join(base_dir, filename)
+        
+        # 提取文件名前缀
+        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
+        
         data = get_pkl_content(pkl_path)
         if data is None:
             continue
@@ -40,7 +44,7 @@ def test_rabicos(task_key, base_dir):
                 print(f"正在测试 Rabi 文件 ({found_files}): {pkl_path}")
   
                 analysis_result = rabi(data)
-                fig_list = plot_rabicos(data, analysis_result, save_path='./tmp/vis/rabicos.png')
+                fig_list = plot_rabicos(data, analysis_result, save_path=f'./tmp/vis/rabicos_{pure_name}.png')
                 # if fig_list and len(fig_list) > 0:
                 #     fig_list[0].show()
                 # plt.show(block=True)

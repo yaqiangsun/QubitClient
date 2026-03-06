@@ -24,6 +24,10 @@ import matplotlib.pyplot as plt
 def test_spectrum2d(task_key, base_dir):
     for pkl_path in os.listdir(base_dir):
         pkl_path = os.path.join(base_dir, pkl_path)
+        
+        # 提取文件名前缀
+        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
+        
         data = get_pkl_content(pkl_path)
         if data is None:
             continue
@@ -35,7 +39,7 @@ def test_spectrum2d(task_key, base_dir):
             if len(data["meta"]["other"]["qubits"]) >= 1:
                 if task_key in "spectrum2d":
                     analysis_result = spectrum2d(data)
-                    fig_list = plot_spectrum2d(data, analysis_result, save_path='./tmp/vis/spectrum2d.png')
+                    fig_list = plot_spectrum2d(data, analysis_result, save_path=f'./tmp/vis/spectrum2d_{pure_name}.png')
                     # fig_list[0].show()
                     # plt.show(block=True)
 

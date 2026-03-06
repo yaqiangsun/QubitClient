@@ -24,6 +24,10 @@ import matplotlib.pyplot as plt
 def test_t2fit(task_key, base_dir):
     for pkl_path in os.listdir(base_dir):
         pkl_path = os.path.join(base_dir, pkl_path)
+        
+        # 提取文件名前缀
+        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
+        
         data = get_pkl_content(pkl_path)
         if data is None:
             continue
@@ -37,7 +41,7 @@ def test_t2fit(task_key, base_dir):
                     print(f"正在测试 t2fit 文件：{pkl_path}")
                     analysis_result = t2fit(data)
                     # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
-                    fig_list = plot_t2fit(data, analysis_result, save_path='./tmp/vis/t2fit.png')
+                    fig_list = plot_t2fit(data, analysis_result, save_path=f'./tmp/vis/t2fit_{pure_name}.png')
                     # if fig_list and len(fig_list) > 0:
                     #     fig_list[0].show()
                     # plt.show(block=True)

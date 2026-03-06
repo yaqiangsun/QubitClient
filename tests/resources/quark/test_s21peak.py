@@ -24,6 +24,10 @@ import matplotlib.pyplot as plt
 def test_s21peak(task_key, base_dir):
     for pkl_path in os.listdir(base_dir):
         pkl_path = os.path.join(base_dir, pkl_path)
+        
+        # 提取文件名前缀
+        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
+        
         data = get_pkl_content(pkl_path)
         if data is None:
             continue
@@ -35,7 +39,7 @@ def test_s21peak(task_key, base_dir):
             if len(data["meta"]["other"]["qubits"]) >= 1:
                 if task_key in "s21peak":
                     analysis_result = s21(data)
-                    fig_list = plot_s21(data, analysis_result, save_path='./tmp/vis/s21.png')
+                    fig_list = plot_s21(data, analysis_result, save_path=f'./tmp/vis/s21_{pure_name}.png')
                     # fig_list[0].show()
                     # plt.show(block=True)
 

@@ -40,7 +40,7 @@ def test_powershift(task_key, base_dir):
             if len(data["meta"]["other"]["qubits"])>=1:
                 if task_key in "powershift":
                     analysis_result = powershift(data)
-                    fig_list = plot_powershift(data,analysis_result,save_path='./tmp/vis/powershift.png')
+                    fig_list = plot_powershift(data,analysis_result,save_path=f'./tmp/vis/powershift_{pure_name}.png')
                     # fig_list[0].show()
                     # plt.show(block=True)
 

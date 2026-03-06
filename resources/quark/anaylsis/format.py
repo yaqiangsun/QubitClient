@@ -74,6 +74,12 @@ def s21_convert(result):
         # 处理Population波形
         iq_avg = np.array(result["data"]["iq_avg"][:, index], dtype=np.complex64)
         amp = np.abs(iq_avg)
+        # 去基线
+        # indices = np.arange(len(amp))
+        # coeffs = np.polyfit(indices, amp, deg=5)
+        # trend = np.polyval(coeffs, indices)
+        # amp = amp - trend
+
         phi = np.angle(iq_avg)
         phi = np.unwrap(np.angle(iq_avg))
         import scipy

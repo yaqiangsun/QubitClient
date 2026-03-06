@@ -426,6 +426,42 @@ def t2fit_convert(result):
     
     return data_formated
 
+def powershift_convert(result):
+    """
+    将quark格式数据转换为qubitclient所需格式
+    Args:
+        result (dict): 原始实验数据字典（需包含meta/data核心字段）
+    Returns:
+        dict: 符合服务器要求的格式数据
+    """
+
+    # 提取量子比特名称
+    qubit_name_list = result["meta"]["other"]["qubits"]
+    data_formated = {
+        "image": {
+        }
+    }
+    for index, qubit_name in enumerate(qubit_name_list):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        # 提取AMP幅值轴x_array
+        power = np.array(result["meta"]["axis"]["power"]["def"], dtype=np.float64)
+        assert power.ndim == 1, "power轴需为一维数组"
+        freq = np.array(result["meta"]["axis"]["freq"]["def"], dtype=np.float64)
+        assert freq.ndim == 1, "freq轴需为一维数组"
+
+        s = result["data"]["iq_avg"].squeeze(axis=-1)
+        abs_s = np.abs(s)
+
+        assert abs_s.ndim == 2, "s为二维"
+        assert abs_s.shape[0] == power.shape[0], "s的第一维度点数需与power轴一致"
+        assert abs_s.shape[1] == freq.shape[0], "s的第二维度点数需与freq轴一致"
+        # 转换成所需的标准格式
+        abs_s = abs_s.T
+        data_formated["image"][qubit_name] = (power, freq, abs_s)
+    return data_formated
+
 def nnspectrum_convert(result):
     """
     将quark格式数据转换为qubitclient所需格式（一维频谱专用）

@@ -21,6 +21,7 @@ if project_root not in sys.path:
 
 from .task import run_task
 from .postprocess import run_postprocess
+from qubitclient.utils.env_load import get_config
 
 import logging
 import numpy as np
@@ -31,9 +32,11 @@ logging.basicConfig(level=logging.INFO)
 
 
 class QubitNNScopeClient(object):
-    def __init__(self, url, api_key):
-        self.url = url
-        self.api_key = api_key
+    def __init__(self, url=None, api_key=None):
+        # 使用配置加载器获取配置（支持多种来源和优先级）
+        config = get_config(url=url, api_key=api_key)
+        self.url = config['url']
+        self.api_key = config['api_key']
 
     def request(self, file_list:list[str|dict[str,np.ndarray]|np.ndarray],task_type:str="s21peak",*args,**kwargs):
         if len(file_list)>0:

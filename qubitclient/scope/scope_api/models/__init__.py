@@ -7,6 +7,7 @@ from .body_rabi_api_v1_tasks_scope_rabi_post import BodyRabiApiV1TasksScopeRabiP
 from .body_rabicos_api_v1_tasks_scope_rabicospeak_post import BodyRabicosApiV1TasksScopeRabicospeakPost
 from .body_ramsy_api_v1_tasks_scope_ramsy_post import BodyRamsyApiV1TasksScopeRamsyPost
 from .body_s21_peak_api_v1_tasks_scope_s21_peak_post import BodyS21PeakApiV1TasksScopeS21PeakPost
+from .body_s21_peakmulti_api_v1_tasks_scope_s21_peakmulti_post import BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost
 from .body_s21_vflux_api_v1_tasks_scope_s21_vflux_post import BodyS21VfluxApiV1TasksScopeS21VfluxPost
 from .body_singleshot_api_v1_tasks_scope_singleshot_post import BodySingleshotApiV1TasksScopeSingleshotPost
 from .body_spectrum_2d_api_v1_tasks_scope_spectrum_2d_post import BodySpectrum2DApiV1TasksScopeSpectrum2DPost
@@ -24,6 +25,7 @@ __all__ = (
     "BodyRabicosApiV1TasksScopeRabicospeakPost",
     "BodyRamsyApiV1TasksScopeRamsyPost",
     "BodyS21PeakApiV1TasksScopeS21PeakPost",
+    "BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost",
     "BodyS21VfluxApiV1TasksScopeS21VfluxPost",
     "BodySingleshotApiV1TasksScopeSingleshotPost",
     "BodySpectrum2DApiV1TasksScopeSpectrum2DPost",

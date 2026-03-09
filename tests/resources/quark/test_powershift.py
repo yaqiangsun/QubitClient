@@ -29,7 +29,6 @@ def test_powershift(task_key, base_dir):
         pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
         
         data = get_pkl_content(pkl_path)
-        print(data)
         if data is None:
             continue
         if "meta" not in data.keys():
@@ -38,7 +37,7 @@ def test_powershift(task_key, base_dir):
             continue
         if task_key.lower() in data["meta"]["name"].lower():
             if len(data["meta"]["other"]["qubits"])>=1:
-                if task_key in "powershift":
+                if task_key in ["powershift","s21"]:
                     analysis_result = powershift(data)
                     fig_list = plot_powershift(data,analysis_result,save_path=f'./tmp/vis/powershift_{pure_name}.png')
                     # fig_list[0].show()
@@ -46,7 +45,7 @@ def test_powershift(task_key, base_dir):
 
 
 def main():
-    task_key = "powershift"
+    task_key = "s21"
     base_dir = "tmp/data/powershift"
     test_powershift(task_key, base_dir)
 

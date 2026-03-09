@@ -1,6 +1,13 @@
 
-import os
-import requests
+# -*- coding: utf-8 -*-
+# Copyright (c) 2026 yaqiang.sun.
+# This source code is licensed under the license found in the LICENSE file
+# in the root directory of this source tree.
+#########################################################################
+# Author: yaqiangsun
+# Created Time: 2026/03/09 15:05:31
+########################################################################
+
 
 import io
 import numpy as np
@@ -8,6 +15,7 @@ import numpy as np
 
 from qubitclient.nnscope.utils.data_convert import convert_spectrum_npy2npz,convert_spectrum_dict2npz
 from qubitclient import CurveType
+from qubitclient.nnscope.nnscope_api.call import request_task
 # load from npz file path
 def load_from_npz_path(file_path_list:list[str]):
     files = []
@@ -100,13 +108,6 @@ def load_from_npy_dict(dict_list:list[dict]):
             bytes_obj = buffer.getvalue()
         files.append(("request", (f"None_{index}.npy",bytes_obj, "application/octet-stream")))
     return files
-def request_task(files,url,api_key,curve_type:str=None):
-    headers = {'Authorization': f'Bearer {api_key}'}  # 添加API密钥到请求头
-    data = {
-            "curve_type":curve_type.value if curve_type else None
-    }
-    response = requests.post(url, files=files, headers=headers,data=data)
-    return response
 def load_files(filepath_list: list[str|dict[str,np.ndarray]|np.ndarray]):
     if len(filepath_list)<=0:
         return []

@@ -8,7 +8,7 @@ def postprocess_result_spectrum2dnnscope(response, threshold):
     logging.debug("Result: %s", response.json())
     result = response.json()
     results = result["result"]
-    results = results[0]
+    # results = results[0]
     results_filtered = []
     for idx, result in enumerate(results):
         result_filtered = {}
@@ -44,10 +44,13 @@ def postprocess_result_s21vfluxnnscope(response, threshold):
     logging.debug("Result: %s", response.json())
     result = response.json()
     results = result["result"]
-    results = results[0]
+
+    # results = results[0]
+
     results_filtered = []
     for idx, result in enumerate(results):
         result_filtered = {}
+        logging.info("cur result: %s, type: %s", result, type(result))
         params_list = result['params_list']
         linepoints_list = result['linepoints_list']
         confidence_list = result['confidence_list']
@@ -128,49 +131,53 @@ def postprocess_result_powershiftnnscope(response, threshold):
 def postprocess_result_spectrumnnscope(response, threshold):
     logging.debug("before filter: Result: %s", response.json())
     result = response.json()
+
     results = result.get("result", [])
 
     results_filtered = []
-    for idx, result in enumerate(results):
+    for res in results:
         result_filtered = {}
-        peaks_list = result.get('peaks_list', [])        # 嵌套结构 [[峰1_波1,峰2_波1],[峰1_波2,峰2_波2]]
-        confidences_list = result.get('confidences_list', [])  # 和peaks_list一一对应的置信度嵌套数组
-        peak_start = result.get('peak_start', [])
-        peak_end = result.get('peak_end', [])
-        # status = result.get('status', [])
+
+        peaks_list = res.get('peaks_list', [])
+        confidences_list = res.get('confidences_list', [])
+        peak_start = res.get('peak_start', [])
+        peak_end = res.get('peak_end', [])
 
         filtered_peaks = []
         filtered_confidences = []
         filtered_peak_start = []
         filtered_peak_end = []
-        filtered_status = []
-        
-        # 双层循环
-        for wave_idx, wave_conf_list in enumerate(confidences_list):
-            # 每个波的过滤结果临时存储
-            wave_peaks_filtered = []
-            wave_confs_filtered = []
-            wave_start_filtered = []
-            wave_end_filtered = []
-            wave_status_filtered = []
-            
-            # 遍历当前波的所有峰
-            for peak_idx, conf in enumerate(wave_conf_list):
-                # 置信度 >= 传入的阈值 才保留
-                if isinstance(conf, (int, float)) and conf >= threshold:
-                    wave_peaks_filtered.append(peaks_list[wave_idx][peak_idx])
-                    wave_confs_filtered.append(confidences_list[wave_idx][peak_idx])
-                    wave_start_filtered.append(peak_start[wave_idx][peak_idx])
-                    wave_end_filtered.append(peak_end[wave_idx][peak_idx])
-            
-            # 当前波过滤完后，有数据才追加到最终结果
-            if wave_peaks_filtered:
-                filtered_peaks.append(wave_peaks_filtered)
-                filtered_confidences.append(wave_confs_filtered)
-                filtered_peak_start.append(wave_start_filtered)
-                filtered_peak_end.append(wave_end_filtered)
-                filtered_status.append(wave_status_filtered)
 
+        # 遍历每一条曲线（保留[]位置）
+        for wave_idx in range(len(confidences_list)):
+            wave_peaks = peaks_list[wave_idx] if wave_idx < len(peaks_list) else []
+            wave_confs = confidences_list[wave_idx] if wave_idx < len(confidences_list) else []
+            wave_starts = peak_start[wave_idx] if wave_idx < len(peak_start) else []
+            wave_ends = peak_end[wave_idx] if wave_idx < len(peak_end) else []
+
+            curr_peaks = []
+            curr_confs = []
+            curr_starts = []
+            curr_ends = []
+
+            # 遍历
+            for peak_idx, conf in enumerate(wave_confs):
+                if isinstance(conf, (int, float)) and conf >= threshold:
+                    if peak_idx < len(wave_peaks):
+                        curr_peaks.append(wave_peaks[peak_idx])
+                    if peak_idx < len(wave_starts):
+                        curr_starts.append(wave_starts[peak_idx])
+                    if peak_idx < len(wave_ends):
+                        curr_ends.append(wave_ends[peak_idx])
+                    curr_confs.append(conf)
+
+            # 无论是否为空，都追加到结果
+            filtered_peaks.append(curr_peaks)
+            filtered_confidences.append(curr_confs)
+            filtered_peak_start.append(curr_starts)
+            filtered_peak_end.append(curr_ends)
+
+        # 组装
         result_filtered['peaks_list'] = filtered_peaks
         result_filtered['confidences_list'] = filtered_confidences
         result_filtered['peak_start'] = filtered_peak_start
@@ -178,9 +185,7 @@ def postprocess_result_spectrumnnscope(response, threshold):
         result_filtered['status'] = 'success'
 
         results_filtered.append(result_filtered)
-    response_data ={}
-    response_data['results'] = results_filtered
-
+    response_data = {'results': results_filtered}
     return response_data
 
 

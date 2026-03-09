@@ -64,83 +64,87 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
         )
     logging.info(f"Saving ai image to:{save_path}")
     return fig_list
-
+@handle_exceptions
 def plot_optpipulse(data,results,save_path):
     data = optpipulse_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.OPTPIPULSE)
-
     return fig_list
+@handle_exceptions
 def plot_s21(data,results,save_path):
     data = s21_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAK)
-
     return fig_list
-
+@handle_exceptions
 def plot_nns21(data,results,save_path):
     data = nns21_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21PEAK)
     return fig_list
-
+@handle_exceptions
 def plot_s21vsflux(data,results,save_path):
     data = s21vsflux_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21VFLUX)
     return fig_list
+@handle_exceptions
 def plot_nns21vsflux(data,results,save_path):
     data = nns21vsflux_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21VFLUX)
     return fig_list
+@handle_exceptions
 def plot_drag(data,results,save_path):
     data = drag_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.DRAG)
     return fig_list
-
+@handle_exceptions
 def plot_singleshot(data,results,save_path):
     data = singleshot_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.SINGLESHOT)
     return fig_list
-
+@handle_exceptions
 def plot_nnspectrum2d(data,results,save_path):
     data = nnspectrum2d_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM2D)
     return fig_list
-
+@handle_exceptions
 def plot_spectrum2d(data,results,save_path):
     data = spectrum2d_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.SPECTRUM2D)
     return fig_list
-
+@handle_exceptions
 def plot_t1fit(data,results,save_path):
     data = t1fit_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.T1FIT)
     return fig_list
-
+@handle_exceptions
 def plot_t2fit(data,results,save_path):
     data = t2fit_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.T2FIT)
     return fig_list
-
+@handle_exceptions
 def plot_rabicos(data,results,save_path):
     data = rabicos_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.RABICOS)
     return fig_list
+@handle_exceptions
 def plot_nnspectrum(data,results,save_path):
     data = nnspectrum_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM)
     return fig_list
+@handle_exceptions
 def plot_spectrum(data,results,save_path):
     data = spectrum_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.SPECTRUM)
     return fig_list
-
+@handle_exceptions
 def plot_ramsey(data,results,save_path):
     data = t2fit_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.RAMSEY)
     return fig_list
+@handle_exceptions
 def plot_powershift(data,results,save_path):
     data = powershift_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.POWERSHIFT)
     return fig_list
-
+@handle_exceptions
 def plot_nnpowershift(data,results,save_path):
     data = powershift_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.POWERSHIFT)

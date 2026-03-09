@@ -1,6 +1,7 @@
 
 
 from .scope_api.api.defined_tasks import s21peak_api_v1_tasks_scope_s21peak_post
+from .scope_api.api.defined_tasks import s21peakmulti_api_v1_tasks_scope_s21peakmulti_post
 from .scope_api.api.defined_tasks import optpipulse_api_v1_tasks_scope_optpipulse_post
 from .scope_api.api.defined_tasks import rabi_api_v1_tasks_scope_rabi_post
 from .scope_api.api.defined_tasks import rabicos_api_v1_tasks_scope_rabicospeak_post
@@ -15,6 +16,7 @@ from .scope_api.api.defined_tasks import drag_api_v1_tasks_scope_drag_post
 
 
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
+from .scope_api.models import BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost
 from .scope_api.models import BodyOptpipulseApiV1TasksScopeOptpipulsePost
 from .scope_api.models import BodyRabiApiV1TasksScopeRabiPost
 from .scope_api.models import BodyRabicosApiV1TasksScopeRabicospeakPost
@@ -88,6 +90,12 @@ def s21peak(client,files: File):
     body: BodyS21PeakApiV1TasksScopeS21PeakPost = BodyS21PeakApiV1TasksScopeS21PeakPost(files=files)
     response: Response[BodyS21PeakApiV1TasksScopeS21PeakPost] = s21peak_api_v1_tasks_scope_s21peak_post.sync_detailed(client=client,body=body)
     return response
+
+@task_register
+def s21peakmulti(client,files: File):
+    body: BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost = BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost(files=files)
+    response: Response[BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost] = s21peakmulti_api_v1_tasks_scope_s21peakmulti_post.sync_detailed(client=client,body=body)
+    return response
 @task_register
 def optpipulse(client,files: File):
     body: BodyOptpipulseApiV1TasksScopeOptpipulsePost = BodyOptpipulseApiV1TasksScopeOptpipulsePost(files=files)
@@ -154,6 +162,7 @@ from enum import Enum, unique
 @unique
 class TaskName(Enum):
     S21PEAK = "s21peak"
+    S21PEAKMULTI = "s21peakmulti"
     OPTPIPULSE = "optpipulse"
     # RABI = "rabi"
     RAMSEY = "ramsey"

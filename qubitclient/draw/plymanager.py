@@ -47,6 +47,7 @@ class QuantumPlotPlyManager:
         self.plotters["t2fit"] = T2FitDataPlyPlotter()
         self.plotters["ramsey"] = RamseyDataPlyPlotter()
         self.plotters["s21peak"] = S21PeakDataPlyPlotter()
+        self.plotters["s21peakmulti"] = S21PeakDataPlyPlotter()
         self.plotters["powershift"] = PowerShiftDataPlyPlotter()
         self.plotters["drag"] = DragDataPlyPlotter()
 

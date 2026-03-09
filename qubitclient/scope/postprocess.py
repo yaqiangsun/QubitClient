@@ -85,7 +85,8 @@ def postprocess_result_s21peak(response ,threshold):
     response_data['results'] = results_filtered
     return response_data
 
-
+def postprocess_result_s21peakmulti(response ,threshold):
+    return postprocess_result_s21peak(response, threshold)
 
 def postprocess_result_spectrum2dscope(response, threshold):
     logging.debug("Result: %s", response.parsed)
@@ -369,6 +370,7 @@ def postprocess_result_powershift(response, threshold):
 
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
+    's21peakmulti': postprocess_result_s21peak,
     's21vfluxscope': postprocess_result_s21vfluxscope,
     'spectrum2dscope': postprocess_result_spectrum2dscope,
     # 'spectrum2dnnscope': postprocess_result_spectrum2dnnscope

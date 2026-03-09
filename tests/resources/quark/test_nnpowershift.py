@@ -29,7 +29,7 @@ def test_nnpowershift(task_key, base_dir):
         pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
         
         data = get_pkl_content(pkl_path)
-        print(data)
+        # print(data)
         if data is None:
             continue
         if "meta" not in data.keys():
@@ -38,7 +38,7 @@ def test_nnpowershift(task_key, base_dir):
             continue
         if task_key.lower() in data["meta"]["name"].lower():
             if len(data["meta"]["other"]["qubits"])>=1:
-                if task_key in "powershift":
+                if task_key in ["powershift","s21"]:
                     analysis_result = nnpowershift(data)
                     fig_list = plot_nnpowershift(data,analysis_result,save_path=f'./tmp/vis/nnpowershift_{pure_name}.png')
                     # fig_list[0].show()
@@ -46,7 +46,7 @@ def test_nnpowershift(task_key, base_dir):
 
 
 def main():
-    task_key = "powershift"
+    task_key = "s21"
     base_dir = "tmp/data/powershift"
     test_nnpowershift(task_key, base_dir)
 

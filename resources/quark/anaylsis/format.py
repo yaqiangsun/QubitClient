@@ -543,7 +543,9 @@ def powershift_convert(result):
         elif abs_s.shape[1] != len(power) - 1 or abs_s.shape[0] != len(freq) - 1:
             raise ValueError(f"数据维度{abs_s.shape} 与轴长度不匹配: power={len(power)}, freq={len(freq)}")
 
-        data_formated["image"][qubit_name] = (power, freq, abs_s)
+        abs_s = abs_s.T
+        abs_s = abs_s[:, ::-1]
+        data_formated["image"][qubit_name] = (freq, power, abs_s)
 
     return data_formated
 

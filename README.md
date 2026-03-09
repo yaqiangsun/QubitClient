@@ -200,16 +200,16 @@ print(result)
 | 任务名称 | 描述 | 文档 | 状态 |
 |---------|------|---------|---------|
 | `TaskName.S21PEAK` | S21 参数峰值检测 | [文档](docs/scope/S21PEAK.md) | ⏸️
-| `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) | ✅
-| `TaskName.RABICOS` | Rabi 振荡余弦第一峰检测 | [文档](docs/scope/RABICOS.md) | ✅
+| `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) | ⏸️
+| `TaskName.RABICOS` | Rabi 振荡余弦第一峰检测 | [文档](docs/scope/RABICOS.md) | ⏸️
 | `TaskName.RAMSEY` | RAMSY 衰减震荡余弦拟合 | [文档](docs/scope/RAMSEY.md) | ✅
-| `TaskName.S21VFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VFLUX.md) | ⏸️
+| `TaskName.S21VFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VFLUX.md) | ✅
 | `TaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/scope/SINGLESHOT.md) | ✅
-| `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ✅
-| `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ✅
+| `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ⏸️
+| `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ⏸️
 | `TaskName.T2FIT` | T2 时间拟合 | [文档](docs/scope/T2FIT.md) | ✅
 | `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ⏸️
-| `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) | ⏸️
+| `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) | ✅
 | `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) | ✅
 
 ### 🤖 Ctrl 任务

@@ -360,13 +360,98 @@ def postprocess_result_singleshot(response, threshold):
 def postprocess_result_spectrum(response, threshold):
     logging.debug("Result: %s", response.parsed)
     result = response.parsed
+    results = result.get("results")
+    results_filtered = []
+    for idx, result in enumerate(results):
+        filtered_item = {}
+        peaks_list = result.get('peaks_list', [])
+        confidences_list = result.get('confidences_list', [])
+        mean_cut_widths_list = result.get('mean_cut_widths_list', [])
+        filtered_peaks = []
+        filtered_confidences = []
+        filtered_mean_cut_widths = []
+        # 遍历每一组数据（处理二维列表结构）
+        for idx, (peaks, confs, widths) in enumerate(zip(peaks_list, confidences_list, mean_cut_widths_list)):
+            try:
+                # 将置信度转为浮点型数组，用于阈值判断
+                confs_arr = np.array(confs, dtype=float)
+                # 生成过滤掩码：置信度≥阈值的位置保留
+                mask = confs_arr >= threshold
+            except (ValueError, TypeError):
+                # 置信度无法转为数值时，保留所有数据
+                mask = np.ones(len(confs), dtype=bool) if confs else []
+            
+            # 按掩码过滤当前组的所有字段
+            # 处理空列表情况，避免索引错误
+            if peaks and mask.size > 0:
+                filtered_peak = np.array(peaks, dtype=object)[mask].tolist()
+            else:
+                filtered_peak = []
+                
+            if confs and mask.size > 0:
+                filtered_conf = confs_arr[mask].tolist() if isinstance(confs_arr, np.ndarray) else confs
+            else:
+                filtered_conf = []
+                
+            if widths and mask.size > 0:
+                filtered_width = np.array(widths, dtype=object)[mask].tolist()
+            else:
+                filtered_width = []
+            
+            filtered_peaks.append(filtered_peak)
+            filtered_confidences.append(filtered_conf)
+            filtered_mean_cut_widths.append(filtered_width)
+        
+        # 组装过滤后的结果
+        filtered_item['peaks_list'] = filtered_peaks
+        filtered_item['confidences_list'] = filtered_confidences
+        filtered_item['mean_cut_widths_list'] = filtered_mean_cut_widths
+        
+        results_filtered.append(filtered_item)
+    final_response = {}
+    final_response['results'] = results_filtered
+    return final_response
 
-    return result
+
 def postprocess_result_powershift(response, threshold):
     logging.debug("Result: %s", response.parsed)
     result = response.parsed
+    results = result.get("results")
+    results_filtered = []
+    for idx, result in enumerate(results):
+        result_filtered = {}
+        q_list = result.get('q_list', [])
+        keypoints_list = result.get('keypoints_list', [])
+        confs = result.get('confs', [])
+        class_num_list = result.get('class_num_list', [])
 
-    return result
+        keypoints_arr = np.array(keypoints_list, dtype=object)
+        class_arr = np.array(class_num_list, dtype=object)
+        try:
+            confs_arr = np.array(confs, dtype=float)
+        except Exception:
+            confs_arr = np.array(confs, dtype=object)
+        q_arr = np.array(q_list, dtype=object)
+        if confs_arr.size > 0 and np.issubdtype(confs_arr.dtype, np.number):
+            mask = confs_arr >= threshold
+        else:
+            mask = np.ones(keypoints_arr.shape, dtype=bool)
+
+        filtered_q = q_arr[mask].tolist() if q_arr.size > 0 else []
+        filtered_keypoints = keypoints_arr[mask].tolist() if keypoints_arr.size > 0 else []
+        filtered_class = class_arr[mask].tolist() if class_arr.size > 0 else []
+        filtered_confs = confs_arr[mask].tolist() if confs_arr.size > 0 and np.issubdtype(confs_arr.dtype, np.number) else []
+
+        result_filtered['q_list'] = filtered_q
+        result_filtered['keypoints_list'] = filtered_keypoints
+        result_filtered['confs'] = filtered_confs
+        result_filtered['class_num_list'] = filtered_class
+
+        results_filtered.append(result_filtered)
+    response_data ={}
+    response_data['results'] = results_filtered
+    return response_data
+
 
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
@@ -382,7 +467,7 @@ TASK_MAP: Dict[str, Callable] = {
     'drag': postprocess_result_drag,
     'singleshot': postprocess_result_singleshot,
     'spectrum': postprocess_result_spectrum,
-    'powershift': postprocess_result_powershift,
+    'powershift': postprocess_result_powershift
 }
 
 def run_postprocess(response, threshold, task_type):

@@ -1,8 +1,8 @@
-# Ctrl.OPT_PIPULSE 任务接口文档
+# Ctrl.OPTPIPULSE 任务接口文档
 
 ## 概述
 
-Ctrl.OPT_PIPULSE 是 Ctrl 中的一个任务，用于执行最优π脉冲测量，寻找最佳的π脉冲幅度以实现高保真度的单量子比特旋转门。
+Ctrl.OPTPIPULSE 是 Ctrl 中的一个任务，用于执行最优π脉冲测量，寻找最佳的π脉冲幅度以实现高保真度的单量子比特旋转门。
 
 ## 接口使用方式
 
@@ -18,7 +18,7 @@ client = QubitCtrlClient()
 
 | 参数名 | 类型 | 必需 | 描述 |
 |--------|------|------|------|
-| task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.OPT_PIPULSE` |
+| task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.OPTPIPULSE` |
 | qubits | list[str] | 是 | 要测量的量子比特列表，例如["Q0", "Q1"] |
 | stage | int | 否 | 测量阶段，默认值1 |
 
@@ -27,7 +27,7 @@ client = QubitCtrlClient()
 ```python
 # 执行最优π脉冲测量
 result = client.run(
-    task_type=CtrlTaskName.OPT_PIPULSE,
+    task_type=CtrlTaskName.OPTPIPULSE,
     qubits=["Q0", "Q1"],
     stage=1
 )

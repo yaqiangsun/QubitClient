@@ -220,7 +220,7 @@ print(result)
 | `CtrlTaskName.S21` | S21 腔频测量实验 | [文档](docs/ctrl/S21.md) | ⏸️
 | `CtrlTaskName.DRAG` | DRAG 免交叉点测量 | [文档](docs/ctrl/DRAG.md) | ⏸️
 | `CtrlTaskName.DELTA` | 频率偏移校准测量 | [文档](docs/ctrl/DELTA.md) | ⏸️
-| `CtrlTaskName.OPT_PIPULSE` | 最优 π 脉冲测量 | [文档](docs/ctrl/OPT_PIPULSE.md) | ⏸️
+| `CtrlTaskName.OPTPIPULSE` | 最优 π 脉冲测量 | [文档](docs/ctrl/OPTPIPULSE.md) | ⏸️
 | `CtrlTaskName.POWERSHIFT` | 功率偏移曲线测量 | [文档](docs/ctrl/POWERSHIFT.md) | ⏸️
 | `CtrlTaskName.RABI` | Rabi 振荡测量 | [文档](docs/ctrl/RABI.md) | ⏸️
 | `CtrlTaskName.RAMSEY` | Ramsey 干涉测量 | [文档](docs/ctrl/RAMSEY.md) | ⏸️

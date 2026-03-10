@@ -11,7 +11,7 @@ from qubitclient.ctrl import CtrlTaskName
 
 def main():
     qubit_ctrl_client = QubitCtrlClient()
-    result = qubit_ctrl_client.run(CtrlTaskName.OPT_PIPULSE,
+    result = qubit_ctrl_client.run(CtrlTaskName.OPTPIPULSE,
                                    qubits=["Q0","Q1"],
                                    stage=1
                                    )

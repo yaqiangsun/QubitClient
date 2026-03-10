@@ -27,7 +27,7 @@ class CtrlTaskName(Enum):
     S21 = "s21"
     DRAG = "drag"
     DELTA = "delta"
-    OPT_PIPULSE = "opt_pipulse"
+    OPTPIPULSE = "opt_pipulse"
     POWERSHIFT = "powershift"
     RABI = "rabi"
     RAMSEY = "ramsey"

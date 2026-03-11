@@ -37,7 +37,7 @@ def optpipulse_convert(result):
             raise ValueError("optpipulse数据缺少AMP轴定义")
 
         # 处理Population波形
-        if "population" in result["meta"]["axis"]:
+        if "population" in result["data"]:
             waveforms = np.array(result["data"]["population"][:,:,index], dtype=np.float64)
         else:
             raise ValueError("optpipulse数据缺少Population轴定义")

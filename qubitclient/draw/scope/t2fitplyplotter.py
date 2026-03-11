@@ -87,9 +87,9 @@ class T2FitDataPlyPlotter(QuantumDataPlyPlotter):
                 text = (
                     f"A   = {A:.3f}<br>"
                     f"B   = {B:.3f}<br>"
-                    f"T₁  = {T1:.1f} µs<br>"
-                    f"T₂  = {T2:.1f} µs<br>"
-                    f"ω   = {w/1e6:.2f} MHz<br>"
+                    f"T₁  = {T1:.1f} s<br>"
+                    f"T₂  = {T2*1e6:.3f} µs<br>"
+                    f"ω   = {w/1e6:.3f} MHz<br>"
                     f"φ   = {phi:.3f}<br>"
                     f"R²  = {r2:.3f}"
                 )

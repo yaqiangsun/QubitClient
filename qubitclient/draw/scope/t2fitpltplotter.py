@@ -82,9 +82,9 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
                 text_str = (
                     f"A   = {A:.3f}\n"
                     f"B   = {B:.3f}\n"
-                    f"T₁  = {T1:.1f} µs\n"
-                    f"T₂  = {T2:.1f} µs\n"
-                    f"ω   = {w/1e6:.2f} MHz\n"
+                    f"T₁  = {T1:.1f} s\n"
+                    f"T₂  = {T2*1e6:.3f} µs\n"
+                    f"ω   = {w/1e6:.3f} MHz\n"
                     f"φ   = {phi:.3f}\n"
                     f"R²  = {r2:.3f}"
                 )
@@ -92,13 +92,14 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
                 self.add_annotation(
                     ax,
                     text_str,
-                    xy=(0, 1),
+                    xy=(0, 1),                 
+                    annotation_xycoords="axes fraction",
                     annotation_textcoords="axes fraction",
-                    annotation_xytext=(0, 1),   
+                    annotation_xytext=(0, 1),
                     color_index=0,
                     showarrow=False,
-                    ha='left',
-                    va='top'
+                    ha='left',                      # 文字左对齐
+                    va='top'                      # 文字顶部对齐
                 )
 
             # 坐标轴标题

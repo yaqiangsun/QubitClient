@@ -93,6 +93,7 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
                     ax,
                     text_str,
                     xy=(0, 1),                 
+                    annotation_xycoords="axes fraction",
                     annotation_textcoords="axes fraction",
                     annotation_xytext=(0, 1),
                     color_index=0,

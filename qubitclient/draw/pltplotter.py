@@ -122,7 +122,7 @@ class QuantumDataPltPlotter(ABC):
                              **kwargs)
         return scatter
 
-    def add_annotation(self, ax: plt.Axes, text: str, xy: Tuple[float, float],annotation_textcoords: str = "offset points",
+    def add_annotation(self, ax: plt.Axes, text: str, xy: Tuple[float, float],annotation_xycoords: str="data",annotation_textcoords: str = "offset points",
     annotation_xytext = (0, 10),color_index: int = 0,showarrow=True, **kwargs):
         """添加统一风格的注释"""
         color = self.style.marker_colors[color_index % len(self.style.marker_colors)]
@@ -132,6 +132,7 @@ class QuantumDataPltPlotter(ABC):
             arrow = None
 
         annotation = ax.annotate(text, xy,
+                                 xycoords=annotation_xycoords,
                                  textcoords=annotation_textcoords,
                                  fontsize=self.style.annotation_fontsize,
                                  color=color, xytext=annotation_xytext,

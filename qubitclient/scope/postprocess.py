@@ -157,14 +157,22 @@ def postprocess_result_rabicos(response, threshold):
         peaks_list_filtered = []
         confs_list_filtered = []
 
+        # 逐个量子比特（或通道）处理，保持原始顺序和长度
         for i in range(len(peaks_list)):
-            peaks = np.array(peaks_list[i])
-            confs = np.array(confs_list[i])
-            mask = confs >= threshold
-            filtered_peaks = peaks[mask].tolist()
-            filtered_confs = confs[mask].tolist()
-            peaks_list_filtered.append(filtered_peaks)
-            confs_list_filtered.append(filtered_confs)
+            peaks = np.array(peaks_list[i]) if peaks_list[i] else np.array([])
+            confs = np.array(confs_list[i]) if confs_list[i] else np.array([])
+
+            # 如果原始数据为空，或者所有置信度都低于阈值 → 置为空列表
+            if len(confs) == 0 or np.all(confs < threshold):
+                peaks_list_filtered.append([])
+                confs_list_filtered.append([])
+            else:
+                # 存在至少一个合格的峰 → 保留过滤后的结果
+                mask = confs >= threshold
+                filtered_peaks = peaks[mask].tolist()
+                filtered_confs = confs[mask].tolist()
+                peaks_list_filtered.append(filtered_peaks)
+                confs_list_filtered.append(filtered_confs)
 
         result_filtered['peaks'] = peaks_list_filtered
         result_filtered['confs'] = confs_list_filtered
@@ -189,14 +197,22 @@ def postprocess_result_optpipulse(response, threshold):
         params_list_filtered = []
         confs_list_filtered  = []
 
+        # 逐个量子比特（或通道）处理，保持原始顺序和长度
         for i in range(len(params_list)):
-            params = np.array(params_list[i])
-            confs  = np.array(confs_list[i])
-            mask = confs >= threshold
-            filtered_params = params[mask].tolist()
-            filtered_confs  = confs[mask].tolist()
-            params_list_filtered.append(filtered_params)
-            confs_list_filtered.append(filtered_confs)
+            params = np.array(params_list[i]) if params_list[i] else np.array([])
+            confs  = np.array(confs_list[i])  if confs_list[i]  else np.array([])
+
+            # 若无数据 或 所有置信度都低于阈值 → 置为空列表
+            if len(confs) == 0 or np.all(confs < threshold):
+                params_list_filtered.append([])
+                confs_list_filtered.append([])
+            else:
+                # 存在至少一个合格的峰 → 保留过滤后的结果
+                mask = confs >= threshold
+                filtered_params = params[mask].tolist()
+                filtered_confs  = confs[mask].tolist()
+                params_list_filtered.append(filtered_params)
+                confs_list_filtered.append(filtered_confs)
 
         result_filtered['params'] = params_list_filtered
         result_filtered['confs']  = confs_list_filtered
@@ -227,8 +243,13 @@ def postprocess_result_t1fit(response, threshold):
         for params, r2, fit_data in zip(params_list, r2_list, fit_data_list):
             if r2 >= threshold:
                 filtered_params.append(params)
-                filtered_fit_data.append(fit_data)
                 filtered_r2.append(r2)
+                filtered_fit_data.append(fit_data)
+            else:
+                # 保留位置，但内容为空列表
+                filtered_params.append([])
+                filtered_r2.append([])       
+                filtered_fit_data.append([])
 
         result_filtered['params_list'] = filtered_params
         result_filtered['r2_list'] = filtered_r2
@@ -261,6 +282,11 @@ def postprocess_result_t2fit(response, threshold):
                 filtered_params.append(params)
                 filtered_fit_data.append(fit_data)
                 filtered_r2.append(r2)
+            else:
+                # 保留位置，但内容为空列表
+                filtered_params.append([])
+                filtered_r2.append([])       
+                filtered_fit_data.append([])
 
         result_filtered['params_list'] = filtered_params
         result_filtered['r2_list'] = filtered_r2

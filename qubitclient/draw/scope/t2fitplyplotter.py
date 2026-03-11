@@ -57,7 +57,9 @@ class T2FitDataPlyPlotter(QuantumDataPlyPlotter):
                 show_data_legend = False
 
             # 拟合曲线
-            if q_idx < len(fit_data_list) and fit_data_list[q_idx] is not None:
+            if (q_idx < len(fit_data_list) and 
+                fit_data_list[q_idx] and                     # 非 None 且非空
+                len(fit_data_list[q_idx]) > 0):
                 fit_y = np.asarray(fit_data_list[q_idx])
 
                 x_plot = x_raw

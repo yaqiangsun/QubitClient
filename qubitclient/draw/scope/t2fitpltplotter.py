@@ -45,7 +45,9 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
             )
 
             # 拟合曲线
-            if q_idx < len(fit_data_list) and fit_data_list[q_idx] is not None:
+            if (q_idx < len(fit_data_list) and 
+                fit_data_list[q_idx] and                     # 非 None 且非空列表
+                len(fit_data_list[q_idx]) > 0):              # 长度大于 0    
                 fit_y = np.asarray(fit_data_list[q_idx])
 
                 # 若长度不匹配则重新生成 x

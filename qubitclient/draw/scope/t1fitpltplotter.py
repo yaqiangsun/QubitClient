@@ -43,17 +43,20 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
                 alpha=0.7
             )
 
-            # 绘制拟合曲线
             has_fit = False
             fit_line = None
-            if q_idx < len(fit_data_list) and fit_data_list[q_idx] is not None:
+
+            if (q_idx < len(fit_data_list) and 
+                fit_data_list[q_idx] and                  # 非空（不是None也不是[]）
+                len(fit_data_list[q_idx]) == len(x_raw)): # 长度必须匹配
+
                 fit_y = np.asarray(fit_data_list[q_idx])
                 fit_line, _ = self.add_line(
                     ax,
                     x_raw,
                     fit_y,
                     label="Fit",
-                    color_index=0,            # 蓝色
+                    color_index=0,
                     line_style_index=0
                 )
                 has_fit = True
@@ -81,7 +84,7 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
 
                 text_str = (
                     f"A  = {A:.3f}\n"
-                    f"T₁ = {T1:.1f} µs\n"
+                    f"T₁ = {T1*1e6:.1f} µs\n"
                     f"B  = {B:.3f}\n"
                     f"R² = {r2:.3f}"
                 )

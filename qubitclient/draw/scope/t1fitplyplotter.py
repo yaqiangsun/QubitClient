@@ -50,13 +50,16 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
             if show_data_legend:
                 show_data_legend = False
 
-            # 拟合曲线
-            if q_idx < len(fit_data_list) and fit_data_list[q_idx] is not None:
+            # 只在拟合数据有效且长度匹配时绘制曲线
+            if (q_idx < len(fit_data_list) and 
+                fit_data_list[q_idx] and 
+                len(fit_data_list[q_idx]) == len(x_raw)):
+
                 fit_y = np.asarray(fit_data_list[q_idx])
                 self.add_line(
                     fig, x=x_raw, y=fit_y,
                     row=row, col=col,
-                    color_index=0,               # 蓝色
+                    color_index=0,
                     line_style_index=0,
                     name="Fit" if show_fit_legend else None,
                     showlegend=show_fit_legend
@@ -71,7 +74,7 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
 
                 text = (
                     f"A  = {A:.3f}<br>"
-                    f"T₁ = {T1:.1f} µs<br>"
+                    f"T₁ = {T1*1e6:.1f} µs<br>"
                     f"B  = {B:.3f}<br>"
                     f"R² = {r2:.3f}"
                 )

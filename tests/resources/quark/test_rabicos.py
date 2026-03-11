@@ -52,7 +52,7 @@ def test_rabicos(task_key, base_dir):
 
 def main():
     task_key = "rabi"
-    base_dir = "data/rabi"
+    base_dir = "tmp/data/rabi"
     test_rabicos(task_key, base_dir)
 
 

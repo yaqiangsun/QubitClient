@@ -423,40 +423,109 @@ def rabicos_convert(result):
 def t1fit_convert(result):
     """
     将 quark 格式的 T1 弛豫数据转换为 qubitclient 所需格式
+    支持 signal 为 'population' 或 'iq_avg'，且存在 delay 轴的数据
     Args:
         result (dict): 原始实验数据字典（需包含 meta/data 核心字段）
     Returns:
-        dict: 符合服务器要求的格式数据 {"image": {qubit_name: (delay_array, population_array)}}
+        dict: 符合服务器要求的格式数据 {"image": {qubit_name: (delay_array, decay_curve)}}
+        其中 decay_curve 为一维实数数组（衰减曲线，已强制非负）
     """
-    # 提取量子比特名称
-    qubit_name_list = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
+    if "meta" not in result or "data" not in result:
+        raise ValueError("数据缺少 'meta' 或 'data' 字段")
+
+    meta = result["meta"]
+    data = result["data"]
     
-    for index, qubit_name in enumerate(qubit_name_list):
-        qubit_name = qubit_name.strip()
-        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+    # 1. 检查信号类型
+    signal = meta.get("other", {}).get("signal", "")
+    if signal not in ["population", "iq_avg"]:
+        raise ValueError(f"T1 拟合只支持 signal='population' 或 'iq_avg'，当前为：{signal!r}")
 
-        # 提取延迟时间轴 x_array
-        if "delay" not in result["meta"]["axis"]:
-            raise ValueError("t1fit数据缺少delay轴定义")
-        delay_array = np.array(result["meta"]["axis"]["delay"]["def"], dtype=np.float64)
-        assert delay_array.ndim == 1, "delay 轴需为一维数组"
-
-        if "population" in result["data"]:
-            population = np.array(result["data"]["population"][:, index], dtype=np.float64)
-        elif "iq_avg" in result["data"]:
-            population = np.array(result["data"]["iq_avg"][:, index], dtype=np.float64)
-        else :
-            raise ValueError(f"{qubit_name} 没有 population/iq_avg 字段")
-
-        # 最终格式校验
-        assert population.ndim == 1, "population 应为一维数组"
-        assert population.shape[0] == delay_array.shape[0], \
-            f"{qubit_name} 的 population/iq_avg长度与 delay 轴不匹配"
-
-        # 转换成所需的标准格式
-        data_formated["image"][qubit_name] = (delay_array, population)
+    # 2. 检查 delay 轴
+    axis = meta.get("axis", {})
+    if "delay" not in axis or "def" not in axis["delay"]:
+        raise ValueError("缺少 delay 轴，无法进行 T1 拟合")
     
+    # 排除明显的多参数扫描（N_list）
+    if "N_list" in axis or "N_list" in meta.get("other", {}):
+        raise ValueError("检测到 N_list 轴，此数据为多轮重复实验或变参扫描，不适合直接 T1 拟合")
+    
+    delay_array = np.array(axis["delay"]["def"], dtype=np.float64)
+    if delay_array.ndim != 1:
+        raise ValueError("delay 轴必须是一维数组")
+
+    # 3. 获取量子比特列表
+    qubits = [q.strip() for q in meta.get("other", {}).get("qubits", [])]
+    if not qubits:
+        raise ValueError("meta.other 中缺少 qubits 字段")
+
+
+    # 4. 处理 population（支持二维和三维情况）
+    if signal == "population":
+        if "population" not in data and "P0" not in data:
+            raise ValueError("signal=population 但 data 中缺少 'population' 或 'P0' 字段")
+        
+        # 兼容两种可能的 key 名
+        pop_key = "population" if "population" in data else "P0"
+        pop_data = np.array(data[pop_key], dtype=np.float64)
+        
+        # 维度规范化：接受 2D 或 3D
+        if pop_data.ndim == 2:
+            # 标准 2D: (n_delay, n_qubit)
+            if pop_data.shape[0] != len(delay_array):
+                raise ValueError(f"population 第一维 {pop_data.shape[0]} 与 delay 长度 {len(delay_array)} 不匹配")
+            if pop_data.shape[1] != len(qubits):
+                raise ValueError(f"population 第二维 {pop_data.shape[1]} 与 qubits 数量 {len(qubits)} 不匹配")
+            
+            for i, qubit in enumerate(qubits):
+                decay_curve = np.maximum(pop_data[:, i], 0.0)  # 强制非负
+                data_formated["image"][qubit] = (delay_array, decay_curve)
+        
+        elif pop_data.ndim == 3:
+            # 常见三维情况：(n_delay, n_extra, n_qubit)，n_extra 通常=1
+            if pop_data.shape[0] != len(delay_array):
+                raise ValueError(f"population 第0维 {pop_data.shape[0]} 与 delay 不匹配")
+            
+            n_extra = pop_data.shape[1]
+            n_qubit_in_data = pop_data.shape[2]
+            
+            if n_qubit_in_data != len(qubits):
+                raise ValueError(f"population 第2维 {n_qubit_in_data} 与 qubits 数量 {len(qubits)} 不匹配")
+            
+            # 取中间维度（通常为1），并 squeeze
+            if n_extra != 1:
+                print(f"警告：population 中间维度为 {n_extra}（非1），将取第一层数据")
+            
+            pop_squeezed = pop_data[:, 0, :]  # 取 [:, 0, :]
+            
+            for i, qubit in enumerate(qubits):
+                decay_curve = np.maximum(pop_squeezed[:, i], 0.0)
+                data_formated["image"][qubit] = (delay_array, decay_curve)
+        
+        else:
+            raise ValueError(f"不支持的 population 维度：{pop_data.shape}（仅支持 2D 或 3D）")
+
+    # 5. 处理 iq_avg（保持原有逻辑，暂不考虑三维）
+    elif signal == "iq_avg":
+        if "iq_avg" not in data:
+            raise ValueError("signal=iq_avg 但 data 中缺少 'iq_avg' 字段")
+            
+        iq_data = np.array(data["iq_avg"], dtype=np.complex128)
+        
+        if iq_data.ndim != 2:
+            raise ValueError(f"iq_avg 预期为二维数组，实际维度：{iq_data.shape}")
+        
+        if iq_data.shape[0] != len(delay_array):
+            raise ValueError(f"iq_avg 第一维与 delay 不匹配")
+        if iq_data.shape[1] != len(qubits):
+            raise ValueError(f"iq_avg 第二维与 qubits 数量不匹配")
+        
+        amp_data = np.abs(iq_data)
+        
+        for i, qubit in enumerate(qubits):
+            decay_curve = np.maximum(amp_data[:, i], 0.0)
+            data_formated["image"][qubit] = (delay_array, decay_curve)
     return data_formated
 
 

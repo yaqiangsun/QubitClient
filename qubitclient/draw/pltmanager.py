@@ -12,6 +12,7 @@ from qubitclient.draw.scope.singleshotpltplotter import SingleShotDataPltPlotter
 from qubitclient.draw.scope.spectrum2dscopepltplotter import Spectrum2DScopeDataPltPlotter
 from qubitclient.draw.scope.spectrumpltplotter import SpectrumDataPltPlotter
 from qubitclient.draw.scope.s21peakpltplotter import S21PeakDataPltPlotter
+from qubitclient.draw.scope.s21peakmultipltplotter import S21PeakMultiDataPltPlotter
 
 from qubitclient.draw.scope.optpipulsepltplotter import OptPiPulseDataPltPlotter
 from qubitclient.draw.scope.ramseypltplotter import RamseyDataPltPlotter
@@ -44,7 +45,7 @@ class QuantumPlotPltManager:
         self.plotters["t2fit"] = T2FitDataPltPlotter()
         self.plotters["ramsey"] = RamseyDataPltPlotter()
         self.plotters["s21peak"] = S21PeakDataPltPlotter()
-        self.plotters["s21peakmulti"] = S21PeakDataPltPlotter()
+        self.plotters["s21peakmulti"] = S21PeakMultiDataPltPlotter()
         self.plotters["powershift"] = PowerShiftDataPltPlotter()
         self.plotters["drag"] = DragDataPltPlotter()
 

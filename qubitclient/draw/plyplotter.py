@@ -19,7 +19,7 @@ class QuantumDataPlyPlotter(ABC):
         pass
     def create_subplots(self, n_plots, titles: List[str],**kwargs):
         """创建基础画布"""
-        cols = self.style.subplots_per_row
+        cols = min(self.style.subplots_per_row,n_plots)
 
         rows = (n_plots // cols) + 1 if n_plots % cols != 0 else n_plots // cols
         secondy = kwargs.get("second_y")
@@ -209,7 +209,7 @@ class QuantumDataPlyPlotter(ABC):
         """统一的布局更新方法"""
         fig.update_layout(
             height=self.style.figure_height_per_row * rows,
-            width=self.style.figure_width_per_col * cols,
+            width=(self.style.figure_width_per_col *self.style.subplots_per_row)/cols,
             margin=dict(r=60, t=60, b=60, l=60),
             showlegend=showlegend,
             legend = self.style.legend,

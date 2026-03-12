@@ -2,10 +2,10 @@ from ..plyplotter import QuantumDataPlyPlotter
 
 import numpy as np
 
-class S21PeakDataPlyPlotter(QuantumDataPlyPlotter):
+class S21PeakMultiDataPlyPlotter(QuantumDataPlyPlotter):
 
     def __init__(self):
-        super().__init__("s21peak")
+        super().__init__("s21peakmulti")
 
     def plot_result_npy(self,**kwargs):
 
@@ -20,6 +20,8 @@ class S21PeakDataPlyPlotter(QuantumDataPlyPlotter):
         phi_list = []
         qname_list = []
         for idx, q_name in enumerate(q_list):
+            if(idx>=1):
+                break
             image_q = image[q_name]
             x = image_q[0]
             amp = image_q[1]
@@ -58,12 +60,16 @@ class S21PeakDataPlyPlotter(QuantumDataPlyPlotter):
             current_col = i % col + 1
 
             # 添加幅度曲线到主Y轴
-
+            y2_range = np.max(y2) - np.min(y2)
+            offset = y2_range  # 使用第一条曲线范围的100%作为偏移
             self.add_line(fig,x=x, y=y1,row=current_row, col=current_col,color_index=0,line_style_index=0,name=f'{qname_list[i]}: Amp Curve',showlegend=True)
 
-            self.add_line(fig,x=x, y=y2,row=current_row, col=current_col,color_index=1,line_style_index=0,name=f'{qname_list[i]}: Phi Curve', secondary_y=True,showlegend=True)
+            self.add_line(fig,x=x, y=y2+offset,row=current_row, col=current_col,color_index=1,line_style_index=0,name=f'{qname_list[i]}: Phi Curve', secondary_y=True,showlegend=True)
 
-
+            fig.update_yaxes(
+                range=[np.min(y2), np.max(y2)+offset],  # 右Y轴范围
+                secondary_y=True
+            )
 
 
 

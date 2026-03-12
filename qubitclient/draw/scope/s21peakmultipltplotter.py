@@ -1,15 +1,15 @@
 
 
 from ..pltplotter import QuantumDataPltPlotter
+import numpy as np
 
 
 
-
-class S21PeakDataPltPlotter(QuantumDataPltPlotter):
+class S21PeakMultiDataPltPlotter(QuantumDataPltPlotter):
     """S21峰值数据绘图器"""
 
     def __init__(self):
-        super().__init__("s21peak")
+        super().__init__("s21peakmulti")
 
     def plot_result_npy(self, **kwargs):
         result = kwargs.get('result')
@@ -21,7 +21,9 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
 
         # 准备数据
         x_list, amp_list, phi_list, q_name_list = [], [], [], []
-        for q_name in q_list:
+        for idx, q_name in enumerate(q_list):
+            if (idx >= 1):
+                break
             image_q = image[q_name]
             x_list.append(image_q[0])
             amp_list.append(image_q[1])
@@ -52,7 +54,12 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
 
             # 绘制曲线
             line1, _ = self.add_line(ax, x, y1, label='Amp Curve', color_index=0,line_style_index=0)
-            line2, _ = self.add_line(ax2, x, y2, label='Phi Curve', color_index=1,line_style_index=0)
+
+            y2_range = np.max(y2) - np.min(y2)
+            offset = y2_range   # 使用第一条曲线范围的100%作为偏移
+
+            line2, _ = self.add_line(ax2, x, y2+offset, label='Phi Curve', color_index=1,line_style_index=0)
+            ax2.set_ylim(np.min(y2), np.max(y2)+offset)
             peak_conf_pair = list(zip(peaks, confs))
             peak_conf_pair.sort(key=lambda x:x[1],reverse=True)
             # 绘制峰值
@@ -70,7 +77,7 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
                     self.add_scatter(ax, x[peak], y1[peak],
                                      color_index=color_idx)
                 # 散点注释
-                self.add_annotation(ax, f'{conf:.2f}\nfreq: {freqs[j]/1e9:.2f}GHz', (x[peak], y1[peak]))
+                self.add_annotation(ax, f'{conf:.2f}\n{freqs[j]/1e9:.2f}GHz', (x[peak], y1[peak]))
                 # 竖线
 
 

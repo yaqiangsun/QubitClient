@@ -19,6 +19,8 @@ from qubitclient.draw.scope.t1fitplyplotter import T1FitDataPlyPlotter
 from qubitclient.draw.scope.t2fitplyplotter import T2FitDataPlyPlotter
 from qubitclient.draw.scope.rabicosplyplotter import RabiCosDataPlyPlotter
 from qubitclient.draw.scope.s21peakplyplotter import S21PeakDataPlyPlotter
+from qubitclient.draw.scope.s21peakmultiplyplotter import S21PeakMultiDataPlyPlotter
+
 from qubitclient.draw.scope.powershiftplyplotter import PowerShiftDataPlyPlotter
 from qubitclient.draw.scope.dragplyplotter import DragDataPlyPlotter
 
@@ -47,7 +49,7 @@ class QuantumPlotPlyManager:
         self.plotters["t2fit"] = T2FitDataPlyPlotter()
         self.plotters["ramsey"] = RamseyDataPlyPlotter()
         self.plotters["s21peak"] = S21PeakDataPlyPlotter()
-        self.plotters["s21peakmulti"] = S21PeakDataPlyPlotter()
+        self.plotters["s21peakmulti"] = S21PeakMultiDataPlyPlotter()
         self.plotters["powershift"] = PowerShiftDataPlyPlotter()
         self.plotters["drag"] = DragDataPlyPlotter()
 

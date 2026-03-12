@@ -209,7 +209,7 @@ class QuantumDataPlyPlotter(ABC):
         """统一的布局更新方法"""
         fig.update_layout(
             height=self.style.figure_height_per_row * rows,
-            width=(self.style.figure_width_per_col *self.style.subplots_per_row)/cols,
+            width=(self.style.figure_width_per_col *self.style.subplots_per_row),
             margin=dict(r=60, t=60, b=60, l=60),
             showlegend=showlegend,
             legend = self.style.legend,

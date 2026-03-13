@@ -8,35 +8,60 @@ def postprocess_result_spectrum2dnnscope(response, threshold):
     logging.debug("Result: %s", response.json())
     result = response.json()
     results = result["result"]
-    # results = results[0]
+
     results_filtered = []
     for idx, result in enumerate(results):
         result_filtered = {}
         params_list = result['params_list']
         linepoints_list = result['linepoints_list']
-        confidence_list = result['confidence_list']
+        confidence_list = result['confidences_list']
 
-        curve_type = result['curve_type']
+        class_ids_list = result['class_ids_list']
+        curve_type_list = result['curve_type_list']
 
-        params_list = np.array(params_list)
-        linepoints_list = np.array(linepoints_list)
-        confidence_list = np.array(confidence_list)
+        status = result['status']
 
-        mask = confidence_list >= threshold
-        filtered_params_list = params_list[mask].tolist()
-        filtered_linepoints_list = linepoints_list[mask].tolist()
-        filtered_confidence_list = confidence_list[mask].tolist()
+        params_list_filtered = []
+        linepoints_list_filtered = []
+        confidence_list_filtered = []
+        class_ids_list_filtered = []
+        curve_type_list_filtered = []
 
+        for i in range(len(confidence_list)):
+            params = np.array(params_list[i])
+            linepoints = np.array(linepoints_list[i])
+            confidence = np.array(confidence_list[i])
+            class_ids = np.array(class_ids_list[i])
+            if curve_type_list[i] == None:
+                curve_type_list[i] = []
+            curve_type = np.array(curve_type_list[i])
+            # if curve_type==None:
+            #     curve_type=[]
+            # if isinstance(curve_type, np.ndarray) and curve_type.ndim == 0:
+            #     curve_type = np.array([curve_type.item()])
 
-        result_filtered['params_list'] = filtered_params_list
-        result_filtered['linepoints_list'] = filtered_linepoints_list
-        result_filtered['confidence_list'] = filtered_confidence_list
+            mask = confidence >= threshold
+            filtered_params = params[mask].tolist()
+            filtered_linepoints = linepoints[mask].tolist()
+            filtered_confidence = confidence[mask].tolist()
+            filtered_class_ids = class_ids[mask].tolist()
+            filtered_curve_type = curve_type[mask].tolist()
+            params_list_filtered.append(filtered_params)
+            linepoints_list_filtered.append(filtered_linepoints)
+            confidence_list_filtered.append(filtered_confidence)
+            class_ids_list_filtered.append(filtered_class_ids)
+            curve_type_list_filtered.append(filtered_curve_type)
 
-        result_filtered['curve_type'] = curve_type
+        result_filtered['params_list'] = params_list_filtered
+        result_filtered['linepoints_list'] = linepoints_list_filtered
+        result_filtered['confidences_list'] = confidence_list_filtered
+        result_filtered['class_ids_list'] = class_ids_list_filtered
+        result_filtered['curve_type_list'] = curve_type_list_filtered
+        result_filtered['status'] = status
 
         results_filtered.append(result_filtered)
     response_data = {}
-    response_data['results'] = [results_filtered]
+    response_data['result'] = results_filtered
     return response_data
 
 
@@ -45,41 +70,64 @@ def postprocess_result_s21vfluxnnscope(response, threshold):
     result = response.json()
     results = result["result"]
 
-    # results = results[0]
-
     results_filtered = []
     for idx, result in enumerate(results):
         result_filtered = {}
-        logging.info("cur result: %s, type: %s", result, type(result))
         params_list = result['params_list']
         linepoints_list = result['linepoints_list']
         confidence_list = result['confidence_list']
-        class_ids = result['class_ids']
-        curve_type = result['curve_type']
 
-        params_list = np.array(params_list)
-        linepoints_list = np.array(linepoints_list)
-        confidence_list = np.array(confidence_list)
-        class_ids = np.array(class_ids)
-        curve_type = np.array(curve_type)
-        if isinstance(curve_type, np.ndarray) and curve_type.ndim == 0:
-            curve_type = np.array([curve_type.item()])
-        mask = confidence_list >= threshold
-        filtered_params_list = params_list[mask].tolist()
-        filtered_linepoints_list = linepoints_list[mask].tolist()
-        filtered_confidence_list = confidence_list[mask].tolist()
-        filtered_class_ids = class_ids[mask].tolist()
-        filtered_curve_type = curve_type[mask].tolist()
+        class_ids_list = result['class_ids']
+        curve_type_list = result['curve_type']
 
-        result_filtered['params_list'] = filtered_params_list
-        result_filtered['linepoints_list'] = filtered_linepoints_list
-        result_filtered['confidence_list'] = filtered_confidence_list
-        result_filtered['class_ids'] = filtered_class_ids
-        result_filtered['curve_type'] = filtered_curve_type
+        status = result['status']
+
+
+
+        params_list_filtered = []
+        linepoints_list_filtered = []
+        confidence_list_filtered = []
+        class_ids_list_filtered = []
+        curve_type_list_filtered = []
+
+        for i in range(len(confidence_list)):
+            params = np.array(params_list[i])
+            linepoints = np.array(linepoints_list[i])
+            confidence = np.array(confidence_list[i])
+            class_ids = np.array(class_ids_list[i])
+            if curve_type_list[i] == None:
+                curve_type_list[i] = []
+            curve_type = np.array(curve_type_list[i])
+            # if curve_type==None:
+            #     curve_type=[]
+            # if isinstance(curve_type, np.ndarray) and curve_type.ndim == 0:
+            #     curve_type = np.array([curve_type.item()])
+
+
+
+
+            mask = confidence >= threshold
+            filtered_params = params[mask].tolist()
+            filtered_linepoints = linepoints[mask].tolist()
+            filtered_confidence = confidence[mask].tolist()
+            filtered_class_ids = class_ids[mask].tolist()
+            filtered_curve_type = curve_type[mask].tolist()
+            params_list_filtered.append(filtered_params)
+            linepoints_list_filtered.append(filtered_linepoints)
+            confidence_list_filtered.append(filtered_confidence)
+            class_ids_list_filtered.append(filtered_class_ids)
+            curve_type_list_filtered.append(filtered_curve_type)
+
+        result_filtered['params_list'] = params_list_filtered
+        result_filtered['linepoints_list'] = linepoints_list_filtered
+        result_filtered['confidence_list'] = confidence_list_filtered
+        result_filtered['class_ids'] = class_ids_list_filtered
+        result_filtered['curve_type'] = curve_type_list_filtered
+        result_filtered['status'] = status
 
         results_filtered.append(result_filtered)
     response_data = {}
-    response_data['results'] = [results_filtered]
+    response_data['result'] = results_filtered
     return response_data
 
 

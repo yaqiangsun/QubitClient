@@ -40,42 +40,42 @@ class Spectrum2DNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
             npz_dict['name'] = q_name
             dict_list.append(npz_dict)
 
-        n_plots = len(results)*2
+        n_plots = len(q_list) * 2
 
         titles = [f"{dict_list[i//2]['name']}" for i in range(n_plots)]
         # 创建子图布局
         fig, rows, cols = self.create_subplots(n_plots, titles)
         # 遍历每个结果绘制子图
+        linepoints_list = results['linepoints_list']
+        class_ids = results['class_ids_list']
+        confidences_list = results['confidences_list']
         for index in range(n_plots):
             row = (index // cols) + 1
             col = (index % cols) + 1
 
-            result = results[index//2]
             data = dict_list[index//2]
 
             # 准备点数据
-            points_list = []
-            for i in range(len(result["linepoints_list"])):
-                points_list.append(np.array(result["linepoints_list"][i]))
-
+            points_list = linepoints_list[index // 2]
 
             self.add_2dmap(fig, z=data["iq_avg"],
                 x=data["bias"],
                 y=data["frequency"], row=row, col=col,showscale=(index == 0))
             # 添加散点
             if (index % 2 != 0):
-                for i, points in enumerate(points_list):
-                    if points.shape[0]:
-                        xy_x = points[:, 0]
-                        xy_y = points[:, 1]
-                        self.add_line(fig, x=xy_x,
-                                      y=xy_y, row=row, col=col,
-                                      color_index=i, line_style_index=0)
-                        centcol = len(xy_x) // 2
-                        self.add_annotation(fig, x=xy_x[centcol],
-                                            y=xy_y[centcol],
-                                            text=f'conf:{round(result["confidence_list"][i], 2)}', row=row,
-                                            col=col)
+                for i in range(len(points_list)):
+                    reflection_points = np.array(points_list[i])
+                    xy_x = reflection_points[:, 0]
+                    xy_y = reflection_points[:, 1]
+
+                    self.add_line(fig, x=xy_x,
+                                  y=xy_y, row=row, col=col,
+                                  color_index=i, line_style_index=0)
+                    centcol = len(xy_x) // 2
+                    self.add_annotation(fig, x=xy_x[centcol],
+                                        y=xy_y[centcol],
+                                        text=f'conf:{round(confidences_list[index // 2][i], 2)}', row=row,
+                                        col=col)
 
 
         self.update_layout(fig, rows, cols)
@@ -88,8 +88,10 @@ class Spectrum2DNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
         results = kwargs.get('results')
         dict_list = kwargs.get('dict_list')
         file_names = kwargs.get('file_names')
-
-        n_plots = len(results)*2
+        linepoints_list = results['linepoints_list']
+        class_ids = results['class_ids_list']
+        confidences_list = results['confidences_list']
+        n_plots = len(linepoints_list)*2
 
         titles =file_names
         # 创建子图布局
@@ -100,13 +102,12 @@ class Spectrum2DNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
             row = (index // cols) + 1
             col = (index % cols) + 1
 
-            result = results[index//2]
             data = dict_list[index//2]
 
             # 准备点数据
-            points_list = []
-            for i in range(len(result["linepoints_list"])):
-                points_list.append(np.array(result["linepoints_list"][i]))
+            points_list = linepoints_list[index // 2]
+
+
 
             self.add_2dmap(fig, z=data["iq_avg"],
                            x=data["bias"],
@@ -114,18 +115,19 @@ class Spectrum2DNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
             colors = np.linspace(0, 1, len(points_list))
             # 添加散点
             if (index % 2 != 0):
-                for i, points in enumerate(points_list):
-                    if points.shape[0]:
-                        xy_x = points[:, 0]
-                        xy_y = points[:, 1]
-                        self.add_line(fig, x=xy_x,
-                                      y=xy_y, row=row, col=col,
-                                      color_index=i, line_style_index=0)
-                        centcol = len(xy_x) // 2
-                        self.add_annotation(fig, x=xy_x[centcol],
-                                            y=xy_y[centcol],
-                                            text=f'conf:{round(result["confidence_list"][i], 2)}', row=row,
-                                            col=col)
+                for i in range(len(points_list)):
+                    reflection_points = np.array(points_list[i])
+                    xy_x = reflection_points[:, 0]
+                    xy_y = reflection_points[:, 1]
+
+                    self.add_line(fig, x=xy_x,
+                                  y=xy_y, row=row, col=col,
+                                  color_index=i, line_style_index=0)
+                    centcol = len(xy_x) // 2
+                    self.add_annotation(fig, x=xy_x[centcol],
+                                        y=xy_y[centcol],
+                                        text=f'conf:{round(confidences_list[index // 2][i], 2)}', row=row,
+                                        col=col)
 
         self.update_layout(fig, rows, cols)
         self.configure_axis(fig, rows, cols, xlable="Bias", ylable="Frequency (GHz)")

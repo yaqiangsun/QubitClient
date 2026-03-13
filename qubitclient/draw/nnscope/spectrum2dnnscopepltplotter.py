@@ -13,9 +13,7 @@ class Spectrum2DNNScopeDataPltPlotter(QuantumDataPltPlotter):
 
 
 
-        n_plots = len(results) * 2
-        fig, axes, rows, cols = self.create_subplots(n_plots)
-        axs = axes.flatten()
+
 
 
         data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
@@ -37,14 +35,18 @@ class Spectrum2DNNScopeDataPltPlotter(QuantumDataPltPlotter):
             npz_dict['iq_avg'] = data
             npz_dict['name'] = q_name
             dict_list.append(npz_dict)
+        n_plots = len(q_list) * 2
+        fig, axes, rows, cols = self.create_subplots(n_plots)
+        axs = axes.flatten()
 
+        linepoints_list = results['linepoints_list']
+        class_ids = results['class_ids_list']
+        confidences_list = results['confidences_list']
         for index in range(n_plots):
             ax = axs[index]
-            result = results[index//2]
 
-            points_list = []
-            for i in range(len(result["linepoints_list"])):
-                points_list.append(result["linepoints_list"][i])
+            points_list =  linepoints_list[index // 2]
+
 
 
 
@@ -63,7 +65,7 @@ class Spectrum2DNNScopeDataPltPlotter(QuantumDataPltPlotter):
                     centcol = len(xy_x) // 2
 
                     self.add_line(ax,xy_x, xy_y,color_index=i,line_style_index=0)
-                    self.add_annotation(ax,f'conf:{round(result["confidence_list"][i], 2)}',(xy_x[centcol], xy_y[centcol]))
+                    self.add_annotation(ax,f'conf:{round(confidences_list[index // 2][i], 2)}',(xy_x[centcol], xy_y[centcol]))
 
 
 
@@ -81,21 +83,19 @@ class Spectrum2DNNScopeDataPltPlotter(QuantumDataPltPlotter):
         dict_list = kwargs.get('dict_list')
         file_names = kwargs.get('file_names')
 
-        n_plots = len(results) * 2
+        linepoints_list = results['linepoints_list']
+        class_ids = results['class_ids_list']
+        confidences_list = results['confidences_list']
+        n_plots = len(linepoints_list) * 2
         fig, axes, row, col = self.create_subplots(n_plots)
         axs = axes.flatten()
 
 
         for index in range(n_plots):
             ax = axs[index]
-            result = results[index//2]
             file_name = file_names[index//2]
 
-            points_list = []
-            for i in range(len(result["linepoints_list"])):
-                points_list.append(result["linepoints_list"][i])
-
-
+            points_list = linepoints_list[index // 2]
 
             c = self.add_2dmap(ax, dict_list[index // 2]["bias"], dict_list[index // 2]["frequency"],
                                dict_list[index // 2]["iq_avg"], shading_index=0, cmap_index=0)
@@ -112,7 +112,7 @@ class Spectrum2DNNScopeDataPltPlotter(QuantumDataPltPlotter):
                     centcol = len(xy_x) // 2
 
                     self.add_line(ax, xy_x, xy_y, color_index=i, line_style_index=0)
-                    self.add_annotation(ax, f'conf:{round(result["confidence_list"][i], 2)}',
+                    self.add_annotation(ax, f'conf:{round(confidences_list[index // 2][i], 2)}',
                                         (xy_x[centcol], xy_y[centcol]))
 
 

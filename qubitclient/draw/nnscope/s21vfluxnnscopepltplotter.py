@@ -16,9 +16,7 @@ class S21VfluxNNScopeDataPltPlotter(QuantumDataPltPlotter):
 
 
 
-        n_plots = len(results) * 2
-        fig, axes, rows, cols = self.create_subplots(n_plots)
-        axs = axes.flatten()
+
 
 
         data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
@@ -40,14 +38,19 @@ class S21VfluxNNScopeDataPltPlotter(QuantumDataPltPlotter):
             npz_dict['iq_avg'] = data
             npz_dict['name'] = q_name
             dict_list.append(npz_dict)
+        n_plots = len(q_list) * 2
+        fig, axes, rows, cols = self.create_subplots(n_plots)
+        axs = axes.flatten()
+
+        linepoints_list = results['linepoints_list']
+        class_ids = results['class_ids']
+        confidence_list = results['confidence_list']
 
         for index in range(n_plots):
             ax = axs[index]
-            result = results[index // 2]
+            points_list = linepoints_list[index // 2]
 
-            points_list = []
-            for i in range(len(result["linepoints_list"])):
-                points_list.append(result["linepoints_list"][i])
+
 
 
 
@@ -65,10 +68,10 @@ class S21VfluxNNScopeDataPltPlotter(QuantumDataPltPlotter):
                     reflection_points = np.array(reflection_points)
                     xy_x = reflection_points[:, 0]
                     xy_y = reflection_points[:, 1]
-                    class_id  = s21vflux_labels[int(result["class_ids"][i])]
+                    class_id  = s21vflux_labels[int(class_ids[index//2][i])]
                     self.add_line(ax, xy_x, xy_y, color_index=i, line_style_index=0)
                     centcol = len(xy_x) // 2
-                    self.add_annotation(ax, f'{class_id} conf:{round(result["confidence_list"][i], 2)}',
+                    self.add_annotation(ax, f'{class_id} conf:{round(confidence_list[index//2][i], 2)}',
                                         (xy_x[centcol], xy_y[centcol]))
 
 

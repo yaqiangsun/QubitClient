@@ -79,33 +79,19 @@ results_filtered = results_filtered.get("results")
 
 ## 返回值格式
 
-返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
+返回的结果是一个列表，每个字典元素对应一个输入文件的处理结果：
 
 ```json
 [
-   [
-     {
-       "params_list": [[float, ...], ...],     // 第一个Q比特每条线段的多项式参数列表
-       "linepoints_list": [[[int, int], ...], ...], // 第一个Q比特每条线段的点坐标列表
-       "confidence_list": [float, ...],         // 第一个Q比特每条线段的置信度
-       "class_ids": [int, ...],         // 第一个Q比特每条线段的分割标签（{0:"cos_light",1:"cos_dark",2:"line_light",3:"line_dark"}）
-       "curve_type": [str, ...],         // 第一个Q比特每条线段的拟合方式（cosine,或poly）
-     },
-     ...
-   ]，
-   [
-     {
-       "params_list": [[float, ...], ...],     // 第二个Q比特每条线段的多项式参数列表
-       "linepoints_list": [[[int, int], ...], ...], // 第二个Q比特每条线段的点坐标列表
-       "confidence_list": [float, ...],         // 第二个Q比特每条线段的置信度
-       "class_ids": [int, ...],         // 第二个Q比特每条线段的分割标签（{0:"cos_light",1:"cos_dark",2:"line_light",3:"line_dark"}）
-       "curve_type": [str, ...],         // 第二个Q比特每条线段的拟合方式（cosine,或poly）
-     },
-     ...
-   ]，
-   ...
+  {
+     "params_list": [[[float]]],     // 表示拟合参数
+     "linepoints_list": [[[[float]]]],     // 表示线点集合
+    "confident_list": [[float]],     // 表示线置信度
+    "class_ids": [[float]],     // 表示线类型
+    "curve_type":[[str]]     // 表示拟合类型
+  },
+  ...
 ]
-
 ```
 
 
@@ -113,13 +99,14 @@ results_filtered = results_filtered.get("results")
 
 ### 字段说明
 
-| 字段名 | 类型                                 | 描述 |
-|--------|------------------------------------|------|
-| params_list | List[List[float]]                  | 每条检测到的线段的拟合参数列表 |
-| linepoints_list | List[List[[row_index, col_index]]] | 每条线段的点坐标列表，每个点包含行索引和列索引 |
-| confidence_list | List[float]                        | 每条线段的置信度，表示检测的可靠性 |
-| class_ids | List[float]                        | 每条线段的分割标签 |
-| curve_type | List[str]                          | 每条线段的拟合方式（cosine,或poly） |
+| 字段名 | 类型 | 描述 |
+|--------|------|------|
+| params_list | [[[float]]] | 表示拟合参数 |
+| linepoints_list | [[[[float]]]] | 表示线点集合 |
+| confident_list | [[float]] | 表示线置信度 |
+| class_ids | [[float]] | 表示线类型 |
+| curve_type | [[float]] | 表示拟合类型 |
+
 
 
 
@@ -127,39 +114,16 @@ results_filtered = results_filtered.get("results")
 
 ```python
 [
-   [
-     {
-       "params_list": [
-         [1.2, 3.4, 5.6],
-         [2.1, 4.3, 6.5]
-       ],
-       "linepoints_list": [
-         [[10, 15], [10, 16], [10, 17]],
-         [[20, 30], [20, 31], [20, 32]]
-       ],
-       "confidence_list": [0.95, 0.87],
-       "class_ids": [1.0, 2.0],
-       "curve_type": ["cosine", "poly"]
-     }
-   ],
-   [
-     {
-       "params_list": [
-         [1.2, 3.4, 5.6],
-         [2.1, 4.3, 6.5]
-       ],
-       "linepoints_list": [
-         [[10, 15], [10, 16], [10, 17]],
-         [[20, 30], [20, 31], [20, 32]]
-       ],
-       "confidence_list": [0.95, 0.87],
-       "class_ids": [1.0, 2.0],
-       "curve_type": ["cosine", "poly"]
-     }
-   ],
-   ...
+  {
+     "params_list": [[[-1,-1,-1,-1]],[[-1,-1,-1,-1]]],
+     "linepoints_list": [[[[-1,6.843e9],[-0.9,6.844e9],...]],[[[-0.8,6.833e9],[-1,6.847e9],...]]],
+    "confident_list": [[0.6],[0.6]]，
+    "class_ids": [[1.0],[1.0]],
+    "curve_type": [["cosin"],["cosin"]]
+  }
 ]
 ```
+
 
 ## 可视化
 

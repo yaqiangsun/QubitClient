@@ -6,6 +6,7 @@ from .body_powershift_api_v1_tasks_scope_powershift_post import BodyPowershiftAp
 from .body_rabi_api_v1_tasks_scope_rabi_post import BodyRabiApiV1TasksScopeRabiPost
 from .body_rabicos_api_v1_tasks_scope_rabicospeak_post import BodyRabicosApiV1TasksScopeRabicospeakPost
 from .body_ramsy_api_v1_tasks_scope_ramsy_post import BodyRamsyApiV1TasksScopeRamsyPost
+from .body_rbfit_api_v1_tasks_scope_rbfit_post import BodyRbfitApiV1TasksScopeRbfitPost
 from .body_s21_peak_api_v1_tasks_scope_s21_peak_post import BodyS21PeakApiV1TasksScopeS21PeakPost
 from .body_s21_peakmulti_api_v1_tasks_scope_s21_peakmulti_post import BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost
 from .body_s21_vflux_api_v1_tasks_scope_s21_vflux_post import BodyS21VfluxApiV1TasksScopeS21VfluxPost
@@ -24,6 +25,7 @@ __all__ = (
     "BodyRabiApiV1TasksScopeRabiPost",
     "BodyRabicosApiV1TasksScopeRabicospeakPost",
     "BodyRamsyApiV1TasksScopeRamsyPost",
+    "BodyRbfitApiV1TasksScopeRbfitPost",
     "BodyS21PeakApiV1TasksScopeS21PeakPost",
     "BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost",
     "BodyS21VfluxApiV1TasksScopeS21VfluxPost",

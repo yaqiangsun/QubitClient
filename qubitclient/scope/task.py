@@ -13,6 +13,7 @@ from .scope_api.api.defined_tasks import t2fit_api_v1_tasks_scope_t2fit_post
 from .scope_api.api.defined_tasks import spectrum2d_api_v1_tasks_scope_spectrum2d_post
 from .scope_api.api.defined_tasks import powershift_api_v1_tasks_scope_powershift_post
 from .scope_api.api.defined_tasks import drag_api_v1_tasks_scope_drag_post
+from .scope_api.api.defined_tasks import rbfit_api_v1_tasks_scope_rbfit_post
 
 
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
@@ -28,6 +29,8 @@ from .scope_api.models import BodyT2FitApiV1TasksScopeT2FitPost
 from .scope_api.models import BodySpectrum2DApiV1TasksScopeSpectrum2DPost
 from .scope_api.models import BodyPowershiftApiV1TasksScopePowershiftPost
 from .scope_api.models import BodyDragApiV1TasksScopeDragPost
+from .scope_api.models import BodyRbfitApiV1TasksScopeRbfitPost
+
 
 
 from .scope_api.types import Response
@@ -158,6 +161,12 @@ def drag(client,files: File):
     response: Response[BodyDragApiV1TasksScopeDragPost] = drag_api_v1_tasks_scope_drag_post.sync_detailed(client=client,body=body)
     return response
 
+@task_register
+def rb(client,files: File):
+    body: BodyRbfitApiV1TasksScopeRbfitPost = BodyRbfitApiV1TasksScopeRbfitPost(files=files)
+    response: Response[BodyRbfitApiV1TasksScopeRbfitPost] = rbfit_api_v1_tasks_scope_rbfit_post.sync_detailed(client=client,body=body)
+    return response
+
 from enum import Enum, unique
 @unique
 class TaskName(Enum):
@@ -175,6 +184,7 @@ class TaskName(Enum):
     SPECTRUM2D = "spectrum2dscope"
     POWERSHIFT = "powershift"
     DRAG = "drag"
+    RB = "rb"
 
 
 

@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any
+from typing import Any, Optional, Union
 
 import httpx
 
@@ -13,7 +13,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     body: BodyRbfitApiV1TasksScopeRbfitPost,
-    type_: str | Unset = "rbfit",
+    type_: Union[Unset, str] = "rbfit",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -36,8 +36,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | HTTPValidationError | None:
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Union[Any, HTTPValidationError]]:
     if response.status_code == 200:
         response_200 = response.json()
         return response_200
@@ -54,8 +54,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | HTTPValidationError]:
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Union[Any, HTTPValidationError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -66,11 +66,11 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: AuthenticatedClient | Client,
+    client: Union[AuthenticatedClient, Client],
     body: BodyRbfitApiV1TasksScopeRbfitPost,
-    type_: str | Unset = "rbfit",
-) -> Response[Any | HTTPValidationError]:
-    r"""Rbfit
+    type_: Union[Unset, str] = "rbfit",
+) -> Response[Union[Any, HTTPValidationError]]:
+    r""""Rbfit
 
      rbfit
 
@@ -90,7 +90,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | HTTPValidationError]
+        Response[Union[Any, HTTPValidationError]]
     """
 
     kwargs = _get_kwargs(
@@ -107,10 +107,10 @@ def sync_detailed(
 
 def sync(
     *,
-    client: AuthenticatedClient | Client,
+    client: Union[AuthenticatedClient, Client],
     body: BodyRbfitApiV1TasksScopeRbfitPost,
-    type_: str | Unset = "rbfit",
-) -> Any | HTTPValidationError | None:
+    type_: Union[Unset, str] = "rbfit",
+) -> Optional[Union[Any, HTTPValidationError]]:
     r"""Rbfit
 
      rbfit
@@ -131,7 +131,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | HTTPValidationError
+        Union[Any, HTTPValidationError]
     """
 
     return sync_detailed(
@@ -143,10 +143,10 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: AuthenticatedClient | Client,
+    client: Union[AuthenticatedClient, Client],
     body: BodyRbfitApiV1TasksScopeRbfitPost,
-    type_: str | Unset = "rbfit",
-) -> Response[Any | HTTPValidationError]:
+    type_: Union[Unset, str] = "rbfit",
+) -> Response[Union[Any, HTTPValidationError]]:
     r"""Rbfit
 
      rbfit
@@ -167,7 +167,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | HTTPValidationError]
+        Response[Union[Any, HTTPValidationError]]
     """
 
     kwargs = _get_kwargs(
@@ -182,10 +182,10 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: AuthenticatedClient | Client,
+    client: Union[AuthenticatedClient, Client],
     body: BodyRbfitApiV1TasksScopeRbfitPost,
-    type_: str | Unset = "rbfit",
-) -> Any | HTTPValidationError | None:
+    type_: Union[Unset, str] = "rbfit",
+) -> Optional[Union[Any, HTTPValidationError]]:
     r"""Rbfit
 
      rbfit
@@ -206,7 +206,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | HTTPValidationError
+        Union[Any, HTTPValidationError]
     """
 
     return (

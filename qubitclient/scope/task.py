@@ -14,6 +14,7 @@ from .scope_api.api.defined_tasks import spectrum2d_api_v1_tasks_scope_spectrum2
 from .scope_api.api.defined_tasks import powershift_api_v1_tasks_scope_powershift_post
 from .scope_api.api.defined_tasks import drag_api_v1_tasks_scope_drag_post
 from .scope_api.api.defined_tasks import rbfit_api_v1_tasks_scope_rbfit_post
+from .scope_api.api.defined_tasks import delta_api_v1_tasks_scope_delta_post
 
 
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
@@ -30,6 +31,7 @@ from .scope_api.models import BodySpectrum2DApiV1TasksScopeSpectrum2DPost
 from .scope_api.models import BodyPowershiftApiV1TasksScopePowershiftPost
 from .scope_api.models import BodyDragApiV1TasksScopeDragPost
 from .scope_api.models import BodyRbfitApiV1TasksScopeRbfitPost
+from .scope_api.models import BodyDeltaApiV1TasksScopeDeltaPost
 
 
 
@@ -160,7 +162,11 @@ def drag(client,files: File):
     body: BodyDragApiV1TasksScopeDragPost = BodyDragApiV1TasksScopeDragPost(files=files)
     response: Response[BodyDragApiV1TasksScopeDragPost] = drag_api_v1_tasks_scope_drag_post.sync_detailed(client=client,body=body)
     return response
-
+@task_register
+def delta(client,files: File):
+    body: BodyDeltaApiV1TasksScopeDeltaPost = BodyDeltaApiV1TasksScopeDeltaPost(files=files)
+    response: Response[BodyDeltaApiV1TasksScopeDeltaPost] = delta_api_v1_tasks_scope_delta_post.sync_detailed(client=client,body=body)
+    return response
 @task_register
 def rb(client,files: File):
     body: BodyRbfitApiV1TasksScopeRbfitPost = BodyRbfitApiV1TasksScopeRbfitPost(files=files)
@@ -185,6 +191,7 @@ class TaskName(Enum):
     POWERSHIFT = "powershift"
     DRAG = "drag"
     RB = "rb"
+    DELTA = "delta"
 
 
 

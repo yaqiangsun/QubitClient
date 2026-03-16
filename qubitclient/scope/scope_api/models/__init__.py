@@ -15,6 +15,7 @@ from .body_spectrum_2d_api_v1_tasks_scope_spectrum_2d_post import BodySpectrum2D
 from .body_spectrum_api_v1_tasks_scope_spectrum_post import BodySpectrumApiV1TasksScopeSpectrumPost
 from .body_t1_fit_api_v1_tasks_scope_t1_fit_post import BodyT1FitApiV1TasksScopeT1FitPost
 from .body_t2_fit_api_v1_tasks_scope_t2_fit_post import BodyT2FitApiV1TasksScopeT2FitPost
+from .body_delta_api_v1_tasks_scope_delta_post import BodyDeltaApiV1TasksScopeDeltaPost
 from .http_validation_error import HTTPValidationError
 from .validation_error import ValidationError
 
@@ -26,6 +27,7 @@ __all__ = (
     "BodyRabicosApiV1TasksScopeRabicospeakPost",
     "BodyRamsyApiV1TasksScopeRamsyPost",
     "BodyRbfitApiV1TasksScopeRbfitPost",
+    "BodyDeltaApiV1TasksScopeDeltaPost",
     "BodyS21PeakApiV1TasksScopeS21PeakPost",
     "BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost",
     "BodyS21VfluxApiV1TasksScopeS21VfluxPost",

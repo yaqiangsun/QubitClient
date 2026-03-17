@@ -550,7 +550,7 @@ def nnspectrum_convert(result):
             s = raw.astype(np.float64)
         else:
             if matched_key == "iq":
-                raw = _normalize_iq_data(
+                raw = normalize_iq_data(
                     raw,
                     f"nnspectrum | qubit={qubit_name}",
                     reduce_2d=True,

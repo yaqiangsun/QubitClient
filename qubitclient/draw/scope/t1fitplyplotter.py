@@ -19,9 +19,10 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
             second_y=False
         )
 
-        params_list   = result.get("params_list", [])
-        r2_list       = result.get("r2_list", [])
-        fit_data_list = result.get("fit_data_list", [])
+        params_list   = result.get("params_list",   [])
+        r2_list       = result.get("r2_list",       [])
+        fit_data_dense_list = result.get("fit_data_dense_list", [])
+        x_dense_list  = result.get("x_dense_list",  [])
 
         show_data_legend = True
         show_fit_legend  = True
@@ -30,7 +31,7 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
             row = (q_idx // cols) + 1
             col = (q_idx % cols) + 1
 
-            item = image_dict[q_name]
+            item = image_dict.get(q_name)
             if not isinstance(item, (list, tuple)) or len(item) < 2:
                 continue
 
@@ -50,14 +51,19 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
             if show_data_legend:
                 show_data_legend = False
 
-            # 只在拟合数据有效且长度匹配时绘制曲线
-            if (q_idx < len(fit_data_list) and 
-                fit_data_list[q_idx] and 
-                len(fit_data_list[q_idx]) == len(x_raw)):
+            # 拟合曲线 — 使用高密度数据
+            if (q_idx < len(fit_data_dense_list) and 
+                q_idx < len(x_dense_list) and
+                fit_data_dense_list[q_idx] is not None and
+                x_dense_list[q_idx] is not None and
+                len(fit_data_dense_list[q_idx]) > 0 and
+                len(x_dense_list[q_idx]) > 0):
 
-                fit_y = np.asarray(fit_data_list[q_idx])
+                x_dense = np.asarray(x_dense_list[q_idx])
+                fit_y_dense = np.asarray(fit_data_dense_list[q_idx])
+
                 self.add_line(
-                    fig, x=x_raw, y=fit_y,
+                    fig, x=x_dense, y=fit_y_dense,
                     row=row, col=col,
                     color_index=0,
                     line_style_index=0,
@@ -67,7 +73,7 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
                 if show_fit_legend:
                     show_fit_legend = False
 
-            # 参数文本（放在左上角）
+            # 参数文本（左上角）
             if q_idx < len(params_list) and params_list[q_idx]:
                 A, T1, B = params_list[q_idx]
                 r2 = r2_list[q_idx] if q_idx < len(r2_list) else 0.0
@@ -79,17 +85,19 @@ class T1FitDataPlyPlotter(QuantumDataPlyPlotter):
                     f"R² = {r2:.3f}"
                 )
 
+                y_max = max(y_raw) if len(y_raw) > 0 else 1.0
                 self.add_annotation(
                     fig,
                     text=text,
                     row=row, col=col,
-                    x=x_raw[0],
-                    y=max(y_raw) * 1.08 if len(y_raw) > 0 else 1.0,
+                    x=min(x_raw) if len(x_raw) > 0 else 0.0,
+                    y=y_max * 1.08,
                     xref="x", yref="y",
-                    showarrow=False
+                    showarrow=False,
+                    xanchor="left",
+                    yanchor="top"
                 )
 
-                    
             fig.update_xaxes(title_text="Time", row=row, col=col)
             fig.update_yaxes(title_text="Amp", row=row, col=col)
 

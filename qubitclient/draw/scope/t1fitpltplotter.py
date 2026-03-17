@@ -1,7 +1,6 @@
 from ..pltplotter import QuantumDataPltPlotter
 import numpy as np
 
-
 class T1FitDataPltPlotter(QuantumDataPltPlotter):
     def __init__(self):
         super().__init__("t1fit")
@@ -17,13 +16,14 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
         fig, axes, rows, cols = self.create_subplots(len(qubit_names))
         axs = axes.flatten()
 
-        params_list   = result.get("params_list", [])
-        r2_list       = result.get("r2_list", [])
-        fit_data_list = result.get("fit_data_list", [])
+        params_list   = result.get("params_list",   [])
+        r2_list       = result.get("r2_list",       [])
+        fit_data_dense_list = result.get("fit_data_dense_list", [])
+        x_dense_list  = result.get("x_dense_list",  [])
 
         for q_idx, q_name in enumerate(qubit_names):
             ax = axs[q_idx]
-            item = image_dict[q_name]
+            item = image_dict.get(q_name)
 
             if not isinstance(item, (list, tuple)) or len(item) < 2:
                 ax.axis('off')
@@ -32,8 +32,8 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
             x_raw = np.asarray(item[0])
             y_raw = np.asarray(item[1])
 
-            # 绘制原始数据（散点）
-            data_scatter = self.add_scatter(
+            # 原始数据（散点）
+            scatter = self.add_scatter(
                 ax,
                 x_raw,
                 y_raw,
@@ -43,41 +43,36 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
                 alpha=0.7
             )
 
-            has_fit = False
-            fit_line = None
+            # 拟合曲线 — 使用高密度数据
+            if (q_idx < len(fit_data_dense_list) and 
+                q_idx < len(x_dense_list) and
+                fit_data_dense_list[q_idx] is not None and
+                x_dense_list[q_idx] is not None and
+                len(fit_data_dense_list[q_idx]) > 0 and
+                len(x_dense_list[q_idx]) > 0):
 
-            if (q_idx < len(fit_data_list) and 
-                fit_data_list[q_idx] and                  # 非空（不是None也不是[]）
-                len(fit_data_list[q_idx]) == len(x_raw)): # 长度必须匹配
+                x_dense = np.asarray(x_dense_list[q_idx])
+                fit_y_dense = np.asarray(fit_data_dense_list[q_idx])
 
-                fit_y = np.asarray(fit_data_list[q_idx])
-                fit_line, _ = self.add_line(
+                self.add_line(
                     ax,
-                    x_raw,
-                    fit_y,
+                    x_dense,
+                    fit_y_dense,
                     label="Fit",
                     color_index=0,
                     line_style_index=0
                 )
-                has_fit = True
 
-            # 构建当前子图的图例 handles 和 labels
-            legend_handles = [data_scatter]
-            legend_labels = ["Data"]
-
-            if has_fit and fit_line is not None:
-                legend_handles.append(fit_line[0])
-                legend_labels.append("Fit")
-
-            # 添加图例（每个子图独立）
-            if legend_handles:
+            # 图例（每个子图独立）
+            handles, labels = ax.get_legend_handles_labels()
+            if handles:
                 self.add_legend(
                     ax=ax,
-                    handles=legend_handles,
-                    labels=legend_labels,
+                    handles=handles,
+                    labels=labels,
                 )
 
-            # 添加拟合参数文本（左上角，axes fraction 坐标）
+            # 参数文本（左上角）
             if q_idx < len(params_list) and params_list[q_idx]:
                 A, T1, B = params_list[q_idx]
                 r2 = r2_list[q_idx] if q_idx < len(r2_list) else 0.0
@@ -92,24 +87,22 @@ class T1FitDataPltPlotter(QuantumDataPltPlotter):
                 self.add_annotation(
                     ax,
                     text_str,
-                    xy=(0, 1),                 
+                    xy=(0, 1),
                     annotation_xycoords="axes fraction",
                     annotation_textcoords="axes fraction",
                     annotation_xytext=(0, 1),
                     color_index=0,
                     showarrow=False,
-                    ha='left',                      # 文字左对齐
-                    va='top'                      # 文字顶部对齐
+                    ha='left',
+                    va='top'
                 )
 
-            # 设置标题和坐标轴标签
-            xlabel = "Time"
-            ylabel = "Amp"
+            # 坐标轴设置
             self.configure_axis(
                 ax,
-                title=q_name,               
-                xlabel=xlabel,
-                ylabel=ylabel
+                title=q_name,
+                xlabel="Time",
+                ylabel="Amp"
             )
 
         fig.tight_layout()

@@ -25,7 +25,8 @@ class T2FitDataPlyPlotter(QuantumDataPlyPlotter):
 
         params_list   = result.get("params_list",   [])
         r2_list       = result.get("r2_list",       [])
-        fit_data_list = result.get("fit_data_list", [])
+        fit_data_dense_list = result.get("fit_data_dense_list", [])
+        x_dense_list  = result.get("x_dense_list",  [])
 
         show_data_legend = True
         show_fit_legend  = True
@@ -56,20 +57,21 @@ class T2FitDataPlyPlotter(QuantumDataPlyPlotter):
             if show_data_legend:
                 show_data_legend = False
 
-            # 拟合曲线
-            if (q_idx < len(fit_data_list) and 
-                fit_data_list[q_idx] and                     # 非 None 且非空
-                len(fit_data_list[q_idx]) > 0):
-                fit_y = np.asarray(fit_data_list[q_idx])
-
-                x_plot = x_raw
-                if len(fit_y) != len(x_raw):
-                    x_plot = np.linspace(x_raw.min(), x_raw.max(), len(fit_y))
+            # 拟合曲线 — 使用高密度数据
+            if (q_idx < len(fit_data_dense_list) and 
+                q_idx < len(x_dense_list) and
+                fit_data_dense_list[q_idx] is not None and 
+                x_dense_list[q_idx] is not None and
+                len(fit_data_dense_list[q_idx]) > 0 and
+                len(x_dense_list[q_idx]) > 0):
+                
+                x_dense = np.asarray(x_dense_list[q_idx])
+                fit_y_dense = np.asarray(fit_data_dense_list[q_idx])
 
                 self.add_line(
                     fig,
-                    x=x_plot,
-                    y=fit_y,
+                    x=x_dense,
+                    y=fit_y_dense,
                     row=row, col=col,
                     color_index=0,             # 蓝色
                     line_style_index=0,
@@ -94,14 +96,18 @@ class T2FitDataPlyPlotter(QuantumDataPlyPlotter):
                     f"R²  = {r2:.3f}"
                 )
 
+                # 位置尽量放在左上角，y 稍高于最大值
+                y_max = max(y_raw) if len(y_raw) > 0 else 1.0
                 self.add_annotation(
                     fig,
                     text=text,
                     row=row, col=col,
-                    x=x_raw.min(),
-                    y=max(y_raw) * 1.06 if len(y_raw) > 0 else 1.0,
+                    x=x_raw.min() if len(x_raw) > 0 else 0.0,
+                    y=y_max * 1.06,
                     xref="x", yref="y",
-                    showarrow=False
+                    showarrow=False,
+                    xanchor="left",
+                    yanchor="top"
                 )
 
             # 坐标轴标签

@@ -18,9 +18,11 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
         fig, axes, rows, cols = self.create_subplots(n_qubits)
         axs = axes.flatten()
 
+        #如果数据点较少可以使用'x_dense'和'fit_data_dense'
         params_list   = result.get("params_list",   [])
         r2_list       = result.get("r2_list",       [])
-        fit_data_list = result.get("fit_data_list", [])
+        fit_data_dense_list = result.get("fit_data_dense_list", [])
+        x_dense_list = result.get("x_dense_list", [])
 
         for q_idx, q_name in enumerate(qubit_names):
             ax = axs[q_idx]
@@ -32,6 +34,7 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
 
             x_raw = np.asarray(item[0])
             y_raw = np.asarray(item[1])
+
 
             # 原始数据 - 散点
             scatter = self.add_scatter(
@@ -45,21 +48,20 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
             )
 
             # 拟合曲线
-            if (q_idx < len(fit_data_list) and 
-                fit_data_list[q_idx] and                     # 非 None 且非空列表
-                len(fit_data_list[q_idx]) > 0):              # 长度大于 0    
-                fit_y = np.asarray(fit_data_list[q_idx])
-
-                # 若长度不匹配则重新生成 x
-                if len(fit_y) != len(x_raw):
-                    x_plot = np.linspace(x_raw.min(), x_raw.max(), len(fit_y))
-                else:
-                    x_plot = x_raw
-
+            if (q_idx < len(fit_data_dense_list) and 
+                q_idx < len(x_dense_list) and
+                fit_data_dense_list[q_idx] is not None and 
+                x_dense_list[q_idx] is not None and
+                len(fit_data_dense_list[q_idx]) > 0 and
+                len(x_dense_list[q_idx]) > 0):
+                
+                fit_data_dense = np.asarray(fit_data_dense_list[q_idx])
+                x_dense = np.asarray(x_dense_list[q_idx]) 
+    
                 self.add_line(
                     ax,
-                    x_plot,
-                    fit_y,
+                    x_dense,
+                    fit_data_dense,
                     label="Fit",            # 每个子图都给 label
                     color_index=0,          # 蓝色
                     line_style_index=0

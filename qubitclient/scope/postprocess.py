@@ -231,35 +231,48 @@ def postprocess_result_t1fit(response, threshold):
 
     for item in results:
         result_filtered = {}
-        params_list = item.get('params_list', [])
-        r2_list = item.get('r2_list', [])
-        fit_data_list = item.get('fit_data_list', [])
+        params_list         = item.get('params_list', [])
+        r2_list             = item.get('r2_list', [])
+        fit_data_list       = item.get('fit_data_list', [])
+        fit_data_dense_list = item.get('fit_data_dense_list', [])  
+        x_dense_list        = item.get('x_dense_list', [])         
         status = item.get('status', 'failed')
 
         filtered_params = []
-        filtered_fit_data = []
         filtered_r2 = []
+        filtered_fit_data = []
+        filtered_fit_data_dense = []   
+        filtered_x_dense = []          
 
-        for params, r2, fit_data in zip(params_list, r2_list, fit_data_list):
+        for params, r2, fit_data, fit_data_dense, x_dense in zip(
+            params_list, r2_list, fit_data_list, fit_data_dense_list, x_dense_list
+        ):
             if r2 >= threshold:
                 filtered_params.append(params)
                 filtered_r2.append(r2)
                 filtered_fit_data.append(fit_data)
+                filtered_fit_data_dense.append(fit_data_dense)
+                filtered_x_dense.append(x_dense)
             else:
-                # 保留位置，但内容为空列表
                 filtered_params.append([])
-                filtered_r2.append([])       
+                filtered_r2.append([])
                 filtered_fit_data.append([])
+                filtered_fit_data_dense.append([])
+                filtered_x_dense.append([])
 
-        result_filtered['params_list'] = filtered_params
-        result_filtered['r2_list'] = filtered_r2
-        result_filtered['fit_data_list'] = filtered_fit_data
-        result_filtered['status'] = status if filtered_params else 'failed'
+        result_filtered['params_list']         = filtered_params
+        result_filtered['r2_list']             = filtered_r2
+        result_filtered['fit_data_list']       = filtered_fit_data
+        result_filtered['fit_data_dense_list'] = filtered_fit_data_dense   
+        result_filtered['x_dense_list']        = filtered_x_dense         
+        result_filtered['status'] = status if any(filtered_params) else 'failed'
         results_filtered.append(result_filtered)
 
     response_data = {}
     response_data['results'] = results_filtered
     return response_data
+
+
 def postprocess_result_t2fit(response, threshold):
     logging.debug("Result: %s", response.parsed)
     result = response.parsed
@@ -268,30 +281,41 @@ def postprocess_result_t2fit(response, threshold):
 
     for item in results:
         result_filtered = {}
-        params_list = item.get('params_list', [])
-        r2_list = item.get('r2_list', [])
-        fit_data_list = item.get('fit_data_list', [])
+        params_list         = item.get('params_list', [])
+        r2_list             = item.get('r2_list', [])
+        fit_data_list       = item.get('fit_data_list', [])
+        fit_data_dense_list = item.get('fit_data_dense_list', [])  
+        x_dense_list        = item.get('x_dense_list', [])         
         status = item.get('status', 'failed')
 
         filtered_params = []
-        filtered_fit_data = []
         filtered_r2 = []
+        filtered_fit_data = []
+        filtered_fit_data_dense = []   
+        filtered_x_dense = []          
 
-        for params, r2, fit_data in zip(params_list, r2_list, fit_data_list):
+        for params, r2, fit_data, fit_data_dense, x_dense in zip(
+            params_list, r2_list, fit_data_list, fit_data_dense_list, x_dense_list
+        ):
             if r2 >= threshold:
                 filtered_params.append(params)
-                filtered_fit_data.append(fit_data)
                 filtered_r2.append(r2)
+                filtered_fit_data.append(fit_data)
+                filtered_fit_data_dense.append(fit_data_dense)     
+                filtered_x_dense.append(x_dense)                   
             else:
-                # 保留位置，但内容为空列表
                 filtered_params.append([])
-                filtered_r2.append([])       
+                filtered_r2.append([])
                 filtered_fit_data.append([])
+                filtered_fit_data_dense.append([])
+                filtered_x_dense.append([])
 
-        result_filtered['params_list'] = filtered_params
-        result_filtered['r2_list'] = filtered_r2
-        result_filtered['fit_data_list'] = filtered_fit_data
-        result_filtered['status'] = status if filtered_params else 'failed'
+        result_filtered['params_list']         = filtered_params
+        result_filtered['r2_list']             = filtered_r2
+        result_filtered['fit_data_list']       = filtered_fit_data
+        result_filtered['fit_data_dense_list'] = filtered_fit_data_dense   
+        result_filtered['x_dense_list']        = filtered_x_dense         
+        result_filtered['status'] = status if any(filtered_params) else 'failed'
         results_filtered.append(result_filtered)
 
     response_data = {}
@@ -478,6 +502,58 @@ def postprocess_result_powershift(response, threshold):
     response_data['results'] = results_filtered
     return response_data
 
+def postprocess_result_rb(response, threshold):
+    result = response.parsed
+    results = result.get("results", [])
+    results_filtered = []
+
+    for item in results:
+        result_filtered = {}
+        params_list         = item.get('params_list', [])
+        r2_list             = item.get('r2_list', [])
+        fit_data_list       = item.get('fit_data_list', [])          
+        fit_data_dense_list = item.get('fit_data_dense_list', [])   
+        fit_x_dense_list    = item.get('x_dense_list', [])          
+        status              = item.get('status', 'failed')
+
+        filtered_params         = []
+        filtered_r2             = []
+        filtered_fit_data       = []
+        filtered_fit_data_dense = []
+        filtered_x_dense        = []
+
+        for params, r2, fit_data, fit_data_dense, x_dense in zip(
+            params_list,
+            r2_list,
+            fit_data_list,
+            fit_data_dense_list,
+            fit_x_dense_list
+        ):
+            if r2 >= threshold:
+                filtered_params.append(params)
+                filtered_r2.append(r2)
+                filtered_fit_data.append(fit_data)
+                filtered_fit_data_dense.append(fit_data_dense)
+                filtered_x_dense.append(x_dense)
+            else:
+                filtered_params.append([])
+                filtered_r2.append([])           
+                filtered_fit_data.append([])
+                filtered_fit_data_dense.append([])
+                filtered_x_dense.append([])
+
+        result_filtered['params_list']         = filtered_params
+        result_filtered['r2_list']             = filtered_r2
+        result_filtered['fit_data_list']       = filtered_fit_data
+        result_filtered['fit_data_dense_list'] = filtered_fit_data_dense
+        result_filtered['x_dense_list']        = filtered_x_dense
+        result_filtered['status'] = status if any(filtered_params) else 'failed'
+
+        results_filtered.append(result_filtered)
+
+    response_data = {}
+    response_data['results'] = results_filtered
+    return response_data
 
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
@@ -493,7 +569,9 @@ TASK_MAP: Dict[str, Callable] = {
     'drag': postprocess_result_drag,
     'singleshot': postprocess_result_singleshot,
     'spectrum': postprocess_result_spectrum,
-    'powershift': postprocess_result_powershift
+    'powershift': postprocess_result_powershift,
+    'rb': postprocess_result_rb
+    
 }
 
 def run_postprocess(response, threshold, task_type):

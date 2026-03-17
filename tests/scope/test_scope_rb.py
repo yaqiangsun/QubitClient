@@ -45,7 +45,7 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rb", batch_size=5):
         print(response)
 
         response_data = client.get_result(response)
-        threshold = 0.5
+        threshold = -1
         response_data_filtered = client.get_filtered_result(response, threshold, TaskName.RB.value)
 
         results = response_data.get("results")
@@ -55,6 +55,10 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rb", batch_size=5):
             original_file = file_names[global_idx]
 
             if isinstance(result, dict) and result.get('status') == 'failed':
+                print(f"{original_file} failed: No image data available")
+                continue
+
+            if isinstance(result, dict) and not result.get("params_list"):
                 print(f"{original_file} failed: No image data available")
                 continue
 

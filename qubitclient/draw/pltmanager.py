@@ -21,6 +21,7 @@ from qubitclient.draw.scope.t2fitpltplotter import T2FitDataPltPlotter
 from qubitclient.draw.scope.rabicospltplotter import RabiCosDataPltPlotter
 from qubitclient.draw.scope.powershiftpltplotter import PowerShiftDataPltPlotter
 from qubitclient.draw.scope.dragpltplotter import DragDataPltPlotter
+from qubitclient.draw.scope.rbpltplotter import RBDataPltPlotter  
 
 
 class QuantumPlotPltManager:
@@ -48,7 +49,7 @@ class QuantumPlotPltManager:
         self.plotters["s21peakmulti"] = S21PeakMultiDataPltPlotter()
         self.plotters["powershift"] = PowerShiftDataPltPlotter()
         self.plotters["drag"] = DragDataPltPlotter()
-
+        self.plotters["rb"] = RBDataPltPlotter() 
     def get_plotter(self, task_type: str) -> QuantumDataPltPlotter:
         if task_type not in self.plotters:
             raise ValueError(f"未找到任务 '{task_type}' 的绘图器")

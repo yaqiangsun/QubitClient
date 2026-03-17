@@ -23,6 +23,7 @@ from qubitclient.draw.scope.s21peakmultiplyplotter import S21PeakMultiDataPlyPlo
 
 from qubitclient.draw.scope.powershiftplyplotter import PowerShiftDataPlyPlotter
 from qubitclient.draw.scope.dragplyplotter import DragDataPlyPlotter
+from qubitclient.draw.scope.rbplyplotter import RBDataPlyPlotter
 
 class QuantumPlotPlyManager:
 
@@ -52,6 +53,8 @@ class QuantumPlotPlyManager:
         self.plotters["s21peakmulti"] = S21PeakMultiDataPlyPlotter()
         self.plotters["powershift"] = PowerShiftDataPlyPlotter()
         self.plotters["drag"] = DragDataPlyPlotter()
+        
+        self.plotters["rb"] = RBDataPlyPlotter()
 
     def get_plotter(self, task_type: str) -> QuantumDataPlyPlotter:
 

@@ -13,7 +13,7 @@ from qubitclient.ctrl import CtrlTaskName
 def main():
     qubit_ctrl_client = QubitCtrlClient()
     result = qubit_ctrl_client.run(CtrlTaskName.S21,
-                                    qubits_use=["Q0","Q1"],
+                                    qubits=["Q0","Q1"],
                                     frequency_start=-40e6,
                                     frequency_end=40e6,
                                     frequency_sample_num=101

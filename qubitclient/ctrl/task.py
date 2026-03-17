@@ -45,10 +45,10 @@ def run_task(task_type,*args,**kwargs):
 
 
 @task_register
-def s21(qubits_use:list[str],
+def s21(qubits:list[str],
         frequency_start=-40e6,frequency_end=40e6,frequency_sample_num=101,*args,**kwargs):
     result = call_mcp("s21",
-                      qubits_use=qubits_use,
+                      qubits=qubits,
                       frequency_start=frequency_start,
                       frequency_end=frequency_end,
                       frequency_sample_num=frequency_sample_num

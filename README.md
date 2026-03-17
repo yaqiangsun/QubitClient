@@ -174,7 +174,7 @@ client = QubitCtrlClient()
 # 执行 S21 腔频测量实验
 result = client.run(
     task_type=CtrlTaskName.S21,
-    qubits_use=["Q0", "Q1"],
+    qubits=["Q0", "Q1"],
     frequency_start=-40e6,
     frequency_end=40e6,
     frequency_sample_num=101

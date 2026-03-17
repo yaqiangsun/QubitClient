@@ -16,7 +16,7 @@ from qubitclient.ctrl import MCPClient
 def main():
     mcp = MCPClient(mcpServers=None)
     result = mcp.call("s21", {
-                        "qubits_use":["Q0","Q1"],
+                        "qubits":["Q0","Q1"],
                         "frequency_start":-40e6,
                         "frequency_end":40e6,
                         "frequency_sample_num":101

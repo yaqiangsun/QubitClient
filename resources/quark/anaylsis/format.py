@@ -896,15 +896,15 @@ def powershift_convert(result):
 
     if iq_data.ndim != 3:
         raise ValueError(
-            f"数据维度不符合预期: {iq_data.shape}，仅支持3维多比特数据 (m, n, k)（k=比特数）"
+            f"iq_avg维度不符合预期: {iq_data.shape}，仅支持3维多比特数据 (m, n, k)（k=比特数）"
         )
+    s = iq_data
 
     for index, qubit_name in enumerate(qubit_name_list):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
-        single_bit_s = iq_data[:, :, index]
-        abs_s = np.abs(single_bit_s)
+        single_bit_s = s[:, :, index]
 
         power, freq = amp_axis, freq_axis
 
@@ -914,11 +914,10 @@ def powershift_convert(result):
         elif abs_s.shape[1] != len(power) - 1 or abs_s.shape[0] != len(freq) - 1:
             raise ValueError(f"数据维度{abs_s.shape} 与轴长度不匹配: power={len(power)}, freq={len(freq)}")
 
-        abs_s = abs_s.T
-        abs_s = abs_s[:, ::-1]
-        data_formated["image"][qubit_name] = (freq, power, abs_s)
+        data_formated["image"][qubit_name] = (freq, power, single_bit_s)
 
     return data_formated
+
 
 def nnspectrum_convert(result):
     """
@@ -1023,7 +1022,7 @@ def rb_convert(result):
         raise ValueError("cycle 轴应为一维数组")
 
     signal_type = result["meta"]["other"].get("signal", "").lower()
-    data_formatted = {"image": {}}
+    data_formated = {"image": {}}
 
     if signal_type != "population":
         raise ValueError(
@@ -1084,6 +1083,6 @@ def rb_convert(result):
                 f"{qname} 的 gate 类型数 {n_gates} 不为 1 或 2，无法处理"
             )
 
-        data_formatted["image"][qname] = [x_array, [y_main, y_ref]]
+        data_formated["image"][qname] = [x_array, [y_main, y_ref]]
 
     return data_formated

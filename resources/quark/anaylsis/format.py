@@ -911,7 +911,7 @@ def powershift_convert(result):
         assert single_bit_s.shape[1] == len(power), "abs_s点数需与power轴一致"
         assert single_bit_s.shape[0] == len(freq), "abs_s点数需与freq轴一致"
 
-        data_formated["image"][qubit_name] = (freq, power, single_bit_s)
+        data_formated["image"][qubit_name] = (freq, power, single_bit_s.T)
 
     return data_formated
 

@@ -908,11 +908,8 @@ def powershift_convert(result):
 
         power, freq = amp_axis, freq_axis
 
-        # 裁剪逻辑
-        if single_bit_s.shape[1] == len(power) and single_bit_s.shape[0] == len(freq):
-            single_bit_s = single_bit_s[:-1, :-1]
-        elif single_bit_s.shape[1] != len(power) - 1 or single_bit_s.shape[0] != len(freq) - 1:
-            raise ValueError(f"数据维度{single_bit_s.shape} 与轴长度不匹配: power={len(power)}, freq={len(freq)}")
+        assert single_bit_s.shape[1] == len(power), "abs_s点数需与power轴一致"
+        assert single_bit_s.shape[0] == len(freq), "abs_s点数需与freq轴一致"
 
         data_formated["image"][qubit_name] = (freq, power, single_bit_s)
 

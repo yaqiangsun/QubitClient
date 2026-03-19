@@ -22,6 +22,7 @@ class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
         for q_name in q_list:
             image_q = image[q_name]
             x, y, value = image_q[0], image_q[1], image_q[2]
+            value = np.abs(value)
             
             idx = q_list.index(q_name)
             keypoints = result['keypoints_list'][idx] if idx < len(result['keypoints_list']) else []

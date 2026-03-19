@@ -66,7 +66,7 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
             conf = item["conf"]
             
             # 绘制原始图像（使用父类的add_2dmap方法）
-            im = self.add_2dmap(ax, x, y, values, shading_index=0, cmap_index=0)
+            im = self.add_2dmap(ax, x, y, np.abs(values), shading_index=0, cmap_index=0)
             fig.colorbar(im, ax=ax)
             
             # 绘制关键点（使用父类的add_scatter和add_line方法）

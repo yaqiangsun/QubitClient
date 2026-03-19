@@ -566,3 +566,102 @@ def nnspectrum_convert(result):
 
 def spectrum_convert(result):
     return nnspectrum_convert(result)
+
+
+def rb_convert(result):
+    """
+    将 quark 格式的 Randomized Benchmarking 数据转换为 qubitclient 所需格式。
+    仅支持 signal 为 "population" 的数据，iq_avg 类型将被明确拒绝。
+    
+    输出格式：
+        {"image": {"qubit_name": [x_array, [y_main, y_ref]]} }
+    其中：
+      - y_main 用于拟合（ref 的 1 - population）
+      - y_ref 为参考曲线（X gate 的 1 - population，或与 y_main 等长的全零数组）
+
+    Args:
+        result (dict): 原始实验数据字典（需包含 meta/data）
+
+    Returns:
+        dict: 转换后的格式数据
+    """
+    if not isinstance(result, dict) or "meta" not in result or "data" not in result:
+        raise ValueError("输入数据缺少 'meta' 或 'data' 字段")
+
+    # 提取量子比特名称
+    qubits = result["meta"].get("other", {}).get("qubits", [])
+    if not qubits:
+        raise ValueError("meta.other 中缺少 qubits 字段或为空")
+
+    # 提取 cycle 轴（Clifford 数 / 序列长度）
+    if "cycle" not in result["meta"].get("axis", {}):
+        raise ValueError("缺少 cycle 轴定义")
+    x_array = np.asarray(result["meta"]["axis"]["cycle"]["def"], dtype=np.float64)
+    if x_array.ndim != 1:
+        raise ValueError("cycle 轴应为一维数组")
+
+    signal_type = result["meta"]["other"].get("signal", "").lower()
+    data_formatted = {"image": {}}
+
+    if signal_type != "population":
+        raise ValueError(
+            f"当前版本仅支持 signal='population'，实际得到 signal='{signal_type}'"
+        )
+
+    # ────────────────────────────────────────────────
+    # 仅处理 population 情况
+    # ────────────────────────────────────────────────
+    if "population" not in result["data"]:
+        raise ValueError("signal 为 population，但数据中缺少 'population' 字段")
+
+    pop_data = np.asarray(result["data"]["population"], dtype=np.float64)
+
+    if pop_data.ndim < 3:
+        raise ValueError(f"population 数据维度过低（至少需要 3 维）：{pop_data.shape}")
+
+    # 压缩多余维度
+    while pop_data.ndim > 3:
+        pop_data = pop_data.mean(axis=-1)
+
+    n_gates, n_qubits_in_data, n_points = pop_data.shape[:3]
+
+    if n_points != len(x_array):
+        raise ValueError(f"cycle 长度 {len(x_array)} 与 population 点数 {n_points} 不匹配")
+
+    # 检查 qubit 维度是否匹配
+    if n_qubits_in_data != len(qubits):
+        # 尝试转置：可能是 (n_gates, n_points, n_qubits)
+        if pop_data.shape[1] == len(qubits):
+            pop_data = np.transpose(pop_data, (0, 2, 1))
+            n_gates, n_qubits_in_data, n_points = pop_data.shape
+        else:
+            raise ValueError(
+                f"qubit 数量不匹配：数据维度 {pop_data.shape} vs meta qubits {len(qubits)}"
+            )
+
+    # 转换为激发态概率：1 - population
+    exc_data = 1.0 - pop_data
+
+    for i, qname in enumerate(qubits):
+        qname = qname.strip()
+        if not qname:
+            continue
+
+        if n_gates == 1:
+            # 只有 ref
+            y_main = exc_data[0, i, :]
+            # y_ref 使用全零数组，与 y_main 形状相同
+            y_ref = np.zeros_like(y_main)
+        elif n_gates == 2:
+            # ref + X，拟合使用 ref 的激发态概率
+            y_main = exc_data[0, i, :]   # ref 的 1 - P0 用于拟合
+            y_ref  = exc_data[1, i, :]   # X gate 的 1 - P0 作为参考曲线
+        else:
+            # 非标准情况，抛出错误（严格控制）
+            raise ValueError(
+                f"{qname} 的 gate 类型数 {n_gates} 不为 1 或 2，无法处理"
+            )
+
+        data_formatted["image"][qname] = [x_array, [y_main, y_ref]]
+
+    return data_formatted

@@ -8,6 +8,9 @@ def postprocess_result_s21vfluxscope(response ,threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result in enumerate(results):
+        state = result.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result.get('error')}")
         result_filtered = {}
         coscurves_list = result['coscurves_list']
         cosconfs_list = result['cosconfs_list']
@@ -52,6 +55,9 @@ def postprocess_result_s21peak(response ,threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result in enumerate(results):
+        state = result.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result.get('error')}")
         result_filtered = {}
         peaks_list = result['peaks']
         confs_list = result['confs']
@@ -94,6 +100,9 @@ def postprocess_result_spectrum2dscope(response, threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result in enumerate(results):
+        state = result.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result.get('error')}")
         result_filtered = {}
         coscurves_list = result['params']
         cosconfs_list = result['confs']
@@ -149,6 +158,9 @@ def postprocess_result_rabicos(response, threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result_item in enumerate(results):
+        state = result_item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result_item.get('error')}")
         result_filtered = {}
         peaks_list = result_item.get('peaks', [])
         confs_list = result_item.get('confs', [])
@@ -189,6 +201,9 @@ def postprocess_result_optpipulse(response, threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result_item in enumerate(results):
+        state = result_item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result_item.get('error')}")
         result_filtered = {}
         params_list = result_item.get('params', [])      
         confs_list  = result_item.get('confs', [])       
@@ -229,7 +244,10 @@ def postprocess_result_t1fit(response, threshold):
     results = result.get("results")
     results_filtered = []
 
-    for item in results:
+    for idx, item in enumerate(results):
+        state = item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {item.get('error')}")
         result_filtered = {}
         params_list         = item.get('params_list', [])
         r2_list             = item.get('r2_list', [])
@@ -279,7 +297,10 @@ def postprocess_result_t2fit(response, threshold):
     results = result.get("results")
     results_filtered = []
 
-    for item in results:
+    for idx, item in enumerate(results):
+        state = item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {item.get('error')}")
         result_filtered = {}
         params_list         = item.get('params_list', [])
         r2_list             = item.get('r2_list', [])
@@ -332,7 +353,10 @@ def postprocess_result_ramsey(response, threshold):
     results = result.get("results")
     results_filtered = []
 
-    for item in results:
+    for idx, item in enumerate(results):
+        state = item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {item.get('error')}")
         result_filtered = {}
         params_list = item.get('params_list', [])
         r2_list = item.get('r2_list', [])
@@ -365,6 +389,9 @@ def postprocess_result_drag(response, threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result in enumerate(results):
+        state = result.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result.get('error')}")
         result_filtered = {}
         x_pred_list = result['x_pred_list']
         y0_pred_list = result['y0_pred_list']
@@ -413,6 +440,9 @@ def postprocess_result_spectrum(response, threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result in enumerate(results):
+        state = result.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result.get('error')}")
         filtered_item = {}
         peaks_list = result.get('peaks_list', [])
         confidences_list = result.get('confidences_list', [])
@@ -469,6 +499,9 @@ def postprocess_result_powershift(response, threshold):
     results = result.get("results")
     results_filtered = []
     for idx, result in enumerate(results):
+        state = result.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result.get('error')}")
         result_filtered = {}
         q_list = result.get('q_list', [])
         keypoints_list = result.get('keypoints_list', [])
@@ -507,7 +540,10 @@ def postprocess_result_rb(response, threshold):
     results = result.get("results", [])
     results_filtered = []
 
-    for item in results:
+    for idx, item in enumerate(results):
+        state = item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {item.get('error')}")
         result_filtered = {}
         params_list         = item.get('params_list', [])
         r2_list             = item.get('r2_list', [])

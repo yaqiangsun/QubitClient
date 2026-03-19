@@ -15,7 +15,8 @@ from qubitclient import handle_exceptions, control_api_execution
 from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,\
                     s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert,\
                     t1fit_convert,t2fit_convert,rabicos_convert,nnspectrum_convert,\
-                    spectrum_convert, nns21_convert,powershift_convert,rb_convert
+                    spectrum_convert, nns21_convert,powershift_convert,\
+                    rb_convert
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
@@ -32,7 +33,7 @@ def scope_template(image,task_type=TaskName.SPECTRUM2D):
     data_ndarray = image
     response = client.request(file_list=[data_ndarray],task_type=task_type)
     # results = client.get_result(response=response)
-    threshold = -1
+    threshold = 0.1
     results = client.get_filtered_result(response, threshold, task_type = task_type.value)
     logging.debug(f"results:{results}")
     return results

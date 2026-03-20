@@ -43,7 +43,7 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
 
     x_array: 一维 np.ndarray，表示x轴坐标
     y_array: 一维 np.ndarray，表示y轴坐标
-    value_array: 一维 np.ndarray，表示信号强度
+    value_array: 二维 np.ndarray，表示测量信号值，为复数
     每个量子比特对应一个键（如 "Q0"），值为 [x, y, value] 的列表
 
 #### 调用示例

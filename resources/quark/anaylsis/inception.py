@@ -16,7 +16,7 @@ from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum
                     s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert,\
                     t1fit_convert,t2fit_convert,rabicos_convert,nnspectrum_convert,\
                     spectrum_convert, nns21_convert,powershift_convert,\
-                    rb_convert
+                    rb_convert,delta_convert
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
@@ -120,6 +120,13 @@ def optpipulse(image):
     image = optpipulse_convert(image)
     results = scope_template(image,task_type=TaskName.OPTPIPULSE)
     # optpipulse_update(image,results)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def delta(image):
+    image = delta_convert(image)
+    results = scope_template(image,task_type=TaskName.OPTPIPULSE)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)

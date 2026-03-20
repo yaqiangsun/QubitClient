@@ -12,7 +12,6 @@ import numpy as np
 import scipy
 
 
-
 def optpipulse_convert(result):
     """
     将quark格式数据转换为qubitclient所需格式
@@ -21,10 +20,10 @@ def optpipulse_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -33,7 +32,7 @@ def optpipulse_convert(result):
             raise ValueError("optpipulse数据缺少AMP轴定义")
         x_array = np.array(result["meta"]["axis"]["amp"]["def"], dtype=np.float64)
 
-        # 多关键词兼容提取波形数据
+        # 多关键词兼容提取波形数据（这里是有优先级的）
         data_dict = result["data"]
         for key in ("population", "iq_avg", "iq"):
             if key in data_dict:
@@ -42,37 +41,46 @@ def optpipulse_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（population/iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('population', 'iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
+        # 
         if raw_data.ndim == 3:
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
+
+        ## 如果关键词是 iq的情况 特殊判断。 或者就不管这个iq这个关键词的情况
+        if matched_key == "iq" and raw.ndim == 3:
+            raw = raw[:, 0, :]
+            logging.info(f"optpipulse | qubit={qubit_name} | iq 3维数据剔除中间维后形状：{raw.shape}")
         logging.info(f"optpipulse | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
+
+        # 数据处理 因为iq iq_avg为复数
         if matched_key == "population":
             waveforms = raw.astype(np.float64)
         else:
             # iq_avg为复数，取模得到实数波形  但是iq的维度要做特殊处理
             waveforms = np.abs(raw.astype(np.complex64)).astype(np.float64)
 
-        # 统一格式校验
+        #################################################################
+        # 统一格式校验  
         if waveforms.ndim != 2:
             raise ValueError(
-                f"optpipulse数据格式不符合要求：waveforms应为2维数组，"
+                f"optpipulse数据格式不符合服务器要求：waveforms应为2维数组，"
                 f"实际为{waveforms.ndim}维，形状{waveforms.shape}"
             )
         if x_array.ndim != 1:
             raise ValueError(
-                f"optpipulse数据格式不符合要求：x_array应为1维数组，"
+                f"optpipulse数据格式不符合服务器要求：x_array应为1维数组，"
                 f"实际为{x_array.ndim}维，形状{x_array.shape}"
             )
         if waveforms.shape[1] != x_array.shape[0]:
             raise ValueError(
-                f"optpipulse数据格式不符合要求：waveforms的第1维长度({waveforms.shape[1]})"
+                f"optpipulse数据格式不符合服务器要求：waveforms的第1维长度({waveforms.shape[1]})"
                 f"需与x_array的第0维长度({x_array.shape[0]})一致"
             )
+        #################################################################
 
         data_formated["image"][qubit_name] = (waveforms, x_array)
     return data_formated
@@ -87,10 +95,10 @@ def delta_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据（值为实数数组，适配波峰算法）
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -106,7 +114,7 @@ def delta_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（population/iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('population', 'iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
 
@@ -114,13 +122,19 @@ def delta_convert(result):
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
+
+        if matched_key == "iq" and raw.ndim == 3:
+            raw = raw[:, 0, :]
+            logging.info(f"delta | qubit={qubit_name} | iq 3维数据剔除中间维后形状：{raw.shape}")
         logging.info(f"delta | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
+
         if matched_key == "population":
             waveforms = -raw.astype(np.float64)
         else:
-            # iq_avg 为复数，取模后取负 这个时候调用的还是opt_pi的分析 所以要去负
-            waveforms = -np.abs(raw.astype(np.complex64))  # 但是iq这个维度有问题 这儿还未处理
+            # iq_avg / iq 为复数，取模后取负，保持与原分析一致
+            waveforms = -np.abs(raw.astype(np.complex64))
 
+        # 统一格式校验
         if waveforms.ndim != 2:
             raise ValueError(
                 f"delta数据格式不符合服务器要求：waveforms应为2维数组，"
@@ -148,10 +162,10 @@ def s21_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -168,10 +182,9 @@ def s21_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 2:
             raw = np.array(raw_data[:, index])
         elif raw_data.ndim == 3:
@@ -219,7 +232,6 @@ def s21_convert(result):
                 f"s21数据格式不符合服务器要求：phi的第0维长度({phi.shape[0]})"
                 f"需与x_array的第0维长度({x_array.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (x_array, amp, phi)
     return data_formated
 
@@ -237,10 +249,10 @@ def s21mulit_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    qubit_name = qubit_name_list[0]
+    qubit_name = qubits[0]
     assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
     if "freq" not in result["meta"]["axis"]:
@@ -256,10 +268,9 @@ def s21mulit_convert(result):
             break
     else:
         raise ValueError(
-            f"未检测到有效数据关键词（iq_avg/iq），"
+            f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'iq'))}），"
             f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
         )
-
     if raw_data.ndim == 2:
         raw = np.array(raw_data[:, 0])
     elif raw_data.ndim == 3:
@@ -306,7 +317,6 @@ def s21mulit_convert(result):
             f"s21multi数据格式不符合服务器要求：phi的第0维长度({phi.shape[0]})"
             f"需与x_array的第0维长度({x_array.shape[0]})一致"
         )
-
     data_formated["image"][qubit_name] = (x_array, amp, phi)
     return data_formated
 
@@ -319,10 +329,10 @@ def drag_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -339,14 +349,16 @@ def drag_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（population/iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('population', 'iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 3:
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
+        if matched_key == "iq" and raw.ndim == 3:
+            raw = raw[:, 0, :]
+            logging.info(f"drag | qubit={qubit_name} | iq ndim adjusted to {raw.shape}")
         logging.info(f"drag | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
         if matched_key == "population":
             y0y1 = raw.astype(np.float64)
@@ -369,7 +381,6 @@ def drag_convert(result):
                 f"drag数据格式不符合服务器要求：y0y1的第1维长度({y0y1.shape[1]})"
                 f"需与x的第0维长度({x.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (x, y0y1)
     return data_formated
 
@@ -381,10 +392,10 @@ def s21vsflux_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -405,14 +416,17 @@ def s21vsflux_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 3:
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
+
+        if matched_key == "iq" and raw.ndim == 3:
+            raw = raw[:, 0, :]
+            logging.info(f"s21vsflux | qubit={qubit_name} | iq 3维数据剔除中间维后形状：{raw.shape}")
         logging.info(f"s21vsflux | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
         s = np.abs(raw.astype(np.complex64))
 
@@ -441,7 +455,6 @@ def s21vsflux_convert(result):
                 f"s21vsflux数据格式不符合服务器要求：s的第1维长度({s.shape[1]})"
                 f"需与volt的第0维长度({volt.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (volt, freq, s)
     return data_formated
 
@@ -460,10 +473,10 @@ def singleshot_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -475,9 +488,12 @@ def singleshot_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/iq/population），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'iq', 'population'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
+        # if matched_key == "iq" and raw.ndim == 4:
+        #     raw = raw[:, 0, :, :]
+        #     logging.info(f"singleshot | qubit={qubit_name} | iq ndim adjusted to {raw.shape}")
         logging.info(f"singleshot | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
 
         # 校验数据维度（确保能执行[0,:,index]和[1,:,index]切片）
@@ -499,7 +515,6 @@ def singleshot_convert(result):
                 f"singleshot数据格式不符合服务器要求：s1应为1维数组，"
                 f"实际为{s1.ndim}维，形状{s1.shape}"
             )
-
         data_formated["image"][qubit_name] = (s0, s1)
     return data_formated
 
@@ -511,10 +526,10 @@ def nnspectrum2d_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -535,14 +550,17 @@ def nnspectrum2d_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/population/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'population', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 3:
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
+
+        if matched_key == "iq" and raw.ndim == 3:
+            raw = raw[:, 0, :]
+            logging.info(f"nnspectrum2d | qubit={qubit_name} | iq 3维数据剔除中间维后形状：{raw.shape}")
         logging.info(f"nnspectrum2d | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
         if matched_key == "population":
             s = raw.astype(np.float64)
@@ -574,7 +592,6 @@ def nnspectrum2d_convert(result):
                 f"nnspectrum2d数据格式不符合服务器要求：s的第1维长度({s.shape[1]})"
                 f"需与freq的第0维长度({freq.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (s.T, bias, freq)
     return data_formated
 
@@ -588,10 +605,10 @@ def spectrum2d_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -612,14 +629,17 @@ def spectrum2d_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/population/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'population', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 3:
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
+
+        if matched_key == "iq" and raw.ndim == 3:
+            raw = raw[:, 0, :]
+            logging.info(f"spectrum2d | qubit={qubit_name} | iq 3维数据剔除中间维后形状：{raw.shape}")
         logging.info(f"spectrum2d | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
         if matched_key == "population":
             s = raw.astype(np.float64)
@@ -651,7 +671,6 @@ def spectrum2d_convert(result):
                 f"spectrum2d数据格式不符合服务器要求：s的第1维长度({s.shape[1]})"
                 f"需与freq的第0维长度({freq.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (s.T, bias, freq)
     return data_formated
 
@@ -664,10 +683,10 @@ def rabicos_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据 {"image": {qubit_name: (x_array, amp_array)}}
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -688,7 +707,7 @@ def rabicos_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/population/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'population', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
         logging.info(f"rabicos | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
@@ -698,7 +717,7 @@ def rabicos_convert(result):
                 iq_data = iq_data[:, 0, :]
                 logging.info(f"rabicos | qubit={qubit_name} | iq 3维数据剔除中间维后形状：{iq_data.shape}")
 
-        assert iq_data.shape[1] == len(qubit_name_list), \
+        assert iq_data.shape[1] == len(qubits), \
             f"数据的 qubit 维度 {iq_data.shape[1]} 与 qubits 数量不匹配"
 
         # 计算幅度
@@ -719,7 +738,6 @@ def rabicos_convert(result):
                 f"rabicos数据格式不符合服务器要求：amp_array的第0维长度({amp_array.shape[0]})"
                 f"需与x_array的第0维长度({x_array.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (x_array, amp_array)
 
     return data_formated
@@ -733,10 +751,10 @@ def t1fit_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据 {"image": {qubit_name: (delay_array, population_array)}}
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -753,17 +771,17 @@ def t1fit_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（population/iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('population', 'iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
-        if raw_data.ndim == 2:
+        if raw_data.ndim == 2: # 正常是这个
             raw = np.array(raw_data[:, index])
-        elif raw_data.ndim == 3:
+        elif raw_data.ndim == 3: # iq的时候是这个 
             raw = np.array(raw_data[:, :, index])
         else:
             raw = np.array(raw_data)
         logging.info(f"t1fit | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
+
         if matched_key == "population":
             population = raw.astype(np.float64)
         else:
@@ -787,7 +805,6 @@ def t1fit_convert(result):
                 f"t1fit数据格式不符合服务器要求：population的第0维长度({population.shape[0]})"
                 f"需与delay_array的第0维长度({delay_array.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (delay_array, population)
 
     return data_formated
@@ -803,10 +820,10 @@ def t2fit_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据 {"image": {qubit_name: (delay_array, population_array)}}
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -823,10 +840,9 @@ def t2fit_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（population/iq_avg/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('population', 'iq_avg', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 2:
             raw = np.array(raw_data[:, index])
         elif raw_data.ndim == 3:
@@ -857,7 +873,6 @@ def t2fit_convert(result):
                 f"t2fit数据格式不符合服务器要求：population的第0维长度({population.shape[0]})"
                 f"需与delay_array的第0维长度({delay_array.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = (delay_array, population)
 
     return data_formated
@@ -871,7 +886,7 @@ def powershift_convert(result):
     Returns:
         dict: 符合服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
     if "amp" not in result["meta"]["axis"]:
@@ -893,6 +908,9 @@ def powershift_convert(result):
             f"未检测到有效数据关键词（iq_avg/iq/population），"
             f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
         )
+    # if key == "iq" and iq_data.ndim == 4:
+    #     iq_data = iq_data[:, 0, :, :]
+    #     logging.info(f"powershift | iq 4维数据剔除中间维后形状：{iq_data.shape}")
 
     if iq_data.ndim != 3:
         raise ValueError(
@@ -900,7 +918,7 @@ def powershift_convert(result):
         )
     s = iq_data
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -924,10 +942,10 @@ def nnspectrum_convert(result):
     Returns:
         dict: 服务器要求的格式数据
     """
-    qubit_name_list = result["meta"]["other"]["qubits"]
+    qubits = result["meta"]["other"]["qubits"]
     data_formated = {"image": {}}
 
-    for index, qubit_name in enumerate(qubit_name_list):
+    for index, qubit_name in enumerate(qubits):
         qubit_name = qubit_name.strip()
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
@@ -944,10 +962,9 @@ def nnspectrum_convert(result):
                 break
         else:
             raise ValueError(
-                f"未检测到有效数据关键词（iq_avg/population/iq），"
+                f"未检测到有效数据关键词（{'/'.join(('iq_avg', 'population', 'iq'))}），"
                 f"请确认数据中的实际关键词名称。当前可用关键词: {list(data_dict.keys())}"
             )
-
         if raw_data.ndim == 2:
             raw = np.array(raw_data[:, index])
         elif raw_data.ndim == 3:
@@ -979,7 +996,6 @@ def nnspectrum_convert(result):
                 f"nnspectrum数据格式不符合服务器要求：s的第0维长度({s.shape[0]})"
                 f"需与freq的第0维长度({freq.shape[0]})一致"
             )
-
         data_formated["image"][qubit_name] = [freq, s]
     return data_formated
 
@@ -988,55 +1004,44 @@ def spectrum_convert(result):
 
 def rb_convert(result):
     """
-    将 quark 格式的 Randomized Benchmarking 数据转换为 qubitclient 所需格式。
-    仅支持 signal 为 "population" 的数据，iq_avg 类型将被明确拒绝。
-    
-    输出格式：
-        {"image": {"qubit_name": [x_array, [y_main, y_ref]]} }
-    其中：
-      - y_main 用于拟合（ref 的 1 - population）
-      - y_ref 为参考曲线（X gate 的 1 - population，或与 y_main 等长的全零数组）
-
+    将quark格式RB数据转换为qubitclient所需格式
     Args:
-        result (dict): 原始实验数据字典（需包含 meta/data）
-
+        result (dict): 原始实验数据字典（需包含meta/data核心字段）
     Returns:
-        dict: 转换后的格式数据
+        dict: 符合服务器要求的格式数据 {"image": {qubit_name: [x_array, [y_main, y_ref]]}}
     """
     if not isinstance(result, dict) or "meta" not in result or "data" not in result:
-        raise ValueError("输入数据缺少 'meta' 或 'data' 字段")
+        raise ValueError("rb数据缺少meta/data字段")
 
-    # 提取量子比特名称
     qubits = result["meta"].get("other", {}).get("qubits", [])
     if not qubits:
-        raise ValueError("meta.other 中缺少 qubits 字段或为空")
+        raise ValueError("rb数据缺少qubits定义")
 
-    # 提取 cycle 轴（Clifford 数 / 序列长度）
     if "cycle" not in result["meta"].get("axis", {}):
-        raise ValueError("缺少 cycle 轴定义")
-    x_array = np.asarray(result["meta"]["axis"]["cycle"]["def"], dtype=np.float64)
+        raise ValueError("rb数据缺少cycle轴定义")
+    x_array = np.array(result["meta"]["axis"]["cycle"]["def"], dtype=np.float64)
+    
     if x_array.ndim != 1:
-        raise ValueError("cycle 轴应为一维数组")
-
-    signal_type = result["meta"]["other"].get("signal", "").lower()
-    data_formated = {"image": {}}
-
-    if signal_type != "population":
         raise ValueError(
-            f"当前版本仅支持 signal='population'，实际得到 signal='{signal_type}'"
+            f"rb数据格式不符合要求：x_array应为1维数组，"
+            f"实际为{x_array.ndim}维，形状{x_array.shape}"
         )
 
-    # ────────────────────────────────────────────────
-    # 仅处理 population 情况
-    # ────────────────────────────────────────────────
-    if "population" not in result["data"]:
-        raise ValueError("signal 为 population，但数据中缺少 'population' 字段")
+    signal_type = result["meta"].get("other", {}).get("signal", "").lower()
+    
+    if signal_type != "population":
+        raise ValueError(f"rb仅支持population数据，当前signal={signal_type}")
 
-    pop_data = np.asarray(result["data"]["population"], dtype=np.float64)
+    data_dict = result["data"]
+    if "population" not in data_dict:
+        raise ValueError("rb数据缺少population字段")
+    pop_data = np.array(data_dict["population"], dtype=np.float64)
 
     if pop_data.ndim < 3:
-        raise ValueError(f"population 数据维度过低（至少需要 3 维）：{pop_data.shape}")
-
+        raise ValueError(
+            f"rb数据格式不符合服务器要求：population至少为3维数组，"
+            f"实际为{pop_data.ndim}维，形状{pop_data.shape}"
+        )
     # 压缩多余维度
     while pop_data.ndim > 3:
         pop_data = pop_data.mean(axis=-1)
@@ -1056,9 +1061,12 @@ def rb_convert(result):
             raise ValueError(
                 f"qubit 数量不匹配：数据维度 {pop_data.shape} vs meta qubits {len(qubits)}"
             )
+    if n_gates not in (1, 2):
+        raise ValueError(f"rb数据格式不符合服务器要求：gate组数应为1或2，实际为{n_gates}")
 
     # 转换为激发态概率：1 - population
     exc_data = 1.0 - pop_data
+    data_formated = {"image": {}}
 
     for i, qname in enumerate(qubits):
         qname = qname.strip()
@@ -1083,3 +1091,4 @@ def rb_convert(result):
         data_formated["image"][qname] = [x_array, [y_main, y_ref]]
 
     return data_formated
+

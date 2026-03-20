@@ -209,7 +209,7 @@ print(result)
 | `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ⏸️
 | `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ✅
 | `TaskName.T2FIT` | T2 时间拟合 | [文档](docs/scope/T2FIT.md) | ✅
-| `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ✅
+| `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ⏸️
 | `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) | ✅
 | `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) | ✅
 | `TaskName.DELTA` | delta优化实验 | [文档](docs/scope/DELTA.md) | ⏸️

@@ -236,7 +236,7 @@ def add_line(self, ax: plt.Axes, x, y,
 ### add_annotation - 添加注释
 
 ```python
-def add_annotation(self, ax: plt.Axes, text: str, xy: Tuple[float, float],annotation_textcoords: str = "offset points",
+def add_annotation(self, ax: plt.Axes, text: str, xy: Tuple[float, float],annotation_xycoords: str="data",annotation_textcoords: str = "offset points",
     annotation_xytext = (0, 10),color_index: int = 0,showarrow=True, **kwargs)
 ```
 
@@ -247,7 +247,8 @@ def add_annotation(self, ax: plt.Axes, text: str, xy: Tuple[float, float],annota
 · text: 注释文本
 
 2. 默认值参数
-· annotation_textcoords: 参照坐标系
+. annotation_xycoords: xy参数的坐标系
+· annotation_textcoords: 文本参照坐标系
 · annotation_xytext: 文本偏移位置
 · color_index: 颜色索引
 · showarrow: 是否显示箭头

@@ -96,7 +96,8 @@ class SingleShotDataPltPlotter(QuantumDataPltPlotter):
                 self.add_2dmap(ax1, s=H1.T - H0.T,
                                x=bins[0],
                                y=bins[1], showscale=False, cmap_index=4)
-            self.add_annotation(ax1,f'Separation Degree: {sep_score:.3f}',xy=(0,1),annotation_xytext=(0,1),annotation_textcoords="axes fraction",\
+            self.add_annotation(ax1,f'Separation Degree: {sep_score:.3f}',xy=(0,1),annotation_xytext=(0,1),annotation_xycoords="axes fraction"\
+                                ,annotation_textcoords="axes fraction",\
                                 color_index=0,showarrow=False)
 
 

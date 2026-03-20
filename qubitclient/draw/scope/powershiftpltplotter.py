@@ -68,17 +68,37 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
             # 绘制原始图像（使用父类的add_2dmap方法）
             im = self.add_2dmap(ax, x, y, np.abs(values), shading_index=0, cmap_index=0)
             fig.colorbar(im, ax=ax)
-            
+
+
+            keypoints_segments=[]
+            if class_num==1:
+                keypoints_segments.append(keypoints)
+            if class_num==2:
+                keypoints_segments.append([keypoints[0],keypoints[1]])
+                keypoints_segments.append([keypoints[1],keypoints[2]])
+                keypoints_segments.append([keypoints[2],keypoints[3]])
+            if class_num==3:
+                keypoints_segments.append([keypoints[0],keypoints[1]])
+                keypoints_segments.append([keypoints[1],keypoints[2]])
+            if class_num==4:
+                keypoints_segments.append(keypoints)
+            if class_num==5:
+                keypoints_segments.append(keypoints)
             # 绘制关键点（使用父类的add_scatter和add_line方法）
-            if keypoints:
-                sorted_keypoints = sorted(keypoints, key=lambda p: (-p[1], p[0]))
-                kp_x = [p[0] for p in sorted_keypoints]
-                kp_y = [p[1] for p in sorted_keypoints]
-                
-                # 添加散点
-                self.add_scatter(ax, kp_x, kp_y, label='Key Points', marker_index=0, color_index=0)
-                # 添加连线
-                self.add_line(ax, kp_x, kp_y, label='Key Line', line_style_index=0, color_index=0)
+            j=0
+            for seg in keypoints_segments:
+
+                if seg:
+                    sorted_seg = sorted(seg, key=lambda p: (-p[1], p[0]))
+                    kp_x = [p[0] for p in sorted_seg]
+                    kp_y = [p[1] for p in sorted_seg]
+
+                    # 添加散点
+                    self.add_scatter(ax, kp_x, kp_y, marker_index=0, color_index=0)
+                    # 添加连线
+                    self.add_line(ax, kp_x, kp_y, line_style_index=0, color_index=j)
+                j+=1
+
             
             # 组装信息文本
             info_text = f"Qubit: {q_name}\n"
@@ -92,13 +112,11 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
             self.add_annotation(
                 ax, 
                 info_text, 
-                xy=(0.05, 0.95),
-                annotation_textcoords="axes fraction",  # 基于轴坐标的文本位置
-                annotation_xytext=(0, 0),
+                xy=(0, 1),annotation_xytext=(0.05, 0.95),annotation_xycoords="axes fraction",
+                annotation_textcoords="axes fraction",
                 showarrow=False  # 不显示箭头
             )
-            
-            # 配置坐标轴（使用父类的configure_axis方法）
+
             self.configure_axis(
                 ax,
                 title=f"{q_name}",
@@ -111,9 +129,7 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
             handles, labels = ax.get_legend_handles_labels()
             self.add_legend(ax, handles, labels)
         
-        # 隐藏多余的子图
-        for i in range(num_items, len(axs)):
-            axs[i].axis('off')
+
         
         # 调整布局
         fig.tight_layout()

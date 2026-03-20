@@ -94,13 +94,17 @@ class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
             values = item["value"]
             keypoints = item["keypoints"]
 
+            q_name = item["q_name"]
+            class_num = item["class_num"]
+            conf = item["conf"]
+
             # 归一化value值以实现统一颜色映射（解决add_2dmap无法传zmin/zmax的问题）
             norm_values = (values - z_min) / (z_max - z_min) if z_max != z_min else values
             
             # 调用父类方法添加热力图
             self.add_2dmap(
                 fig=fig,
-                z=norm_values,
+                z=values,
                 x=x,
                 y=y,
                 row=row,
@@ -108,41 +112,66 @@ class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
                 showscale=(i == num_items - 1),  # 仅最后一个子图显示颜色条
                 colorscale_index=0  # 使用Viridis配色（对应父类color_scale[0]）
             )
+            #
+            keypoints_segments = []
+            if class_num == 1:
+                keypoints_segments.append(keypoints)
+            if class_num == 2:
+                keypoints_segments.append([keypoints[0], keypoints[1]])
+                keypoints_segments.append([keypoints[1], keypoints[2]])
+                keypoints_segments.append([keypoints[2], keypoints[3]])
+            if class_num == 3:
+                keypoints_segments.append([keypoints[0], keypoints[1]])
+                keypoints_segments.append([keypoints[1], keypoints[2]])
+            if class_num == 4:
+                keypoints_segments.append(keypoints)
+            if class_num == 5:
+                keypoints_segments.append(keypoints)
+            j = 0
+            for seg in keypoints_segments:
+                if seg:
+                    seg = np.array(seg).reshape(-1, 2)
+                    # 按y从高到低排序关键点
+                    sorted_seg = sorted(seg, key=lambda p: (-p[1], p[0]))
+                    kp_x = [p[0] for p in sorted_seg]
+                    kp_y = [p[1] for p in sorted_seg]
 
-            # 关键点绘制
-            if keypoints and len(keypoints) > 0:
-                keypoints = np.array(keypoints).reshape(-1, 2)
-                # 按y从高到低排序关键点
-                sorted_keypoints = sorted(keypoints, key=lambda p: (-p[1], p[0]))
-                kp_x = [p[0] for p in sorted_keypoints]
-                kp_y = [p[1] for p in sorted_keypoints]
-
-                # 调用父类方法添加关键点散点
-                self.add_scatter(
-                    fig=fig,
-                    x=kp_x,
-                    y=kp_y,
-                    row=row,
-                    col=col,
-                    color_index=0,  # 红色（对应父类marker_color_palette[0]）
-                    marker_index=0,  # 星形标记（对应父类marker_styles[0]）
-                    name='Key Points',
-                    showlegend=False
-                )
-
-                # 关键点连接线（调用父类add_line方法）
-                if len(kp_x) > 1:
-                    self.add_line(
+                    # 调用父类方法添加关键点散点
+                    self.add_scatter(
                         fig=fig,
                         x=kp_x,
                         y=kp_y,
                         row=row,
                         col=col,
-                        color_index=0,  # 红色线条
-                        line_style_index=1,  # 虚线样式（对应父类line_styles[1]）
-                        name='Key Points Line',
+                        color_index=0,  # 红色（对应父类marker_color_palette[0]）
+                        marker_index=0,  # 星形标记（对应父类marker_styles[0]）
+                        name='Key Points',
                         showlegend=False
                     )
+
+                    # 关键点连接线（调用父类add_line方法）
+                    if len(kp_x) > 1:
+                        self.add_line(
+                            fig=fig,
+                            x=kp_x,
+                            y=kp_y,
+                            row=row,
+                            col=col,
+                            color_index=j,  # 红色线条
+                            line_style_index=1,  # 虚线样式（对应父类line_styles[1]）
+                            name='Key Points Line',
+                            showlegend=False
+                        )
+                    j+=1
+            info_text = f"Qubit: {q_name}<br>"
+            if class_num is not None:
+                info_text += f"Class: {class_num}<br>"
+            if conf is not None:
+                # 格式化置信度为两位小数
+                info_text += f"Confidence: {conf:.2f}"
+            self.add_annotation(fig, x=0, y=0.9, xref="x domain", yref="y domain", showarrow=False,
+                                text=info_text, row=row,
+                                col=col)
 
         # 配置坐标轴
         self.configure_axis(fig, rows, cols, xlable="X", ylable="Y")

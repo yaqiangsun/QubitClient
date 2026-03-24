@@ -7,7 +7,7 @@
 # Created Time: 2026/02/06 18:09:15
 ########################################################################
 
-
+import numpy as np
 from qubitclient.ctrl import MCPClient
 
 def call_mcp(task_type:str,*args,**kwargs):
@@ -49,12 +49,16 @@ def s21(qubits:list[str],
         frequency_start=-40e6,
         frequency_end=40e6,
         frequency_sample_num=101,
+        state: int | list[int] | None = [0],
         *args,**kwargs):
+    if isinstance(state, int):
+        state = [state]
     result = call_mcp("s21",
                       qubits=qubits,
                       frequency_start=frequency_start,
                       frequency_end=frequency_end,
-                      frequency_sample_num=frequency_sample_num
+                      frequency_sample_num=frequency_sample_num,
+                      state=state
                       )
     return result
 
@@ -64,31 +68,52 @@ def drag(qubits:list[str],
          stage:int=1,
          N_repeat:int=1,
          pulsePair:list[int]=[0, 1],
+         signal: str = "population",
          *args, **kwargs):
     result = call_mcp("drag",
                       qubits=qubits,
                       lamb=lamb,
                       stage=stage,
                       N_repeat=N_repeat,
-                      pulsePair=pulsePair
+                      pulsePair=pulsePair,
+                      signal=signal
                       )
     return result
 @task_register
 def delta(qubits:list[str],
+          N_list: list[int] | None = [1, 5, 13],
+          delta_list: list[float] | None = None,
           stage:int=1,
+          delay: float = 20e-9,
           *args, **kwargs):
+    if delta_list is None:
+        delta_list = (np.linspace(-20, 20, 101) * 1e6).tolist()
+
     result = call_mcp("delta",
                       qubits=qubits,
-                      stage=stage
+                      stage=stage,
+                      delay=delay,
+                      N_list=N_list,
+                      delta_list=delta_list
                       )
     return result
 @task_register
 def opt_pipulse(qubits:list[str],
                 stage:int=1,
+                N_list: list[int] | None = [1, 3, 5],
+                amp_list: list[float] | None = None,
+                signal: str = "population",
+                delay: float = 20e-9,
                 *args, **kwargs):
+    if amp_list is None:
+        amp_list = np.linspace(0.5, 1.5, 51).tolist()
     result = call_mcp("opt_pipulse",
                       qubits=qubits,
-                      stage=stage
+                      stage=stage,
+                      N_list=N_list,
+                      amp_list=amp_list,
+                      delay=delay,
+                      signal=signal
                       )
     return result
 
@@ -108,11 +133,13 @@ def powershift(qubits:list[str],
 def rabi(qubits:list[str],
          drive_amp:list[float],
          width:float=30e-9,
+         signal: str = "iq_avg",
          *args, **kwargs):
     result = call_mcp("rabi",
                       qubits=qubits,
                       drive_amp=drive_amp,
-                      width=width
+                      width=width,
+                      signal=signal
                       )
     return result
 
@@ -122,13 +149,15 @@ def ramsey(qubits:list[str],
            delay:float=10e-6,
            stage:int=1,
            scale:int=15,
+           signal: str = "population",
            *args, **kwargs):
     result = call_mcp("ramsey",
                       qubits=qubits,
                       delta=delta,
                       delay=delay,
                       stage=stage,
-                      scale=scale
+                      scale=scale,
+                      signal=signal
                       )
     return result
 
@@ -201,9 +230,11 @@ def spectrum_2d(qubits:list[str],
 @task_register
 def t1(qubits: list[str],
        delay:list[float],
+       signal: str = "population",
        *args, **kwargs):
     result = call_mcp("t1",
                       qubits=qubits,
-                      delay=delay
+                      delay=delay,
+                      signal=signal
                       )
     return result

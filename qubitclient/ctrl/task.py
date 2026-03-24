@@ -46,7 +46,10 @@ def run_task(task_type,*args,**kwargs):
 
 @task_register
 def s21(qubits:list[str],
-        frequency_start=-40e6,frequency_end=40e6,frequency_sample_num=101,*args,**kwargs):
+        frequency_start=-40e6,
+        frequency_end=40e6,
+        frequency_sample_num=101,
+        *args,**kwargs):
     result = call_mcp("s21",
                       qubits=qubits,
                       frequency_start=frequency_start,
@@ -56,7 +59,12 @@ def s21(qubits:list[str],
     return result
 
 @task_register
-def drag(qubits:list[str], lamb:list[float], stage:int=1, N_repeat:int=1, pulsePair:list[int]=[0, 1], *args, **kwargs):
+def drag(qubits:list[str],
+         lamb:list[float],
+         stage:int=1,
+         N_repeat:int=1,
+         pulsePair:list[int]=[0, 1],
+         *args, **kwargs):
     result = call_mcp("drag",
                       qubits=qubits,
                       lamb=lamb,
@@ -66,14 +74,18 @@ def drag(qubits:list[str], lamb:list[float], stage:int=1, N_repeat:int=1, pulseP
                       )
     return result
 @task_register
-def delta(qubits:list[str], stage:int=1, *args, **kwargs):
+def delta(qubits:list[str],
+          stage:int=1,
+          *args, **kwargs):
     result = call_mcp("delta",
                       qubits=qubits,
                       stage=stage
                       )
     return result
 @task_register
-def opt_pipulse(qubits:list[str], stage:int=1, *args, **kwargs):
+def opt_pipulse(qubits:list[str],
+                stage:int=1,
+                *args, **kwargs):
     result = call_mcp("opt_pipulse",
                       qubits=qubits,
                       stage=stage
@@ -81,7 +93,10 @@ def opt_pipulse(qubits:list[str], stage:int=1, *args, **kwargs):
     return result
 
 @task_register
-def powershift(qubits:list[str], power:list[float], freq:list[float], *args, **kwargs):
+def powershift(qubits:list[str],
+               power:list[float],
+               freq:list[float],
+               *args, **kwargs):
     result = call_mcp("powershift",
                       qubits=qubits,
                       power=power,
@@ -90,7 +105,10 @@ def powershift(qubits:list[str], power:list[float], freq:list[float], *args, **k
     return result
 
 @task_register
-def rabi(qubits:list[str], drive_amp:list[float], width:float=30e-9, *args, **kwargs):
+def rabi(qubits:list[str],
+         drive_amp:list[float],
+         width:float=30e-9,
+         *args, **kwargs):
     result = call_mcp("rabi",
                       qubits=qubits,
                       drive_amp=drive_amp,
@@ -99,7 +117,12 @@ def rabi(qubits:list[str], drive_amp:list[float], width:float=30e-9, *args, **kw
     return result
 
 @task_register
-def ramsey(qubits:list[str], delta:float=20e6, delay:float=10e-6, stage:int=1, scale:int=15, *args, **kwargs):
+def ramsey(qubits:list[str],
+           delta:float=20e6,
+           delay:float=10e-6,
+           stage:int=1,
+           scale:int=15,
+           *args, **kwargs):
     result = call_mcp("ramsey",
                       qubits=qubits,
                       delta=delta,
@@ -110,7 +133,11 @@ def ramsey(qubits:list[str], delta:float=20e6, delay:float=10e-6, stage:int=1, s
     return result
 
 @task_register
-def s21vsflux(qubits_scan:list[str], read_bias:list[float], freq:list[float], qubits_read:list[str], *args, **kwargs):
+def s21vsflux(qubits_scan:list[str],
+              read_bias:list[float],
+              freq:list[float],
+              qubits_read:list[str],
+              *args, **kwargs):
     result = call_mcp("s21vsflux",
                       qubits_scan=qubits_scan,
                       read_bias=read_bias,
@@ -120,7 +147,9 @@ def s21vsflux(qubits_scan:list[str], read_bias:list[float], freq:list[float], qu
     return result
 
 @task_register
-def singleshot(qubits:list[str], stage:int=1, *args, **kwargs):
+def singleshot(qubits:list[str],
+               stage:int=1,
+               *args, **kwargs):
     result = call_mcp("singleshot",
                       qubits=qubits,
                       stage=stage
@@ -128,8 +157,15 @@ def singleshot(qubits:list[str], stage:int=1, *args, **kwargs):
     return result
 
 @task_register
-def spectrum(qubits:list[str], freq:list[float], drive_amp:float=0.04, duration:float=40e-6, 
-             from_idle:bool=True, absolute:bool=True, signal:str="iq_avg", build_dependencies:bool=False, *args, **kwargs):
+def spectrum(qubits:list[str],
+             freq:list[float],
+             drive_amp:float=0.04,
+             duration:float=40e-6, 
+             from_idle:bool=True,
+             absolute:bool=True,
+             signal:str="iq_avg",
+             build_dependencies:bool=False,
+             *args, **kwargs):
     result = call_mcp("spectrum",
                       qubits=qubits,
                       freq=freq,
@@ -143,8 +179,14 @@ def spectrum(qubits:list[str], freq:list[float], drive_amp:float=0.04, duration:
     return result
 
 @task_register
-def spectrum_2d(qubits:list[str], drive_amp:float=0.05, duration:float=40e-6, freq:list[float]=None, 
-                bias:list[float]=None, from_idle:bool=False, absolute:bool=True, *args, **kwargs):
+def spectrum_2d(qubits:list[str],
+                drive_amp:float=0.05,
+                duration:float=40e-6,
+                freq:list[float]=None, 
+                bias:list[float]=None,
+                from_idle:bool=False,
+                absolute:bool=True,
+                *args, **kwargs):
     result = call_mcp("spectrum_2d",
                       qubits=qubits,
                       drive_amp=drive_amp,
@@ -157,7 +199,9 @@ def spectrum_2d(qubits:list[str], drive_amp:float=0.05, duration:float=40e-6, fr
     return result
 
 @task_register
-def t1(qubits:list[str], delay:list[float], *args, **kwargs):
+def t1(qubits: list[str],
+       delay:list[float],
+       *args, **kwargs):
     result = call_mcp("t1",
                       qubits=qubits,
                       delay=delay

@@ -201,12 +201,12 @@ print(result)
 |---------|------|---------|---------|
 | `TaskName.S21PEAKMULTI` | 全频段扫描S21全链峰值检测 | [文档](docs/scope/S21PEAKMULTI.md) | ✅
 | `TaskName.S21PEAK` | S21 单个峰值优化检测 | [文档](docs/scope/S21PEAK.md) | ✅
-| `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) | ⏸️
+| `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) | ✅
 | `TaskName.RABICOS` | Rabi 振荡余弦第一峰检测 | [文档](docs/scope/RABICOS.md) | ⏸️
 | `TaskName.RAMSEY` | RAMSY 衰减震荡余弦拟合 | [文档](docs/scope/RAMSEY.md) | ✅
 | `TaskName.S21VFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VFLUX.md) | ✅
 | `TaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/scope/SINGLESHOT.md) | ✅
-| `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ⏸️
+| `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ✅
 | `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ✅
 | `TaskName.T2FIT` | T2 时间拟合 | [文档](docs/scope/T2FIT.md) | ✅
 | `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ⏸️

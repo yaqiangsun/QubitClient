@@ -29,3 +29,4 @@ dist/
 build/
 qubitclient.egg-info/
 py.typed
+.claude/

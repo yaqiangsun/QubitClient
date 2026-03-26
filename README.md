@@ -220,17 +220,17 @@ print(result)
 | 任务名称 | 描述 | 详细文档 | 状态 |
 |---------|------|---------|---------|
 | `CtrlTaskName.S21` | S21 腔频测量实验 | [文档](docs/ctrl/S21.md) | ✅
-| `CtrlTaskName.DRAG` | DRAG 免交叉点测量 | [文档](docs/ctrl/DRAG.md) | ⏸️
-| `CtrlTaskName.DELTA` | 频率偏移校准测量 | [文档](docs/ctrl/DELTA.md) | ⏸️
-| `CtrlTaskName.OPTPIPULSE` | 最优 π 脉冲测量 | [文档](docs/ctrl/OPTPIPULSE.md) | ⏸️
-| `CtrlTaskName.POWERSHIFT` | 功率偏移曲线测量 | [文档](docs/ctrl/POWERSHIFT.md) | ⏸️
-| `CtrlTaskName.RABI` | Rabi 振荡测量 | [文档](docs/ctrl/RABI.md) | ⏸️
-| `CtrlTaskName.RAMSEY` | Ramsey 干涉测量 | [文档](docs/ctrl/RAMSEY.md) | ⏸️
-| `CtrlTaskName.S21VSFLUX` | S21 vs Flux 测量 | [文档](docs/ctrl/S21VSFLUX.md) | ⏸️
-| `CtrlTaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/ctrl/SINGLESHOT.md) | ⏸️
-| `CtrlTaskName.SPECTRUM` | 频谱分析测量 | [文档](docs/ctrl/SPECTRUM.md) | ⏸️
-| `CtrlTaskName.SPECTRUM_2D` | 二维频谱测量 | [文档](docs/ctrl/SPECTRUM_2D.md) | ⏸️
-| `CtrlTaskName.T1` | T1 弛豫时间测量 | [文档](docs/ctrl/T1.md) | ⏸️
+| `CtrlTaskName.DRAG` | DRAG 免交叉点测量 | [文档](docs/ctrl/DRAG.md) | ✅
+| `CtrlTaskName.DELTA` | 频率偏移校准测量 | [文档](docs/ctrl/DELTA.md) | ✅
+| `CtrlTaskName.OPTPIPULSE` | 最优 π 脉冲测量 | [文档](docs/ctrl/OPTPIPULSE.md) | ✅
+| `CtrlTaskName.POWERSHIFT` | 功率偏移曲线测量 | [文档](docs/ctrl/POWERSHIFT.md) | ✅
+| `CtrlTaskName.RABI` | Rabi 振荡测量 | [文档](docs/ctrl/RABI.md) | ✅
+| `CtrlTaskName.RAMSEY` | Ramsey 干涉测量 | [文档](docs/ctrl/RAMSEY.md) | ✅
+| `CtrlTaskName.S21VSFLUX` | S21 vs Flux 测量 | [文档](docs/ctrl/S21VSFLUX.md) | ✅
+| `CtrlTaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/ctrl/SINGLESHOT.md) | ✅
+| `CtrlTaskName.SPECTRUM` | 频谱分析测量 | [文档](docs/ctrl/SPECTRUM.md) | ✅
+| `CtrlTaskName.SPECTRUM_2D` | 二维频谱测量 | [文档](docs/ctrl/SPECTRUM_2D.md) | ✅
+| `CtrlTaskName.T1` | T1 弛豫时间测量 | [文档](docs/ctrl/T1.md) | ✅
 | `CtrlTaskName.DATA` | 获取测量数据 | [文档](docs/ctrl/DATA.md) | ✅
 
 ## 📁 数据格式说明

@@ -36,6 +36,7 @@ class CtrlTaskName(Enum):
     SPECTRUM = "spectrum"
     SPECTRUM_2D = "spectrum_2d"
     T1 = "t1"
+    RB = "rb"
     DATA = "get_data"
 
 
@@ -239,7 +240,25 @@ def t1(qubits: list[str],
                       signal=signal
                       )
     return result
-
+@task_register
+def rb(qubits:list[str],
+       couplers:tuple=tuple([]),
+       stage:int=3,
+       gate:list=['ref'],
+       cycle:list=None,
+       size:int=11,
+       *args, **kwargs):
+    if cycle is None:
+        cycle = np.unique(np.logspace(0, np.log10(1000), 21, dtype=int)).tolist()
+    result = call_mcp("rb",
+                      qubits=qubits,
+                      couplers=couplers,
+                      stage=stage,
+                      gate=gate,
+                      cycle=cycle,
+                      size=size
+                      )
+    return result
 @task_register
 def get_data(rid,
        *args, **kwargs):

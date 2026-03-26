@@ -231,6 +231,7 @@ print(result)
 | `CtrlTaskName.SPECTRUM` | 频谱分析测量 | [文档](docs/ctrl/SPECTRUM.md) | ✅
 | `CtrlTaskName.SPECTRUM_2D` | 二维频谱测量 | [文档](docs/ctrl/SPECTRUM_2D.md) | ✅
 | `CtrlTaskName.T1` | T1 弛豫时间测量 | [文档](docs/ctrl/T1.md) | ✅
+| `CtrlTaskName.RB` | 随机基准测试 | [文档](docs/ctrl/RB.md) | ✅
 | `CtrlTaskName.DATA` | 获取测量数据 | [文档](docs/ctrl/DATA.md) | ✅
 
 ## 📁 数据格式说明

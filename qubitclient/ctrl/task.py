@@ -36,6 +36,7 @@ class CtrlTaskName(Enum):
     SPECTRUM = "spectrum"
     SPECTRUM_2D = "spectrum_2d"
     T1 = "t1"
+    DATA = "get_data"
 
 
 def run_task(task_type,*args,**kwargs):
@@ -236,5 +237,13 @@ def t1(qubits: list[str],
                       qubits=qubits,
                       delay=delay,
                       signal=signal
+                      )
+    return result
+
+@task_register
+def get_data(rid,
+       *args, **kwargs):
+    result = call_mcp("get_data",
+                      rid=rid
                       )
     return result

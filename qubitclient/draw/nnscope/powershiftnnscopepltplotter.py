@@ -1,8 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from ..pltplotter import QuantumDataPltPlotter
 import cv2
-import logging
 
 
 def convert_complex_map_to_image(iq_avg):

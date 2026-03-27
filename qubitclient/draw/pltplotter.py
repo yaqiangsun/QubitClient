@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional
 from .pltplotstyle import PltPlotStyleConfig
 
 class QuantumDataPltPlotter(ABC):

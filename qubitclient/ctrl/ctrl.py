@@ -7,10 +7,8 @@
 # Created Time: 2026/02/06 18:11:37
 ########################################################################
 
-import numpy as np
 
 from .task import run_task
-import numpy as np
 
 
 class QubitCtrlClient(object):

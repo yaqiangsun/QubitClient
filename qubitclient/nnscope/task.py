@@ -13,7 +13,6 @@ import io
 import numpy as np
 
 
-from qubitclient.nnscope.utils.data_convert import convert_spectrum_npy2npz,convert_spectrum_dict2npz
 from qubitclient import CurveType
 from qubitclient.nnscope.nnscope_api.call import request_task
 # load from npz file path

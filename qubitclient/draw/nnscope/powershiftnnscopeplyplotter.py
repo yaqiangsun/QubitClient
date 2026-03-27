@@ -1,11 +1,7 @@
 from ..plyplotter import QuantumDataPlyPlotter
 import numpy as np
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import cv2
-from scipy.stats import norm
-import os
-import logging
 
 
 def convert_complex_map_to_image(iq_avg):

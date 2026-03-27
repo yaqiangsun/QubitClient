@@ -24,7 +24,6 @@ from .postprocess import run_postprocess
 from qubitclient.utils.env_load import get_config
 
 import logging
-import numpy as np
 
 
 

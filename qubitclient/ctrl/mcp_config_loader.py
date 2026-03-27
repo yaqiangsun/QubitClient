@@ -267,7 +267,7 @@ def load_environment_specific_config(env: str = None) -> Dict[str, MCPConfig]:
     
     # If environment-specific config doesn't exist, fallback to default config
     if not env_config_path.exists():
-        logger.info(f"Environment-specific config does not exist, using default config")
+        logger.info("Environment-specific config does not exist, using default config")
         loader = MCPConfigLoader()
     
     return loader.load()

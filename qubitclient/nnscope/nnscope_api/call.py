@@ -9,7 +9,6 @@
 
 
 
-import os
 import requests
 def request_task(files,url,api_key,curve_type:str=None):
     headers = {'Authorization': f'Bearer {api_key}'}  # 添加API密钥到请求头

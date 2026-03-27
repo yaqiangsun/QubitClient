@@ -173,3 +173,11 @@ def rb(image):
     image = rb_convert(image)
     results = scope_template(image,task_type=TaskName.RB)
     return results
+
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def delta(image):
+    image = delta_convert(image)
+    results = scope_template(image,task_type=TaskName.DELTA)
+    return results

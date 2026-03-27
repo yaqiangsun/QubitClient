@@ -129,10 +129,10 @@ def delta_convert(result):
         logging.info(f"delta | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
 
         if matched_key == "population":
-            waveforms = -raw.astype(np.float64)
+            waveforms = raw.astype(np.float64)
         else:
             # iq_avg / iq 为复数，取模后取负，保持与原分析一致
-            waveforms = -np.abs(raw.astype(np.complex64))
+            waveforms = np.abs(raw.astype(np.complex64))
 
         # 统一格式校验
         if waveforms.ndim != 2:

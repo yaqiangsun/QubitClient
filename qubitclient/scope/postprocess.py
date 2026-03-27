@@ -238,6 +238,51 @@ def postprocess_result_optpipulse(response, threshold):
     response_data['results'] = results_filtered
     return response_data
 
+
+def postprocess_result_delta(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+    results = result.get("results")
+    results_filtered = []
+    for idx, result_item in enumerate(results):
+        state = result_item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {result_item.get('error')}")
+        result_filtered = {}
+        params_list = result_item.get('params', [])      
+        confs_list  = result_item.get('confs', [])       
+        status = result_item.get('status', 'failed')
+
+        params_list_filtered = []
+        confs_list_filtered  = []
+
+        # 逐个量子比特（或通道）处理，保持原始顺序和长度
+        for i in range(len(params_list)):
+            params = np.array(params_list[i]) if params_list[i] else np.array([])
+            confs  = np.array(confs_list[i])  if confs_list[i]  else np.array([])
+
+            # 若无数据 或 所有置信度都低于阈值 → 置为空列表
+            if len(confs) == 0 or np.all(confs < threshold):
+                params_list_filtered.append([])
+                confs_list_filtered.append([])
+            else:
+                # 存在至少一个合格的峰 → 保留过滤后的结果
+                mask = confs >= threshold
+                filtered_params = params[mask].tolist()
+                filtered_confs  = confs[mask].tolist()
+                params_list_filtered.append(filtered_params)
+                confs_list_filtered.append(filtered_confs)
+
+        result_filtered['params'] = params_list_filtered
+        result_filtered['confs']  = confs_list_filtered
+        result_filtered['status']  = status
+        results_filtered.append(result_filtered)
+
+    response_data = {}
+    response_data['results'] = results_filtered
+    return response_data
+
+
 def postprocess_result_t1fit(response, threshold):
     logging.debug("Result: %s", response.parsed)
     result = response.parsed
@@ -606,7 +651,8 @@ TASK_MAP: Dict[str, Callable] = {
     'singleshot': postprocess_result_singleshot,
     'spectrum': postprocess_result_spectrum,
     'powershift': postprocess_result_powershift,
-    'rb': postprocess_result_rb
+    'rb': postprocess_result_rb,
+    'delta': postprocess_result_delta
     
 }
 

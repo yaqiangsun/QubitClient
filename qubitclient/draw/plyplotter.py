@@ -39,7 +39,7 @@ class QuantumDataPlyPlotter(ABC):
             vertical_spacing = 0.015
         else:  # rows > 20
             vertical_spacing = 0.008
-
+            vertical_spacing = min(1/(rows-1),vertical_spacing)
 
         if secondy:
             fig = make_subplots(

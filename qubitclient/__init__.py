@@ -1,4 +1,4 @@
-__version__ = "0.5.3"
+__version__ = "0.5.4"
 
 from .nnscope.nnscope_api.curve.curve_type import CurveType  # noqa: F401
 from .scope.scope import QubitScopeClient

@@ -78,7 +78,6 @@ response = client.request(
 results = client.get_result(response=response)
 threshold = 0.5
 results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
-results_filtered = results_filtered.get("results")
 
 
 
@@ -97,6 +96,10 @@ results_filtered = results_filtered.get("results")
   },
   ...
 ]
+
+其中，当拟合类型curve_type_list为cosin时，拟合参数列表params_list为[A,freq,phi,offset], 拟合公式为：pred_y = A * np.sin(freq*pred_x + phi) + offset
+其中，当拟合类型curve_type_list为poly时，拟合参数列表params_list为[A,B,C,D], 拟合公式为：pred_y = A * pred_x**3 + B * pred_x**2+ C * pred_x**1+ D
+
 ```
 
 
@@ -114,7 +117,15 @@ results_filtered = results_filtered.get("results")
 
 
 
-
+self.A = -1
+        self.B = -1
+        self.C =-1
+        self.D = -1
+        self.coeffs = [self.A, self.B, self.C, self.D]
+        self.poly_func = None
+        self.degree = degree
+    def poly_fit(self,x, A, B, C, D):
+        return A * x**3 + B * x**2+ C * x**1+ D
 ### 示例结果
 
 ```python
@@ -135,8 +146,11 @@ results_filtered = results_filtered.get("results")
 
 ```python
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
-from qubitclient.draw.pltmanager import QuantumPlotPltManager
-
+from qubitclient.draw.pltmanager import QuantumPlotPltManager if type(results)==dict:
+if "results" not in results.keys():
+   results = results.get("results")
+elif "result" in results.keys():
+   results = results.get("result")
 save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
 save_path_png = save_path_prefix + ".png"
 save_path_html = save_path_prefix + ".html"

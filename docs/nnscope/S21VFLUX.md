@@ -74,7 +74,7 @@ response = client.request(file_list=dict_list,task_type=NNTaskName.S21VFLUX,curv
 results = client.get_result(response=response)
 threshold = 0.5
 results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
-results_filtered = results_filtered.get("results")
+
 ```
 
 ## 返回值格式
@@ -92,6 +92,9 @@ results_filtered = results_filtered.get("results")
   },
   ...
 ]
+其中，当拟合类型curve_type为cosin时，拟合参数列表params_list为[A,freq,phi,offset], 拟合公式为：pred_y = A * np.sin(freq*pred_x + phi) + offset
+其中，当拟合类型curve_type为poly时，拟合参数列表params_list为[A,B,C,D], 拟合公式为：pred_y = A * pred_x**3 + B * pred_x**2+ C * pred_x**1+ D
+
 ```
 
 
@@ -132,7 +135,11 @@ results_filtered = results_filtered.get("results")
 ```python
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 from qubitclient.draw.pltmanager import QuantumPlotPltManager
-
+if type(results)==dict:
+     if "results" not in results.keys():
+         results = results.get("results")
+     elif "result" in results.keys():
+         results = results.get("result")
 plot_manager = QuantumPlotPlyManager()
 plot_manager.plot_quantum_data(
     data_type='npy',

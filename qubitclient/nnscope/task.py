@@ -138,7 +138,7 @@ def run_task(file_list: list[str|dict[str,np.ndarray]|np.ndarray],url,api_key,ta
     files = load_files(file_list)
     if not isinstance(task_type, str):
         task_type = task_type.value
-    response = DEFINED_TASKS[task_type.value](files,url,api_key,*args,**kwargs)
+    response = DEFINED_TASKS[task_type](files,url,api_key,*args,**kwargs)
     return response
 
 

@@ -38,6 +38,8 @@ class CtrlTaskName(Enum):
     T1 = "t1"
     RB = "rb"
     DATA = "get_data"
+    QUERY_PARAM = "query_param"
+    UPDATE_PARAM = "update_param"
 
 
 def run_task(task_type,*args,**kwargs):
@@ -264,5 +266,21 @@ def get_data(rid,
        *args, **kwargs):
     result = call_mcp("get_data",
                       rid=rid
+                      )
+    return result
+
+@task_register
+def query_param(key,
+       *args, **kwargs):
+    result = call_mcp("query_param",
+                      key=key
+                      )
+    return result
+@task_register
+def update_param(key,value,
+       *args, **kwargs):
+    result = call_mcp("update_param",
+                      key=key,
+                      value=value
                       )
     return result

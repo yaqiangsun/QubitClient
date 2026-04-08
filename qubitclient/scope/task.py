@@ -86,7 +86,9 @@ def task_register(func):
 
 def run_task(client,file_list: list[str|dict[str,np.ndarray]|np.ndarray],task_type:str):
     files = load_files(file_list)
-    response = DEFINED_TASKS[task_type.value](client,files)
+    if not isinstance(task_type, str):
+        task_type = task_type.value
+    response = DEFINED_TASKS[task_type](client,files)
     return response
 
 

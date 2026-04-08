@@ -43,7 +43,9 @@ class CtrlTaskName(Enum):
 
 
 def run_task(task_type,*args,**kwargs):
-    response = DEFINED_TASKS[task_type.value](*args,**kwargs)
+    if not isinstance(task_type, str):
+        task_type = task_type.value
+    response = DEFINED_TASKS[task_type](*args,**kwargs)
     return response
 
 

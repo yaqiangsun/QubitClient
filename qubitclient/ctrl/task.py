@@ -30,6 +30,7 @@ from enum import Enum, unique
 @unique
 class CtrlTaskName(Enum):
     S21 = "s21"
+    S21MULTI = "s21multi"
     DRAG = "drag"
     DELTA = "delta"
     OPTPIPULSE = "opt_pipulse"
@@ -72,7 +73,23 @@ def s21(qubits:list[str],
                       state=state
                       )
     return result
-
+@task_register
+def s21multi(qubits:list[str],
+        frequency_start=-40e6,
+        frequency_end=40e6,
+        frequency_sample_num=101,
+        state: int | list[int] | None = [0],
+        *args,**kwargs):
+    if isinstance(state, int):
+        state = [state]
+    result = call_mcp("s21",
+                      qubits=qubits,
+                      frequency_start=frequency_start,
+                      frequency_end=frequency_end,
+                      frequency_sample_num=frequency_sample_num,
+                      state=state
+                      )
+    return result
 @task_register
 def drag(qubits:list[str],
          lamb:list[float],

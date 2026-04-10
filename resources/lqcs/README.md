@@ -1,0 +1,38 @@
+# 在lqcs中使用
+
+
+## 配置
+1. 将analysis目录复制到quark项目根目录下；
+2. 将`config.py.example`拷贝为`config.py`,并配置相关参数
+
+## 使用
+1. 对于测量后的结果，使用quark接口获取测量后的数据：
+- 在线获取数据：
+```python
+None
+```
+- 离线获取数据：
+```python
+None
+```
+获取得到的数据即为后续功能的输入.
+
+2. 使用接口分析
+```
+from analysis.inception import optpipulse
+results = optpipulse(data)
+```
+
+3. 绘图
+```python
+from analysis.visualization import plot_optpipulse
+fig_list = plot_optpipulse(data,analysis_result,save_path='./tmp/vis/opt_pipulse.png')
+# fig_list[0].show()
+```
+4. 更新参数
+```python
+from analysis.update import optpipulse_update
+image = optpipulse_convert(image)
+results = scope_template(image,task_type=TaskName.OPTPIPULSE)
+optpipulse_update(image,results)
+```

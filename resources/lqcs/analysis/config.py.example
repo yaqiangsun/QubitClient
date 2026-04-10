@@ -1,0 +1,5 @@
+API_URL = "http://x.x.x.x:7000"
+API_KEY = "xxxx.xxxx.xxxxxxxx"  # 设置API密钥
+
+# 控制是否执行API调用的开关，默认为True表示启用API调用
+ENABLE_API = True

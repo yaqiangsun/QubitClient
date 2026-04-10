@@ -9,10 +9,15 @@
 
 import numpy as np
 from qubitclient.ctrl import MCPClient
+import json
 
 def call_mcp(task_type:str,*args,**kwargs):
     mcp = MCPClient(mcpServers=None)
     result = mcp.call(task_type,*args,**kwargs)
+    try:
+        result = json.loads(result)
+    except Exception as e:
+        pass
     return result
 
 DEFINED_TASKS = {}

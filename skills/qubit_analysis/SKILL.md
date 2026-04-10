@@ -392,10 +392,10 @@ results = client.get_result(response)
 
 ### Data Format Conversion (from Quark)
 
-Use the conversion functions in `resources/quark/anaylsis/format.py` to convert Quark format data:
+Use the conversion functions in `resources/quark/analysis/format.py` to convert Quark format data:
 
 ```python
-from resources.quark.anaylsis.format import (
+from resources.quark.analysis.format import (
     s21_convert,
     optpipulse_convert,
     t1fit_convert,

@@ -15,9 +15,9 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.anaylsis.utils import get_pkl_content
-from resources.quark.anaylsis.inception import nnspectrum
-from resources.quark.anaylsis.visualization import plot_nnspectrum
+from resources.quark.analysis.utils import get_pkl_content
+from resources.quark.analysis.inception import nnspectrum
+from resources.quark.analysis.visualization import plot_nnspectrum
 import matplotlib.pyplot as plt
 
 

@@ -1,7 +1,7 @@
 import sys
 sys.path.append("./")
-from resources.quark.anaylsis.format import powershift_convert
-from resources.quark.anaylsis.utils import get_pkl_content
+from resources.quark.analysis.format import powershift_convert
+from resources.quark.analysis.utils import get_pkl_content
 import numpy as np
 
 def convert(path):

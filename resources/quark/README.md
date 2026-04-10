@@ -19,7 +19,7 @@ data = get_data_by_tid(tid)
 
 2. 使用接口分析
 ```
-from anaylsis.inception import optpipulse
+from analysis.inception import optpipulse
 results = optpipulse(data)
 ```
 

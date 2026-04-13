@@ -15,9 +15,9 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import nnspectrum
-from resources.quark.analysis.visualization import plot_nnspectrum
+from resources.lqcs.analysis.utils import get_hdf5_content
+from resources.lqcs.analysis.inception import nnspectrum
+from resources.lqcs.analysis.visualization import plot_nnspectrum
 import matplotlib.pyplot as plt
 
 
@@ -27,28 +27,12 @@ def test_nnspectrum(task_key, base_dir):
         
         # 提取文件名前缀
         pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
-        
-        data = get_pkl_content(pkl_path)
-        if data is None:
-            continue
-        if "meta" not in data.keys():
-            continue
-        if "name" not in data["meta"].keys():
-            continue
-        print(f" print task_key: {task_key}, data name: {data['meta']['name']}")
 
-        # 因为是拿 spectrum 数据来测 nnscope，所以 False
-        # if task_key.lower() in data["meta"]["name"].lower():
-        if "spectrum" in data["meta"]["name"].lower():
-            if len(data["meta"]["other"].get("qubits", [])) >= 1:
-                logging.info("task_key: %s, qubits: %s", task_key, data["meta"]["other"]["qubits"])
-                if task_key in "spectrum":
-                    analysis_result = nnspectrum(data)
-                    logging.info(f"-----nnspectrum analysis result: {analysis_result}")
-                    fig_list = plot_nnspectrum(data, analysis_result, save_path=f'./tmp/vis/nnspectrum_{pure_name}.png')
-                    # fig_list[0].show()
-                    # plt.show(block=True)
+        data = get_hdf5_content(pkl_path)
 
+        if task_key in "nnspectrum":
+            analysis_result = nnspectrum(data)
+            fig_list = plot_nnspectrum(data, analysis_result, save_path=f'./tmp/vis/nnspectrum_{pure_name}.png')
 
 def main():
     task_key = "spectrum"

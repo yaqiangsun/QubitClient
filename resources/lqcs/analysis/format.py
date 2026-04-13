@@ -223,4 +223,53 @@ def t2fit_convert(result):
     return data_formated
 
 
+def nnspectrum_convert(result):
+    data_formated = {"image": {}}
 
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if data.dtype.names:
+            field_names = data.dtype.names
+            
+            # 时间轴 f0
+            time = data[field_names[0]]
+
+            for channel_idx in range(1, len(field_names)):
+                channel_field = field_names[channel_idx]
+                channel_data = data[channel_field]
+
+                # 生成名字：qubit_1, qubit_2
+                new_qubit_name = f"{qubit_name}_{channel_idx}"
+
+                data_formated["image"][new_qubit_name] = (time, channel_data)
+
+    return data_formated
+
+
+def spectrum_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if data.dtype.names:
+            field_names = data.dtype.names
+            
+            # 时间轴 f0
+            time = data[field_names[0]]
+
+            for channel_idx in range(1, len(field_names)):
+                channel_field = field_names[channel_idx]
+                channel_data = data[channel_field]
+
+                # 生成名字：qubit_1, qubit_2
+                new_qubit_name = f"{qubit_name}_{channel_idx}"
+
+                data_formated["image"][new_qubit_name] = (time, channel_data)
+
+    return data_formated

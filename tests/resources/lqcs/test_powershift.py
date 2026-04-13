@@ -15,37 +15,30 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import powershift
-from resources.quark.analysis.visualization import plot_powershift
+from resources.lqcs.analysis.utils import get_hdf5_content
+from resources.lqcs.analysis.inception import powershift
+from resources.lqcs.analysis.visualization import plot_powershift
 import matplotlib.pyplot as plt
 
 
 def test_powershift(task_key, base_dir):
-    for pkl_path in os.listdir(base_dir):
-        pkl_path = os.path.join(base_dir, pkl_path)
+    for hdf5_path in os.listdir(base_dir):
+        hdf5_path = os.path.join(base_dir, hdf5_path)
 
         # 提取文件名前缀
-        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
+        pure_name = os.path.splitext(os.path.basename(hdf5_path))[0]
         
-        data = get_pkl_content(pkl_path)
-        if data is None:
-            continue
-        if "meta" not in data.keys():
-            continue
-        if "name" not in data["meta"].keys():
-            continue
-        if task_key.lower() in data["meta"]["name"].lower():
-            if len(data["meta"]["other"]["qubits"])>=1:
-                if task_key in ["powershift","s21"]:
-                    analysis_result = powershift(data)
-                    fig_list = plot_powershift(data,analysis_result,save_path=f'./tmp/vis/powershift_{pure_name}.png')
-                    # fig_list[0].show()
-                    # plt.show(block=True)
+        data = get_hdf5_content(hdf5_path)
+
+        if task_key in ["powershift"]:
+            analysis_result = powershift(data)
+            fig_list = plot_powershift(data,analysis_result,save_path=f'./tmp/vis/powershift_{pure_name}.png')
+            # fig_list[0].show()
+            # plt.show(block=True)
 
 
 def main():
-    task_key = "s21"
+    task_key = "powershift"
     base_dir = "tmp/data/powershift"
     test_powershift(task_key, base_dir)
 

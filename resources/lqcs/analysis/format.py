@@ -184,3 +184,43 @@ def powershift_convert(result):
         assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
     return data_formated
 
+def t1fit_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if data.dtype.names:  # 结构化数组
+            delay = data['f0']          # 自变量：延迟时间
+            #p_i   = data['f1']          # Dependent0: P1 | I 
+            p_x = data['f2']          # Dependent1: P1 | X 
+
+            data_formated["image"][qubit_name] = (delay, p_x)
+
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+
+def t2fit_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if data.dtype.names:   
+            delay = data['f0']      
+            # p1    = data['f6']      
+            amplitude = data['f1']
+
+            data_formated["image"][qubit_name] = (delay, amplitude)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+

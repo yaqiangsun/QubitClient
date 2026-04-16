@@ -1,7 +1,7 @@
 <h1 align="center">
   <img src="asset/qubitclient.png" alt="QubitClient Logo" width="200"/>
   <br>
-  QubitClient: 面向量子系统的AI客户端
+  QubitClient: 用于量子计算的AI智能体
 </h1>
 
 <p align="center">
@@ -58,7 +58,7 @@
 
 ## 📖 介绍
 
-**QubitClient** 是一个功能强大的 Python 客户端库，用于与 **Qubit 服务**进行高效交互。它封装了丰富的 API 接口，专为量子计算实验数据处理而设计，支持**特征提取**、**参数拟合**、**实验控制**等多种任务，能够实现快速分析二维能谱、功率偏移曲线等关键实验数据，支持多种形式格式转换。
+**QubitClient** 是一个功能强大的AI智能体，用于与 **Qubit 服务**进行高效交互。它封装了丰富的 API 接口，专为量子计算实验数据处理而设计，支持**特征提取**、**参数拟合**、**实验控制**等多种任务，能够实现快速分析二维能谱、功率偏移曲线等关键实验数据，支持多种形式格式转换。
 
 ## ✨ 功能特性
 
@@ -69,6 +69,8 @@
 - 🔌 **易于集成**：简洁的 API 设计，可快速融入现有项目流程。
 - 🤝 **MCP 协议支持**：基于 MCP 协议的实时量子测量任务控制，实现实验自动化。
 - 🤖 **LLM/VLM 集成**：支持大语言模型和视觉语言模型，用于量子测量数据分析与决策。
+  - 🟢 **Google Gemma 4**：支持 `google/gemma-4-E4B-it` 模型
+  - 🔵 **NVIDIA Ising**：支持 `nv-community/Ising-Calibration-1-35B-A3B` 模型，专为量子校准设计
 
 ## 📦 安装
 
@@ -382,19 +384,27 @@ python tests/test_ctrl_mcp.py
 python tests/test_llm.py
 ```
 
-## ⚙️ LLM 配置
+## ⚙️ LLM/VLM 配置
 
-在 `qubitclient.json` 中配置 LLM（创建或编辑此文件）：
+在 `qubitclient.json` 中配置 LLM/VLM（创建或编辑此文件）：
 
 ```json
 {
   "llm": {
     "api_key": "your-api-key",
     "base_url": "https://your-llm-endpoint.com/v1",
-    "model": "gpt-4o"
+    "model": "nvidia/Ising-Calibration-1-35B-A3B"
   }
 }
 ```
+
+### 支持的模型
+
+| 模型 | 描述 | 推荐用途 |
+|------|------|---------|
+| `nvidia/Ising-Calibration-1-35B-A3B` | NVIDIA Ising，专门针对量子校准任务优化 | **量子测量数据分析首选** |
+| `google/gemma-4-E4B-it` | Google Gemma 4，多模态推理能力 | 通用图表分析与推理 |
+| `gpt-4o` | OpenAI GPT-4o | 通用对话与分析 |
 
 支持的配置方式（优先级从低到高）：
 1. 默认值（gpt-4o）
@@ -410,6 +420,9 @@ python tests/test_llm.py
 ## 📝 更新日志
 
 ### 近期更新
+- 🤖 **新增 VLM 模型支持**：
+  - 🔵 **NVIDIA Ising** (`Ising-Calibration-1-35B-A3B`)：专为量子校准任务优化的 VLM
+  - 🟢 **Google Gemma 4** (`gemma-4-E4B-it`)：多模态推理能力，支持图表分析
 - 🤖 **新增 QCalEval 基准测试**：集成 NVIDIA QCalEval 数据集，支持 6 种 VLM 任务（Q1-Q6）和 87 种实验类型
 - 🤖 **新增实验背景模块**：为 22 种实验家族提供专业物理背景描述
 - 🤖 **新增 LLM 决策模块**：支持基于评估结果自动决策下一步测量

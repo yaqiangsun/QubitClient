@@ -38,6 +38,9 @@ from qubitclient.llm.experiments import (
     get_experiment_background,
 )
 
+# Fewshot 支持
+from qubitclient.llm.fewshot import get_fewshot_prompt, get_fewshot_images
+
 
 # 实验类型+问题：这些组合的prompt中已包含背景信息，不需要再添加experiment_background
 # 格式: (experiment_family, question_number)
@@ -134,6 +137,7 @@ def decide_next_action(
 def describe_plot(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
+    fewshot: bool = False,
 ) -> dict:
     """
     描述图表任务 (QCalEval Q1)
@@ -142,6 +146,7 @@ def describe_plot(
     Args:
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
+        fewshot: 是否使用 fewshot 模式
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -160,9 +165,17 @@ def describe_plot(
     task_prompt = get_describe_plot_prompt(family) if family else "Describe the figure <image> in JSON format."
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
+    # Fewshot 模式
+    example_images = []
+    if fewshot and family:
+        prompt, example_images = get_fewshot_prompt(family, "q1", prompt, include_images=True)
+
+    # 合并示例图片和目标图片
+    all_images = example_images + ([image_data] if not isinstance(image_data, list) else image_data)
+
     return {
         "messages": [{"role": "user", "content": prompt}],
-        "images": image_data,
+        "images": all_images,
         "response_schema": DESCRIBE_PLOT_RESPONSE_SCHEMA,
     }
 
@@ -171,6 +184,7 @@ def describe_plot(
 def classify_outcome(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
+    fewshot: bool = False,
 ) -> dict:
     """
     分类实验结果任务 (QCalEval Q2)
@@ -179,6 +193,7 @@ def classify_outcome(
     Args:
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
+        fewshot: 是否使用 fewshot 模式
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -197,9 +212,17 @@ def classify_outcome(
     task_prompt = get_classify_outcome_prompt(family) if family else get_classify_outcome_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
+    # Fewshot 模式
+    example_images = []
+    if fewshot and family:
+        prompt, example_images = get_fewshot_prompt(family, "q2", prompt, include_images=True)
+
+    # 合并示例图片和目标图片
+    all_images = example_images + ([image_data] if not isinstance(image_data, list) else image_data)
+
     return {
         "messages": [{"role": "user", "content": prompt}],
-        "images": image_data,
+        "images": all_images,
         "response_schema": CLASSIFY_OUTCOME_RESPONSE_SCHEMA,
     }
 
@@ -208,6 +231,7 @@ def classify_outcome(
 def scientific_reasoning(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
+    fewshot: bool = False,
 ) -> dict:
     """
     科学推理任务 (QCalEval Q3)
@@ -216,6 +240,7 @@ def scientific_reasoning(
     Args:
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
+        fewshot: 是否使用 fewshot 模式
 
     Returns:
         包含 messages 和 images 的字典
@@ -234,9 +259,17 @@ def scientific_reasoning(
     task_prompt = get_scientific_reasoning_prompt(family) if family else get_scientific_reasoning_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
+    # Fewshot 模式
+    example_images = []
+    if fewshot and family:
+        prompt, example_images = get_fewshot_prompt(family, "q3", prompt, include_images=True)
+
+    # 合并示例图片和目标图片
+    all_images = example_images + ([image_data] if not isinstance(image_data, list) else image_data)
+
     return {
         "messages": [{"role": "user", "content": prompt}],
-        "images": image_data,
+        "images": all_images,
         # Q3 (scientific_reasoning) 是开放性推理任务，输出自由文本
     }
 
@@ -245,6 +278,7 @@ def scientific_reasoning(
 def assess_fit(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
+    fewshot: bool = False,
 ) -> dict:
     """
     评估拟合可靠性任务 (QCalEval Q4)
@@ -253,6 +287,7 @@ def assess_fit(
     Args:
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
+        fewshot: 是否使用 fewshot 模式
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -271,9 +306,17 @@ def assess_fit(
     task_prompt = get_assess_fit_prompt(family) if family else get_assess_fit_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
+    # Fewshot 模式
+    example_images = []
+    if fewshot and family:
+        prompt, example_images = get_fewshot_prompt(family, "q4", prompt, include_images=True)
+
+    # 合并示例图片和目标图片
+    all_images = example_images + ([image_data] if not isinstance(image_data, list) else image_data)
+
     return {
         "messages": [{"role": "user", "content": prompt}],
-        "images": image_data,
+        "images": all_images,
         "response_schema": ASSESS_FIT_RESPONSE_SCHEMA,
     }
 
@@ -283,6 +326,7 @@ def extract_params(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
     params_schema: dict | None = None,
+    fewshot: bool = False,
 ) -> dict:
     """
     提取参数任务 (QCalEval Q5)
@@ -292,6 +336,7 @@ def extract_params(
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         params_schema: 参数提取模式（可选，默认从experiment_family获取）
+        fewshot: 是否使用 fewshot 模式
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -315,9 +360,17 @@ def extract_params(
     task_prompt = get_extract_params_prompt(family) if family else get_extract_params_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
+    # Fewshot 模式
+    example_images = []
+    if fewshot and family:
+        prompt, example_images = get_fewshot_prompt(family, "q5", prompt, include_images=True)
+
+    # 合并示例图片和目标图片
+    all_images = example_images + ([image_data] if not isinstance(image_data, list) else image_data)
+
     return {
         "messages": [{"role": "user", "content": prompt}],
-        "images": image_data,
+        "images": all_images,
         "response_schema": schema or get_extract_params_schema(family or "rabi"),
     }
 
@@ -326,6 +379,7 @@ def extract_params(
 def evaluate_status(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
+    fewshot: bool = False,
 ) -> dict:
     """
     评估实验状态任务 (QCalEval Q6)
@@ -334,6 +388,7 @@ def evaluate_status(
     Args:
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
+        fewshot: 是否使用 fewshot 模式
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -352,8 +407,16 @@ def evaluate_status(
     task_prompt = get_evaluate_status_prompt(family) if family else get_evaluate_status_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
+    # Fewshot 模式
+    example_images = []
+    if fewshot and family:
+        prompt, example_images = get_fewshot_prompt(family, "q6", prompt, include_images=True)
+
+    # 合并示例图片和目标图片
+    all_images = example_images + ([image_data] if not isinstance(image_data, list) else image_data)
+
     return {
         "messages": [{"role": "user", "content": prompt}],
-        "images": image_data,
+        "images": all_images,
         "response_schema": EVALUATE_STATUS_RESPONSE_SCHEMA,
     }

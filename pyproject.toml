@@ -47,6 +47,9 @@ full = [
 [tool.uv]
 index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
+[tool.setuptools.package-data]
+qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["qubitclient*"]  # match qubitscope and qubitscope.*

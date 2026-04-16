@@ -1,4 +1,9 @@
 {
   "url": "https://your-api-server.com",
-  "api_key": "your-api-key-here"
+  "api_key": "your-api-key-here",
+  "llm": {
+    "api_key": "xxxxxxx",
+    "base_url": "https://llm.xxx.xxx/v1",
+    "model": "nvidia/Ising-Calibration-1-35B-A3B"
+  }
 }

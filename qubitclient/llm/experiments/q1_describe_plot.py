@@ -15,313 +15,101 @@ Q1: 描述图表任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-# Coupler flux prompt
-PROMPT_COUPLER_FLUX = """Describe the coupler flux spectroscopy figure <image> in JSON format.
-
-This experiment maps the coupler's frequency response vs applied flux bias.
-Focus on: avoided crossing pattern, dispersion curve shape, fit quality.
+# Standard prompt for single-image plots
+PROMPT_STANDARD = """Describe the figure <image> in JSON format.
 
 Required fields:
 {
-  "plot_type": "scatter" | "line" | "heatmap",
+  "plot_type": "scatter" | "line" | "heatmap" | "histogram",
   "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
   "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
   "main_features": string
 }"""
 
-# CZ benchmarking prompt
-PROMPT_CZ_BENCHMARKING = """Describe the CZ benchmarking figure <image> in JSON format.
+# Two-image prompt
+PROMPT_TWO_IMAGES = """Describe each figure <image> in JSON format.
 
-This experiment measures atom retention probability and cycle polarization vs circuit depth.
-Focus on: decay rate, polarization values, circuit depth range.
+This entry has 2 images. Provide a JSON array with one object per image, in order.
 
-Required fields:
+Required fields per image:
 {
-  "plot_type": "scatter" | "line",
+  "plot_type": "scatter" | "line" | "heatmap" | "histogram",
   "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
   "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
   "main_features": string
 }"""
 
-# DRAG prompt
-PROMPT_DRAG = """Describe the DRAG calibration figure <image> in JSON format.
-
-This experiment sweeps 1/alpha to find the optimal DRAG coefficient.
-Focus on: zero-crossing position, two datasets with opposite slopes, fit lines.
+# MOT loading / tweezer array prompt
+PROMPT_CAMERA_IMAGE = """Describe the figure <image> in JSON format.
 
 Required fields:
 {
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
+  "plot_type": "image" | "heatmap" | "scatter",
+  "x_axis": {"label": string, "unit": string},
+  "y_axis": {"label": string, "unit": string},
+  "colorbar": {"label": string},
   "main_features": string
 }"""
 
-# GMM prompt
-PROMPT_GMM = """Describe the GMM (Gaussian Mixture Model) discrimination figure <image> in JSON format.
-
-This experiment shows I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit.
-Focus on: two clusters, separation, overlap, cluster centers.
+# Tweezer array prompt (no colorbar)
+PROMPT_TWEEZER = """Describe the figure <image> in JSON format.
 
 Required fields:
 {
-  "plot_type": "scatter",
-  "x_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
+  "plot_type": "image" | "heatmap" | "scatter",
+  "x_axis": {"label": string, "unit": string},
+  "y_axis": {"label": string, "unit": string},
   "main_features": string
 }"""
 
-# Microwave Ramsey prompt
-PROMPT_MICROWAVE_RAMSEY = """Describe the microwave Ramsey figure <image> in JSON format.
-
-This experiment uses microwave pulses to measure Ramsey oscillations.
-Focus on: oscillation frequency, contrast, decay envelope.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# MOT loading prompt
-PROMPT_MOT_LOADING = """Describe the MOT loading image <image> in JSON format.
-
-This is a camera image showing trapped atoms in a magneto-optical trap.
-Focus on: cloud shape, position, brightness, uniformity.
-
-Required fields:
-{
-  "plot_type": "heatmap" | "image",
-  "x_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Pinchoff prompt
-PROMPT_PINCHOFF = """Describe the pinch-off measurement figure <image> in JSON format.
-
-This measures 1D current trace vs gate voltage to determine device pinch-off.
-Focus on: saturation region, transition region, pinch-off point.
-
-Required fields:
-{
-  "plot_type": "line" | "scatter",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "main_features": string
-}"""
-
-# PingPong prompt
-PROMPT_PINGPONG = """Describe the PingPong calibration figure <image> in JSON format.
-
-This applies repeated pi-pulse pairs and measures qubit population vs gate count.
-Focus on: error accumulation pattern, linear vs oscillatory behavior.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Qubit flux spectroscopy prompt
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """Describe the qubit flux spectroscopy 2D map <image> in JSON format.
-
-This maps qubit transition frequency vs applied flux bias.
-Focus on: dispersion curve (arc/parabola), resonance peaks, fit overlay.
-
-Required fields:
-{
-  "plot_type": "heatmap" | "scatter",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Qubit spectroscopy prompt
-PROMPT_QUBIT_SPECTROSCOPY = """Describe the qubit spectroscopy figure <image> in JSON format.
-
-This sweeps drive frequency to find the qubit transition.
-Focus on: spectral peak, Lorentzian fit, peak position.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Qubit spectroscopy power frequency prompt
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """Describe the 2D qubit spectroscopy figure <image> in JSON format.
-
-This sweeps both drive power and frequency to map qubit transitions.
-Focus on: f01 line, f02/2 line, power dependence, visibility.
-
-Required fields:
-{
-  "plot_type": "heatmap",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Rabi prompt
-PROMPT_RABI = """Describe the Rabi oscillation figure <image> in JSON format.
-
-This sweeps pulse amplitude to find the pi-pulse amplitude.
-Focus on: sinusoidal oscillations, oscillation visibility, fit quality.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Rabi hardware prompt
-PROMPT_RABI_HW = """Describe the Rabi (hardware) figure <image> in JSON format.
-
-This sweeps pulse amplitude to find the pi-pulse amplitude with hardware characterization.
-Focus on: oscillation amplitude, periodicity, fit reliability.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Ramsey charge tomography prompt
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Describe the Ramsey charge tomography 2D map <image> in JSON format.
-
-This shows repeated Ramsey measurements over time revealing charge jumps.
-Focus on: fringe continuity, jump events, noise level.
-
-Required fields:
-{
-  "plot_type": "heatmap",
-  "x_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Ramsey frequency calibration prompt
-PROMPT_RAMSEY_FREQ_CAL = """Describe the Ramsey frequency calibration figure <image> in JSON format.
-
-This measures frequency detuning with two π/2 pulses separated by variable delay.
-Focus on: oscillation visibility, detuning frequency, fit quality.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Ramsey T2* prompt
-PROMPT_RAMSEY_T2STAR = """Describe the Ramsey T2* figure <image> in JSON format.
-
-This measures dephasing time with two π/2 pulses at variable delay.
-Focus on: decaying oscillations, T2* value, FFT peak.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Resonator spectroscopy prompt
-PROMPT_RES_SPEC = """Describe the resonator spectroscopy figure <image> in JSON format.
-
-This sweeps probe frequency to find the resonator resonance.
-Focus on: resonance dip/peak, depth, width, baseline.
-
-Required fields:
-{
-  "plot_type": "line" | "scatter",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Rydberg Ramsey prompt
-PROMPT_RYDBERG_RAMSEY = """Describe the Rydberg Ramsey figure <image> in JSON format.
-
-This measures coherence on ground-to-Rydberg transition.
-Focus on: oscillation visibility, T2 coherence, detuning.
-
-Required fields:
-{
-  "plot_type": "scatter" | "line",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Rydberg spectroscopy prompt
-PROMPT_RYDBERG_SPECTROSCOPY = """Describe the Rydberg spectroscopy figure <image> in JSON format.
-
-This sweeps optical detuning across multiple atomic sites.
-Focus on: spectral features, contrast, fit quality per site.
+# Charge tomography prompt
+PROMPT_CHARGE_TOMOGRAPHY = """Describe the figure <image> in JSON format.
 
 Required fields:
 {
   "plot_type": "heatmap" | "line" | "scatter",
   "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
   "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
+  "colorbar": {"label": string},
   "main_features": string
 }"""
 
-# T1 prompt
-PROMPT_T1 = """Describe the T1 relaxation figure <image> in JSON format.
+# Aliases for compatibility
+PROMPT_COUPLER_FLUX = PROMPT_STANDARD
+# Special case for cz_benchmarking (different field name)
+PROMPT_CZ_BENCHMARKING = """Describe each figure <image> in JSON format.
 
-This measures qubit population vs delay time after excitation to |1⟩.
-Focus on: exponential decay, decay visibility, fit quality.
+This entry has 2 images. Provide a JSON array with one object per image, in order.
 
-Required fields:
+Required fields per object:
 {
-  "plot_type": "scatter" | "line",
+  "plot_type": "scatter" | "line" | "heatmap" | "histogram",
   "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
+  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
   "main_features": string
 }"""
+PROMPT_DRAG = PROMPT_STANDARD
+PROMPT_GMM = PROMPT_STANDARD
+PROMPT_MICROWAVE_RAMSEY = PROMPT_STANDARD
+PROMPT_MOT_LOADING = PROMPT_CAMERA_IMAGE
 
-# T1 fluctuations prompt
-PROMPT_T1_FLUCTUATIONS = """Describe the T1 stability measurement figure <image> in JSON format.
-
-This tracks T1 relaxation time over repeated measurements.
-Focus on: stability, drift, jump events, classification.
-
-Required fields:
-{
-  "plot_type": "line" | "scatter",
-  "x_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
-
-# Tweezer array prompt
-PROMPT_TWEEZER_ARRAY = """Describe the optical tweezer array image <image> in JSON format.
-
-This is a camera image showing trapped atoms in a regular grid.
-Focus on: spot uniformity, grid regularity, aberration.
-
-Required fields:
-{
-  "plot_type": "heatmap" | "image",
-  "x_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear", "range": [min, max]},
-  "main_features": string
-}"""
+# Aliases for remaining experiments
+PROMPT_PINCHOFF = PROMPT_STANDARD
+PROMPT_PINGPONG = PROMPT_STANDARD
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = PROMPT_STANDARD
+PROMPT_QUBIT_SPECTROSCOPY = PROMPT_STANDARD
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = PROMPT_TWO_IMAGES
+PROMPT_RABI = PROMPT_STANDARD
+PROMPT_RABI_HW = PROMPT_STANDARD
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = PROMPT_CHARGE_TOMOGRAPHY
+PROMPT_RAMSEY_FREQ_CAL = PROMPT_TWO_IMAGES
+PROMPT_RAMSEY_T2STAR = PROMPT_TWO_IMAGES
+PROMPT_RES_SPEC = PROMPT_TWO_IMAGES
+PROMPT_RYDBERG_RAMSEY = PROMPT_STANDARD
+PROMPT_RYDBERG_SPECTROSCOPY = PROMPT_STANDARD
+PROMPT_T1 = PROMPT_STANDARD
+PROMPT_T1_FLUCTUATIONS = PROMPT_STANDARD
+PROMPT_TWEEZER_ARRAY = PROMPT_TWEEZER
 
 
 # ========== Prompt 字典映射 ==========

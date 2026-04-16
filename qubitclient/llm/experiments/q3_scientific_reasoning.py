@@ -15,21 +15,21 @@ Q3: 科学推理任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-PROMPT_COUPLER_FLUX = """What does this result <image> imply?
+PROMPT_COUPLER_FLUX = """What does this result imply?
 
 Explain:
-- What the avoided crossing pattern indicates about coupler tuning
-- Whether the crossing frequencies are in the desired range
-- What calibration step follows (e.g., adjust coupling strength, proceed to gate calibration)
+- What the dispersion curve shape reveals about coupler tunability range and coupling strength
+- Whether the flux range captures enough of the dispersion for reliable parameter extraction
+- What next step follows (e.g., setting coupler bias point, calibrating two-qubit gate interaction)
 
 Provide your assessment."""
 
 PROMPT_CZ_BENCHMARKING = """What does this result <image> imply?
 
 Explain:
-- What the decay rate indicates about gate fidelity
-- Whether the polarization is sufficient for entangling operations
-- What calibration step follows (e.g., optimize pulse timing, adjust atom positions)
+- What the retention decay rate and polarization decay rate indicate about gate fidelity, atom loss per gate, and overall gate quality
+- Whether the circuit depth range spans enough decay to extract meaningful fidelity metrics from both retention and polarization
+- What adjustment follows (e.g., recalibrating the CZ gate, adjusting circuit depth range, or investigating atom loss mechanisms)
 
 Provide your assessment."""
 
@@ -45,171 +45,173 @@ Provide your assessment."""
 PROMPT_GMM = """What does this result <image> imply?
 
 Explain:
-- What the cluster separation indicates about readout fidelity
-- Whether the state discrimination is sufficient for quantum error correction
-- What calibration step follows (e.g., adjust readout amplitude, optimize integration time)
+- What the cluster separation, shape, and overlap indicate about readout fidelity and SNR
+- Whether the discrimination is sufficient for reliable single-shot state assignment
+- What adjustment follows (e.g., optimizing readout power, frequency, or integration time)
 
 Provide your assessment."""
 
 PROMPT_MICROWAVE_RAMSEY = """What does this result <image> imply?
 
 Explain:
-- What the oscillation frequency and contrast indicate about qubit coherence
-- Whether the T2* is sufficient for gate operations
-- What calibration step follows (e.g., improve coherence, adjust drive frequency)
+- What the oscillation contrast, retention level, and fit quality indicate about qubit coherence and microwave drive calibration
+- Whether the contrast and retention are sufficient for reliable state discrimination and parameter extraction
+- What adjustment follows (e.g., tuning microwave frequency closer to resonance, investigating system retention issues, or proceeding with current calibration)
 
 Provide your assessment."""
 
-PROMPT_MOT_LOADING = """What does this result <image> imply?
+PROMPT_MOT_LOADING = """What does this MOT loading result <image> indicate about the trap performance?
 
 Explain:
-- What the cloud characteristics indicate about loading efficiency
-- Whether the atom number is sufficient for experiments
-- What calibration step follows (e.g., adjust MOT parameters, proceed to trapping)
+- What the cloud morphology (size, symmetry, brightness) indicates about trap alignment and atom number
+- Whether the image quality and SNR are sufficient for reliable cloud characterization
+- What trap parameter adjustment follows (e.g., beam alignment, magnetic gradient tuning, or laser detuning)
 
 Provide your assessment."""
 
 PROMPT_PINCHOFF = """What does this result <image> imply?
 
 Explain:
-- What the current-voltage relationship indicates about device pinch-off
-- Whether the device is suitable for electron transport experiments
-- What calibration step follows (e.g., adjust gate voltages, optimize device design)
+- What the transition shape (steepness, completeness, residual current) indicates about channel depletion and device quality
+- Whether the gate voltage range captures the full pinch-off transition for reliable threshold extraction
+- What adjustment follows (e.g., extending voltage range, checking device polarity, investigating leakage paths)
 
 Provide your assessment."""
 
 PROMPT_PINGPONG = """What does this result <image> imply?
 
 Explain:
-- What the error accumulation rate indicates about gate fidelity
-- Whether the gates are sufficient for deep circuits
-- What calibration step follows (e.g., optimize pulse amplitude, adjust spacing)
+- What the slope and oscillation pattern indicate about pi-pulse amplitude error magnitude and direction
+- Whether the gate count range is sufficient to distinguish calibration quality from noise
+- What pulse amplitude adjustment follows based on the observed error accumulation trend
 
 Provide your assessment."""
 
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """What does this result <image> imply?
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """What does this result imply?
 
 Explain:
-- What the dispersion curve shape indicates about qubit nonlinearity
-- Whether the qubit is properly tunable in the desired frequency range
-- What calibration step follows (e.g., set operating point, proceed to spectroscopy)
+- What the dispersion curve shape reveals about qubit sweet spot location, Ej/Ec ratio, and flux tunability
+- Whether the flux and frequency ranges capture enough of the dispersion for reliable parameter extraction
+- What next step follows (e.g., biasing to sweet spot, extending flux range, refining fit model)
 
 Provide your assessment."""
 
-PROMPT_QUBIT_SPECTROSCOPY = """What does this result <image> imply?
+PROMPT_QUBIT_SPECTROSCOPY = """What does this result imply?
 
 Explain:
-- What the peak position indicates about qubit frequency
-- Whether the linewidth is sufficient for reliable operations
-- What calibration step follows (e.g., set drive frequency, proceed to Rabi)
+- What the peak position, linewidth, and shape indicate about qubit frequency and coherence
+- Whether the frequency span and resolution are sufficient for unambiguous transition identification
+- What next step follows (e.g., narrowing scan around peak, proceeding to Rabi or Ramsey calibration)
 
 Provide your assessment."""
 
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """What does this result <image> imply?
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is a 2D qubit spectroscopy experiment on a standard transmon (negative anharmonicity, so f02/2 appears at a lower frequency than f01): we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, and optionally f02/2) with visible power dependence.
+
+What do these results <image>, <image> and <image> imply?
 
 Explain:
-- What the transition lines indicate about qubit energy levels
-- Whether the power dependence is as expected
-- What calibration step follows (e.g., set operating power, proceed to further calibration)
+- What the transition line structure reveals about qubit anharmonicity and drive power coupling
+- Whether the frequency and power ranges are sufficient to identify all relevant transitions
+- What parameter adjustment (power range, frequency window) or next step (single-tone spectroscopy, Rabi) follows
 
 Provide your assessment."""
 
 PROMPT_RABI = """What does this result <image> imply?
 
 Explain:
-- What the oscillation visibility indicates about drive efficiency
-- Whether the pi-pulse amplitude is in the correct range
-- What calibration step follows (e.g., set pi-pulse amplitude, proceed to Ramsey)
+- What the oscillation pattern indicates about drive coupling strength and pi-pulse amplitude
+- Whether the amplitude range and sampling are sufficient for reliable Rabi rate extraction
+- What calibration step follows (e.g., adjusting drive amplitude, extending sweep range, or proceeding to DRAG calibration)
 
 Provide your assessment."""
 
-PROMPT_RABI_HW = """What does this result <image> imply?
+PROMPT_RABI_HW = """What does this result imply?
 
 Explain:
-- What the Rabi frequency indicates about drive strength
-- Whether the hardware is operating correctly
-- What calibration step follows (e.g., verify hardware settings, proceed)
+- What the oscillation pattern indicates about drive coupling strength and pi-pulse amplitude
+- Whether the amplitude range and sampling are sufficient for reliable Rabi rate extraction
+- What calibration step follows (e.g., adjusting drive amplitude, extending sweep range, or proceeding to DRAG calibration)
 
 Provide your assessment."""
 
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """What does this result <image> imply?
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """What does this Ramsey charge tomography result <image> imply for qubit operation?
 
 Explain:
-- What the fringe pattern indicates about charge stability
-- Whether charge jumps are present and their frequency
-- What calibration step follows (e.g., investigate charge noise, wait for stabilization)
+- What the fringe continuity and disruption pattern indicate about the charge noise environment
+- Whether the scan duration and resolution are sufficient to characterize charge jump frequency and severity
+- What device or environment adjustment follows (e.g., improving filtering, relocating qubit operating point, extending monitoring)
 
 Provide your assessment."""
 
-PROMPT_RAMSEY_FREQ_CAL = """What does this result <image> imply?
+PROMPT_RAMSEY_FREQ_CAL = """What do these results <image> and <image> imply?
 
 Explain:
-- What the detuning frequency indicates about qubit frequency accuracy
-- Whether the frequency is properly set for operations
-- What calibration step follows (e.g., adjust qubit frequency, proceed to gates)
+- What the oscillation pattern indicates about the qubit's detuning and coherence
+- Whether the measurement is sufficient for reliable parameter extraction
+- What parameter adjustment or next calibration step follows
 
 Provide your assessment."""
 
-PROMPT_RAMSEY_T2STAR = """What does this result <image> imply?
+PROMPT_RAMSEY_T2STAR = """What do these results <image> and <image> imply?
 
 Explain:
-- What the T2* value indicates about qubit coherence
-- Whether the coherence is sufficient for desired gate fidelities
-- What calibration step follows (e.g., improve coherence, adjust operating point)
+- What the oscillation pattern indicates about the qubit's detuning and coherence
+- Whether the measurement is sufficient for reliable parameter extraction
+- What parameter adjustment or next calibration step follows
 
 Provide your assessment."""
 
 PROMPT_RES_SPEC = """What does this result <image> imply?
 
 Explain:
-- What the resonance frequency indicates about resonator properties
-- Whether the coupling is as designed
-- What calibration step follows (e.g., set probe frequency, proceed to qubit spectroscopy)
+- What the resonance lineshape (depth, width, symmetry) indicates about internal and coupling quality factors
+- Whether the frequency span and resolution are sufficient for reliable resonance frequency extraction
+- What next step follows (e.g., adjusting frequency window, proceeding to qubit spectroscopy)
 
 Provide your assessment."""
 
 PROMPT_RYDBERG_RAMSEY = """What does this result <image> imply?
 
 Explain:
-- What the coherence time indicates about Rydberg excitation quality
-- Whether the detuning is properly set
-- What calibration step follows (e.g., adjust parameters, proceed to gates)
+- What the oscillation frequency, amplitude decay rate, and fit quality (RChi2) indicate about qubit coherence and frequency noise
+- Whether the data clusters across all time windows are consistently described by a single fit, or if the fit diverges from later clusters
+- What calibration step follows (e.g., adjusting Rydberg laser parameters, adding more time windows, or proceeding to gate sequences)
 
 Provide your assessment."""
 
 PROMPT_RYDBERG_SPECTROSCOPY = """What does this result <image> imply?
 
 Explain:
-- What the spectral features indicate about Rydberg level positions
-- Whether all sites show consistent behavior
-- What calibration step follows (e.g., set detuning, proceed to experiments)
+- What the spectral line shapes, fit quality (chi-squared), and contrast indicate about the Rydberg transition coupling and laser stability
+- Whether the spectroscopy resolution and signal-to-noise ratio are sufficient for reliable frequency and Rabi frequency extraction across sites
+- What calibration step follows (e.g., adjusting laser power or alignment, investigating noisy sites, or proceeding to Rydberg gate calibration)
 
 Provide your assessment."""
 
 PROMPT_T1 = """What does this result <image> imply?
 
 Explain:
-- What the T1 value indicates about qubit relaxation
-- Whether the T1 is sufficient for desired operations
-- What calibration step follows (e.g., improve T1, proceed to further experiments)
+- What the decay rate and residual population indicate about qubit relaxation time and thermal population
+- Whether the time window and sampling capture enough of the decay for reliable T1 extraction
+- What next step follows (e.g., extending delay range, improving thermalization, proceeding to T2 measurement)
 
 Provide your assessment."""
 
 PROMPT_T1_FLUCTUATIONS = """What does this result <image> imply?
 
 Explain:
-- What the T1 stability indicates about qubit frequency noise
-- Whether the fluctuations are acceptable for experiments
-- What calibration step follows (e.g., investigate noise sources, wait for stabilization)
+- What the T1 time series pattern (stability, switching, drift) indicates about the dominant decoherence mechanism
+- Whether the monitoring duration and sampling rate are sufficient to characterize the fluctuation type
+- What mitigation strategy follows (e.g., TLS avoidance, thermal stabilization, or frequency tuning)
 
 Provide your assessment."""
 
 PROMPT_TWEEZER_ARRAY = """What does this result <image> imply?
 
 Explain:
-- What the spot characteristics indicate about trapping quality
-- Whether the array is suitable for quantum experiments
-- What calibration step follows (e.g., adjust trap powers, proceed to experiments)
+- What the spot uniformity, sharpness, and grid regularity indicate about the optical system alignment and aberration correction quality
+- Whether the array fill factor and spot quality are sufficient for reliable atom trapping across all sites
+- What adjustment follows (e.g., re-running aberration correction, adjusting trap power, or proceeding to atom loading)
 
 Provide your assessment."""
 

@@ -15,251 +15,55 @@ Q4: 评估拟合任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-PROMPT_COUPLER_FLUX = """Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
+# Standard assess fit prompt
+PROMPT_STANDARD = """Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
 
 Options:
-- Reliable: Clear avoided crossing with good fit quality
-- Unreliable: No clear pattern or poor fit quality
-- No fit: No fit attempted or visible
+- Reliable
+- Unreliable
+- No fit
 
 Provide your answer as:
 Assessment: <your choice>
 Reason: <brief explanation>"""
 
-PROMPT_CZ_BENCHMARKING = """Assess whether the data in this plot <image> is reliable for gate fidelity assessment.
+# Special case for qubit_spectroscopy_power_frequency (has background)
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is a 2D qubit spectroscopy experiment on a standard transmon (negative anharmonicity, so f02/2 appears at a lower frequency than f01): we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, and optionally f02/2) with visible power dependence.
+
+Assess whether the fit to the data in these plots <image>, <image> and <image> is reliable for parameter extraction.
 
 Options:
-- Reliable: Clear decay pattern with high retention/polarization
-- Unreliable: No clear pattern or unexpected behavior
-- No fit: No clear trend visible
+- Reliable
+- Unreliable
+- No fit
 
 Provide your answer as:
 Assessment: <your choice>
 Reason: <brief explanation>"""
 
-PROMPT_DRAG = """A successful result has the zero-crossing clearly observable in the sweep window.
-
-Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
-
-Options:
-- Reliable: Clear crossing with good linear fits
-- Unreliable: No clear crossing or poor fit quality
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_GMM = """Assess whether the GMM fit in this plot <image> is reliable for state discrimination.
-
-Options:
-- Reliable: Clear separation with good fit
-- Unreliable: Overlapping clusters or poor fit
-- No fit: No fit visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_MICROWAVE_RAMSEY = """Assess whether the fit to the data in this plot <image> is reliable for extracting frequency and contrast.
-
-Options:
-- Reliable: Clear oscillations with good fit
-- Unreliable: No clear oscillations or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_MOT_LOADING = """Assess whether the image <image> shows a reliable atomic cloud for experiments.
-
-Options:
-- Reliable: Clear, compact cloud visible
-- Unreliable: Diffuse or unclear cloud
-- No cloud: No cloud visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_PINCHOFF = """Assess whether the data in this plot <image> shows a reliable pinch-off transition.
-
-Options:
-- Reliable: Clear transition with identifiable regions
-- Unreliable: No clear transition or noisy
-- No transition: No pinch-off visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_PINGPONG = """Assess whether the fit to the data in this plot <image> is reliable for extracting error rate.
-
-Options:
-- Reliable: Clear linear accumulation with good fit
-- Unreliable: No clear pattern or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """A successful result shows clear dispersion curve with good fit.
-
-Assess whether the fit to the data in this plot <image> is reliable for extracting dispersion.
-
-Options:
-- Reliable: Clear curve with good fit
-- Unreliable: No clear curve or poor fit
-- No fit: No fit visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_QUBIT_SPECTROSCOPY = """Assess whether the fit to the data in this plot <image> is reliable for extracting frequency.
-
-Options:
-- Reliable: Clear peak with good Lorentzian fit
-- Unreliable: No clear peak or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """Assess whether the data in this plot <image> shows reliable transition lines.
-
-Options:
-- Reliable: Clear f01 line (and f02/2 if present)
-- Unreliable: No clear lines or very weak
-- No features: No transition features visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RABI = """Assess whether the fit to the data in this plot <image> is reliable for extracting pi-pulse amplitude.
-
-Options:
-- Reliable: Clear oscillations with good fit
-- Unreliable: No clear oscillations or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RABI_HW = """Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
-
-Options:
-- Reliable: Clear oscillations with good fit
-- Unreliable: No clear oscillations or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Assess whether the data in this plot <image> shows reliable fringe pattern for charge analysis.
-
-Options:
-- Reliable: Clear fringes, no jumps
-- Unreliable: Jumps present or very noisy
-- No pattern: No clear fringe pattern
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RAMSEY_FREQ_CAL = """Assess whether the fit to the data in this plot <image> is reliable for extracting detuning.
-
-Options:
-- Reliable: Clear oscillations with good fit
-- Unreliable: No clear oscillations or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RAMSEY_T2STAR = """Assess whether the fit to the data in this plot <image> is reliable for extracting T2*.
-
-Options:
-- Reliable: Clear decaying oscillations with good fit
-- Unreliable: No clear decay or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RES_SPEC = """Assess whether the data in this plot <image> shows a reliable resonance for extracting frequency.
-
-Options:
-- Reliable: Clear resonance with good contrast
-- Unreliable: No clear resonance or very weak
-- No resonance: No resonance feature visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RYDBERG_RAMSEY = """Assess whether the data in this plot <image> is reliable for extracting T2 and detuning.
-
-Options:
-- Reliable: Clear oscillations with good contrast
-- Unreliable: No clear oscillations or poor quality
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_RYDBERG_SPECTROSCOPY = """Assess whether the fits to the data in this plot <image> are reliable for extracting transition frequencies.
-
-Options:
-- Reliable: Clear features with good fits
-- Unreliable: No clear features or poor fits
-- No fit: No fit visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_T1 = """Assess whether the fit to the data in this plot <image> is reliable for extracting T1.
-
-Options:
-- Reliable: Clear decay with good fit
-- Unreliable: No clear decay or poor fit
-- No fit: No fit attempted
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_T1_FLUCTUATIONS = """Assess whether the data in this plot <image> is reliable for classifying T1 stability.
-
-Options:
-- Reliable: Clear trend (stable/fluctuating)
-- Unreliable: No clear pattern or very noisy
-- No data: No measurable T1
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
-
-PROMPT_TWEEZER_ARRAY = """Assess whether the image <image> shows a reliable tweezer array for experiments.
-
-Options:
-- Reliable: Sharp, uniform spots in grid
-- Unreliable: Irregular or non-uniform spots
-- No spots: No spots visible
-
-Provide your answer as:
-Assessment: <your choice>
-Reason: <brief explanation>"""
+# Aliases for all experiments
+PROMPT_COUPLER_FLUX = PROMPT_STANDARD
+PROMPT_CZ_BENCHMARKING = PROMPT_STANDARD
+PROMPT_DRAG = PROMPT_STANDARD
+PROMPT_GMM = PROMPT_STANDARD
+PROMPT_MICROWAVE_RAMSEY = PROMPT_STANDARD
+PROMPT_MOT_LOADING = PROMPT_STANDARD
+PROMPT_PINCHOFF = PROMPT_STANDARD
+PROMPT_PINGPONG = PROMPT_STANDARD
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = PROMPT_STANDARD
+PROMPT_QUBIT_SPECTROSCOPY = PROMPT_STANDARD
+# Note: PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY already defined above
+PROMPT_RABI = PROMPT_STANDARD
+PROMPT_RABI_HW = PROMPT_STANDARD
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = PROMPT_STANDARD
+PROMPT_RAMSEY_FREQ_CAL = PROMPT_STANDARD
+PROMPT_RAMSEY_T2STAR = PROMPT_STANDARD
+PROMPT_RES_SPEC = PROMPT_STANDARD
+PROMPT_RYDBERG_RAMSEY = PROMPT_STANDARD
+PROMPT_RYDBERG_SPECTROSCOPY = PROMPT_STANDARD
+PROMPT_T1 = PROMPT_STANDARD
+PROMPT_T1_FLUCTUATIONS = PROMPT_STANDARD
+PROMPT_TWEEZER_ARRAY = PROMPT_STANDARD
 
 
 # ========== Prompt 字典映射 ==========

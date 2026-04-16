@@ -15,115 +15,159 @@ Q5: 提取参数任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-PROMPT_COUPLER_FLUX = """Extract the following parameters from this coupler flux spectroscopy plot <image>.
+# Special case: prompt includes background (different from experiment_background field)
+PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. Each image has two panels (left and right), each showing a different qubit. There are three frequency branches separated by two avoided crossings.
+
+Extract the following parameters from this coupler flux plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"crossing_voltages_V": [float, float], "left_fig_branch_freqs_GHz": [float, float, float], "right_fig_branch_freqs_GHz": [float, float, float]}
 
-PROMPT_CZ_BENCHMARKING = """Extract the following parameters from this CZ benchmarking plot <image>.
+crossing_voltages_V: the two bias voltages where avoided crossings occur, ordered left to right.
+left/right_fig_branch_freqs_GHz: the three branch plateau frequencies in each panel, ordered left to right along the voltage axis. Use "Unreliable" if the fit is too poor to read."""
+
+PROMPT_CZ_BENCHMARKING = """Extract the following parameters from this CZ benchmarking data <image>.
+
+Read the site/qubit pair indices from the title (e.g. 'Sites (9, 11)').
+Read uncertainties from the title (parenthetical notation, e.g. '0.9955 (4)' means 0.9955 +/- 0.0004).
 
 Report in JSON format:
-{{params_schema}}"""
+{"site_indices": [int, int], "retention_per_cz": float, "retention_per_cz_unc": float, "cycle_polarization": float, "cycle_polarization_unc": float, "chi_squared_retention": float | null, "chi_squared_polarization": float | null, "max_circuit_depth": int}"""
 
 PROMPT_DRAG = """Extract the following parameters from this DRAG calibration plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"optimal_alpha_inv": float, "intersection_clear": true | false}"""
 
 PROMPT_GMM = """Extract the following parameters from this GMM plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"separation": "well-separated" | "touching" | "overlapping", "cluster0_center": [I, Q], "cluster1_center": [I, Q]}"""
 
-PROMPT_MICROWAVE_RAMSEY = """Extract the following parameters from this Ramsey plot <image>.
+PROMPT_MICROWAVE_RAMSEY = """Extract the following parameters from this microwave Ramsey plot <image>.
 
-Report in JSON format:
-{{params_schema}}"""
-
-PROMPT_MOT_LOADING = """Extract the following parameters from this MOT image <image>.
+Read the detuning and its uncertainty from the title (+/- notation).
 
 Report in JSON format:
-{{params_schema}}"""
+{"detuning_Hz": float | null, "detuning_Hz_unc": float | null, "contrast": float, "retention_min": float}"""
 
-PROMPT_PINCHOFF = """Extract the following parameters from this pinch-off plot <image>.
-
-Report in JSON format:
-{{params_schema}}"""
-
-PROMPT_PINGPONG = """Extract the following parameters from this PingPong plot <image>.
+PROMPT_MOT_LOADING = """Extract the cloud parameters from this MOT image <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"has_cloud": true | false, "center_x": int, "center_y": int, "cloud_present": true | false}
 
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """Extract the following parameters from this flux spectroscopy plot <image>.
+- has_cloud: whether a distinct atom cloud is visible
+- center_x: approximate x-coordinate of cloud center (pixels)
+- center_y: approximate y-coordinate of cloud center (pixels)
+- cloud_present: same as has_cloud (for verification)
+
+If no cloud is visible, report center coordinates as 0."""
+
+PROMPT_PINCHOFF = """Extract the key transition indices from this pinchoff measurement <image>.
+
+The x-axis shows gate voltage index (0-40, total 41 points).
+Identify three key positions as index values:
 
 Report in JSON format:
-{{params_schema}}"""
+{"cut_off_index": int | null, "transition_index": int | null, "saturation_index": int | null}
+
+- saturation_index: Index where the current first reaches its high plateau (saturation region)
+- transition_index: Index of the midpoint of the transition region
+- cut_off_index: Index where the current reaches its low plateau (device pinched off)
+
+If the transition is not clear enough to identify these indices, use null."""
+
+PROMPT_PINGPONG = """Extract the following parameters from this PingPong measurement <image>.
+
+Report in JSON format:
+{"error_per_gate": float | null, "accumulation_type": "linear" | "oscillatory" | "none"}"""
+
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """Extract the following parameters from this qubit spectroscopy plot <image>.
+
+Report in JSON format:
+{"num_resonances": int, "resonance_freq_GHz": float}"""
 
 PROMPT_QUBIT_SPECTROSCOPY = """Extract the following parameters from this spectroscopy plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"num_resonances": int, "resonance_freq_GHz": float, "resonance_type": "peak" | "dip"}"""
 
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """Extract the following parameters from this 2D spectroscopy plot <image>.
+# Special case: prompt includes background (different version from experiment_background field)
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is a 2D qubit spectroscopy experiment on a standard transmon (negative anharmonicity, so f02/2 appears at a lower frequency than f01): we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, and optionally f02/2) with visible power dependence.
 
-Report in JSON format:
-{{params_schema}}"""
-
-PROMPT_RABI = """Extract the following parameters from this Rabi plot <image>.
+Extract the following parameters from this 2D qubit spectroscopy plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"f01_MHz": float | null, "transitions_visible": "f01_only" | "f01_f02half" | "none", "power_regime": "optimal" | "high" | "none", "measurement_usable": bool}"""
 
-PROMPT_RABI_HW = """Extract the following parameters from this Rabi HW plot <image>.
-
-Report in JSON format:
-{{params_schema}}"""
-
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Extract the following parameters from this charge tomography plot <image>.
+PROMPT_RABI = """Extract the following parameters from this Rabi oscillation plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"periods_visible": float, "amplitude_decay": "stable" | "decaying" | "growing", "signal_quality": "clean" | "noisy" | "distorted"}"""
 
-PROMPT_RAMSEY_FREQ_CAL = """Extract the following parameters from this Ramsey freq cal plot <image>.
-
-Report in JSON format:
-{{params_schema}}"""
-
-PROMPT_RAMSEY_T2STAR = """Extract the following parameters from this T2* plot <image>.
+PROMPT_RABI_HW = """Extract the following parameters from this Rabi oscillation plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"periods_visible": float, "amplitude_decay": "stable" | "decaying" | "growing", "signal_quality": "clean" | "noisy" | "distorted"}"""
+
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Analyze this Ramsey charge tomography scan <image> for charge jump events.
+
+Classify whether any charge jump event is detected, and if so, extract positions and sizes.
+
+Report in JSON format:
+{"event_detected": true | false, "jump_count": int, "jump_positions": [int, ...], "jump_sizes_mV": [float, ...]}
+
+- event_detected: whether any charge jump event is visible
+- jump_count: total number of charge jump events (horizontal discontinuities)
+- jump_positions: list of scan numbers where jumps occur (approximate)
+- jump_sizes_mV: list of estimated charge jump sizes in mV for each detected jump"""
+
+PROMPT_RAMSEY_FREQ_CAL = """Extract the following parameters from this Ramsey measurement <image>.
+
+Report in JSON format:
+{"T2_star_us": float | null, "detuning_MHz": float | null, "fringes_visible": int}"""
+
+PROMPT_RAMSEY_T2STAR = """Extract the following parameters from this Ramsey measurement <image>.
+
+Report in JSON format:
+{"T2_star_us": float | null, "detuning_MHz": float | null, "fringes_visible": int}"""
 
 PROMPT_RES_SPEC = """Extract the following parameters from this resonator spectroscopy plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"resonance_freq_GHz": float | null | null, "contrast": float | null}"""
 
 PROMPT_RYDBERG_RAMSEY = """Extract the following parameters from this Rydberg Ramsey plot <image>.
 
+Read uncertainties from the title/header (+/- notation).
+
 Report in JSON format:
-{{params_schema}}"""
+{"frequency_MHz": float, "frequency_MHz_unc": float, "T2_us": float, "T2_us_unc": float, "RChi2": float, "frequency_noise_kHz": float | null}"""
 
 PROMPT_RYDBERG_SPECTROSCOPY = """Extract the following parameters from this Rydberg spectroscopy plot <image>.
 
-Report in JSON format:
-{{params_schema}}"""
+If the plot shows multiple sites/panels, report a JSON array with one object per site.
+Read the site index label from the plot (e.g. 153, 171). Read uncertainties from the title/header (+/- or parenthetical notation).
 
-PROMPT_T1 = """Extract the following parameters from this T1 plot <image>.
+Report in JSON format (array of objects, one per site):
+[{"site_index": int, "f0_kHz": float, "f0_kHz_unc": float, "t_ns": float, "t_ns_unc": float, "f_Rabi_MHz": float, "f_Rabi_MHz_unc": float, "chi_squared": float}]"""
 
-Report in JSON format:
-{{params_schema}}"""
-
-PROMPT_T1_FLUCTUATIONS = """Extract the following parameters from this T1 stability plot <image>.
+PROMPT_T1 = """Extract the following parameters from this T1 decay plot <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"T1_us": float | null, "decay_visible": true | false}"""
 
-PROMPT_TWEEZER_ARRAY = """Extract the following parameters from this tweezer array image <image>.
+PROMPT_T1_FLUCTUATIONS = """Extract the following parameters from this T1 fluctuation measurement <image>.
 
 Report in JSON format:
-{{params_schema}}"""
+{"classification": "stable" | "telegraphic" | "random_walk", "mean_t1_us": float}"""
+
+PROMPT_TWEEZER_ARRAY = """Examine this tweezer array camera image <image>.
+
+Extract the following properties.
+
+Report in JSON format:
+{"grid_regularity": "regular" | "irregular", "spot_uniformity": "uniform" | "non-uniform", "aberration_corrected": true | false}"""
 
 
 # ========== Prompt 字典映射 ==========
@@ -154,11 +198,9 @@ EXTRACT_PARAMS_PROMPTS = {
 }
 
 
-def get_extract_params_prompt(experiment_family: str, params_schema: str | None = None) -> str:
+def get_extract_params_prompt(experiment_family: str) -> str:
     """获取提取参数的专属 prompt"""
-    base_prompt = EXTRACT_PARAMS_PROMPTS.get(experiment_family, EXTRACT_PARAMS_PROMPTS["rabi"])
-    schema = params_schema or '{"optimal_value": float, "note": string}'
-    return base_prompt.replace("{{params_schema}}", schema)
+    return EXTRACT_PARAMS_PROMPTS.get(experiment_family, EXTRACT_PARAMS_PROMPTS["rabi"])
 
 
 # ========== 参数提取 Schema ==========
@@ -181,9 +223,11 @@ SCHEMA_CZ_BENCHMARKING = {
         "retention_per_cz_unc": {"type": "number"},
         "cycle_polarization": {"type": "number"},
         "cycle_polarization_unc": {"type": "number"},
+        "chi_squared_retention": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "chi_squared_polarization": {"oneOf": [{"type": "number"}, {"type": "null"}]},
         "max_circuit_depth": {"type": "integer"},
     },
-    "required": ["retention_per_cz", "cycle_polarization"],
+    "required": ["site_indices", "retention_per_cz", "cycle_polarization"],
 }
 
 SCHEMA_DRAG = {

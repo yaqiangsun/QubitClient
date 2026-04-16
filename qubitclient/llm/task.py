@@ -39,6 +39,17 @@ from qubitclient.llm.experiments import (
 )
 
 
+# 实验类型+问题：这些组合的prompt中已包含背景信息，不需要再添加experiment_background
+# 格式: (experiment_family, question_number)
+PROMPTS_WITH_EMBEDDED_BACKGROUND = {
+    ("coupler_flux", 5),           # Q5包含背景
+    ("qubit_spectroscopy_power_frequency", 2),  # Q2包含背景
+    ("qubit_spectroscopy_power_frequency", 3),  # Q3包含背景
+    ("qubit_spectroscopy_power_frequency", 4),  # Q4包含背景
+    ("qubit_spectroscopy_power_frequency", 5),  # Q5包含背景
+    ("qubit_spectroscopy_power_frequency", 6),  # Q6包含背景
+}
+
 DEFINED_TASKS = {}
 
 
@@ -141,7 +152,11 @@ def describe_plot(
         family = family.value
 
     # 合并 experiment_background 和任务 prompt
-    background = get_experiment_background(family) if family else ""
+    # 如果prompt中已包含背景信息，则跳过添加
+    if family and (family, 1) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
+        background = ""
+    else:
+        background = get_experiment_background(family) if family else ""
     task_prompt = get_describe_plot_prompt(family) if family else "Describe the figure <image> in JSON format."
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
@@ -174,7 +189,11 @@ def classify_outcome(
         family = family.value
 
     # 合并 experiment_background 和任务 prompt
-    background = get_experiment_background(family) if family else ""
+    # 如果prompt中已包含背景信息，则跳过添加
+    if family and (family, 2) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
+        background = ""
+    else:
+        background = get_experiment_background(family) if family else ""
     task_prompt = get_classify_outcome_prompt(family) if family else get_classify_outcome_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
@@ -207,7 +226,11 @@ def scientific_reasoning(
         family = family.value
 
     # 合并 experiment_background 和任务 prompt
-    background = get_experiment_background(family) if family else ""
+    # 如果prompt中已包含背景信息，则跳过添加
+    if family and (family, 3) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
+        background = ""
+    else:
+        background = get_experiment_background(family) if family else ""
     task_prompt = get_scientific_reasoning_prompt(family) if family else get_scientific_reasoning_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
@@ -240,7 +263,11 @@ def assess_fit(
         family = family.value
 
     # 合并 experiment_background 和任务 prompt
-    background = get_experiment_background(family) if family else ""
+    # 如果prompt中已包含背景信息，则跳过添加
+    if family and (family, 4) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
+        background = ""
+    else:
+        background = get_experiment_background(family) if family else ""
     task_prompt = get_assess_fit_prompt(family) if family else get_assess_fit_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
@@ -280,7 +307,11 @@ def extract_params(
         schema = get_extract_params_schema(family)
 
     # 合并 experiment_background 和任务 prompt
-    background = get_experiment_background(family) if family else ""
+    # 如果prompt中已包含背景信息，则跳过添加
+    if family and (family, 5) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
+        background = ""
+    else:
+        background = get_experiment_background(family) if family else ""
     task_prompt = get_extract_params_prompt(family) if family else get_extract_params_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
@@ -313,7 +344,11 @@ def evaluate_status(
         family = family.value
 
     # 合并 experiment_background 和任务 prompt
-    background = get_experiment_background(family) if family else ""
+    # 如果prompt中已包含背景信息，则跳过添加
+    if family and (family, 6) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
+        background = ""
+    else:
+        background = get_experiment_background(family) if family else ""
     task_prompt = get_evaluate_status_prompt(family) if family else get_evaluate_status_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 

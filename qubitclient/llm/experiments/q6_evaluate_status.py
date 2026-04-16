@@ -18,31 +18,30 @@ Q6: 评估状态任务
 PROMPT_COUPLER_FLUX = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear avoided crossing with good fit within sweep range
-- NO_SIGNAL: Flat or noisy data, no clear crossing pattern
-- OPTIMAL_NOT_CENTERED: Crossing exists but near edge of range or fit poor
+- SUCCESS: Clear coupler dispersion curve, fit tracks data
+- FIT_POOR: Dispersion visible but fit deviates
 
-When the status is not SUCCESS, provide a SPECIFIC suggested flux range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min flux>, <max flux>) [flux quanta].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min flux>, <max flux>) [flux quanta] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_CZ_BENCHMARKING = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: High retention (>0.9) and polarization, clear decay pattern
-- NO_SIGNAL: Random data, no clear decay
-- OPTIMAL_NOT_CENTERED: Moderate values but acceptable
+- SUCCESS: Both retention and polarization close to 1, gradual decay, good fits
+- NO_GATE: Retention unrealistically high (flat ~1) with fast depolarization — gate may not actually be occurring
+- MISCALIBRATED: Fast depolarization and/or poor retention — gate miscalibrated or circuits too deep for accurate characterization
 
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+When the status is not SUCCESS, provide a SPECIFIC Suggested action: <specific recommendation for gate calibration or circuit depth adjustment>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for gate calibration or circuit depth adjustment> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_DRAG = """Evaluate the image <image> and determine the experiment status.
@@ -52,7 +51,7 @@ DECISION CRITERIA
 - NO_SIGNAL: Flat or random, no crossing pattern
 - OPTIMAL_NOT_CENTERED: Crossing exists but in first/last quarter or outside range
 
-When the status is not SUCCESS, provide a SPECIFIC suggested 1/alpha range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min 1/alpha>, <max 1/alpha>).
 
 The response MUST follow this exact format:
 
@@ -63,286 +62,306 @@ Notes: <1-3 sentences explaining your reasoning>"""
 PROMPT_GMM = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Two well-separated clusters clearly visible
-- NO_SIGNAL: Single blob or random scatter, no discrimination possible
-- OPTIMAL_NOT_CENTERED: Clusters touching or partially overlapping
+- SUCCESS: Two clearly separated clusters
+- NO_SIGNAL: No distinguishable clusters
+- NO_EXCITATION: No significant difference between the two distributions — qubit state not changed by the drive
+- HIGH_POWER: Clusters distorted, elongated, or fragmented
+- NO_RES_RESPONSE: All points collapsed to single region
 
-When the status is not SUCCESS, provide a SPECIFIC suggested adjustment.
+When the status is not SUCCESS, provide a SPECIFIC suggested Suggested action: <specific recommendation for readout power, frequency, or qubit drive>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for readout power, frequency, or qubit drive> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_MICROWAVE_RAMSEY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear oscillations with high contrast (>0.8), good fit
-- NO_SIGNAL: Flat or random, no oscillations
-- OPTIMAL_NOT_CENTERED: Oscillations visible but low contrast or noisy
+- SUCCESS: High contrast (~1), good fit, data well-described by curve
+- LOW_CONTRAST: Low contrast oscillations and/or low overall retention — possible system problem
+- DETUNED: Retention can be high but minima significantly above 0 — microwaves detuned on order of Rabi frequency
 
-When the status is not SUCCESS, provide a SPECIFIC suggested delay range.
+When the status is not SUCCESS, provide a SPECIFIC Suggested action: <specific recommendation for microwave frequency, power, or system check>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for microwave frequency, power, or system check> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_MOT_LOADING = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear, compact cloud with good brightness
-- NO_SIGNAL: No cloud visible, only background
-- OPTIMAL_NOT_CENTERED: Cloud present but diffuse or offset
+- SUCCESS: Well-defined, symmetric Gaussian-shaped cloud with high SNR
+- NO_SIGNAL: Uniform noise across entire field, no fluorescence from trapped atoms — fundamental trap setup issue
+- ASYMMETRIC: Cloud visible but with asymmetric tail/comet structure — radiation pressure imbalance or magnetic field gradient misalignment
 
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+When the status is not SUCCESS, provide a SPECIFIC suggested Suggested action: <specific recommendation for trap alignment or laser parameter adjustment>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for trap alignment or laser parameter adjustment> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_PINCHOFF = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear pinch-off transition with identifiable regions
-- NO_SIGNAL: No measurable current or no transition
-- OPTIMAL_NOT_CENTERED: Transition visible but noisy or incomplete
+- SUCCESS: Clear transition from conducting to pinched-off (current drops to near-zero residual)
+- INVERTED: Current increases with gate voltage instead of decreasing — polarity or configuration error
+- INCOMPLETE: Current begins to drop but sweep range too narrow to capture full transition to zero
+- NO_TRANSITION: No identifiable transition — current remains flat or noisy without clear pinch-off
+- NEGATIVE_OFFSET: Current crosses zero and saturates at negative value — instrumental offset or background subtraction error
+- POSITIVE_OFFSET: Current decreases but saturates at a finite positive value instead of reaching zero — incomplete depletion or parasitic leakage
 
-When the status is not SUCCESS, provide a SPECIFIC suggested voltage range.
+When the status is not SUCCESS, provide a SPECIFIC suggested Suggested action: <specific recommendation for gate voltage range or device configuration>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for gate voltage range or device configuration> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_PINGPONG = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear linear error accumulation, good fit
-- NO_SIGNAL: No clear pattern, random scatter
-- OPTIMAL_NOT_CENTERED: Some pattern but irregular
+- SUCCESS: Signal stable with increasing gate count
+- NO_EXCITATION: Signal flat near ground state
+- MODERATE_ERROR: Visible drift or oscillation, pi-pulse approximately correct
+- LARGE_ERROR: Strong oscillation or rapid divergence
 
-When the status is not SUCCESS, provide a SPECIFIC suggested gate count range.
+When the status is not SUCCESS, provide a SPECIFIC suggested Suggested action: <specific recommendation for pi-pulse amplitude adjustment>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for pi-pulse amplitude adjustment> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_QUBIT_FLUX_SPECTROSCOPY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear dispersion curve with good fit, in range
-- NO_SIGNAL: Flat or noisy, no clear curve
-- OPTIMAL_NOT_CENTERED: Curve visible but noisy or fit poor
+- SUCCESS: Clear dispersion curve, fit tracks data
+- FIT_POOR: Dispersion visible but fit deviates
+- FIT_FAILED: Fit completely failed to converge
+- RANGE_TOO_NARROW: Dispersion only partially visible
+- NO_SIGNAL: No spectral features in 2D map
+- NOT_TUNABLE: Qubit frequency flat or nearly flat across flux range; no significant dispersion
 
-When the status is not SUCCESS, provide a SPECIFIC suggested flux range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min flux>, <max flux>) [flux quanta] or (<min freq>, <max freq>) [GHz].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min flux>, <max flux>) [flux quanta] or (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_QUBIT_SPECTROSCOPY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Single clear peak with good Lorentzian fit
-- NO_SIGNAL: Flat or noisy, no peaks
-- OPTIMAL_NOT_CENTERED: Multiple peaks or poor fit
+- SUCCESS: Single clear spectral peak with good fit
+- NO_SIGNAL: No peaks visible
+- MULTIPLE_PEAKS: Multiple spectral lines, ambiguous ID
 
-When the status is not SUCCESS, provide a SPECIFIC suggested frequency range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min frequency>, <max frequency>) [GHz].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min frequency>, <max frequency>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """Evaluate the image <image> and determine the experiment status.
+# Special case: prompt includes background (different version from experiment_background field)
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is a 2D qubit spectroscopy experiment on a standard transmon (negative anharmonicity, so f02/2 appears at a lower frequency than f01): we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, and optionally f02/2) with visible power dependence.
+
+Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear f01 line visible (and f02/2 if present)
-- NO_SIGNAL: No clear lines, flat/noisy
-- OPTIMAL_NOT_CENTERED: Weak features or limited range
+- SUCCESS: Clear transition line(s) with full power dependence visible, usable for extraction
+- AMP_TOO_HIGH: Transition power-broadened/saturated, features washed out and frequency shifted
+- NO_SIGNAL: No features — wrong frequency window entirely
 
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.] or (<min freq>, <max freq>) [GHz].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min power>, <max power>) [a.u.] or (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_RABI = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear oscillations, good fit, visible inversion
-- NO_SIGNAL: Flat or random, no oscillations
-- OPTIMAL_NOT_CENTERED: Oscillations visible but distorted or limited
+- SUCCESS: Clear oscillations, fit tracks data
+- FIT_POOR: Oscillations visible but fit deviates
+- RANGE_TOO_NARROW: Fewer than one full period visible
+- NO_SIGNAL: Flat or random, no oscillatory structure
+- DAMPED: Amplitude decays >50% within window
+- UNDERSAMPLED: Too many oscillation periods; signal aliased or under-resolved
 
-When the status is not SUCCESS, provide a SPECIFIC suggested amplitude range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min amplitude>, <max amplitude>).
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min amplitude>, <max amplitude>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_RABI_HW = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear oscillations with good fit
-- NO_SIGNAL: Flat or noisy, no oscillations
-- OPTIMAL_NOT_CENTERED: Limited amplitude range
+- SUCCESS: Clear oscillations, fit tracks data
+- FIT_POOR: Oscillations visible but fit deviates
+- OFF_RESONANCE: Oscillations visible but drive frequency is off-resonance — distorted response with poor fit
+- RANGE_TOO_NARROW: Fewer than one full period visible
 
-When the status is not SUCCESS, provide a SPECIFIC suggested amplitude range.
-
-The response MUST follow this exact format:
-
-Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>"""
-
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Evaluate the image <image> and determine the experiment status.
-
-DECISION CRITERIA
-- SUCCESS: Clean fringes, no jumps visible
-- NO_SIGNAL: No clear pattern, random noise
-- OPTIMAL_NOT_CENTERED: Occasional small jumps or noise
-
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min amplitude>, <max amplitude>).
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min amplitude>, <max amplitude>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Classify the charge jump activity observed in this scan <image>.
+
+CLASSIFICATION CRITERIA
+- NO_EVENT: Continuous undisturbed fringes, no charge jump detected
+- EVENT: One or more discrete charge jump events visible as horizontal discontinuities in the fringe pattern
+- NO_COHERENCE: No discernible fringes — coherence lost entirely, cannot assess charge jump activity
+
+Provide your classification and briefly describe the observed charge jump activity.
+
+The response MUST follow this exact format:
+
+Classification: <one of the listed categories>
+Notes: <1-3 sentences describing the charge jump activity>"""
 
 PROMPT_RAMSEY_FREQ_CAL = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear oscillations, clear detuning, good fit
-- NO_SIGNAL: Flat or noisy, no oscillations
-- OPTIMAL_NOT_CENTERED: Limited oscillations, noisy
+- SUCCESS: Clear oscillations with decay envelope, fit tracks data
+- NO_DETUNING: Signal is flat — no oscillations
+- BEATING: Amplitude modulation from multiple frequencies
+- TOO_MANY_OSC: Detuning too large for time window
+- TOO_FEW_OSC: Detuning too small for time window
+- WINDOW_TOO_SHORT: Decay not fully captured
+- SAMPLING_TOO_COARSE: Oscillations undersampled/aliased
 
-When the status is not SUCCESS, provide a SPECIFIC suggested delay range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min delay>, <max delay>) [unit].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min delay>, <max delay>) [unit] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_RAMSEY_T2STAR = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear decaying oscillations, good T2* fit
-- NO_SIGNAL: Flat or noisy, no oscillations
-- OPTIMAL_NOT_CENTERED: Limited decay visible, noisy
+- SUCCESS: Clear oscillations with decay envelope, fit tracks data
+- NO_DETUNING: Signal is flat — no oscillations
+- BEATING: Amplitude modulation from multiple frequencies
+- TOO_MANY_OSC: Detuning too large for time window
+- TOO_FEW_OSC: Detuning too small for time window
+- WINDOW_TOO_SHORT: Decay not fully captured
+- SAMPLING_TOO_COARSE: Oscillations undersampled/aliased
 
-When the status is not SUCCESS, provide a SPECIFIC suggested delay range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min delay>, <max delay>) [unit].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min delay>, <max delay>) [unit] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_RES_SPEC = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear resonance dip/peak with good contrast
-- NO_SIGNAL: Flat baseline, no resonance
-- OPTIMAL_NOT_CENTERED: Weak resonance, limited depth
+- SUCCESS: Clear resonance feature visible
+- NO_SIGNAL: Flat response, no resonance in frequency range
 
-When the status is not SUCCESS, provide a SPECIFIC suggested frequency range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min frequency>, <max frequency>) [GHz].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min frequency>, <max frequency>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_RYDBERG_RAMSEY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear oscillations, good coherence
-- NO_SIGNAL: Flat or noisy, no oscillations
-- OPTIMAL_NOT_CENTERED: Limited oscillations, fast decay
+- SUCCESS: A single decaying sinusoidal fit is consistent across all time windows, with low RChi2
+- UNDERSAMPLED: Data clusters do not span enough of the oscillation period; the fit cannot reconcile all time windows simultaneously
 
-When the status is not SUCCESS, provide a SPECIFIC suggested delay range.
+When the status is not SUCCESS, provide a SPECIFIC Suggested action: <specific recommendation for sampling density or measurement window>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for sampling density or measurement window> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_RYDBERG_SPECTROSCOPY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear spectral lines, good fits, high contrast
-- NO_SIGNAL: No features, noise dominated
-- OPTIMAL_NOT_CENTERED: Weak features, limited sites
+- SUCCESS: Good fits (low chi-squared), clear spectral features, high contrast across sites
+- LOW_CONTRAST: Reduced contrast, noisy resonance, many sites failed to fit
 
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+When the status is not SUCCESS, provide a SPECIFIC Suggested action: <specific recommendation for laser power, frequency, or alignment>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for laser power, frequency, or alignment> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_T1 = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear exponential decay, good fit, T1 in reasonable range
-- NO_SIGNAL: Flat or random, no decay pattern
-- OPTIMAL_NOT_CENTERED: Decay visible but noisy or limited range
+- SUCCESS: Clear exponential decay, fit tracks data
+- NO_SIGNAL: Population is flat — qubit never excited or decayed instantly
+- WINDOW_TOO_SHORT: Signal hasn't reached baseline
+- SAMPLING_TOO_COARSE: Time steps too large to resolve decay
 
-When the status is not SUCCESS, provide a SPECIFIC suggested delay range.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min delay>, <max delay>) [us].
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: (<min delay>, <max delay>) [us] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_T1_FLUCTUATIONS = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Stable T1 values, minimal variation
-- NO_SIGNAL: No measurable T1, random scatter
-- OPTIMAL_NOT_CENTERED: Moderate drift or occasional jumps
+- STABLE: T1 values tightly clustered around a single baseline, variation dominated by measurement scatter
+- TELEGRAPHIC: T1 switches abruptly between two or more discrete metastable levels — indicates coupling to a two-level system defect
+- RANDOM_WALK: T1 shows continuous correlated drift over a wide range — indicates slow environmental changes (temperature, magnetic field, charge noise)
 
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+Provide a brief explanation of your classification.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation for T1 stabilization or further characterization> (or "N/A" if STABLE)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_TWEEZER_ARRAY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Sharp, uniform spots in regular grid
-- NO_SIGNAL: No spots visible, only background
-- OPTIMAL_NOT_CENTERED: Some spots but irregular or non-uniform
+- CORRECTED: Regular grid of sharp, uniform spots — aberration corrected
+- ABERRATED: Spots are blurred, non-uniform, or missing — aberration not corrected
 
-When the status is not SUCCESS, provide a SPECIFIC suggestion.
+When the status is not SUCCESS, provide a SPECIFIC Suggested action: <specific recommendation>.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Suggested range: Suggested action: <specific recommendation> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 
@@ -401,6 +420,7 @@ EVALUATE_STATUS_RESPONSE_SCHEMA = {
                 "FIT_POOR",
                 "HIGH_POWER",
                 "INCOMPLETE",
+                "INVERTED",
                 "LARGE_ERROR",
                 "LOW_CONTRAST",
                 "MISCALIBRATED",

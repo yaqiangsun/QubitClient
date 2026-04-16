@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""QCalEval Gmm 实验测试"""
+"""QCalEval Rydberg_Spectroscopy 实验测试"""
 
 import os
 import sys
@@ -15,21 +15,26 @@ from qubitclient.llm import QubitLLM
 from qubitclient.llm.task import LLMTaskName
 
 
-# Gmm 测试数据
+# Rydberg_Spectroscopy 测试数据
 TEST_SAMPLE = {
-    "id": "gmm_failure_high_power_a",
-    "experiment_type": "gmm_failure_high_power",
-    "experiment_family": "gmm",
-    "image_filename": "fbc8b87a58704a1c.png",
+    "id": "rydberg_spectroscopy_success_a",
+    "experiment_type": "rydberg_spectroscopy_success",
+    "experiment_family": "rydberg_spectroscopy",
+    "image_filename": "5dc78f504dfa1b5c.png",
     "q1_answer": {"plot_type": "scatter"},
-    "q2_answer": "Suboptimal parameters",
-    "q4_answer": "Unreliable",
-    "q5_answer": {
-  "separation": "Unreliable",
-  "cluster0_center": "Unreliable",
-  "cluster1_center": "Unreliable"
-},
-    "q6_expected_status": "HIGH_POWER",
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
+    "q5_answer": [{
+  "site_index": 153,
+  "f0_kHz": 43.04,
+  "f0_kHz_unc": 7.4,
+  "t_ns": 2226.0,
+  "t_ns_unc": 18.0,
+  "f_Rabi_MHz": 2.004,
+  "f_Rabi_MHz_unc": 0.02,
+  "chi_squared": 0.8
+}],
+    "q6_expected_status": "SUCCESS",
 }
 
 
@@ -37,8 +42,8 @@ def get_image_path(filename: str) -> str:
     return os.path.join(DATASET_DIR, "images", filename)
 
 
-def test_gmm_q1_describe():
-    print("\n=== Gmm: Q1 Describe Plot ===")
+def test_rydberg_spectroscopy_q1_describe():
+    print("\n=== Rydberg_Spectroscopy: Q1 Describe Plot ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.DESCRIBE_PLOT,
@@ -51,8 +56,8 @@ def test_gmm_q1_describe():
     print("  ✓")
 
 
-def test_gmm_q2_classify():
-    print("\n=== Gmm: Q2 Classify Outcome ===")
+def test_rydberg_spectroscopy_q2_classify():
+    print("\n=== Rydberg_Spectroscopy: Q2 Classify Outcome ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.CLASSIFY_OUTCOME,
@@ -65,8 +70,8 @@ def test_gmm_q2_classify():
     print("  ✓")
 
 
-def test_gmm_q3_reasoning():
-    print("\n=== Gmm: Q3 Scientific Reasoning ===")
+def test_rydberg_spectroscopy_q3_reasoning():
+    print("\n=== Rydberg_Spectroscopy: Q3 Scientific Reasoning ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.SCIENTIFIC_REASONING,
@@ -79,8 +84,8 @@ def test_gmm_q3_reasoning():
     print("  ✓")
 
 
-def test_gmm_q4_assess():
-    print("\n=== Gmm: Q4 Assess Fit ===")
+def test_rydberg_spectroscopy_q4_assess():
+    print("\n=== Rydberg_Spectroscopy: Q4 Assess Fit ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.ASSESS_FIT,
@@ -93,8 +98,8 @@ def test_gmm_q4_assess():
     print("  ✓")
 
 
-def test_gmm_q5_extract():
-    print("\n=== Gmm: Q5 Extract Params ===")
+def test_rydberg_spectroscopy_q5_extract():
+    print("\n=== Rydberg_Spectroscopy: Q5 Extract Params ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.EXTRACT_PARAMS,
@@ -107,8 +112,8 @@ def test_gmm_q5_extract():
     print("  ✓")
 
 
-def test_gmm_q6_status():
-    print("\n=== Gmm: Q6 Evaluate Status ===")
+def test_rydberg_spectroscopy_q6_status():
+    print("\n=== Rydberg_Spectroscopy: Q6 Evaluate Status ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.EVALUATE_STATUS,
@@ -122,10 +127,10 @@ def test_gmm_q6_status():
 
 
 if __name__ == "__main__":
-    test_gmm_q1_describe()
-    test_gmm_q2_classify()
-    test_gmm_q3_reasoning()
-    test_gmm_q4_assess()
-    test_gmm_q5_extract()
-    test_gmm_q6_status()
-    print("\n✓ Gmm tests passed!")
+    test_rydberg_spectroscopy_q1_describe()
+    test_rydberg_spectroscopy_q2_classify()
+    test_rydberg_spectroscopy_q3_reasoning()
+    test_rydberg_spectroscopy_q4_assess()
+    test_rydberg_spectroscopy_q5_extract()
+    test_rydberg_spectroscopy_q6_status()
+    print("\n✓ Rydberg_Spectroscopy tests passed!")

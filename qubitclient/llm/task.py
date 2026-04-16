@@ -281,8 +281,7 @@ def extract_params(
 
     # 合并 experiment_background 和任务 prompt
     background = get_experiment_background(family) if family else ""
-    schema_str = json.dumps(schema) if isinstance(schema, dict) else str(schema or "{}")
-    task_prompt = get_extract_params_prompt(family, schema_str) if family else get_extract_params_prompt("rabi", schema_str)
+    task_prompt = get_extract_params_prompt(family) if family else get_extract_params_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {

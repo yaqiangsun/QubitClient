@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""QCalEval Gmm 实验测试"""
+"""QCalEval Pinchoff 实验测试"""
 
 import os
 import sys
@@ -15,21 +15,21 @@ from qubitclient.llm import QubitLLM
 from qubitclient.llm.task import LLMTaskName
 
 
-# Gmm 测试数据
+# Pinchoff 测试数据
 TEST_SAMPLE = {
-    "id": "gmm_failure_high_power_a",
-    "experiment_type": "gmm_failure_high_power",
-    "experiment_family": "gmm",
-    "image_filename": "fbc8b87a58704a1c.png",
+    "id": "pinchoff_success_a",
+    "experiment_type": "pinchoff_success",
+    "experiment_family": "pinchoff",
+    "image_filename": "d740f7b24099d21a.png",
     "q1_answer": {"plot_type": "scatter"},
-    "q2_answer": "Suboptimal parameters",
-    "q4_answer": "Unreliable",
+    "q2_answer": "Expected behavior",
+    "q4_answer": "No",
     "q5_answer": {
-  "separation": "Unreliable",
-  "cluster0_center": "Unreliable",
-  "cluster1_center": "Unreliable"
+  "cut_off_index": 11,
+  "transition_index": 8,
+  "saturation_index": 6
 },
-    "q6_expected_status": "HIGH_POWER",
+    "q6_expected_status": "SUCCESS",
 }
 
 
@@ -37,8 +37,8 @@ def get_image_path(filename: str) -> str:
     return os.path.join(DATASET_DIR, "images", filename)
 
 
-def test_gmm_q1_describe():
-    print("\n=== Gmm: Q1 Describe Plot ===")
+def test_pinchoff_q1_describe():
+    print("\n=== Pinchoff: Q1 Describe Plot ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.DESCRIBE_PLOT,
@@ -51,8 +51,8 @@ def test_gmm_q1_describe():
     print("  ✓")
 
 
-def test_gmm_q2_classify():
-    print("\n=== Gmm: Q2 Classify Outcome ===")
+def test_pinchoff_q2_classify():
+    print("\n=== Pinchoff: Q2 Classify Outcome ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.CLASSIFY_OUTCOME,
@@ -65,8 +65,8 @@ def test_gmm_q2_classify():
     print("  ✓")
 
 
-def test_gmm_q3_reasoning():
-    print("\n=== Gmm: Q3 Scientific Reasoning ===")
+def test_pinchoff_q3_reasoning():
+    print("\n=== Pinchoff: Q3 Scientific Reasoning ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.SCIENTIFIC_REASONING,
@@ -79,8 +79,8 @@ def test_gmm_q3_reasoning():
     print("  ✓")
 
 
-def test_gmm_q4_assess():
-    print("\n=== Gmm: Q4 Assess Fit ===")
+def test_pinchoff_q4_assess():
+    print("\n=== Pinchoff: Q4 Assess Fit ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.ASSESS_FIT,
@@ -93,8 +93,8 @@ def test_gmm_q4_assess():
     print("  ✓")
 
 
-def test_gmm_q5_extract():
-    print("\n=== Gmm: Q5 Extract Params ===")
+def test_pinchoff_q5_extract():
+    print("\n=== Pinchoff: Q5 Extract Params ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.EXTRACT_PARAMS,
@@ -107,8 +107,8 @@ def test_gmm_q5_extract():
     print("  ✓")
 
 
-def test_gmm_q6_status():
-    print("\n=== Gmm: Q6 Evaluate Status ===")
+def test_pinchoff_q6_status():
+    print("\n=== Pinchoff: Q6 Evaluate Status ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.EVALUATE_STATUS,
@@ -122,10 +122,10 @@ def test_gmm_q6_status():
 
 
 if __name__ == "__main__":
-    test_gmm_q1_describe()
-    test_gmm_q2_classify()
-    test_gmm_q3_reasoning()
-    test_gmm_q4_assess()
-    test_gmm_q5_extract()
-    test_gmm_q6_status()
-    print("\n✓ Gmm tests passed!")
+    test_pinchoff_q1_describe()
+    test_pinchoff_q2_classify()
+    test_pinchoff_q3_reasoning()
+    test_pinchoff_q4_assess()
+    test_pinchoff_q5_extract()
+    test_pinchoff_q6_status()
+    print("\n✓ Pinchoff tests passed!")

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""QCalEval DRAG 实验测试"""
+"""QCalEval Drag 实验测试"""
 
 import os
 import sys
@@ -15,7 +15,7 @@ from qubitclient.llm import QubitLLM
 from qubitclient.llm.task import LLMTaskName
 
 
-# DRAG 测试数据
+# Drag 测试数据
 TEST_SAMPLE = {
     "id": "drag_failure_no_signal_a",
     "experiment_type": "drag_failure_no_signal",
@@ -24,7 +24,10 @@ TEST_SAMPLE = {
     "q1_answer": {"plot_type": "scatter"},
     "q2_answer": "Apparatus issue",
     "q4_answer": "Unreliable",
-    "q5_answer": {"optimal_alpha_inv": "Unreliable", "intersection_clear": False},
+    "q5_answer": {
+  "optimal_alpha_inv": "Unreliable",
+  "intersection_clear": False
+},
     "q6_expected_status": "NO_SIGNAL",
 }
 
@@ -34,7 +37,7 @@ def get_image_path(filename: str) -> str:
 
 
 def test_drag_q1_describe():
-    print("\n=== DRAG: Q1 Describe Plot ===")
+    print("\n=== Drag: Q1 Describe Plot ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.DESCRIBE_PLOT,
@@ -48,7 +51,7 @@ def test_drag_q1_describe():
 
 
 def test_drag_q2_classify():
-    print("\n=== DRAG: Q2 Classify Outcome ===")
+    print("\n=== Drag: Q2 Classify Outcome ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.CLASSIFY_OUTCOME,
@@ -62,7 +65,7 @@ def test_drag_q2_classify():
 
 
 def test_drag_q3_reasoning():
-    print("\n=== DRAG: Q3 Scientific Reasoning ===")
+    print("\n=== Drag: Q3 Scientific Reasoning ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.SCIENTIFIC_REASONING,
@@ -76,7 +79,7 @@ def test_drag_q3_reasoning():
 
 
 def test_drag_q4_assess():
-    print("\n=== DRAG: Q4 Assess Fit ===")
+    print("\n=== Drag: Q4 Assess Fit ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.ASSESS_FIT,
@@ -90,7 +93,7 @@ def test_drag_q4_assess():
 
 
 def test_drag_q5_extract():
-    print("\n=== DRAG: Q5 Extract Params ===")
+    print("\n=== Drag: Q5 Extract Params ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.EXTRACT_PARAMS,
@@ -104,7 +107,7 @@ def test_drag_q5_extract():
 
 
 def test_drag_q6_status():
-    print("\n=== DRAG: Q6 Evaluate Status ===")
+    print("\n=== Drag: Q6 Evaluate Status ===")
     llm = QubitLLM()
     prompt_data = llm.get_prompt(
         LLMTaskName.EVALUATE_STATUS,
@@ -124,4 +127,4 @@ if __name__ == "__main__":
     test_drag_q4_assess()
     test_drag_q5_extract()
     test_drag_q6_status()
-    print("\n✓ DRAG tests passed!")
+    print("\n✓ Drag tests passed!")

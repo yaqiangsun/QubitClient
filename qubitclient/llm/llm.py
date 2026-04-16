@@ -36,12 +36,11 @@ def get_openai_client(api_key: str | None = None, base_url: str | None = None) -
 def _encode_image(image_data: str | bytes) -> str:
     """将图像数据编码为 base64 字符串"""
     if isinstance(image_data, str):
-        if os.path.exists(image_data):
-            with open(image_data, "rb") as f:
-                image_bytes = f.read()
-            return base64.b64encode(image_bytes).decode("utf-8")
-        else:
-            return image_data
+        if not os.path.exists(image_data):
+            raise FileNotFoundError(f"Image file not found: {image_data}")
+        with open(image_data, "rb") as f:
+            image_bytes = f.read()
+        return base64.b64encode(image_bytes).decode("utf-8")
     else:
         return base64.b64encode(image_data).decode("utf-8")
 

@@ -187,7 +187,7 @@ print(result)
 #### 🤖 LLM 功能（VLM 图像分析）
 
 ```python
-from qubitclient.llm import QubitLLM, LLMTaskName
+from qubitclient.llm import QubitLLM, LLMTaskName, ExperimentFamily
 
 # 初始化客户端（自动从 qubitclient.json 读取配置）
 llm = QubitLLM()
@@ -207,7 +207,28 @@ result = llm.chat(
 print(result)
 
 # 方式3：使用任务 prompt（自动构建消息和 JSON schema）
-result = llm.run(LLMTaskName.EVALUATE_ANALYSIS, analysis_result={"score": 80})
+# 使用字符串指定实验类型
+result = llm.run(
+    LLMTaskName.DESCRIBE_PLOT,
+    "test.png",
+    experiment_family="drag"
+)
+print(result)
+
+# 使用枚举指定实验类型（推荐）
+result = llm.run(
+    LLMTaskName.EXTRACT_PARAMS,
+    "test.png",
+    experiment_family=ExperimentFamily.RABI
+)
+print(result)
+
+# 评估实验状态
+result = llm.run(
+    LLMTaskName.EVALUATE_STATUS,
+    "test.png",
+    experiment_family=ExperimentFamily.T1
+)
 print(result)
 ```
 
@@ -265,11 +286,43 @@ print(result)
 ### 🤖 LLM 任务
 
 | 任务名称 | 描述 | 详细文档 | 状态 |
-|---------|------|
-| `LLMTaskName.VLM_ANALYZE` | VLM 图像分析 | [文档](docs/llm/xxx.md) | ⏸️
-| `LLMTaskName.EVALUATE_ANALYSIS` | 评估分析结果 | [文档](docs/llm/xxx.md) | ⏸️
-| `LLMTaskName.DECIDE_NEXT_ACTION` | 决定下一步行动 | [文档](docs/llm/xxx.md) | ⏸️
-| `LLMTaskName.SUGGEST_PARAMS` | 建议测量参数 | [文档](docs/llm/xxx.md) | ⏸️
+|---------|------|----------|---------|
+| `LLMTaskName.DECIDE_NEXT_ACTION` | 决策下一步测量目标及参数 | - | ⏸️
+| `LLMTaskName.DESCRIBE_PLOT` | 描述图表类型、坐标轴、特征 | QCalEval-Q1 | ⏸️
+| `LLMTaskName.CLASSIFY_OUTCOME` | 分类实验结果 | QCalEval-Q2 | ⏸️
+| `LLMTaskName.SCIENTIFIC_REASONING` | 科学推理分析 | QCalEval-Q3 | ⏸️
+| `LLMTaskName.ASSESS_FIT` | 评估拟合可靠性 | QCalEval-Q4 | ⏸️
+| `LLMTaskName.EXTRACT_PARAMS` | 提取参数 | QCalEval-Q5 | ⏸️
+| `LLMTaskName.EVALUATE_STATUS` | 评估实验状态 | QCalEval-Q6 | ⏸️
+
+#### 📊 ExperimentFamily 实验家族
+
+使用 `ExperimentFamily` 枚举指定不同实验类型，自动获取对应的 prompt 背景和参数提取 schema：
+
+| 枚举值 | 描述 | 状态 |
+|--------|------|---------|
+| `ExperimentFamily.COUPLER_FLUX` | 可调耦合器光谱 | ⏸️
+| `ExperimentFamily.CZ_BENCHMARKING` | CZ 门基准测试 | ⏸️
+| `ExperimentFamily.DRAG` | DRAG 校准 | ⏸️
+| `ExperimentFamily.GMM` | 高斯混合模型 | ⏸️
+| `ExperimentFamily.MICROWAVE_RAMSEY` | 微波 Ramsey | ⏸️
+| `ExperimentFamily.MOT_LOADING` | MOT 加载 | ⏸️
+| `ExperimentFamily.PINCHOFF` | Pinch-off 测量 | ⏸️
+| `ExperimentFamily.PINGPONG` | PingPong 校准 | ⏸️
+| `ExperimentFamily.QUBIT_FLUX_SPECTROSCOPY` | 量子比特通量光谱 | ⏸️
+| `ExperimentFamily.QUBIT_SPECTROSCOPY` | 量子比特光谱 | ⏸️
+| `ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY` | 二维功率频率光谱 | ⏸️
+| `ExperimentFamily.RABI` | Rabi 振荡 | ⏸️
+| `ExperimentFamily.RABI_HW` | Rabi 硬件 | ⏸️
+| `ExperimentFamily.RAMSEY_CHARGE_TOMOGRAPHY` | Ramsey 电荷层析 | ⏸️
+| `ExperimentFamily.RAMSEY_FREQ_CAL` | Ramsey 频率校准 | ⏸️
+| `ExperimentFamily.RAMSEY_T2STAR` | T2* 退相干 | ⏸️
+| `ExperimentFamily.RES_SPEC` | 共振器光谱 | ⏸️
+| `ExperimentFamily.RYDBERG_RAMSEY` | Rydberg Ramsey | ⏸️
+| `ExperimentFamily.RYDBERG_SPECTROSCOPY` | Rydberg 光谱 | ⏸️
+| `ExperimentFamily.T1` | T1 弛豫 | ⏸️
+| `ExperimentFamily.T1_FLUCTUATIONS` | T1 涨落 | ⏸️
+| `ExperimentFamily.TWEEZER_ARRAY` | 光镊阵列 | ⏸️
 
 ## 📁 数据格式说明
 

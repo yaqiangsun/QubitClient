@@ -15,15 +15,25 @@ import json
 from enum import Enum, unique
 
 from qubitclient.llm.prompt import (
-    get_evaluation_prompt,
     get_decision_prompt,
-    get_suggest_params_prompt,
-    get_vlm_analyze_prompt,
-    EVALUATION_RESPONSE_SCHEMA,
+    get_describe_plot_prompt,
+    get_classify_outcome_prompt,
+    get_scientific_reasoning_prompt,
+    get_assess_fit_prompt,
+    get_extract_params_prompt,
+    get_evaluate_status_prompt,
     DECISION_RESPONSE_SCHEMA,
-    SUGGEST_PARAMS_RESPONSE_SCHEMA,
+    DESCRIBE_PLOT_RESPONSE_SCHEMA,
+    CLASSIFY_OUTCOME_RESPONSE_SCHEMA,
+    ASSESS_FIT_RESPONSE_SCHEMA,
+    EXTRACT_PARAMS_RESPONSE_SCHEMA,
+    EVALUATE_STATUS_RESPONSE_SCHEMA,
 )
-from qubitclient.ctrl.task import CtrlTaskName
+from qubitclient.llm.experiment import (
+    ExperimentFamily,
+    get_experiment_background,
+    get_extract_params_schema,
+)
 
 
 DEFINED_TASKS = {}
@@ -47,64 +57,31 @@ def get_task_prompt(task_type, *args, **kwargs):
 @unique
 class LLMTaskName(Enum):
     """LLM 任务名称枚举"""
-    EVALUATE_ANALYSIS = "evaluate_analysis"
+    # 决策任务：给出下一步目标与对应参数
     DECIDE_NEXT_ACTION = "decide_next_action"
-    VLM_ANALYZE = "vlm_analyze"
-    SUGGEST_PARAMS = "suggest_params"
-
-
-@task_register
-def evaluate_analysis(
-    analysis_result: dict | str,
-    criteria: dict | None = None,
-    prompt: str | None = None,
-) -> dict:
-    """
-    获取评估任务的 prompt
-
-    Args:
-        analysis_result: 分析结果（dict 或 JSON 字符串）
-        criteria: 评估标准（可选）
-        prompt: 自定义提示词
-
-    Returns:
-        包含 messages 和 response_schema 的字典
-    """
-    # 转换分析结果为字符串
-    if isinstance(analysis_result, dict):
-        analysis_str = json.dumps(analysis_result, ensure_ascii=False, indent=2)
-    else:
-        analysis_str = str(analysis_result)
-
-    # 转换 criteria 为字符串
-    criteria_str = json.dumps(criteria, ensure_ascii=False, indent=2) if criteria else None
-
-    # 构建提示词
-    if prompt is None:
-        prompt = get_evaluation_prompt(analysis_str, criteria_str)
-    else:
-        prompt = prompt.format(analysis_result=analysis_str)
-
-    messages = [{"role": "user", "content": prompt}]
-
-    return {
-        "messages": messages,
-        "response_schema": EVALUATION_RESPONSE_SCHEMA,
-    }
+    # QCalEval tasks
+    DESCRIBE_PLOT = "describe_plot"
+    CLASSIFY_OUTCOME = "classify_outcome"
+    SCIENTIFIC_REASONING = "scientific_reasoning"
+    ASSESS_FIT = "assess_fit"
+    EXTRACT_PARAMS = "extract_params"
+    EVALUATE_STATUS = "evaluate_status"
 
 
 @task_register
 def decide_next_action(
     evaluation_result: dict | str,
     available_actions: list | None = None,
+    context: dict | None = None,
     prompt: str | None = None,
 ) -> dict:
     """
-    获取决策任务的 prompt
+    决策任务：基于评估结果给出下一步测量目标及参数建议
 
     Args:
         evaluation_result: VLM 评估结果（dict 或 JSON 字符串）
         available_actions: 可用的 ctrl 行动列表
+        context: 上下文信息（历史数据、当前状态等），用于生成参数建议
         prompt: 自定义提示词
 
     Returns:
@@ -116,12 +93,15 @@ def decide_next_action(
     else:
         eval_str = str(evaluation_result)
 
+    # 转换上下文为字符串
+    context_str = json.dumps(context, ensure_ascii=False, indent=2) if context else None
+
     # 转换可用行动为字符串
     actions_str = ", ".join(available_actions) if available_actions else None
 
     # 构建提示词
     if prompt is None:
-        prompt = get_decision_prompt(eval_str, actions_str)
+        prompt = get_decision_prompt(eval_str, actions_str, context_str)
     else:
         prompt = prompt.format(evaluation_result=eval_str)
 
@@ -133,59 +113,206 @@ def decide_next_action(
     }
 
 
+# ========== QCalEval Tasks ==========
+
+
 @task_register
-def vlm_analyze(
+def describe_plot(
     image_data: str | bytes | list,
-    prompt: str = "分析这张量子测量图像，描述你观察到的特征和可能的物理意义",
+    experiment_background: str | None = None,
+    experiment_family: str | ExperimentFamily | None = None,
 ) -> dict:
     """
-    获取 VLM 分析任务的 prompt
+    描述图表任务 (QCalEval Q1)
+    描述图像中的图表类型、坐标轴、范围和主要特征
 
     Args:
-        image_data: 图像数据（路径、bytes 或图像列表）
-        prompt: 分析提示词
+        image_data: 图像数据
+        experiment_background: 实验背景描述（可选）
+        experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），自动获取背景（可选）
 
     Returns:
-        包含 messages, images 的字典
+        包含 messages, images 和 response_schema 的字典
     """
-    formatted_prompt = get_vlm_analyze_prompt(prompt)
+    # 自动获取实验背景
+    if experiment_background is None and experiment_family:
+        if isinstance(experiment_family, ExperimentFamily):
+            experiment_family = experiment_family.value
+        experiment_background = get_experiment_background(experiment_family)
+
+    prompt = get_describe_plot_prompt(experiment_background)
 
     return {
-        "messages": [{"role": "user", "content": formatted_prompt}],
+        "messages": [{"role": "user", "content": prompt}],
+        "images": image_data,
+        "response_schema": DESCRIBE_PLOT_RESPONSE_SCHEMA,
+    }
+
+
+@task_register
+def classify_outcome(
+    image_data: str | bytes | list,
+    experiment_background: str | None = None,
+    experiment_family: str | ExperimentFamily | None = None,
+) -> dict:
+    """
+    分类实验结果任务 (QCalEval Q2)
+    将实验结果分类为: Expected/Suboptimal/Anomalous/Apparatus issue
+
+    Args:
+        image_data: 图像数据
+        experiment_background: 实验背景描述（可选）
+        experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），自动获取背景（可选）
+
+    Returns:
+        包含 messages, images 和 response_schema 的字典
+    """
+    # 自动获取实验背景
+    if experiment_background is None and experiment_family:
+        if isinstance(experiment_family, ExperimentFamily):
+            experiment_family = experiment_family.value
+        experiment_background = get_experiment_background(experiment_family)
+
+    prompt = get_classify_outcome_prompt(experiment_background)
+
+    return {
+        "messages": [{"role": "user", "content": prompt}],
+        "images": image_data,
+        "response_schema": CLASSIFY_OUTCOME_RESPONSE_SCHEMA,
+    }
+
+
+@task_register
+def scientific_reasoning(
+    image_data: str | bytes | list,
+    experiment_background: str | None = None,
+    experiment_family: str | ExperimentFamily | None = None,
+) -> dict:
+    """
+    科学推理任务 (QCalEval Q3)
+    分析实验结果的物理含义并给出下一步建议
+
+    Args:
+        image_data: 图像数据
+        experiment_background: 实验背景描述（可选）
+        experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），自动获取背景（可选）
+
+    Returns:
+        包含 messages 和 images 的字典
+    """
+    # 自动获取实验背景
+    if experiment_background is None and experiment_family:
+        if isinstance(experiment_family, ExperimentFamily):
+            experiment_family = experiment_family.value
+        experiment_background = get_experiment_background(experiment_family)
+
+    prompt = get_scientific_reasoning_prompt(experiment_background)
+
+    return {
+        "messages": [{"role": "user", "content": prompt}],
         "images": image_data,
     }
 
 
 @task_register
-def suggest_params(
-    task_type: str | CtrlTaskName,
-    context: dict,
+def assess_fit(
+    image_data: str | bytes | list,
+    experiment_background: str | None = None,
+    experiment_family: str | ExperimentFamily | None = None,
 ) -> dict:
     """
-    获取参数建议任务的 prompt
+    评估拟合可靠性任务 (QCalEval Q4)
+    评估数据拟合是否可用于参数提取
 
     Args:
-        task_type: 目标任务类型
-        context: 上下文信息（历史数据、评估结果等）
+        image_data: 图像数据
+        experiment_background: 实验背景描述（可选）
+        experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），自动获取背景（可选）
 
     Returns:
-        包含 messages 和 response_schema 的字典
+        包含 messages, images 和 response_schema 的字典
     """
-    # 转换任务类型
-    if isinstance(task_type, CtrlTaskName):
-        task_type_str = task_type.value
-    else:
-        task_type_str = str(task_type)
+    # 自动获取实验背景
+    if experiment_background is None and experiment_family:
+        if isinstance(experiment_family, ExperimentFamily):
+            experiment_family = experiment_family.value
+        experiment_background = get_experiment_background(experiment_family)
 
-    # 转换上下文为字符串
-    context_str = json.dumps(context, ensure_ascii=False, indent=2)
-
-    # 构建提示词
-    prompt = get_suggest_params_prompt(task_type_str, context_str)
-
-    messages = [{"role": "user", "content": prompt}]
+    prompt = get_assess_fit_prompt(experiment_background)
 
     return {
-        "messages": messages,
-        "response_schema": SUGGEST_PARAMS_RESPONSE_SCHEMA,
+        "messages": [{"role": "user", "content": prompt}],
+        "images": image_data,
+        "response_schema": ASSESS_FIT_RESPONSE_SCHEMA,
+    }
+
+
+@task_register
+def extract_params(
+    image_data: str | bytes | list,
+    experiment_background: str | None = None,
+    experiment_family: str | ExperimentFamily | None = None,
+    params_schema: dict | None = None,
+) -> dict:
+    """
+    提取参数任务 (QCalEval Q5)
+    从图表中提取指定参数
+
+    Args:
+        image_data: 图像数据
+        experiment_background: 实验背景描述（可选）
+        experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），自动获取背景（可选）
+        params_schema: 参数提取模式（可选，默认从experiment_family获取）
+
+    Returns:
+        包含 messages, images 和 response_schema 的字典
+    """
+    # 自动获取实验背景和schema
+    _experiment_family = experiment_family
+    if experiment_background is None and _experiment_family:
+        if isinstance(_experiment_family, ExperimentFamily):
+            _experiment_family = _experiment_family.value
+        experiment_background = get_experiment_background(_experiment_family)
+    if params_schema is None and _experiment_family:
+        params_schema = get_extract_params_schema(_experiment_family)
+
+    prompt = get_extract_params_prompt(experiment_background)
+
+    return {
+        "messages": [{"role": "user", "content": prompt}],
+        "images": image_data,
+        "response_schema": params_schema or EXTRACT_PARAMS_RESPONSE_SCHEMA,
+    }
+
+
+@task_register
+def evaluate_status(
+    image_data: str | bytes | list,
+    experiment_background: str | None = None,
+    experiment_family: str | ExperimentFamily | None = None,
+) -> dict:
+    """
+    评估实验状态任务 (QCalEval Q6)
+    判断实验成功/失败状态并给出建议
+
+    Args:
+        image_data: 图像数据
+        experiment_background: 实验背景描述（可选）
+        experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），自动获取背景（可选）
+
+    Returns:
+        包含 messages, images 和 response_schema 的字典
+    """
+    # 自动获取实验背景
+    if experiment_background is None and experiment_family:
+        if isinstance(experiment_family, ExperimentFamily):
+            experiment_family = experiment_family.value
+        experiment_background = get_experiment_background(experiment_family)
+
+    prompt = get_evaluate_status_prompt(experiment_background)
+
+    return {
+        "messages": [{"role": "user", "content": prompt}],
+        "images": image_data,
+        "response_schema": EVALUATE_STATUS_RESPONSE_SCHEMA,
     }

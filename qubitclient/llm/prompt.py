@@ -29,7 +29,7 @@ DEFAULT_EVALUATION_PROMPT = """你是一个量子测量数据分析专家。请�
 """
 
 # 默认决策提示词
-DEFAULT_DECISION_PROMPT = """基于以下评估结果，建议下一步应该执行的测量任务。
+DEFAULT_DECISION_PROMPT = """基于以下评估结果和上下文信息，给出下一步测量目标及参数建议。
 
 评估结果:
 {evaluation_result}
@@ -47,6 +47,8 @@ DEFAULT_DECISION_PROMPT = """基于以下评估结果，建议下一步应该执
 - spectrum_2d: 二维频谱测量
 - singleshot: 单次测量
 - rb: 随机基准测试
+
+{context_info}
 
 请以 JSON 格式返回决策，包含以下字段:
 - recommended_task: 推荐的下一个任务名称
@@ -115,18 +117,32 @@ def get_evaluation_prompt(analysis_result: str, criteria: str | None = None) -> 
     return prompt
 
 
-def get_decision_prompt(evaluation_result: str, available_actions: list | None = None) -> str:
+def get_decision_prompt(
+    evaluation_result: str,
+    available_actions: list | None = None,
+    context: str | None = None,
+) -> str:
     """
     获取决策提示词
 
     Args:
         evaluation_result: 评估结果字符串
         available_actions: 可用行动列表
+        context: 上下文信息字符串
 
     Returns:
         格式化后的提示词
     """
-    prompt = DEFAULT_DECISION_PROMPT.format(evaluation_result=evaluation_result)
+    # 构建上下文信息
+    if context:
+        context_info = f"上下文信息:\n{context}"
+    else:
+        context_info = "上下文信息: (无)"
+
+    prompt = DEFAULT_DECISION_PROMPT.format(
+        evaluation_result=evaluation_result,
+        context_info=context_info,
+    )
     if available_actions:
         prompt += f"\n\n可用的行动: {available_actions}"
     return prompt
@@ -162,16 +178,242 @@ def get_vlm_analyze_prompt(prompt: str | None = None) -> str:
     return prompt or DEFAULT_VLM_ANALYZE_PROMPT
 
 
+# ========== QCalEval Prompt Templates ==========
+
+# Q1: 描述图表
+DEFAULT_DESCRIBE_PLOT_PROMPT = """Describe the figure <image> in JSON format.
+
+Required fields:
+{{background}}
+{{schema}}
+"""
+
+DESCRIBE_PLOT_SCHEMA = """{
+  "plot_type": "scatter" | "line" | "heatmap" | "histogram",
+  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
+  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
+  "main_features": string
+}"""
+
+
+# Q2: 分类实验结果
+DEFAULT_CLASSIFY_OUTCOME_PROMPT = """{{background}}
+
+Based on what you observe in the data <image>, classify the experimental outcome.
+
+Options:
+- Expected behavior: Experiment produced usable calibration data
+- Suboptimal parameters: Working but needs parameter adjustment within this experiment
+- Anomalous behavior: Requires upstream recalibration or shows uncontrollable quantum effects
+- Apparatus issue: No meaningful signal — measurement system misconfigured
+
+Provide your answer as:
+Classification: <your choice>
+Reason: <brief explanation>
+"""
+
+CLASSIFY_OUTCOME_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "Classification": {
+            "type": "string",
+            "enum": [
+                "Expected behavior",
+                "Suboptimal parameters",
+                "Anomalous behavior",
+                "Apparatus issue",
+            ],
+        },
+        "Reason": {"type": "string"},
+    },
+    "required": ["Classification", "Reason"],
+}
+
+
+# Q3: 科学推理
+DEFAULT_SCIENTIFIC_REASONING_PROMPT = """{{background}}
+
+What does this result <image> imply?
+
+Explain:
+- What the key features indicate about the physical system
+- Whether the measurement quality is sufficient for reliable analysis
+- What calibration step follows (if applicable)
+
+Provide your assessment.
+"""
+
+
+# Q4: 评估拟合
+DEFAULT_ASSESS_FIT_PROMPT = """{{background}}
+
+Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
+
+Options:
+- Reliable
+- Unreliable
+- No fit
+
+Provide your answer as:
+Assessment: <your choice>
+Reason: <brief explanation>
+"""
+
+ASSESS_FIT_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "Assessment": {
+            "type": "string",
+            "enum": ["Reliable", "Unreliable", "No fit"],
+        },
+        "Reason": {"type": "string"},
+    },
+    "required": ["Assessment", "Reason"],
+}
+
+
+# Q5: 提取参数
+DEFAULT_EXTRACT_PARAMS_PROMPT = """{{background}}
+
+Extract the following parameters from this calibration plot <image>.
+
+Report in JSON format:
+{{params_schema}}
+"""
+
+DEFAULT_EXTRACT_PARAMS_SCHEMA = '{"optimal_value": float, "intersection_clear": true | false}'
+
+EXTRACT_PARAMS_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "optimal_value": {"type": "number", "description": "Extracted optimal parameter value"},
+        "intersection_clear": {"type": "boolean", "description": "Whether the intersection/crossing is clear"},
+    },
+    "required": ["optimal_value", "intersection_clear"],
+}
+
+
+# Q6: 评估状态
+DEFAULT_EVALUATE_STATUS_PROMPT = """{{background}}
+
+Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear signal observed in measurement window
+- NO_SIGNAL: Flat or random, no meaningful pattern
+- OPTIMAL_NOT_CENTERED: Signal exists but not in optimal range
+
+When the status is not SUCCESS, provide a SPECIFIC suggested range.
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>
+"""
+
+EVALUATE_STATUS_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "Status": {
+            "type": "string",
+            "enum": ["SUCCESS", "NO_SIGNAL", "OPTIMAL_NOT_CENTERED"],
+        },
+        "Suggested range": {"type": "string"},
+        "Notes": {"type": "string"},
+    },
+    "required": ["Status", "Suggested range", "Notes"],
+}
+
+
+# ========== QCalEval Prompt Functions ==========
+
+
+def get_describe_plot_prompt(experiment_background: str | None = None) -> str:
+    """获取描述图表的提示词"""
+    background = f"{experiment_background}\n\n" if experiment_background else ""
+    return DEFAULT_DESCRIBE_PLOT_PROMPT.replace("{{background}}", background).replace("{{schema}}", DESCRIBE_PLOT_SCHEMA)
+
+
+def get_classify_outcome_prompt(experiment_background: str) -> str:
+    """获取分类实验结果的提示词"""
+    return DEFAULT_CLASSIFY_OUTCOME_PROMPT.replace("{{background}}", experiment_background or "")
+
+
+def get_scientific_reasoning_prompt(experiment_background: str) -> str:
+    """获取科学推理的提示词"""
+    return DEFAULT_SCIENTIFIC_REASONING_PROMPT.replace("{{background}}", experiment_background or "")
+
+
+def get_assess_fit_prompt(experiment_background: str) -> str:
+    """获取评估拟合的提示词"""
+    return DEFAULT_ASSESS_FIT_PROMPT.replace("{{background}}", experiment_background or "")
+
+
+def get_extract_params_prompt(
+    experiment_background: str,
+    params_schema: str | None = None,
+) -> str:
+    """获取提取参数的提示词"""
+    schema = params_schema or DEFAULT_EXTRACT_PARAMS_SCHEMA
+    return DEFAULT_EXTRACT_PARAMS_PROMPT.replace("{{background}}", experiment_background or "").replace("{{params_schema}}", schema)
+
+
+def get_evaluate_status_prompt(experiment_background: str) -> str:
+    """获取评估实验状态的提示词"""
+    return DEFAULT_EVALUATE_STATUS_PROMPT.replace("{{background}}", experiment_background or "")
+
+
+# Q1 Response Schema
+DESCRIBE_PLOT_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "plot_type": {
+            "type": "string",
+            "enum": ["scatter", "line", "heatmap", "histogram"],
+        },
+        "x_axis": {
+            "type": "object",
+            "properties": {
+                "label": {"type": "string"},
+                "scale": {"type": "string", "enum": ["linear", "log"]},
+                "range": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+            },
+            "required": ["label", "scale", "range"],
+        },
+        "y_axis": {
+            "type": "object",
+            "properties": {
+                "label": {"type": "string"},
+                "scale": {"type": "string", "enum": ["linear", "log"]},
+                "range": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+            },
+            "required": ["label", "scale", "range"],
+        },
+        "main_features": {"type": "string"},
+    },
+    "required": ["plot_type", "x_axis", "y_axis", "main_features"],
+}
+
+
 __all__ = [
-    "DEFAULT_EVALUATION_PROMPT",
+    # Base prompts
     "DEFAULT_DECISION_PROMPT",
-    "DEFAULT_VLM_ANALYZE_PROMPT",
-    "DEFAULT_SUGGEST_PARAMS_PROMPT",
-    "EVALUATION_RESPONSE_SCHEMA",
+    # Base schemas
     "DECISION_RESPONSE_SCHEMA",
-    "SUGGEST_PARAMS_RESPONSE_SCHEMA",
-    "get_evaluation_prompt",
+    # Base functions
     "get_decision_prompt",
-    "get_suggest_params_prompt",
-    "get_vlm_analyze_prompt",
+    # QCalEval prompts
+    "get_describe_plot_prompt",
+    "get_classify_outcome_prompt",
+    "get_scientific_reasoning_prompt",
+    "get_assess_fit_prompt",
+    "get_extract_params_prompt",
+    "get_evaluate_status_prompt",
+    # QCalEval schemas
+    "DESCRIBE_PLOT_RESPONSE_SCHEMA",
+    "CLASSIFY_OUTCOME_RESPONSE_SCHEMA",
+    "ASSESS_FIT_RESPONSE_SCHEMA",
+    "EXTRACT_PARAMS_RESPONSE_SCHEMA",
+    "EVALUATE_STATUS_RESPONSE_SCHEMA",
 ]

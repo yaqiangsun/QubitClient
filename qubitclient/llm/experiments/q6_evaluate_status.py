@@ -13,9 +13,9 @@ Q6: 评估状态任务
 判断实验成功/失败状态并给出建议
 """
 
-# Q6: 评估状态 - 每个家族有不同的成功/失败标准
-EVALUATE_STATUS_PROMPTS = {
-    "coupler_flux": """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
+# ========== 独立 Prompt 字符串定义 ==========
+
+PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -30,8 +30,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "cz_benchmarking": """This is CZ gate benchmarking: measures atom retention probability and cycle polarization vs circuit depth. A successful result shows retention and polarization close to 1 with gradual decay.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_CZ_BENCHMARKING = """This is CZ gate benchmarking: measures atom retention probability and cycle polarization vs circuit depth. A successful result shows retention and polarization close to 1 with gradual decay.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -46,8 +47,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "drag": """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_DRAG = """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -62,8 +64,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min 1/alpha>, <max 1/alpha>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "gmm": """This is a GMM discrimination experiment: I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit. A successful result has two well-separated clusters.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_GMM = """This is a GMM discrimination experiment: I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit. A successful result has two well-separated clusters.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -78,8 +81,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "microwave_ramsey": """This is a microwave Ramsey experiment: sinusoidal oscillations with contrast close to 1 and good fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_MICROWAVE_RAMSEY = """This is a microwave Ramsey experiment: sinusoidal oscillations with contrast close to 1 and good fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -94,8 +98,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "mot_loading": """This is a MOT loading image: shows trapped atoms in a magneto-optical trap. A successful result shows a well-defined, compact atomic cloud.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_MOT_LOADING = """This is a MOT loading image: shows trapped atoms in a magneto-optical trap. A successful result shows a well-defined, compact atomic cloud.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -110,8 +115,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "pinchoff": """This is a pinch-off measurement: current trace vs gate voltage to determine device pinch-off.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_PINCHOFF = """This is a pinch-off measurement: current trace vs gate voltage to determine device pinch-off.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -126,8 +132,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "pingpong": """This is PingPong calibration: repeated pi-pulse pairs measure qubit population vs gate count. A successful result shows linear error accumulation.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_PINGPONG = """This is PingPong calibration: repeated pi-pulse pairs measure qubit population vs gate count. A successful result shows linear error accumulation.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -142,8 +149,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "qubit_flux_spectroscopy": """This is flux-dependent qubit spectroscopy: 2D map of qubit frequency vs flux. A successful result shows clear dispersion curve with good fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """This is flux-dependent qubit spectroscopy: 2D map of qubit frequency vs flux. A successful result shows clear dispersion curve with good fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -158,8 +166,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "qubit_spectroscopy": """This is qubit spectroscopy: sweep drive frequency to find qubit transition. A successful result has a single clear peak with good Lorentzian fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_QUBIT_SPECTROSCOPY = """This is qubit spectroscopy: sweep drive frequency to find qubit transition. A successful result has a single clear peak with good Lorentzian fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -174,8 +183,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "qubit_spectroscopy_power_frequency": """This is 2D qubit spectroscopy: sweep power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, optionally f02/2).
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is 2D qubit spectroscopy: sweep power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, optionally f02/2).
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -190,8 +200,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "rabi": """This is a Rabi experiment: sweep pulse amplitude to find pi-pulse. A successful result shows clear sinusoidal oscillations with fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RABI = """This is a Rabi experiment: sweep pulse amplitude to find pi-pulse. A successful result shows clear sinusoidal oscillations with fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -206,8 +217,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "rabi_hw": """This is a Rabi experiment with hardware characterization: clear oscillations with fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RABI_HW = """This is a Rabi experiment with hardware characterization: clear oscillations with fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -222,8 +234,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "ramsey_charge_tomography": """This is Ramsey charge tomography: 2D map over time revealing charge jumps. Clean result shows continuous fringes.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """This is Ramsey charge tomography: 2D map over time revealing charge jumps. Clean result shows continuous fringes.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -238,8 +251,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "ramsey_freq_cal": """This is Ramsey frequency calibration: oscillations at detuning frequency with accurate fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RAMSEY_FREQ_CAL = """This is Ramsey frequency calibration: oscillations at detuning frequency with accurate fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -254,8 +268,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "ramsey_t2star": """This is Ramsey T2* dephasing: decaying oscillations with fit that extracts T2*.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RAMSEY_T2STAR = """This is Ramsey T2* dephasing: decaying oscillations with fit that extracts T2*.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -270,8 +285,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "res_spec": """This is resonator spectroscopy: sweep probe frequency to find resonance. A successful result has clear resonance feature.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RES_SPEC = """This is resonator spectroscopy: sweep probe frequency to find resonance. A successful result has clear resonance feature.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -286,8 +302,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "rydberg_ramsey": """This is Rydberg Ramsey: oscillations on ground-to-Rydberg transition with T2 and detuning.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RYDBERG_RAMSEY = """This is Rydberg Ramsey: oscillations on ground-to-Rydberg transition with T2 and detuning.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -302,8 +319,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "rydberg_spectroscopy": """This is Rydberg spectroscopy: sweep detuning across multiple sites. Clear spectral features with good fits.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RYDBERG_SPECTROSCOPY = """This is Rydberg spectroscopy: sweep detuning across multiple sites. Clear spectral features with good fits.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -318,8 +336,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "t1": """This is T1 relaxation: measure population vs delay after excitation to |1⟩. A successful result shows clear exponential decay with good fit.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_T1 = """This is T1 relaxation: measure population vs delay after excitation to |1⟩. A successful result shows clear exponential decay with good fit.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -334,8 +353,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "t1_fluctuations": """This is T1 stability measurement: T1 tracked over repeated measurements. Stable values indicate good qubit stability.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_T1_FLUCTUATIONS = """This is T1 stability measurement: T1 tracked over repeated measurements. Stable values indicate good qubit stability.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -350,8 +370,9 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
-    "tweezer_array": """This is optical tweezer array image: trapped atoms in regular grid. Sharp, uniform spots indicate proper aberration correction.
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_TWEEZER_ARRAY = """This is optical tweezer array image: trapped atoms in regular grid. Sharp, uniform spots indicate proper aberration correction.
 
 Evaluate the image <image> and determine the experiment status.
 
@@ -366,7 +387,34 @@ The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>""",
+Notes: <1-3 sentences explaining your reasoning>"""
+
+
+# ========== Prompt 字典映射 ==========
+
+EVALUATE_STATUS_PROMPTS = {
+    "coupler_flux": PROMPT_COUPLER_FLUX,
+    "cz_benchmarking": PROMPT_CZ_BENCHMARKING,
+    "drag": PROMPT_DRAG,
+    "gmm": PROMPT_GMM,
+    "microwave_ramsey": PROMPT_MICROWAVE_RAMSEY,
+    "mot_loading": PROMPT_MOT_LOADING,
+    "pinchoff": PROMPT_PINCHOFF,
+    "pingpong": PROMPT_PINGPONG,
+    "qubit_flux_spectroscopy": PROMPT_QUBIT_FLUX_SPECTROSCOPY,
+    "qubit_spectroscopy": PROMPT_QUBIT_SPECTROSCOPY,
+    "qubit_spectroscopy_power_frequency": PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY,
+    "rabi": PROMPT_RABI,
+    "rabi_hw": PROMPT_RABI_HW,
+    "ramsey_charge_tomography": PROMPT_RAMSEY_CHARGE_TOMOGRAPHY,
+    "ramsey_freq_cal": PROMPT_RAMSEY_FREQ_CAL,
+    "ramsey_t2star": PROMPT_RAMSEY_T2STAR,
+    "res_spec": PROMPT_RES_SPEC,
+    "rydberg_ramsey": PROMPT_RYDBERG_RAMSEY,
+    "rydberg_spectroscopy": PROMPT_RYDBERG_SPECTROSCOPY,
+    "t1": PROMPT_T1,
+    "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
+    "tweezer_array": PROMPT_TWEEZER_ARRAY,
 }
 
 

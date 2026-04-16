@@ -13,9 +13,9 @@ Q4: 评估拟合任务
 评估数据拟合是否可用于参数提取
 """
 
-# Q4: 评估拟合 - 每个家族有不同的可靠性标准
-ASSESS_FIT_PROMPTS = {
-    "coupler_flux": """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
+# ========== 独立 Prompt 字符串定义 ==========
+
+PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
 
@@ -26,8 +26,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "cz_benchmarking": """This is CZ gate benchmarking: measures retention probability and cycle polarization vs circuit depth. A successful result shows retention and polarization close to 1 with gradual decay.
+Reason: <brief explanation>"""
+
+PROMPT_CZ_BENCHMARKING = """This is CZ gate benchmarking: measures retention probability and cycle polarization vs circuit depth. A successful result shows retention and polarization close to 1 with gradual decay.
 
 Assess whether the data in this plot <image> is reliable for gate fidelity assessment.
 
@@ -38,8 +39,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "drag": """This is a DRAG calibration: we sweep 1/alpha to find the optimal value. A successful result has the zero-crossing clearly observable in the sweep window.
+Reason: <brief explanation>"""
+
+PROMPT_DRAG = """This is a DRAG calibration: we sweep 1/alpha to find the optimal value. A successful result has the zero-crossing clearly observable in the sweep window.
 
 Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
 
@@ -50,8 +52,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "gmm": """This is GMM discrimination: I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit. A successful result has two well-separated clusters.
+Reason: <brief explanation>"""
+
+PROMPT_GMM = """This is GMM discrimination: I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit. A successful result has two well-separated clusters.
 
 Assess whether the GMM fit in this plot <image> is reliable for state discrimination.
 
@@ -62,8 +65,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "microwave_ramsey": """This is a microwave Ramsey: sinusoidal oscillations with contrast close to 1 and good fit.
+Reason: <brief explanation>"""
+
+PROMPT_MICROWAVE_RAMSEY = """This is a microwave Ramsey: sinusoidal oscillations with contrast close to 1 and good fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting frequency and contrast.
 
@@ -74,8 +78,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "mot_loading": """This is a MOT loading image: shows trapped atoms in a magneto-optical trap.
+Reason: <brief explanation>"""
+
+PROMPT_MOT_LOADING = """This is a MOT loading image: shows trapped atoms in a magneto-optical trap.
 
 Assess whether the image <image> shows a reliable atomic cloud for experiments.
 
@@ -86,8 +91,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "pinchoff": """This is pinch-off measurement: current trace vs gate voltage to determine device pinch-off.
+Reason: <brief explanation>"""
+
+PROMPT_PINCHOFF = """This is pinch-off measurement: current trace vs gate voltage to determine device pinch-off.
 
 Assess whether the data in this plot <image> shows a reliable pinch-off transition.
 
@@ -98,8 +104,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "pingpong": """This is PingPong calibration: error accumulation vs gate count. A successful result shows linear error accumulation.
+Reason: <brief explanation>"""
+
+PROMPT_PINGPONG = """This is PingPong calibration: error accumulation vs gate count. A successful result shows linear error accumulation.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting error rate.
 
@@ -110,8 +117,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "qubit_flux_spectroscopy": """This is flux-dependent qubit spectroscopy: 2D map of qubit frequency vs flux. A successful result shows clear dispersion curve with good fit.
+Reason: <brief explanation>"""
+
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """This is flux-dependent qubit spectroscopy: 2D map of qubit frequency vs flux. A successful result shows clear dispersion curve with good fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting dispersion.
 
@@ -122,8 +130,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "qubit_spectroscopy": """This is qubit spectroscopy: sweep drive frequency to find qubit transition. A successful result has a single clear peak with good Lorentzian fit.
+Reason: <brief explanation>"""
+
+PROMPT_QUBIT_SPECTROSCOPY = """This is qubit spectroscopy: sweep drive frequency to find qubit transition. A successful result has a single clear peak with good Lorentzian fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting frequency.
 
@@ -134,8 +143,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "qubit_spectroscopy_power_frequency": """This is 2D qubit spectroscopy: sweep power and frequency to map transitions. A successful result shows clear transition lines.
+Reason: <brief explanation>"""
+
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is 2D qubit spectroscopy: sweep power and frequency to map transitions. A successful result shows clear transition lines.
 
 Assess whether the data in this plot <image> shows reliable transition lines.
 
@@ -146,8 +156,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "rabi": """This is Rabi experiment: sweep pulse amplitude to find pi-pulse. A successful result shows clear oscillations with fit.
+Reason: <brief explanation>"""
+
+PROMPT_RABI = """This is Rabi experiment: sweep pulse amplitude to find pi-pulse. A successful result shows clear oscillations with fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting pi-pulse amplitude.
 
@@ -158,8 +169,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "rabi_hw": """This is Rabi experiment with hardware characterization: clear oscillations with fit.
+Reason: <brief explanation>"""
+
+PROMPT_RABI_HW = """This is Rabi experiment with hardware characterization: clear oscillations with fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for parameter extraction.
 
@@ -170,8 +182,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "ramsey_charge_tomography": """This is Ramsey charge tomography: 2D map over time revealing charge jumps. Clean result shows continuous fringes.
+Reason: <brief explanation>"""
+
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """This is Ramsey charge tomography: 2D map over time revealing charge jumps. Clean result shows continuous fringes.
 
 Assess whether the data in this plot <image> shows reliable fringe pattern for charge analysis.
 
@@ -182,8 +195,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "ramsey_freq_cal": """This is Ramsey frequency calibration: oscillations at detuning frequency with accurate fit.
+Reason: <brief explanation>"""
+
+PROMPT_RAMSEY_FREQ_CAL = """This is Ramsey frequency calibration: oscillations at detuning frequency with accurate fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting detuning.
 
@@ -194,8 +208,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "ramsey_t2star": """This is Ramsey T2* dephasing: decaying oscillations with fit that extracts T2*.
+Reason: <brief explanation>"""
+
+PROMPT_RAMSEY_T2STAR = """This is Ramsey T2* dephasing: decaying oscillations with fit that extracts T2*.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting T2*.
 
@@ -206,8 +221,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "res_spec": """This is resonator spectroscopy: sweep probe frequency to find resonance. A successful result has clear resonance feature.
+Reason: <brief explanation>"""
+
+PROMPT_RES_SPEC = """This is resonator spectroscopy: sweep probe frequency to find resonance. A successful result has clear resonance feature.
 
 Assess whether the data in this plot <image> shows a reliable resonance for extracting frequency.
 
@@ -218,8 +234,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "rydberg_ramsey": """This is Rydberg Ramsey: oscillations on ground-to-Rydberg transition. Clear oscillations indicate good coherence.
+Reason: <brief explanation>"""
+
+PROMPT_RYDBERG_RAMSEY = """This is Rydberg Ramsey: oscillations on ground-to-Rydberg transition. Clear oscillations indicate good coherence.
 
 Assess whether the data in this plot <image> is reliable for extracting T2 and detuning.
 
@@ -230,8 +247,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "rydberg_spectroscopy": """This is Rydberg spectroscopy: sweep detuning across sites. Clear spectral features with good fits indicate success.
+Reason: <brief explanation>"""
+
+PROMPT_RYDBERG_SPECTROSCOPY = """This is Rydberg spectroscopy: sweep detuning across sites. Clear spectral features with good fits indicate success.
 
 Assess whether the fits to the data in this plot <image> are reliable for extracting transition frequencies.
 
@@ -242,8 +260,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "t1": """This is T1 relaxation: measure population vs delay after excitation. A successful result shows clear exponential decay with good fit.
+Reason: <brief explanation>"""
+
+PROMPT_T1 = """This is T1 relaxation: measure population vs delay after excitation. A successful result shows clear exponential decay with good fit.
 
 Assess whether the fit to the data in this plot <image> is reliable for extracting T1.
 
@@ -254,8 +273,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "t1_fluctuations": """This is T1 stability: T1 tracked over measurements. Stable values indicate good qubit stability.
+Reason: <brief explanation>"""
+
+PROMPT_T1_FLUCTUATIONS = """This is T1 stability: T1 tracked over measurements. Stable values indicate good qubit stability.
 
 Assess whether the data in this plot <image> is reliable for classifying T1 stability.
 
@@ -266,8 +286,9 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
-    "tweezer_array": """This is optical tweezer array image: trapped atoms in regular grid. Sharp, uniform spots indicate proper aberration correction.
+Reason: <brief explanation>"""
+
+PROMPT_TWEEZER_ARRAY = """This is optical tweezer array image: trapped atoms in regular grid. Sharp, uniform spots indicate proper aberration correction.
 
 Assess whether the image <image> shows a reliable tweezer array for experiments.
 
@@ -278,7 +299,34 @@ Options:
 
 Provide your answer as:
 Assessment: <your choice>
-Reason: <brief explanation>""",
+Reason: <brief explanation>"""
+
+
+# ========== Prompt 字典映射 ==========
+
+ASSESS_FIT_PROMPTS = {
+    "coupler_flux": PROMPT_COUPLER_FLUX,
+    "cz_benchmarking": PROMPT_CZ_BENCHMARKING,
+    "drag": PROMPT_DRAG,
+    "gmm": PROMPT_GMM,
+    "microwave_ramsey": PROMPT_MICROWAVE_RAMSEY,
+    "mot_loading": PROMPT_MOT_LOADING,
+    "pinchoff": PROMPT_PINCHOFF,
+    "pingpong": PROMPT_PINGPONG,
+    "qubit_flux_spectroscopy": PROMPT_QUBIT_FLUX_SPECTROSCOPY,
+    "qubit_spectroscopy": PROMPT_QUBIT_SPECTROSCOPY,
+    "qubit_spectroscopy_power_frequency": PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY,
+    "rabi": PROMPT_RABI,
+    "rabi_hw": PROMPT_RABI_HW,
+    "ramsey_charge_tomography": PROMPT_RAMSEY_CHARGE_TOMOGRAPHY,
+    "ramsey_freq_cal": PROMPT_RAMSEY_FREQ_CAL,
+    "ramsey_t2star": PROMPT_RAMSEY_T2STAR,
+    "res_spec": PROMPT_RES_SPEC,
+    "rydberg_ramsey": PROMPT_RYDBERG_RAMSEY,
+    "rydberg_spectroscopy": PROMPT_RYDBERG_SPECTROSCOPY,
+    "t1": PROMPT_T1,
+    "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
+    "tweezer_array": PROMPT_TWEEZER_ARRAY,
 }
 
 

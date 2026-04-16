@@ -13,9 +13,9 @@ Q2: 分类实验结果任务
 将实验结果分类为: Expected/Suboptimal/Anomalous/Apparatus issue
 """
 
-# Q2: 分类实验结果 - 每个家族有不同的关注点
-CLASSIFY_OUTCOME_PROMPTS = {
-    "coupler_flux": """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
+# ========== 独立 Prompt 字符串定义 ==========
+
+PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -27,8 +27,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "cz_benchmarking": """This is CZ (controlled-Z) gate benchmarking on pairs of neutral atoms. It measures atom retention probability and cycle polarization as a function of circuit depth. A successful result shows both retention and polarization close to 1 with gradual decay.
+Reason: <brief explanation>"""
+
+PROMPT_CZ_BENCHMARKING = """This is CZ (controlled-Z) gate benchmarking on pairs of neutral atoms. It measures atom retention probability and cycle polarization as a function of circuit depth. A successful result shows both retention and polarization close to 1 with gradual decay.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -40,8 +41,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "drag": """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
+Reason: <brief explanation>"""
+
+PROMPT_DRAG = """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -53,8 +55,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "gmm": """This is a single-shot readout discrimination experiment: the I-Q scatter plot shows measurement results for |0⟩ and |1⟩ states fitted with a Gaussian Mixture Model. A successful result has two well-separated clusters.
+Reason: <brief explanation>"""
+
+PROMPT_GMM = """This is a single-shot readout discrimination experiment: the I-Q scatter plot shows measurement results for |0⟩ and |1⟩ states fitted with a Gaussian Mixture Model. A successful result has two well-separated clusters.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -66,8 +69,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "microwave_ramsey": """This is a Ramsey experiment on the ground-state clock qubit using microwave pulses. A successful result shows sinusoidal oscillations with contrast close to 1 and data well-fit by the curve.
+Reason: <brief explanation>"""
+
+PROMPT_MICROWAVE_RAMSEY = """This is a Ramsey experiment on the ground-state clock qubit using microwave pulses. A successful result shows sinusoidal oscillations with contrast close to 1 and data well-fit by the curve.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -79,8 +83,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "mot_loading": """This is a MOT (magneto-optical trap) loading image: a camera captures the fluorescence of trapped atoms. A successful result shows a well-defined, compact atomic cloud in the view.
+Reason: <brief explanation>"""
+
+PROMPT_MOT_LOADING = """This is a MOT (magneto-optical trap) loading image: a camera captures the fluorescence of trapped atoms. A successful result shows a well-defined, compact atomic cloud in the view.
 
 Based on what you observe in the image <image>, classify the experimental outcome.
 
@@ -92,8 +97,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "pinchoff": """This is an electron-on-helium pinch-off measurement: a 1D current trace is measured as a function of gate voltage. The measurement determines whether the device has pinched off — transitioning from conducting to non-conducting state.
+Reason: <brief explanation>"""
+
+PROMPT_PINCHOFF = """This is an electron-on-helium pinch-off measurement: a 1D current trace is measured as a function of gate voltage. The measurement determines whether the device has pinched off — transitioning from conducting to non-conducting state.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -105,8 +111,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "pingpong": """This is a PingPong amplitude calibration: repeated pi-pulse pairs are applied and qubit population is measured vs gate count. A successful result shows error accumulation that can be fitted linearly.
+Reason: <brief explanation>"""
+
+PROMPT_PINGPONG = """This is a PingPong amplitude calibration: repeated pi-pulse pairs are applied and qubit population is measured vs gate count. A successful result shows error accumulation that can be fitted linearly.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -118,8 +125,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "qubit_flux_spectroscopy": """This is flux-dependent qubit spectroscopy: a 2D map of qubit transition frequency vs applied flux bias. A successful result shows a clear dispersion curve (arc or parabola) with a good fit overlaid.
+Reason: <brief explanation>"""
+
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """This is flux-dependent qubit spectroscopy: a 2D map of qubit transition frequency vs applied flux bias. A successful result shows a clear dispersion curve (arc or parabola) with a good fit overlaid.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -131,8 +139,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "qubit_spectroscopy": """This is a qubit spectroscopy experiment: we sweep drive frequency to find the qubit transition. A successful result has a single clear spectral peak with a good Lorentzian fit.
+Reason: <brief explanation>"""
+
+PROMPT_QUBIT_SPECTROSCOPY = """This is a qubit spectroscopy experiment: we sweep drive frequency to find the qubit transition. A successful result has a single clear spectral peak with a good Lorentzian fit.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -144,8 +153,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "qubit_spectroscopy_power_frequency": """This is a 2D qubit spectroscopy experiment: we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, and optionally f02/2) with visible power dependence.
+Reason: <brief explanation>"""
+
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is a 2D qubit spectroscopy experiment: we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, and optionally f02/2) with visible power dependence.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -157,8 +167,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "rabi": """This is a Rabi experiment: we sweep pulse amplitude to find the pi-pulse amplitude where the qubit population inverts. A successful result shows clear sinusoidal oscillations with a fit that tracks the data closely.
+Reason: <brief explanation>"""
+
+PROMPT_RABI = """This is a Rabi experiment: we sweep pulse amplitude to find the pi-pulse amplitude where the qubit population inverts. A successful result shows clear sinusoidal oscillations with a fit that tracks the data closely.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -170,8 +181,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "rabi_hw": """This is a Rabi experiment: we sweep pulse amplitude to find the pi-pulse amplitude where the qubit population inverts. A successful result shows clear sinusoidal oscillations with a fit that tracks the data closely.
+Reason: <brief explanation>"""
+
+PROMPT_RABI_HW = """This is a Rabi experiment: we sweep pulse amplitude to find the pi-pulse amplitude where the qubit population inverts. A successful result shows clear sinusoidal oscillations with a fit that tracks the data closely.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -183,8 +195,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "ramsey_charge_tomography": """This is a Ramsey charge tomography scan: repeated Ramsey measurements over time form a 2D map revealing charge jump events. A clean result shows continuous, undisturbed fringes.
+Reason: <brief explanation>"""
+
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """This is a Ramsey charge tomography scan: repeated Ramsey measurements over time form a 2D map revealing charge jump events. A clean result shows continuous, undisturbed fringes.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -196,8 +209,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "ramsey_freq_cal": """This is a Ramsey frequency calibration experiment: two π/2 pulses separated by a variable delay measure frequency detuning. A successful result shows clear oscillations at the detuning frequency with a fit that accurately extracts the frequency offset.
+Reason: <brief explanation>"""
+
+PROMPT_RAMSEY_FREQ_CAL = """This is a Ramsey frequency calibration experiment: two π/2 pulses separated by a variable delay measure frequency detuning. A successful result shows clear oscillations at the detuning frequency with a fit that accurately extracts the frequency offset.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -209,8 +223,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "ramsey_t2star": """This is a Ramsey T2* dephasing experiment: two π/2 pulses separated by a variable delay measure the dephasing time T2*. A successful result shows decaying oscillations with a fit that accurately extracts T2*.
+Reason: <brief explanation>"""
+
+PROMPT_RAMSEY_T2STAR = """This is a Ramsey T2* dephasing experiment: two π/2 pulses separated by a variable delay measure the dephasing time T2*. A successful result shows decaying oscillations with a fit that accurately extracts T2*.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -222,8 +237,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "res_spec": """This is a resonator spectroscopy experiment: we sweep probe frequency to find the resonator resonance. A successful result has a clear resonance feature (dip or peak).
+Reason: <brief explanation>"""
+
+PROMPT_RES_SPEC = """This is a resonator spectroscopy experiment: we sweep probe frequency to find the resonator resonance. A successful result has a clear resonance feature (dip or peak).
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -235,8 +251,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "rydberg_ramsey": """This is a Ramsey experiment on the ground-to-Rydberg transition: two π/2 pulses separated by variable delay measure the coherence time (T2) and detuning frequency. A successful result shows clear oscillations.
+Reason: <brief explanation>"""
+
+PROMPT_RYDBERG_RAMSEY = """This is a Ramsey experiment on the ground-to-Rydberg transition: two π/2 pulses separated by variable delay measure the coherence time (T2) and detuning frequency. A successful result shows clear oscillations.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -248,8 +265,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "rydberg_spectroscopy": """This is Rydberg transition spectroscopy: optical detuning is swept across multiple atomic sites to locate the transition frequency. A successful result shows clear spectral features with good fits and high contrast across sites.
+Reason: <brief explanation>"""
+
+PROMPT_RYDBERG_SPECTROSCOPY = """This is Rydberg transition spectroscopy: optical detuning is swept across multiple atomic sites to locate the transition frequency. A successful result shows clear spectral features with good fits and high contrast across sites.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -261,8 +279,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "t1": """This is a T1 relaxation experiment: after exciting the qubit to |1⟩, we measure population vs delay time. A successful result shows a clear exponential decay from high to low population with a good fit.
+Reason: <brief explanation>"""
+
+PROMPT_T1 = """This is a T1 relaxation experiment: after exciting the qubit to |1⟩, we measure population vs delay time. A successful result shows a clear exponential decay from high to low population with a good fit.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -274,8 +293,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "t1_fluctuations": """This is a T1 stability measurement: T1 relaxation time is tracked over repeated measurements. A successful result shows stable T1 values with minimal drift or jumps.
+Reason: <brief explanation>"""
+
+PROMPT_T1_FLUCTUATIONS = """This is a T1 stability measurement: T1 relaxation time is tracked over repeated measurements. A successful result shows stable T1 values with minimal drift or jumps.
 
 Based on what you observe in the data <image>, classify the experimental outcome.
 
@@ -287,8 +307,9 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
-    "tweezer_array": """This is a camera image of an optical tweezer array used to trap neutral atoms in a regular grid. A successful image shows sharp, uniform, well-separated spots indicating proper aberration correction.
+Reason: <brief explanation>"""
+
+PROMPT_TWEEZER_ARRAY = """This is a camera image of an optical tweezer array used to trap neutral atoms in a regular grid. A successful image shows sharp, uniform, well-separated spots indicating proper aberration correction.
 
 Based on what you observe in the image <image>, classify the experimental outcome.
 
@@ -300,7 +321,34 @@ Options:
 
 Provide your answer as:
 Classification: <your choice>
-Reason: <brief explanation>""",
+Reason: <brief explanation>"""
+
+
+# ========== Prompt 字典映射 ==========
+
+CLASSIFY_OUTCOME_PROMPTS = {
+    "coupler_flux": PROMPT_COUPLER_FLUX,
+    "cz_benchmarking": PROMPT_CZ_BENCHMARKING,
+    "drag": PROMPT_DRAG,
+    "gmm": PROMPT_GMM,
+    "microwave_ramsey": PROMPT_MICROWAVE_RAMSEY,
+    "mot_loading": PROMPT_MOT_LOADING,
+    "pinchoff": PROMPT_PINCHOFF,
+    "pingpong": PROMPT_PINGPONG,
+    "qubit_flux_spectroscopy": PROMPT_QUBIT_FLUX_SPECTROSCOPY,
+    "qubit_spectroscopy": PROMPT_QUBIT_SPECTROSCOPY,
+    "qubit_spectroscopy_power_frequency": PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY,
+    "rabi": PROMPT_RABI,
+    "rabi_hw": PROMPT_RABI_HW,
+    "ramsey_charge_tomography": PROMPT_RAMSEY_CHARGE_TOMOGRAPHY,
+    "ramsey_freq_cal": PROMPT_RAMSEY_FREQ_CAL,
+    "ramsey_t2star": PROMPT_RAMSEY_T2STAR,
+    "res_spec": PROMPT_RES_SPEC,
+    "rydberg_ramsey": PROMPT_RYDBERG_RAMSEY,
+    "rydberg_spectroscopy": PROMPT_RYDBERG_SPECTROSCOPY,
+    "t1": PROMPT_T1,
+    "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
+    "tweezer_array": PROMPT_TWEEZER_ARRAY,
 }
 
 

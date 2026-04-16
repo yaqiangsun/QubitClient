@@ -1,0 +1,1 @@
+ modelscope download --model google/gemma-4-E4B-it

@@ -1,0 +1,1 @@
+modelscope download --model nv-community/Ising-Calibration-1-35B-A3B

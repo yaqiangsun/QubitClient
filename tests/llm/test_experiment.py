@@ -16,13 +16,14 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from qubitclient.llm.experiment import (
+from qubitclient.llm.experiments import (
     EXPERIMENT_BACKGROUNDS,
-    EXTRACT_PARAMS_SCHEMAS,
-    EVALUATE_STATUS_CRITERIA,
     get_experiment_background,
+)
+
+from qubitclient.llm.experiments.q5_extract_params import (
+    EXTRACT_PARAMS_SCHEMAS,
     get_extract_params_schema,
-    get_evaluate_status_criteria,
 )
 
 
@@ -66,23 +67,6 @@ def test_extract_params_schemas():
     print(f"✓ 参数提取Schema: {len(EXTRACT_PARAMS_SCHEMAS)} 种实验")
 
 
-def test_evaluate_status_criteria():
-    """测试状态评估标准"""
-    # 检查关键实验类型
-    assert "drag" in EVALUATE_STATUS_CRITERIA
-    assert "rabi" in EVALUATE_STATUS_CRITERIA
-    assert "t1" in EVALUATE_STATUS_CRITERIA
-    assert "default" in EVALUATE_STATUS_CRITERIA
-
-    # 检查状态值
-    drag_criteria = EVALUATE_STATUS_CRITERIA["drag"]
-    assert "SUCCESS" in drag_criteria
-    assert "NO_SIGNAL" in drag_criteria
-    assert "OPTIMAL_NOT_CENTERED" in drag_criteria
-
-    print(f"✓ 状态评估标准: {len(EVALUATE_STATUS_CRITERIA)} 种实验")
-
-
 def test_get_experiment_background():
     """测试获取实验背景函数"""
     # 已知实验类型
@@ -119,22 +103,6 @@ def test_get_extract_params_schema():
     print("✓ get_extract_params_schema 函数正常")
 
 
-def test_get_evaluate_status_criteria():
-    """测试获取状态评估标准函数"""
-    # 已知实验类型
-    criteria = get_evaluate_status_criteria("drag")
-    assert criteria is not None
-    assert "SUCCESS" in criteria
-    assert "NO_SIGNAL" in criteria
-
-    # 未知实验类型 (应返回default)
-    criteria = get_evaluate_status_criteria("unknown")
-    assert criteria is not None
-    assert criteria == EVALUATE_STATUS_CRITERIA["default"]
-
-    print("✓ get_evaluate_status_criteria 函数正常")
-
-
 def test_all_families_have_backgrounds():
     """测试所有实验家族都有背景描述"""
     # QCalEval中的22种实验家族
@@ -158,9 +126,7 @@ def test_all_families_have_backgrounds():
 if __name__ == "__main__":
     test_experiment_backgrounds()
     test_extract_params_schemas()
-    test_evaluate_status_criteria()
     test_get_experiment_background()
     test_get_extract_params_schema()
-    test_get_evaluate_status_criteria()
     test_all_families_have_backgrounds()
     print("\n✓ All experiment module tests passed!")

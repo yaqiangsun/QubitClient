@@ -55,6 +55,12 @@ from qubitclient.llm.experiments.q6_evaluate_status import (
     get_evaluate_status_prompt,
 )
 
+from qubitclient.llm.experiments.experiment_background import (
+    EXPERIMENT_BACKGROUNDS,
+    get_experiment_background,
+    DEFAULT_BACKGROUND,
+)
+
 __all__ = [
     # Q1: describe_plot
     "DESCRIBE_PLOT_PROMPTS",
@@ -80,4 +86,8 @@ __all__ = [
     "EVALUATE_STATUS_PROMPTS",
     "EVALUATE_STATUS_RESPONSE_SCHEMA",
     "get_evaluate_status_prompt",
+    # experiment_background
+    "EXPERIMENT_BACKGROUNDS",
+    "get_experiment_background",
+    "DEFAULT_BACKGROUND",
 ]

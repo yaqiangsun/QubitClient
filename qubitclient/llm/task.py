@@ -204,6 +204,7 @@ def scientific_reasoning(
     return {
         "messages": [{"role": "user", "content": prompt}],
         "images": image_data,
+        # Q3 (scientific_reasoning) 是开放性推理任务，输出自由文本
     }
 
 

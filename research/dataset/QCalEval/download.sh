@@ -1,0 +1,1 @@
+modelscope download --dataset nv-community/QCalEval --local_dir ./tmp/nvidia/QCalEval

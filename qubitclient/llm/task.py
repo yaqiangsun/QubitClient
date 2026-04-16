@@ -35,6 +35,7 @@ from qubitclient.llm.experiments import (
     get_extract_params_prompt,
     get_evaluate_status_prompt,
     get_extract_params_schema,
+    get_experiment_background,
 )
 
 
@@ -139,7 +140,10 @@ def describe_plot(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
-    prompt = get_describe_plot_prompt(family) if family else "Describe the figure <image> in JSON format."
+    # 合并 experiment_background 和任务 prompt
+    background = get_experiment_background(family) if family else ""
+    task_prompt = get_describe_plot_prompt(family) if family else "Describe the figure <image> in JSON format."
+    prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {
         "messages": [{"role": "user", "content": prompt}],
@@ -169,7 +173,10 @@ def classify_outcome(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
-    prompt = get_classify_outcome_prompt(family) if family else get_classify_outcome_prompt("rabi")
+    # 合并 experiment_background 和任务 prompt
+    background = get_experiment_background(family) if family else ""
+    task_prompt = get_classify_outcome_prompt(family) if family else get_classify_outcome_prompt("rabi")
+    prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {
         "messages": [{"role": "user", "content": prompt}],
@@ -199,7 +206,10 @@ def scientific_reasoning(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
-    prompt = get_scientific_reasoning_prompt(family) if family else get_scientific_reasoning_prompt("rabi")
+    # 合并 experiment_background 和任务 prompt
+    background = get_experiment_background(family) if family else ""
+    task_prompt = get_scientific_reasoning_prompt(family) if family else get_scientific_reasoning_prompt("rabi")
+    prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {
         "messages": [{"role": "user", "content": prompt}],
@@ -229,7 +239,10 @@ def assess_fit(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
-    prompt = get_assess_fit_prompt(family) if family else get_assess_fit_prompt("rabi")
+    # 合并 experiment_background 和任务 prompt
+    background = get_experiment_background(family) if family else ""
+    task_prompt = get_assess_fit_prompt(family) if family else get_assess_fit_prompt("rabi")
+    prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {
         "messages": [{"role": "user", "content": prompt}],
@@ -266,9 +279,11 @@ def extract_params(
     if schema is None and family:
         schema = get_extract_params_schema(family)
 
-    # 获取专属 prompt
+    # 合并 experiment_background 和任务 prompt
+    background = get_experiment_background(family) if family else ""
     schema_str = json.dumps(schema) if isinstance(schema, dict) else str(schema or "{}")
-    prompt = get_extract_params_prompt(family, schema_str) if family else get_extract_params_prompt("rabi", schema_str)
+    task_prompt = get_extract_params_prompt(family, schema_str) if family else get_extract_params_prompt("rabi", schema_str)
+    prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {
         "messages": [{"role": "user", "content": prompt}],
@@ -298,7 +313,10 @@ def evaluate_status(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
-    prompt = get_evaluate_status_prompt(family) if family else get_evaluate_status_prompt("rabi")
+    # 合并 experiment_background 和任务 prompt
+    background = get_experiment_background(family) if family else ""
+    task_prompt = get_evaluate_status_prompt(family) if family else get_evaluate_status_prompt("rabi")
+    prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     return {
         "messages": [{"role": "user", "content": prompt}],

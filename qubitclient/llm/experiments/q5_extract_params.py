@@ -15,156 +15,112 @@ Q5: 提取参数任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
-
-Extract the following parameters from this coupler flux spectroscopy plot <image>.
+PROMPT_COUPLER_FLUX = """Extract the following parameters from this coupler flux spectroscopy plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_CZ_BENCHMARKING = """This is CZ gate benchmarking: measures atom retention probability and cycle polarization vs circuit depth. A successful result shows retention and polarization close to 1 with gradual decay.
-
-Extract the following parameters from this CZ benchmarking plot <image>.
+PROMPT_CZ_BENCHMARKING = """Extract the following parameters from this CZ benchmarking plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_DRAG = """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
-
-Extract the following parameters from this DRAG calibration plot <image>.
+PROMPT_DRAG = """Extract the following parameters from this DRAG calibration plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_GMM = """This is a GMM discrimination experiment: I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit. A successful result has two well-separated clusters.
-
-Extract the following parameters from this GMM plot <image>.
+PROMPT_GMM = """Extract the following parameters from this GMM plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_MICROWAVE_RAMSEY = """This is a microwave Ramsey experiment: sinusoidal oscillations with contrast close to 1 and good fit.
-
-Extract the following parameters from this Ramsey plot <image>.
+PROMPT_MICROWAVE_RAMSEY = """Extract the following parameters from this Ramsey plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_MOT_LOADING = """This is a MOT loading image: shows trapped atoms in a magneto-optical trap. A successful result shows a well-defined, compact atomic cloud.
-
-Extract the following parameters from this MOT image <image>.
+PROMPT_MOT_LOADING = """Extract the following parameters from this MOT image <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_PINCHOFF = """This is a pinch-off measurement: current trace vs gate voltage to determine device pinch-off.
-
-Extract the following parameters from this pinch-off plot <image>.
+PROMPT_PINCHOFF = """Extract the following parameters from this pinch-off plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_PINGPONG = """This is PingPong calibration: repeated pi-pulse pairs measure qubit population vs gate count. A successful result shows linear error accumulation.
-
-Extract the following parameters from this PingPong plot <image>.
+PROMPT_PINGPONG = """Extract the following parameters from this PingPong plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """This is flux-dependent qubit spectroscopy: 2D map of qubit frequency vs flux. A successful result shows clear dispersion curve with good fit.
-
-Extract the following parameters from this flux spectroscopy plot <image>.
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """Extract the following parameters from this flux spectroscopy plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_QUBIT_SPECTROSCOPY = """This is qubit spectroscopy: sweep drive frequency to find qubit transition. A successful result has a single clear peak with good Lorentzian fit.
-
-Extract the following parameters from this spectroscopy plot <image>.
+PROMPT_QUBIT_SPECTROSCOPY = """Extract the following parameters from this spectroscopy plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is 2D qubit spectroscopy: sweep power and frequency to map qubit transitions. A successful result shows clear transition lines.
-
-Extract the following parameters from this 2D spectroscopy plot <image>.
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """Extract the following parameters from this 2D spectroscopy plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RABI = """This is a Rabi experiment: sweep pulse amplitude to find pi-pulse amplitude where qubit population inverts. A successful result shows clear sinusoidal oscillations with fit.
-
-Extract the following parameters from this Rabi plot <image>.
+PROMPT_RABI = """Extract the following parameters from this Rabi plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RABI_HW = """This is a Rabi experiment with hardware characterization: clear oscillations with fit.
-
-Extract the following parameters from this Rabi HW plot <image>.
+PROMPT_RABI_HW = """Extract the following parameters from this Rabi HW plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """This is Ramsey charge tomography: 2D map over time revealing charge jumps. Clean result shows continuous fringes.
-
-Extract the following parameters from this charge tomography plot <image>.
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Extract the following parameters from this charge tomography plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RAMSEY_FREQ_CAL = """This is Ramsey frequency calibration: oscillations at detuning frequency with accurate fit.
-
-Extract the following parameters from this Ramsey freq cal plot <image>.
+PROMPT_RAMSEY_FREQ_CAL = """Extract the following parameters from this Ramsey freq cal plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RAMSEY_T2STAR = """This is Ramsey T2* dephasing: decaying oscillations with fit that extracts T2*.
-
-Extract the following parameters from this T2* plot <image>.
+PROMPT_RAMSEY_T2STAR = """Extract the following parameters from this T2* plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RES_SPEC = """This is resonator spectroscopy: sweep probe frequency to find resonance. A successful result has clear resonance feature.
-
-Extract the following parameters from this resonator spectroscopy plot <image>.
+PROMPT_RES_SPEC = """Extract the following parameters from this resonator spectroscopy plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RYDBERG_RAMSEY = """This is Rydberg Ramsey: oscillations on ground-to-Rydberg transition with T2 and detuning.
-
-Extract the following parameters from this Rydberg Ramsey plot <image>.
+PROMPT_RYDBERG_RAMSEY = """Extract the following parameters from this Rydberg Ramsey plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_RYDBERG_SPECTROSCOPY = """This is Rydberg spectroscopy: sweep detuning across multiple sites. Clear spectral features with good fits.
-
-Extract the following parameters from this Rydberg spectroscopy plot <image>.
+PROMPT_RYDBERG_SPECTROSCOPY = """Extract the following parameters from this Rydberg spectroscopy plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_T1 = """This is T1 relaxation: measure population vs delay after excitation to |1⟩. A successful result shows clear exponential decay with good fit.
-
-Extract the following parameters from this T1 plot <image>.
+PROMPT_T1 = """Extract the following parameters from this T1 plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_T1_FLUCTUATIONS = """This is T1 stability measurement: T1 tracked over repeated measurements. Stable values indicate good qubit stability.
-
-Extract the following parameters from this T1 stability plot <image>.
+PROMPT_T1_FLUCTUATIONS = """Extract the following parameters from this T1 stability plot <image>.
 
 Report in JSON format:
 {{params_schema}}"""
 
-PROMPT_TWEEZER_ARRAY = """This is optical tweezer array image: trapped atoms in regular grid. Sharp, uniform spots indicate proper aberration correction.
-
-Extract the following parameters from this tweezer array image <image>.
+PROMPT_TWEEZER_ARRAY = """Extract the following parameters from this tweezer array image <image>.
 
 Report in JSON format:
 {{params_schema}}"""

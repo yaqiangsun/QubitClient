@@ -15,9 +15,7 @@ Q3: 科学推理任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
-
-What does this result <image> imply?
+PROMPT_COUPLER_FLUX = """What does this result <image> imply?
 
 Explain:
 - What the avoided crossing pattern indicates about coupler tuning
@@ -26,9 +24,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_CZ_BENCHMARKING = """This is CZ (controlled-Z) gate benchmarking on pairs of neutral atoms. It measures atom retention probability and cycle polarization as a function of circuit depth. A successful result shows both retention and polarization close to 1 with gradual decay.
-
-What does this result <image> imply?
+PROMPT_CZ_BENCHMARKING = """What does this result <image> imply?
 
 Explain:
 - What the decay rate indicates about gate fidelity
@@ -37,9 +33,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_DRAG = """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
-
-What does this result <image> imply?
+PROMPT_DRAG = """What does this result <image> imply?
 
 Explain:
 - What the zero-crossing position and slope indicate about DRAG coefficient optimality and leakage suppression
@@ -48,9 +42,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_GMM = """This is a single-shot readout discrimination experiment: the I-Q scatter plot shows measurement results for |0⟩ and |1⟩ states fitted with a Gaussian Mixture Model. A successful result has two well-separated clusters.
-
-What does this result <image> imply?
+PROMPT_GMM = """What does this result <image> imply?
 
 Explain:
 - What the cluster separation indicates about readout fidelity
@@ -59,9 +51,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_MICROWAVE_RAMSEY = """This is a Ramsey experiment on the ground-state clock qubit using microwave pulses. A successful result shows sinusoidal oscillations with contrast close to 1 and data well-fit by the curve.
-
-What does this result <image> imply?
+PROMPT_MICROWAVE_RAMSEY = """What does this result <image> imply?
 
 Explain:
 - What the oscillation frequency and contrast indicate about qubit coherence
@@ -70,9 +60,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_MOT_LOADING = """This is a MOT (magneto-optical trap) loading image: a camera captures the fluorescence of trapped atoms. A successful result shows a well-defined, compact atomic cloud in the view.
-
-What does this result <image> imply?
+PROMPT_MOT_LOADING = """What does this result <image> imply?
 
 Explain:
 - What the cloud characteristics indicate about loading efficiency
@@ -81,9 +69,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_PINCHOFF = """This is an electron-on-helium pinch-off measurement: a 1D current trace is measured as a function of gate voltage. The measurement determines whether the device has pinched off.
-
-What does this result <image> imply?
+PROMPT_PINCHOFF = """What does this result <image> imply?
 
 Explain:
 - What the current-voltage relationship indicates about device pinch-off
@@ -92,9 +78,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_PINGPONG = """This is a PingPong amplitude calibration: repeated pi-pulse pairs are applied and qubit population is measured vs gate count. A successful result shows error accumulation that can be fitted linearly.
-
-What does this result <image> imply?
+PROMPT_PINGPONG = """What does this result <image> imply?
 
 Explain:
 - What the error accumulation rate indicates about gate fidelity
@@ -103,9 +87,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """This is flux-dependent qubit spectroscopy: a 2D map of qubit transition frequency vs applied flux bias. A successful result shows a clear dispersion curve with a good fit.
-
-What does this result <image> imply?
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """What does this result <image> imply?
 
 Explain:
 - What the dispersion curve shape indicates about qubit nonlinearity
@@ -114,9 +96,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_QUBIT_SPECTROSCOPY = """This is a qubit spectroscopy experiment: we sweep drive frequency to find the qubit transition. A successful result has a single clear spectral peak with a good Lorentzian fit.
-
-What does this result <image> imply?
+PROMPT_QUBIT_SPECTROSCOPY = """What does this result <image> imply?
 
 Explain:
 - What the peak position indicates about qubit frequency
@@ -125,9 +105,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is a 2D qubit spectroscopy experiment: we sweep both drive power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, optionally f02/2).
-
-What does this result <image> imply?
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """What does this result <image> imply?
 
 Explain:
 - What the transition lines indicate about qubit energy levels
@@ -136,9 +114,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RABI = """This is a Rabi experiment: we sweep pulse amplitude to find the pi-pulse amplitude where the qubit population inverts. A successful result shows clear sinusoidal oscillations with a fit.
-
-What does this result <image> imply?
+PROMPT_RABI = """What does this result <image> imply?
 
 Explain:
 - What the oscillation visibility indicates about drive efficiency
@@ -147,9 +123,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RABI_HW = """This is a Rabi experiment: we sweep pulse amplitude to find the pi-pulse amplitude. A successful result shows clear sinusoidal oscillations with a fit.
-
-What does this result <image> imply?
+PROMPT_RABI_HW = """What does this result <image> imply?
 
 Explain:
 - What the Rabi frequency indicates about drive strength
@@ -158,9 +132,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """This is a Ramsey charge tomography scan: repeated Ramsey measurements over time form a 2D map revealing charge jump events. A clean result shows continuous fringes.
-
-What does this result <image> imply?
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """What does this result <image> imply?
 
 Explain:
 - What the fringe pattern indicates about charge stability
@@ -169,9 +141,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RAMSEY_FREQ_CAL = """This is a Ramsey frequency calibration: two π/2 pulses separated by variable delay measure frequency detuning. A successful result shows clear oscillations with accurate fit.
-
-What does this result <image> imply?
+PROMPT_RAMSEY_FREQ_CAL = """What does this result <image> imply?
 
 Explain:
 - What the detuning frequency indicates about qubit frequency accuracy
@@ -180,9 +150,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RAMSEY_T2STAR = """This is a Ramsey T2* dephasing experiment: two π/2 pulses separated by variable delay measure the dephasing time T2*. A successful result shows decaying oscillations with accurate fit.
-
-What does this result <image> imply?
+PROMPT_RAMSEY_T2STAR = """What does this result <image> imply?
 
 Explain:
 - What the T2* value indicates about qubit coherence
@@ -191,9 +159,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RES_SPEC = """This is a resonator spectroscopy: we sweep probe frequency to find the resonator resonance. A successful result has a clear resonance feature (dip or peak).
-
-What does this result <image> imply?
+PROMPT_RES_SPEC = """What does this result <image> imply?
 
 Explain:
 - What the resonance frequency indicates about resonator properties
@@ -202,9 +168,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RYDBERG_RAMSEY = """This is a Ramsey experiment on ground-to-Rydberg transition: two π/2 pulses separated by variable delay measure T2 and detuning. A successful result shows clear oscillations.
-
-What does this result <image> imply?
+PROMPT_RYDBERG_RAMSEY = """What does this result <image> imply?
 
 Explain:
 - What the coherence time indicates about Rydberg excitation quality
@@ -213,9 +177,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_RYDBERG_SPECTROSCOPY = """This is Rydberg spectroscopy: optical detuning swept across multiple atomic sites. A successful result shows clear spectral features with good fits.
-
-What does this result <image> imply?
+PROMPT_RYDBERG_SPECTROSCOPY = """What does this result <image> imply?
 
 Explain:
 - What the spectral features indicate about Rydberg level positions
@@ -224,9 +186,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_T1 = """This is a T1 relaxation experiment: after exciting to |1⟩, we measure population vs delay time. A successful result shows clear exponential decay with good fit.
-
-What does this result <image> imply?
+PROMPT_T1 = """What does this result <image> imply?
 
 Explain:
 - What the T1 value indicates about qubit relaxation
@@ -235,9 +195,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_T1_FLUCTUATIONS = """This is a T1 stability measurement: T1 tracked over repeated measurements. A successful result shows stable T1 values with minimal drift.
-
-What does this result <image> imply?
+PROMPT_T1_FLUCTUATIONS = """What does this result <image> imply?
 
 Explain:
 - What the T1 stability indicates about qubit frequency noise
@@ -246,9 +204,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_TWEEZER_ARRAY = """This is an optical tweezer array image: trapped atoms in a regular grid. A successful image shows sharp, uniform, well-separated spots.
-
-What does this result <image> imply?
+PROMPT_TWEEZER_ARRAY = """What does this result <image> imply?
 
 Explain:
 - What the spot characteristics indicate about trapping quality

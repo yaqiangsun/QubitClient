@@ -15,9 +15,7 @@ Q6: 评估状态任务
 
 # ========== 独立 Prompt 字符串定义 ==========
 
-PROMPT_COUPLER_FLUX = """This is tunable coupler spectroscopy: we map the coupler's frequency response vs applied flux bias. A successful result shows a clear coupler dispersion curve with a good fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_COUPLER_FLUX = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear avoided crossing with good fit within sweep range
@@ -32,9 +30,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_CZ_BENCHMARKING = """This is CZ gate benchmarking: measures atom retention probability and cycle polarization vs circuit depth. A successful result shows retention and polarization close to 1 with gradual decay.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_CZ_BENCHMARKING = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: High retention (>0.9) and polarization, clear decay pattern
@@ -49,9 +45,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_DRAG = """This is a DRAG calibration: we sweep 1/alpha to find the optimal value that minimizes leakage. A successful result has the zero-crossing of fitted curves clearly observable in the sweep window.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_DRAG = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Zero-crossing clearly observable in sweep window
@@ -66,9 +60,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min 1/alpha>, <max 1/alpha>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_GMM = """This is a GMM discrimination experiment: I-Q scatter plot for |0⟩ and |1⟩ states with GMM fit. A successful result has two well-separated clusters.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_GMM = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Two well-separated clusters clearly visible
@@ -83,9 +75,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_MICROWAVE_RAMSEY = """This is a microwave Ramsey experiment: sinusoidal oscillations with contrast close to 1 and good fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_MICROWAVE_RAMSEY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear oscillations with high contrast (>0.8), good fit
@@ -100,9 +90,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_MOT_LOADING = """This is a MOT loading image: shows trapped atoms in a magneto-optical trap. A successful result shows a well-defined, compact atomic cloud.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_MOT_LOADING = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear, compact cloud with good brightness
@@ -117,9 +105,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_PINCHOFF = """This is a pinch-off measurement: current trace vs gate voltage to determine device pinch-off.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_PINCHOFF = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear pinch-off transition with identifiable regions
@@ -134,9 +120,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_PINGPONG = """This is PingPong calibration: repeated pi-pulse pairs measure qubit population vs gate count. A successful result shows linear error accumulation.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_PINGPONG = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear linear error accumulation, good fit
@@ -151,9 +135,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """This is flux-dependent qubit spectroscopy: 2D map of qubit frequency vs flux. A successful result shows clear dispersion curve with good fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear dispersion curve with good fit, in range
@@ -168,9 +150,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_QUBIT_SPECTROSCOPY = """This is qubit spectroscopy: sweep drive frequency to find qubit transition. A successful result has a single clear peak with good Lorentzian fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_QUBIT_SPECTROSCOPY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Single clear peak with good Lorentzian fit
@@ -185,9 +165,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """This is 2D qubit spectroscopy: sweep power and frequency to map qubit transitions. A successful result shows clear transition lines (f01, optionally f02/2).
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear f01 line visible (and f02/2 if present)
@@ -202,9 +180,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RABI = """This is a Rabi experiment: sweep pulse amplitude to find pi-pulse. A successful result shows clear sinusoidal oscillations with fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RABI = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear oscillations, good fit, visible inversion
@@ -219,9 +195,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RABI_HW = """This is a Rabi experiment with hardware characterization: clear oscillations with fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RABI_HW = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear oscillations with good fit
@@ -236,9 +210,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """This is Ramsey charge tomography: 2D map over time revealing charge jumps. Clean result shows continuous fringes.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clean fringes, no jumps visible
@@ -253,9 +225,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RAMSEY_FREQ_CAL = """This is Ramsey frequency calibration: oscillations at detuning frequency with accurate fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RAMSEY_FREQ_CAL = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear oscillations, clear detuning, good fit
@@ -270,9 +240,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RAMSEY_T2STAR = """This is Ramsey T2* dephasing: decaying oscillations with fit that extracts T2*.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RAMSEY_T2STAR = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear decaying oscillations, good T2* fit
@@ -287,9 +255,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RES_SPEC = """This is resonator spectroscopy: sweep probe frequency to find resonance. A successful result has clear resonance feature.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RES_SPEC = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear resonance dip/peak with good contrast
@@ -304,9 +270,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RYDBERG_RAMSEY = """This is Rydberg Ramsey: oscillations on ground-to-Rydberg transition with T2 and detuning.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RYDBERG_RAMSEY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear oscillations, good coherence
@@ -321,9 +285,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RYDBERG_SPECTROSCOPY = """This is Rydberg spectroscopy: sweep detuning across multiple sites. Clear spectral features with good fits.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_RYDBERG_SPECTROSCOPY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear spectral lines, good fits, high contrast
@@ -338,9 +300,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_T1 = """This is T1 relaxation: measure population vs delay after excitation to |1⟩. A successful result shows clear exponential decay with good fit.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_T1 = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Clear exponential decay, good fit, T1 in reasonable range
@@ -355,9 +315,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_T1_FLUCTUATIONS = """This is T1 stability measurement: T1 tracked over repeated measurements. Stable values indicate good qubit stability.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_T1_FLUCTUATIONS = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Stable T1 values, minimal variation
@@ -372,9 +330,7 @@ Status: <one of the listed statuses>
 Suggested range: (<min>, <max>) (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_TWEEZER_ARRAY = """This is optical tweezer array image: trapped atoms in regular grid. Sharp, uniform spots indicate proper aberration correction.
-
-Evaluate the image <image> and determine the experiment status.
+PROMPT_TWEEZER_ARRAY = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
 - SUCCESS: Sharp, uniform spots in regular grid

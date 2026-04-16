@@ -22,6 +22,7 @@
 - **Batch Processing**: Supports processing multiple data files simultaneously
 - **Easy Integration**: Provides clean and clear API interfaces for quick integration into existing projects
 - **MCP Protocol Support**: Real-time quantum measurement task control based on MCP protocol
+- **LLM/VLM Integration**: Supports large language models and vision-language models for quantum measurement data analysis and decision-making
 
 ## Installation
 
@@ -133,6 +134,33 @@ result = client.run(
 print(result)
 ```
 
+#### LLM Functions (VLM Image Analysis)
+
+```python
+from qubitclient.llm import QubitLLM, LLMTaskName
+
+# Initialize client (auto-loads config from qubitclient.json)
+llm = QubitLLM()
+
+# Method 1: Direct chat
+result = llm.chat([
+    {"role": "system", "content": "You are a quantum physics expert."},
+    {"role": "user", "content": "Explain quantum entanglement"}
+])
+print(result)
+
+# Method 2: VLM with image
+result = llm.chat(
+    [{"role": "user", "content": "Analyze this image"}],
+    images="measurement.png"
+)
+print(result)
+
+# Method 3: Use task prompt (auto-builds messages and JSON schema)
+result = llm.run(LLMTaskName.EVALUATE_ANALYSIS, analysis_result={"score": 80})
+print(result)
+```
+
 ## Supported Task Types
 
 ### NNScope Tasks
@@ -172,6 +200,13 @@ print(result)
 - `CtrlTaskName.SPECTRUM_2D`: 2D spectrum measurement, simultaneously scanning frequency and bias parameters, see [SPECTRUM_2D Detailed Documentation](docs/ctrl/SPECTRUM_2D.md)
 - `CtrlTaskName.T1`: T1 relaxation time measurement, measuring qubit energy relaxation time, see [T1 Detailed Documentation](docs/ctrl/T1.md)
 
+### LLM Tasks
+
+- `LLMTaskName.VLM_ANALYZE`: VLM image analysis
+- `LLMTaskName.EVALUATE_ANALYSIS`: Evaluate analysis results
+- `LLMTaskName.DECIDE_NEXT_ACTION`: Decide next action
+- `LLMTaskName.SUGGEST_PARAMS`: Suggest measurement parameters
+
 ## Data Format Specification
 
 ### Input Format
@@ -195,7 +230,31 @@ python tests/test_scope.py
 
 # Run Ctrl tests
 python tests/test_ctrl_mcp.py
+
+# Run LLM tests
+python tests/test_llm.py
 ```
+
+## LLM Configuration
+
+Configure LLM in `qubitclient.json` (create or edit this file):
+
+```json
+{
+  "llm": {
+    "api_key": "your-api-key",
+    "base_url": "https://your-llm-endpoint.com/v1",
+    "model": "gpt-4o"
+  }
+}
+```
+
+Supported configuration methods (priority from low to high):
+1. Default values (gpt-4o)
+2. User directory `~/qubitclient.json`
+3. Environment variables `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`
+4. Runtime directory `./qubitclient.json`
+5. Constructor parameters (highest priority)
 
 ## Format Conversion and Other Tool Integration
 
@@ -205,6 +264,7 @@ Refer to the code in the [resources](resources) directory for different tools.
 
 Recent updates:
 
+- **Added LLM module**: Integrated large language models and vision-language models for quantum measurement data analysis and decision-making (2026-04-16)
 - **Added Ctrl package**: MCP protocol-based measurement tasks (2026-02-06)
 - **Added DRAG analysis function**: Added DRAG task data analysis (2026-02-05)
 - **Added scope package**: Added multiple task functions (2025-10-22)

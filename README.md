@@ -68,6 +68,7 @@
 - ⚡ **批量处理**：轻松同时处理多个数据文件，提高工作效率。
 - 🔌 **易于集成**：简洁的 API 设计，可快速融入现有项目流程。
 - 🤝 **MCP 协议支持**：基于 MCP 协议的实时量子测量任务控制，实现实验自动化。
+- 🤖 **LLM/VLM 集成**：支持大语言模型和视觉语言模型，用于量子测量数据分析与决策。
 
 ## 📦 安装
 
@@ -183,6 +184,33 @@ result = client.run(
 print(result)
 ```
 
+#### 🤖 LLM 功能（VLM 图像分析）
+
+```python
+from qubitclient.llm import QubitLLM, LLMTaskName
+
+# 初始化客户端（自动从 qubitclient.json 读取配置）
+llm = QubitLLM()
+
+# 方式1：直接对话
+result = llm.chat([
+    {"role": "system", "content": "You are a quantum physics expert."},
+    {"role": "user", "content": "Explain quantum entanglement"}
+])
+print(result)
+
+# 方式2：带图像的 VLM 分析
+result = llm.chat(
+    [{"role": "user", "content": "分析这张图像"}],
+    images="measurement.png"
+)
+print(result)
+
+# 方式3：使用任务 prompt（自动构建消息和 JSON schema）
+result = llm.run(LLMTaskName.EVALUATE_ANALYSIS, analysis_result={"score": 80})
+print(result)
+```
+
 ## 📋 支持的任务类型
 
 ### 🧠 NNScope 任务
@@ -209,7 +237,7 @@ print(result)
 | `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ✅
 | `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ✅
 | `TaskName.T2FIT` | T2 时间拟合 | [文档](docs/scope/T2FIT.md) | ✅
-| `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ⏸️
+| `TaskName.POWERSHIFT` | 功率偏移曲线分析 | [文档](docs/scope/POWERSHIFT.md) | ✅
 | `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) | ✅
 | `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) | ✅
 | `TaskName.DELTA` | delta优化实验 | [文档](docs/scope/DELTA.md) | ✅
@@ -234,6 +262,15 @@ print(result)
 | `CtrlTaskName.RB` | 随机基准测试 | [文档](docs/ctrl/RB.md) | ✅
 | `CtrlTaskName.DATA` | 获取测量数据 | [文档](docs/ctrl/DATA.md) | ✅
 
+### 🤖 LLM 任务
+
+| 任务名称 | 描述 | 详细文档 | 状态 |
+|---------|------|
+| `LLMTaskName.VLM_ANALYZE` | VLM 图像分析 | [文档](docs/llm/xxx.md) | ⏸️
+| `LLMTaskName.EVALUATE_ANALYSIS` | 评估分析结果 | [文档](docs/llm/xxx.md) | ⏸️
+| `LLMTaskName.DECIDE_NEXT_ACTION` | 决定下一步行动 | [文档](docs/llm/xxx.md) | ⏸️
+| `LLMTaskName.SUGGEST_PARAMS` | 建议测量参数 | [文档](docs/llm/xxx.md) | ⏸️
+
 ## 📁 数据格式说明
 
 不同任务对输入/输出数据格式有不同要求，请参考对应任务的详细文档（上面链接）获取具体说明。
@@ -251,7 +288,31 @@ python tests/test_scope.py
 
 # 运行 Ctrl 测试
 python tests/test_ctrl_mcp.py
+
+# 运行 LLM 测试
+python tests/test_llm.py
 ```
+
+## ⚙️ LLM 配置
+
+在 `qubitclient.json` 中配置 LLM（创建或编辑此文件）：
+
+```json
+{
+  "llm": {
+    "api_key": "your-api-key",
+    "base_url": "https://your-llm-endpoint.com/v1",
+    "model": "gpt-4o"
+  }
+}
+```
+
+支持的配置方式（优先级从低到高）：
+1. 默认值（gpt-4o）
+2. 用户目录 `~/qubitclient.json`
+3. 环境变量 `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`
+4. 运行目录 `./qubitclient.json`
+5. 构造函数参数（最高优先级）
 
 ## 🔧 格式转换与工具集成
 
@@ -259,7 +320,8 @@ python tests/test_ctrl_mcp.py
 
 ## 📝 更新日志
 
-### v0.4.0 (近期更新)
+### 近期更新
+- 🤖 **新增 LLM 模块**：集成大语言模型和视觉语言模型，支持量子测量数据分析与决策
 - 🎨 **优化绘制功能**：统一结果绘制风格
 - 🤝 **增加 Ctrl 功能包**：基于 MCP 协议的实时测量任务
 - 📈 **增加 DRAG 分析功能**：支持 DRAG 任务数据分析

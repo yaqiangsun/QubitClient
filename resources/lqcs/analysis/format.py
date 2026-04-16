@@ -123,6 +123,8 @@ def s21vsflux_convert(result):
             # 验证：检查 amp_2d 是否与原始数据一致
 
         data_formated["image"][qubit_name] = (unique_volt, unique_freq, amp_2d)
+        # data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
+
         assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
         assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
     return data_formated
@@ -170,16 +172,16 @@ def powershift_convert(result):
 
             if is_row_major:
                 # 行优先：每个频率的所有电压连续存储
-                amp_2d = amp.reshape(n_freq, n_volt)
+                amp_2d = s.reshape(n_freq, n_volt)
             else:
                 # 列优先：每个电压的所有频率连续存储
-                amp_2d = amp.reshape(n_volt, n_freq).T
+                amp_2d = s.reshape(n_volt, n_freq).T
 
             # 重塑 amp 为2D
 
             # 验证：检查 amp_2d 是否与原始数据一致
 
-        data_formated["image"][qubit_name] = (unique_volt, unique_freq, amp_2d)
+        data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d)
         assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
         assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
     return data_formated

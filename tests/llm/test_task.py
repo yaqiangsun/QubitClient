@@ -83,9 +83,9 @@ def test_describe_plot_task():
     assert "plot_type" in result["response_schema"]["properties"]
     assert "DRAG" in result["messages"][0]["content"]
 
-    # 使用自定义背景
-    result = get_task_prompt("describe_plot", "test.png", experiment_background="Custom background")
-    assert "Custom background" in result["messages"][0]["content"]
+    # 使用不同家族
+    result = get_task_prompt("describe_plot", "test.png", experiment_family="t1")
+    assert "T1" in result["messages"][0]["content"]
 
     print("✓ describe_plot 任务正常")
 

@@ -8,7 +8,7 @@ from qubitclient.llm.task import (
     get_task_prompt,
 )
 
-from qubitclient.llm.experiment import ExperimentFamily
+from qubitclient.llm.experiment import ExperimentFamily, ExperimentType
 
 from qubitclient.llm.llm import QubitLLM, get_openai_client
 
@@ -21,4 +21,5 @@ __all__ = [
     "get_task_prompt",
     # experiment
     "ExperimentFamily",
+    "ExperimentType",
 ]

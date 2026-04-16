@@ -21,7 +21,7 @@ from qubitclient.llm.decision import (
     get_decision_prompt,
 )
 
-from qubitclient.llm.experiment import (
+from qubitclient.llm.experiments import (
     # Response Schema
     DESCRIBE_PLOT_RESPONSE_SCHEMA,
     CLASSIFY_OUTCOME_RESPONSE_SCHEMA,

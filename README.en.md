@@ -137,7 +137,7 @@ print(result)
 #### LLM Functions (VLM Image Analysis)
 
 ```python
-from qubitclient.llm import QubitLLM, LLMTaskName
+from qubitclient.llm import QubitLLM, LLMTaskName, ExperimentFamily
 
 # Initialize client (auto-loads config from qubitclient.json)
 llm = QubitLLM()
@@ -157,7 +157,60 @@ result = llm.chat(
 print(result)
 
 # Method 3: Use task prompt (auto-builds messages and JSON schema)
-result = llm.run(LLMTaskName.EVALUATE_ANALYSIS, analysis_result={"score": 80})
+# QCalEval Q1: Describe plot
+result = llm.run(
+    LLMTaskName.DESCRIBE_PLOT,
+    "test.png",
+    experiment_family=ExperimentFamily.RABI
+)
+print(result)
+
+# QCalEval Q2: Classify outcome
+result = llm.run(
+    LLMTaskName.CLASSIFY_OUTCOME,
+    "test.png",
+    experiment_family=ExperimentFamily.T1
+)
+print(result)
+
+# QCalEval Q3: Scientific reasoning
+result = llm.run(
+    LLMTaskName.SCIENTIFIC_REASONING,
+    "test.png",
+    experiment_family=ExperimentFamily.RAMSEY_T2STAR
+)
+print(result)
+
+# QCalEval Q4: Assess fit reliability
+result = llm.run(
+    LLMTaskName.ASSESS_FIT,
+    "test.png",
+    experiment_family=ExperimentFamily.RABI
+)
+print(result)
+
+# QCalEval Q5: Extract parameters
+result = llm.run(
+    LLMTaskName.EXTRACT_PARAMS,
+    "test.png",
+    experiment_family=ExperimentFamily.T1
+)
+print(result)
+
+# QCalEval Q6: Evaluate experiment status
+result = llm.run(
+    LLMTaskName.EVALUATE_STATUS,
+    "test.png",
+    experiment_family=ExperimentFamily.T1
+)
+print(result)
+
+# Decision task: suggest next measurement based on evaluation
+result = llm.run(
+    LLMTaskName.DECIDE_NEXT_ACTION,
+    evaluation_result={"status": "success", "params": {...}},
+    available_actions=["S21", "RABI", "T1"]
+)
 print(result)
 ```
 
@@ -202,10 +255,15 @@ print(result)
 
 ### LLM Tasks
 
-- `LLMTaskName.VLM_ANALYZE`: VLM image analysis
-- `LLMTaskName.EVALUATE_ANALYSIS`: Evaluate analysis results
-- `LLMTaskName.DECIDE_NEXT_ACTION`: Decide next action
-- `LLMTaskName.SUGGEST_PARAMS`: Suggest measurement parameters
+| Task Name | Description | Reference | Status |
+|-----------|-------------|-----------|--------|
+| `LLMTaskName.DECIDE_NEXT_ACTION` | Decide next measurement target and parameters | - | ⏸️
+| `LLMTaskName.DESCRIBE_PLOT` | Describe chart type, axes, features | QCalEval-Q1 | ⏸️
+| `LLMTaskName.CLASSIFY_OUTCOME` | Classify experiment outcome (Expected/Suboptimal/Anomalous) | QCalEval-Q2 | ⏸️
+| `LLMTaskName.SCIENTIFIC_REASONING` | Scientific reasoning analysis | QCalEval-Q3 | ⏸️
+| `LLMTaskName.ASSESS_FIT` | Assess fit reliability | QCalEval-Q4 | ⏸️
+| `LLMTaskName.EXTRACT_PARAMS` | Extract parameters from plot | QCalEval-Q5 | ⏸️
+| `LLMTaskName.EVALUATE_STATUS` | Evaluate experiment status (success/failure with reason) | QCalEval-Q6 | ⏸️
 
 ## Data Format Specification
 
@@ -264,6 +322,9 @@ Refer to the code in the [resources](resources) directory for different tools.
 
 Recent updates:
 
+- **Added QCalEval benchmark**: Integrated NVIDIA QCalEval dataset, supporting 6 VLM tasks (Q1-Q6) and 87 experiment types (2026-04-16)
+- **Added experiment background module**: Provides professional physics background descriptions for 22 experiment families (2026-04-16)
+- **Added LLM decision module**: Supports automatic decision-making for next measurement based on evaluation results (2026-04-16)
 - **Added LLM module**: Integrated large language models and vision-language models for quantum measurement data analysis and decision-making (2026-04-16)
 - **Added Ctrl package**: MCP protocol-based measurement tasks (2026-02-06)
 - **Added DRAG analysis function**: Added DRAG task data analysis (2026-02-05)

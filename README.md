@@ -277,6 +277,7 @@ print(result)
 | `NNTaskName.S21VFLUX` | S21 vs Flux 参数曲线分割 | [文档](docs/nnscope/S21VFLUX.md) | ⏸️
 | `NNTaskName.SPECTRUM` | 频谱分析 | [文档](docs/nnscope/SPECTRUM.md) | ✅
 | `NNTaskName.S21PEAK` | S21 峰值检测 | [文档](docs/nnscope/S21PEAK.md) | ⏸️
+| `NNTaskName.S21PEAKMULTI` | S21 峰值检测 | [文档](docs/nnscope/S21PEAKMULTI.md) | ⏸️
 
 ### 🔬 Scope 任务
 

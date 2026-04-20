@@ -172,6 +172,13 @@ def s21peaknnscope(files,url,api_key,*args,**kwargs):
     return response
 
 @task_register
+def s21peakmultinnscope(files,url,api_key,*args,**kwargs):
+    s21peak_url = url + "/api/v1/tasks/nnscope/s21multi"
+    response = request_task(files, s21peak_url, api_key)
+    return response
+
+
+@task_register
 def spectrumnnscope(files,url,api_key,*args,**kwargs):
     spectrum_url = url + "/api/v1/tasks/nnscope/spectrum"
     response = request_task(files,spectrum_url,api_key)
@@ -193,5 +200,6 @@ class NNTaskName(Enum):
     POWERSHIFT = "powershiftnnscope"
     SPECTRUM = "spectrumnnscope"
     S21PEAK = "s21peaknnscope"
+    S21PEAKMULTI = "s21peaknnscope"
 
 

@@ -166,6 +166,8 @@ class QubitLLM:
             "model": model or self.model,
             "messages": messages,
             "stream": stream,
+            "temperature": 0.2,
+            "max_tokens": 16384,
             **kwargs
         }
 

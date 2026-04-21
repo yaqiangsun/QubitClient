@@ -49,12 +49,17 @@ def get_image_path(filename: str) -> str:
 def test_coupler_flux_q1_describe():
     print("\n=== Coupler_Flux: Q1 Describe Plot ===")
     llm = QubitLLM()
-    prompt_data = llm.get_prompt(
+    # prompt_data = llm.get_prompt(
+    #     LLMTaskName.DESCRIBE_PLOT,
+    #     image_data=get_image_path(TEST_SAMPLE["image_filename"]),
+    #     experiment_family=ExperimentFamily.COUPLER_FLUX
+    # )
+    # result = llm.chat(**prompt_data)
+    result = llm.run(
         LLMTaskName.DESCRIBE_PLOT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
     assert "plot_type" in result
     print("  ✓")
@@ -63,12 +68,17 @@ def test_coupler_flux_q1_describe():
 def test_coupler_flux_q2_classify():
     print("\n=== Coupler_Flux: Q2 Classify Outcome ===")
     llm = QubitLLM()
-    prompt_data = llm.get_prompt(
+    # prompt_data = llm.get_prompt(
+    #     LLMTaskName.CLASSIFY_OUTCOME,
+    #     image_data=get_image_path(TEST_SAMPLE["image_filename"]),
+    #     experiment_family=ExperimentFamily.COUPLER_FLUX
+    # )
+    # result = llm.chat(**prompt_data)
+    result = llm.run(
         LLMTaskName.CLASSIFY_OUTCOME,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
     assert "Classification" in result
     print("  ✓")
@@ -77,12 +87,17 @@ def test_coupler_flux_q2_classify():
 def test_coupler_flux_q3_reasoning():
     print("\n=== Coupler_Flux: Q3 Scientific Reasoning ===")
     llm = QubitLLM()
-    prompt_data = llm.get_prompt(
+    # prompt_data = llm.get_prompt(
+    #     LLMTaskName.SCIENTIFIC_REASONING,
+    #     image_data=get_image_path(TEST_SAMPLE["image_filename"]),
+    #     experiment_family=ExperimentFamily.COUPLER_FLUX
+    # )
+    # result = llm.chat(**prompt_data)
+    result = llm.run(
         LLMTaskName.SCIENTIFIC_REASONING,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    result = llm.chat(**prompt_data)
     print(f"  结果: {result[:200]}...")
     assert len(result) > 0
     print("  ✓")
@@ -91,12 +106,17 @@ def test_coupler_flux_q3_reasoning():
 def test_coupler_flux_q4_assess():
     print("\n=== Coupler_Flux: Q4 Assess Fit ===")
     llm = QubitLLM()
-    prompt_data = llm.get_prompt(
+    # prompt_data = llm.get_prompt(
+    #     LLMTaskName.ASSESS_FIT,
+    #     image_data=get_image_path(TEST_SAMPLE["image_filename"]),
+    #     experiment_family=ExperimentFamily.COUPLER_FLUX
+    # )
+    # result = llm.chat(**prompt_data)
+    result = llm.run(
         LLMTaskName.ASSESS_FIT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
     assert "Assessment" in result
     print("  ✓")
@@ -105,12 +125,17 @@ def test_coupler_flux_q4_assess():
 def test_coupler_flux_q5_extract():
     print("\n=== Coupler_Flux: Q5 Extract Params ===")
     llm = QubitLLM()
-    prompt_data = llm.get_prompt(
+    # prompt_data = llm.get_prompt(
+    #     LLMTaskName.EXTRACT_PARAMS,
+    #     image_data=get_image_path(TEST_SAMPLE["image_filename"]),
+    #     experiment_family=ExperimentFamily.COUPLER_FLUX
+    # )
+    # result = llm.chat(**prompt_data)
+    result = llm.run(
         LLMTaskName.EXTRACT_PARAMS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
     assert result is not None
     print("  ✓")
@@ -119,12 +144,17 @@ def test_coupler_flux_q5_extract():
 def test_coupler_flux_q6_status():
     print("\n=== Coupler_Flux: Q6 Evaluate Status ===")
     llm = QubitLLM()
-    prompt_data = llm.get_prompt(
+    # prompt_data = llm.get_prompt(
+    #     LLMTaskName.EVALUATE_STATUS,
+    #     image_data=get_image_path(TEST_SAMPLE["image_filename"]),
+    #     experiment_family=ExperimentFamily.COUPLER_FLUX
+    # )
+    # result = llm.chat(**prompt_data)
+    result = llm.run(
         LLMTaskName.EVALUATE_STATUS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
     assert "Status" in result
     print("  ✓")

@@ -59,9 +59,14 @@ def test_cz_benchmarking_q1_describe():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.CZ_BENCHMARKING
     )
-    result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
-    assert "plot_type" in result
+    result = llm.chat(**prompt_data, stream=True)
+    print("  结果: ", end="")
+    full_result = ""
+    for chunk in result:
+        print(chunk, end="", flush=True)
+        full_result += chunk
+    print()
+    assert "plot_type" in full_result
     print("  ✓")
 
 
@@ -73,9 +78,14 @@ def test_cz_benchmarking_q2_classify():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.CZ_BENCHMARKING
     )
-    result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
-    assert "Classification" in result
+    result = llm.chat(**prompt_data, stream=True)
+    print("  结果: ", end="")
+    full_result = ""
+    for chunk in result:
+        print(chunk, end="", flush=True)
+        full_result += chunk
+    print()
+    assert "Classification" in full_result
     print("  ✓")
 
 
@@ -87,9 +97,14 @@ def test_cz_benchmarking_q3_reasoning():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.CZ_BENCHMARKING
     )
-    result = llm.chat(**prompt_data)
-    print(f"  结果: {result[:200]}...")
-    assert len(result) > 0
+    result = llm.chat(**prompt_data, stream=True)
+    print("  结果: ", end="")
+    full_result = ""
+    for chunk in result:
+        print(chunk, end="", flush=True)
+        full_result += chunk
+    print()
+    assert len(full_result) > 0
     print("  ✓")
 
 
@@ -101,9 +116,14 @@ def test_cz_benchmarking_q4_assess():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.CZ_BENCHMARKING
     )
-    result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
-    assert "Assessment" in result
+    result = llm.chat(**prompt_data, stream=True)
+    print("  结果: ", end="")
+    full_result = ""
+    for chunk in result:
+        print(chunk, end="", flush=True)
+        full_result += chunk
+    print()
+    assert "Assessment" in full_result
     print("  ✓")
 
 
@@ -115,9 +135,14 @@ def test_cz_benchmarking_q5_extract():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.CZ_BENCHMARKING
     )
-    result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
-    assert result is not None
+    result = llm.chat(**prompt_data, stream=True)
+    print("  结果: ", end="")
+    full_result = ""
+    for chunk in result:
+        print(chunk, end="", flush=True)
+        full_result += chunk
+    print()
+    assert full_result is not None and len(full_result) > 0
     print("  ✓")
 
 
@@ -129,9 +154,14 @@ def test_cz_benchmarking_q6_status():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.CZ_BENCHMARKING
     )
-    result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
-    assert "Status" in result
+    result = llm.chat(**prompt_data, stream=True)
+    print("  结果: ", end="")
+    full_result = ""
+    for chunk in result:
+        print(chunk, end="", flush=True)
+        full_result += chunk
+    print()
+    assert "Status" in full_result
     print("  ✓")
 
 

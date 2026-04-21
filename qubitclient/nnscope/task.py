@@ -200,6 +200,6 @@ class NNTaskName(Enum):
     POWERSHIFT = "powershiftnnscope"
     SPECTRUM = "spectrumnnscope"
     S21PEAK = "s21peaknnscope"
-    S21PEAKMULTI = "s21peaknnscope"
+    S21PEAKMULTI = "s21peakmultinnscope"
 
 

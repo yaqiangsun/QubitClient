@@ -1,4 +1,5 @@
 import numpy as np
+import plotly.graph_objects as go
 from ..plyplotter import QuantumDataPlyPlotter
 
 class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
@@ -103,7 +104,7 @@ class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
             # 调用父类方法添加热力图
             self.add_2dmap(
                 fig=fig,
-                z=values,
+                z=values.T,
                 x=x,
                 y=y,
                 row=row,

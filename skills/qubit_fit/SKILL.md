@@ -1,24 +1,8 @@
 ---
-name: qubit_analysis
-description: "Quantum experiment data NUMERICAL analysis with support for parameter fitting tasks including: (1) S21 peak detection, (2) Optimal π-pulse calibration, (3) Rabi oscillation analysis, (4) T1/T2 relaxation time fitting, (5) DRAG pulse optimization, (6) Power shift characterization, (7) Ramsey fringe analysis, (8) Single-shot readout fidelity, and (9) 2D spectrum analysis. Provides unified API for curve fitting, parameter extraction, and batch processing with matplotlib/plotly visualization support"
+name: qubit_fit
+description: "Quantum experiment NUMERICAL curve fitting and parameter extraction. Support for: (1) S21 peak detection, (2) Optimal π-pulse calibration, (3) Rabi oscillation analysis, (4) T1/T2 relaxation time fitting, (5) DRAG pulse optimization, (6) Power shift characterization, (7) Ramsey fringe analysis, (8) Single-shot readout fidelity, and (9) 2D spectrum analysis. Provides unified API for curve fitting, parameter extraction, and batch processing with matplotlib/plotly visualization support."
 license: Proprietary. LICENSE.txt has complete terms
 ---
-
-## qubit_analysis vs qubit_vlm
-
-**qubit_analysis** (数值分析):
-- 输入: **原始数据** (x, y数组) - 测量数据
-- 方法: 数值计算、曲线拟合、峰值检测
-- 任务: S21峰值检测、T1/T2拟合、DRAG优化、单比特门校准
-- 输出: 数值参数、峰值位置、拟合曲线
-
-**qubit_vlm** (视觉分析):
-- 输入: **图像** (PNG, JPG等) - 实验结果图
-- 方法: VLM多模态模型 (GPT-4o, Claude等)
-- 任务: 描述图表、分析数据质量、评估拟合效果、推理科学意义
-- 输出: 文本分析、质量评估、参数判断
-
-典型工作流: `qubit_analysis` → 数值拟合 → 绘图 → `qubit_vlm` → 质量评估
 
 ## API Reference
 

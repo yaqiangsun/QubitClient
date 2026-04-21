@@ -65,7 +65,7 @@ def transform_rabicos_npy_and_processed_data(url, api_key, dict_list):
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
     base_dir = "./data/rabi_in_group_test"
     file_names = os.listdir(base_dir)
     file_path_list = []

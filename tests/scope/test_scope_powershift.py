@@ -95,7 +95,7 @@ def send_powershift_npy_to_server(url, api_key, dir_path="data/33137"):
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
 
     base_dir = "./tmp/data"
     send_powershift_npy_to_server(API_URL, API_KEY, base_dir)

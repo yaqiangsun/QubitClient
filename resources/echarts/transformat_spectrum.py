@@ -94,7 +94,7 @@ def transform_spectrum_npy_and_processed_data(url, api_key, dict_list):
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
     base_dir = "./tmp/spectrum"
     file_names = os.listdir(base_dir)
     file_path_list = []

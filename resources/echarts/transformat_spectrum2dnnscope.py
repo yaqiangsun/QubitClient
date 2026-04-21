@@ -124,7 +124,7 @@ def transform_spectrum2dnnscope_npy_and_processed_data(url, api_key,data_ndarray
     return trans_single_npy
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
 
     # # 1. npz file.
     base_dir = "data/1829"

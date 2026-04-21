@@ -79,7 +79,7 @@ def send_s21vflux_npy_to_server(url, api_key,file_path = "/home/sunyaqiang/work/
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
 
 
     file_path = "./tmp/s21vlux/tmp0dcd82ea.py_6844.npy"

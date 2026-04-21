@@ -84,7 +84,7 @@ def send_ramsey_npy_to_server(url, api_key, dir_path="data/ramsey", batch_size=5
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
     base_dir = "data/ramsey_test"
     send_ramsey_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 

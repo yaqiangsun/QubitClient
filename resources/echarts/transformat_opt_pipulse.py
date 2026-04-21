@@ -70,7 +70,7 @@ def transform_opt_pipulse_npy_and_processed_data(url, api_key, dict_list):
     return trans_all_npy
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
     base_dir = "./data/ramsey_test"
     file_names = os.listdir(base_dir)
     file_path_list = []

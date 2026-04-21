@@ -133,7 +133,7 @@ def send_spectrum2dnnscope_npy_to_server(url, api_key,file_path = "/home/sunyaqi
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
 
     # 1. npz file.
     # base_dir = "tmp/data/1829"

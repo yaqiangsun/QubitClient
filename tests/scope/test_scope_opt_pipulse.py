@@ -80,7 +80,7 @@ def send_optpipulse_npy_to_server(url, api_key, dir_path="data/opt_pipulse", bat
 
 
 def main():
-    from config import API_URL, API_KEY
+    API_URL, API_KEY = None,None
     base_dir = "data/opt_pipulse_test"
     send_optpipulse_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 

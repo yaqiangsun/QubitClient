@@ -13,9 +13,9 @@ import os
 import sys
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
-DATASET_DIR = os.path.join(TEST_DIR, "dataset")
+DATASET_DIR = os.path.join(TEST_DIR, "..", "dataset")
 
-project_root = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
+project_root = os.path.abspath(os.path.join(TEST_DIR, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 

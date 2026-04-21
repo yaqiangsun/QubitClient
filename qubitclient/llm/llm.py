@@ -53,6 +53,7 @@ class QubitLLM:
         api_key: str | None = None,
         base_url: str | None = None,
         model: str | None = None,
+        language: str = "en",
     ):
         """
         初始化 QubitLLM
@@ -61,6 +62,7 @@ class QubitLLM:
             api_key: OpenAI API 密钥，默认从配置文件读取
             base_url: 自定义 API 地址，默认从配置文件读取
             model: 默认使用的模型，默认从配置文件读取
+            language: 默认语言，"en" 为英文，"zh" 为中文
         """
         from qubitclient.utils.env_load import get_llm_config
 
@@ -68,6 +70,7 @@ class QubitLLM:
         self.api_key = config.get("api_key")
         self.base_url = config.get("base_url")
         self.model = config.get("model", "gpt-4o")
+        self.language = language
         self._client = None
 
     @property
@@ -91,6 +94,8 @@ class QubitLLM:
         Returns:
             包含 messages 和 response_schema 的字典
         """
+        if "language" not in kwargs:
+            kwargs["language"] = self.language
         return get_task_prompt(task_type, *args, **kwargs)
 
     def run(self, task_type: str | LLMTaskName, *args, **kwargs) -> dict:
@@ -100,11 +105,14 @@ class QubitLLM:
         Args:
             task_type: 任务类型（字符串或 LLMTaskName 枚举）
             *args: 位置参数
-            **kwargs: 关键字参数
+            **kwargs: 关键字参数，可包含 language 参数指定语言（"en" 或 "zh"）
 
         Returns:
             任务执行结果（dict）
         """
+        # 如果未指定 language，使用实例默认语言
+        if "language" not in kwargs:
+            kwargs["language"] = self.language
         prompt_data = get_task_prompt(task_type, *args, **kwargs)
         return self.chat(**prompt_data)
 

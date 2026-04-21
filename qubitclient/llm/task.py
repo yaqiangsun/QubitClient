@@ -27,7 +27,7 @@ from qubitclient.llm.experiments import (
     CLASSIFY_OUTCOME_RESPONSE_SCHEMA,
     ASSESS_FIT_RESPONSE_SCHEMA,
     EVALUATE_STATUS_RESPONSE_SCHEMA,
-    # 获取函数
+    # 获取函数（英文）
     get_describe_plot_prompt,
     get_classify_outcome_prompt,
     get_scientific_reasoning_prompt,
@@ -36,6 +36,14 @@ from qubitclient.llm.experiments import (
     get_evaluate_status_prompt,
     get_extract_params_schema,
     get_experiment_background,
+    # 获取函数（中文）
+    get_describe_plot_prompt_zh,
+    get_classify_outcome_prompt_zh,
+    get_scientific_reasoning_prompt_zh,
+    get_assess_fit_prompt_zh,
+    get_extract_params_prompt_zh,
+    get_evaluate_status_prompt_zh,
+    get_experiment_background_zh,
 )
 
 # Fewshot 支持
@@ -138,6 +146,7 @@ def describe_plot(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
     fewshot: bool = False,
+    language: str = "en",
 ) -> dict:
     """
     描述图表任务 (QCalEval Q1)
@@ -147,6 +156,7 @@ def describe_plot(
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         fewshot: 是否使用 fewshot 模式
+        language: 语言，"en" 为英文，"zh" 为中文
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -156,13 +166,23 @@ def describe_plot(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
+    # 根据语言选择 prompt 函数
+    if language == "zh":
+        get_background = get_experiment_background_zh
+        get_task_prompt = get_describe_plot_prompt_zh
+        default_prompt = "请以JSON格式描述图像<image>中的图表。"
+    else:
+        get_background = get_experiment_background
+        get_task_prompt = get_describe_plot_prompt
+        default_prompt = "Describe the figure <image> in JSON format."
+
     # 合并 experiment_background 和任务 prompt
     # 如果prompt中已包含背景信息，则跳过添加
     if family and (family, 1) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
         background = ""
     else:
-        background = get_experiment_background(family) if family else ""
-    task_prompt = get_describe_plot_prompt(family) if family else "Describe the figure <image> in JSON format."
+        background = get_background(family) if family else ""
+    task_prompt = get_task_prompt(family) if family else default_prompt
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     # Fewshot 模式
@@ -185,6 +205,7 @@ def classify_outcome(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
     fewshot: bool = False,
+    language: str = "en",
 ) -> dict:
     """
     分类实验结果任务 (QCalEval Q2)
@@ -194,6 +215,7 @@ def classify_outcome(
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         fewshot: 是否使用 fewshot 模式
+        language: 语言，"en" 为英文，"zh" 为中文
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -203,13 +225,21 @@ def classify_outcome(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
+    # 根据语言选择 prompt 函数
+    if language == "zh":
+        get_background = get_experiment_background_zh
+        get_task_prompt = get_classify_outcome_prompt_zh
+    else:
+        get_background = get_experiment_background
+        get_task_prompt = get_classify_outcome_prompt
+
     # 合并 experiment_background 和任务 prompt
     # 如果prompt中已包含背景信息，则跳过添加
     if family and (family, 2) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
         background = ""
     else:
-        background = get_experiment_background(family) if family else ""
-    task_prompt = get_classify_outcome_prompt(family) if family else get_classify_outcome_prompt("rabi")
+        background = get_background(family) if family else ""
+    task_prompt = get_task_prompt(family) if family else get_task_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     # Fewshot 模式
@@ -232,6 +262,7 @@ def scientific_reasoning(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
     fewshot: bool = False,
+    language: str = "en",
 ) -> dict:
     """
     科学推理任务 (QCalEval Q3)
@@ -241,6 +272,7 @@ def scientific_reasoning(
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         fewshot: 是否使用 fewshot 模式
+        language: 语言，"en" 为英文，"zh" 为中文
 
     Returns:
         包含 messages 和 images 的字典
@@ -250,13 +282,21 @@ def scientific_reasoning(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
+    # 根据语言选择 prompt 函数
+    if language == "zh":
+        get_background = get_experiment_background_zh
+        get_task_prompt = get_scientific_reasoning_prompt_zh
+    else:
+        get_background = get_experiment_background
+        get_task_prompt = get_scientific_reasoning_prompt
+
     # 合并 experiment_background 和任务 prompt
     # 如果prompt中已包含背景信息，则跳过添加
     if family and (family, 3) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
         background = ""
     else:
-        background = get_experiment_background(family) if family else ""
-    task_prompt = get_scientific_reasoning_prompt(family) if family else get_scientific_reasoning_prompt("rabi")
+        background = get_background(family) if family else ""
+    task_prompt = get_task_prompt(family) if family else get_task_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     # Fewshot 模式
@@ -279,6 +319,7 @@ def assess_fit(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
     fewshot: bool = False,
+    language: str = "en",
 ) -> dict:
     """
     评估拟合可靠性任务 (QCalEval Q4)
@@ -288,6 +329,7 @@ def assess_fit(
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         fewshot: 是否使用 fewshot 模式
+        language: 语言，"en" 为英文，"zh" 为中文
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -297,13 +339,21 @@ def assess_fit(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
+    # 根据语言选择 prompt 函数
+    if language == "zh":
+        get_background = get_experiment_background_zh
+        get_task_prompt = get_assess_fit_prompt_zh
+    else:
+        get_background = get_experiment_background
+        get_task_prompt = get_assess_fit_prompt
+
     # 合并 experiment_background 和任务 prompt
     # 如果prompt中已包含背景信息，则跳过添加
     if family and (family, 4) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
         background = ""
     else:
-        background = get_experiment_background(family) if family else ""
-    task_prompt = get_assess_fit_prompt(family) if family else get_assess_fit_prompt("rabi")
+        background = get_background(family) if family else ""
+    task_prompt = get_task_prompt(family) if family else get_task_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     # Fewshot 模式
@@ -327,6 +377,7 @@ def extract_params(
     experiment_family: str | ExperimentFamily | None = None,
     params_schema: dict | None = None,
     fewshot: bool = False,
+    language: str = "en",
 ) -> dict:
     """
     提取参数任务 (QCalEval Q5)
@@ -337,6 +388,7 @@ def extract_params(
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         params_schema: 参数提取模式（可选，默认从experiment_family获取）
         fewshot: 是否使用 fewshot 模式
+        language: 语言，"en" 为英文，"zh" 为中文
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -345,6 +397,14 @@ def extract_params(
     family = experiment_family
     if isinstance(family, ExperimentFamily):
         family = family.value
+
+    # 根据语言选择 prompt 函数
+    if language == "zh":
+        get_background = get_experiment_background_zh
+        get_task_prompt = get_extract_params_prompt_zh
+    else:
+        get_background = get_experiment_background
+        get_task_prompt = get_extract_params_prompt
 
     # 获取 schema
     schema = params_schema
@@ -356,8 +416,8 @@ def extract_params(
     if family and (family, 5) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
         background = ""
     else:
-        background = get_experiment_background(family) if family else ""
-    task_prompt = get_extract_params_prompt(family) if family else get_extract_params_prompt("rabi")
+        background = get_background(family) if family else ""
+    task_prompt = get_task_prompt(family) if family else get_task_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     # Fewshot 模式
@@ -380,6 +440,7 @@ def evaluate_status(
     image_data: str | bytes | list,
     experiment_family: str | ExperimentFamily | None = None,
     fewshot: bool = False,
+    language: str = "en",
 ) -> dict:
     """
     评估实验状态任务 (QCalEval Q6)
@@ -389,6 +450,7 @@ def evaluate_status(
         image_data: 图像数据
         experiment_family: 实验家族（字符串或 ExperimentFamily 枚举），使用专属 prompt
         fewshot: 是否使用 fewshot 模式
+        language: 语言，"en" 为英文，"zh" 为中文
 
     Returns:
         包含 messages, images 和 response_schema 的字典
@@ -398,13 +460,21 @@ def evaluate_status(
     if isinstance(family, ExperimentFamily):
         family = family.value
 
+    # 根据语言选择 prompt 函数
+    if language == "zh":
+        get_background = get_experiment_background_zh
+        get_task_prompt = get_evaluate_status_prompt_zh
+    else:
+        get_background = get_experiment_background
+        get_task_prompt = get_evaluate_status_prompt
+
     # 合并 experiment_background 和任务 prompt
     # 如果prompt中已包含背景信息，则跳过添加
     if family and (family, 6) in PROMPTS_WITH_EMBEDDED_BACKGROUND:
         background = ""
     else:
-        background = get_experiment_background(family) if family else ""
-    task_prompt = get_evaluate_status_prompt(family) if family else get_evaluate_status_prompt("rabi")
+        background = get_background(family) if family else ""
+    task_prompt = get_task_prompt(family) if family else get_task_prompt("rabi")
     prompt = f"{background}\n\n{task_prompt}" if background else task_prompt
 
     # Fewshot 模式

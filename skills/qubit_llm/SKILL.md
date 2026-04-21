@@ -6,6 +6,13 @@ license: Proprietary. LICENSE.txt has complete terms
 
 ## API Reference
 
+### Installation
+
+```bash
+# Install qubitclient
+pip install qubitclient[full]
+```
+
 ### Quick Start
 
 ```python

@@ -20,7 +20,7 @@ project_root = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from qubitclient.llm import QubitLLM
+from qubitclient.llm import QubitLLM, ExperimentFamily
 from qubitclient.llm.task import LLMTaskName
 
 

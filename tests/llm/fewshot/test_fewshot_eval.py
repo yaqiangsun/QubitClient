@@ -20,7 +20,7 @@ project_root = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from qubitclient.llm import QubitLLM
+from qubitclient.llm import QubitLLM, ExperimentFamily
 from qubitclient.llm.task import LLMTaskName
 
 
@@ -48,7 +48,7 @@ def test_pingpong_q1_zeroshot():
     result = llm.run(
         LLMTaskName.DESCRIBE_PLOT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
     print(f"  结果: {str(result)[:200]}...")
@@ -63,7 +63,7 @@ def test_pingpong_q1_fewshot():
     result = llm.run(
         LLMTaskName.DESCRIBE_PLOT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
     print(f"  结果: {str(result)[:200]}...")
@@ -78,7 +78,7 @@ def test_pingpong_q2_zeroshot():
     result = llm.run(
         LLMTaskName.CLASSIFY_OUTCOME,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
     print(f"  结果: {str(result)[:200]}...")
@@ -93,7 +93,7 @@ def test_pingpong_q2_fewshot():
     result = llm.run(
         LLMTaskName.CLASSIFY_OUTCOME,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
     print(f"  结果: {str(result)[:200]}...")
@@ -108,7 +108,7 @@ def test_pingpong_q3_zeroshot():
     result = llm.run(
         LLMTaskName.SCIENTIFIC_REASONING,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
     print(f"  结果: {result[:200]}...")
@@ -123,7 +123,7 @@ def test_pingpong_q3_fewshot():
     result = llm.run(
         LLMTaskName.SCIENTIFIC_REASONING,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
     print(f"  结果: {result[:200]}...")
@@ -138,7 +138,7 @@ def test_pingpong_q4_zeroshot():
     result = llm.run(
         LLMTaskName.ASSESS_FIT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
     print(f"  结果: {str(result)[:200]}...")
@@ -153,7 +153,7 @@ def test_pingpong_q4_fewshot():
     prompt_data = llm.get_prompt(
         LLMTaskName.ASSESS_FIT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
     print(f"  图片数: {len(prompt_data['images'])}")
@@ -170,7 +170,7 @@ def test_pingpong_q5_zeroshot():
     prompt_data = llm.get_prompt(
         LLMTaskName.EXTRACT_PARAMS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
     print(f"  图片数: {len(prompt_data['images'])}")
@@ -187,7 +187,7 @@ def test_pingpong_q5_fewshot():
     prompt_data = llm.get_prompt(
         LLMTaskName.EXTRACT_PARAMS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
     print(f"  图片数: {len(prompt_data['images'])}")
@@ -204,7 +204,7 @@ def test_pingpong_q6_zeroshot():
     prompt_data = llm.get_prompt(
         LLMTaskName.EVALUATE_STATUS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
     print(f"  图片数: {len(prompt_data['images'])}")
@@ -222,7 +222,7 @@ def test_pingpong_q6_fewshot():
     prompt_data = llm.get_prompt(
         LLMTaskName.EVALUATE_STATUS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"],
+        experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
     print(f"  图片数: {len(prompt_data['images'])}")

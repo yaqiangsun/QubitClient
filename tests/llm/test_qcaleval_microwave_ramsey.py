@@ -20,7 +20,7 @@ project_root = os.path.abspath(os.path.join(TEST_DIR, "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from qubitclient.llm import QubitLLM
+from qubitclient.llm import QubitLLM, ExperimentFamily
 from qubitclient.llm.task import LLMTaskName
 
 
@@ -53,7 +53,7 @@ def test_microwave_ramsey_q1_describe():
     prompt_data = llm.get_prompt(
         LLMTaskName.DESCRIBE_PLOT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"]
+        experiment_family=ExperimentFamily.MICROWAVE_RAMSEY
     )
     result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
@@ -67,7 +67,7 @@ def test_microwave_ramsey_q2_classify():
     prompt_data = llm.get_prompt(
         LLMTaskName.CLASSIFY_OUTCOME,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"]
+        experiment_family=ExperimentFamily.MICROWAVE_RAMSEY
     )
     result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
@@ -81,7 +81,7 @@ def test_microwave_ramsey_q3_reasoning():
     prompt_data = llm.get_prompt(
         LLMTaskName.SCIENTIFIC_REASONING,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"]
+        experiment_family=ExperimentFamily.MICROWAVE_RAMSEY
     )
     result = llm.chat(**prompt_data)
     print(f"  结果: {result[:200]}...")
@@ -95,7 +95,7 @@ def test_microwave_ramsey_q4_assess():
     prompt_data = llm.get_prompt(
         LLMTaskName.ASSESS_FIT,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"]
+        experiment_family=ExperimentFamily.MICROWAVE_RAMSEY
     )
     result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
@@ -109,7 +109,7 @@ def test_microwave_ramsey_q5_extract():
     prompt_data = llm.get_prompt(
         LLMTaskName.EXTRACT_PARAMS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"]
+        experiment_family=ExperimentFamily.MICROWAVE_RAMSEY
     )
     result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")
@@ -123,7 +123,7 @@ def test_microwave_ramsey_q6_status():
     prompt_data = llm.get_prompt(
         LLMTaskName.EVALUATE_STATUS,
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-        experiment_family=TEST_SAMPLE["experiment_family"]
+        experiment_family=ExperimentFamily.MICROWAVE_RAMSEY
     )
     result = llm.chat(**prompt_data)
     print(f"  结果: {str(result)[:200]}...")

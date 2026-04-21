@@ -19,16 +19,15 @@ llm = QubitLLM()
 result = llm.run(
     LLMTaskName.DESCRIBE_PLOT,
     image_data="path/to/image.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 ```
 
 ### Client Initialization
 
 ```python
-from qubitclient.llm import QubitLLM, get_openai_client
+from qubitclient.llm import QubitLLM, ExperimentFamily
 from qubitclient.llm.task import LLMTaskName
-from qubitclient.llm.experiment_tools import ExperimentFamily, ExperimentType
 ```
 
 ### LLM Task Names (LLMTaskName)
@@ -83,7 +82,7 @@ ExperimentFamily.TWEEZER_ARRAY         # Tweezer array
 prompt_data = llm.get_prompt(
     LLMTaskName.DESCRIBE_PLOT,
     image_data="path/to/image.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 # Returns: {"messages": [...], "images": [...], "response_schema": {...}}
 
@@ -98,7 +97,7 @@ result = llm.chat(**prompt_data)
 result = llm.run(
     LLMTaskName.DESCRIBE_PLOT,
     image_data="path/to/image.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 # Returns parsed JSON result
 ```
@@ -125,7 +124,7 @@ Enable fewshot mode for improved accuracy with example images:
 result = llm.run(
     LLMTaskName.EXTRACT_PARAMS,
     image_data="path/to/image.png",
-    experiment_family="t1",
+    experiment_family=ExperimentFamily.T1,
     fewshot=True  # Uses built-in examples for this experiment family
 )
 ```
@@ -143,7 +142,7 @@ llm = QubitLLM()
 result = llm.run(
     LLMTaskName.DESCRIBE_PLOT,
     image_data="t1_decay.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 # Returns: {"plot_type": "line", "x_axis": "Delay (s)", "y_axis": "Population", ...}
 ```
@@ -154,7 +153,7 @@ result = llm.run(
 result = llm.run(
     LLMTaskName.CLASSIFY_OUTCOME,
     image_data="rabi_oscillation.png",
-    experiment_family="rabi"
+    experiment_family=ExperimentFamily.RABI
 )
 # Returns: {"Classification": "Expected", "Confidence": 0.9, ...}
 ```
@@ -165,7 +164,7 @@ result = llm.run(
 result = llm.run(
     LLMTaskName.SCIENTIFIC_REASONING,
     image_data="ramsey_fringe.png",
-    experiment_family="ramsey_t2star"
+    experiment_family=ExperimentFamily.RAMSEY_T2STAR
 )
 # Returns: "The data shows clear oscillation with T2* decay..."
 ```
@@ -176,7 +175,7 @@ result = llm.run(
 result = llm.run(
     LLMTaskName.ASSESS_FIT,
     image_data="t1_fit.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 # Returns: {"Assessment": "Good", "R_squared": 0.98, ...}
 ```
@@ -187,7 +186,7 @@ result = llm.run(
 result = llm.run(
     LLMTaskName.EXTRACT_PARAMS,
     image_data="t1_decay.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 # Returns: {"T1": 15.3e-6, "offset": 0.02, "amplitude": 0.98}
 ```
@@ -198,7 +197,7 @@ result = llm.run(
 result = llm.run(
     LLMTaskName.EVALUATE_STATUS,
     image_data="t1_decay.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 # Returns: {"Status": "SUCCESS", "Notes": "Good T1 value within expected range"}
 ```
@@ -211,12 +210,12 @@ from qubitclient.llm.task import LLMTaskName
 image_path = "experiment_result.png"
 
 # Get prompts for each task
-q1_prompt = llm.get_prompt(LLMTaskName.DESCRIBE_PLOT, image_data=image_path, experiment_family="t1")
-q2_prompt = llm.get_prompt(LLMTaskName.CLASSIFY_OUTCOME, image_data=image_path, experiment_family="t1")
-q3_prompt = llm.get_prompt(LLMTaskName.SCIENTIFIC_REASONING, image_data=image_path, experiment_family="t1")
-q4_prompt = llm.get_prompt(LLMTaskName.ASSESS_FIT, image_data=image_path, experiment_family="t1")
-q5_prompt = llm.get_prompt(LLMTaskName.EXTRACT_PARAMS, image_data=image_path, experiment_family="t1")
-q6_prompt = llm.get_prompt(LLMTaskName.EVALUATE_STATUS, image_data=image_path, experiment_family="t1")
+q1_prompt = llm.get_prompt(LLMTaskName.DESCRIBE_PLOT, image_data=image_path, experiment_family=ExperimentFamily.T1)
+q2_prompt = llm.get_prompt(LLMTaskName.CLASSIFY_OUTCOME, image_data=image_path, experiment_family=ExperimentFamily.T1)
+q3_prompt = llm.get_prompt(LLMTaskName.SCIENTIFIC_REASONING, image_data=image_path, experiment_family=ExperimentFamily.T1)
+q4_prompt = llm.get_prompt(LLMTaskName.ASSESS_FIT, image_data=image_path, experiment_family=ExperimentFamily.T1)
+q5_prompt = llm.get_prompt(LLMTaskName.EXTRACT_PARAMS, image_data=image_path, experiment_family=ExperimentFamily.T1)
+q6_prompt = llm.get_prompt(LLMTaskName.EVALUATE_STATUS, image_data=image_path, experiment_family=ExperimentFamily.T1)
 
 # Execute each task
 q1_result = llm.chat(**q1_prompt)
@@ -255,7 +254,7 @@ llm = QubitLLM(
 prompt_data = llm.get_prompt(
     LLMTaskName.SCIENTIFIC_REASONING,
     image_data="image.png",
-    experiment_family="t1"
+    experiment_family=ExperimentFamily.T1
 )
 
 for chunk in llm.chat(stream=True, **prompt_data):
@@ -271,22 +270,4 @@ result = llm.chat(
     images="image.png",
     model="gpt-4o-mini"  # override default model
 )
-```
-
-## Testing
-
-Run QCalEval tests:
-
-```bash
-# Test all tasks for a specific experiment
-python tests/llm/test_qcaleval_t1.py
-python tests/llm/test_qcaleval_pinchoff.py
-python tests/llm/test_qcaleval_rabi.py
-
-# Test experiment module
-python tests/llm/test_experiment.py
-python tests/llm/test_task.py
-
-# Test fewshot
-python tests/llm/fewshot/test_fewshot_eval.py
 ```

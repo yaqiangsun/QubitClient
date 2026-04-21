@@ -1,6 +1,6 @@
 ---
-name: qubit_vqa
-description: "Quantum experiment VISUAL Question Answering (VQA) using Vision Language Models (VLM). Analyze experiment RESULT PLOTS to: (1) Describe plot types and axes, (2) Classify experiment outcomes (Expected/Suboptimal/Anomalous/Apparatus issue), (3) Scientific reasoning with next-step suggestions, (4) Assess fit reliability, (5) Extract physical parameters from plots, (6) Evaluate experiment status (SUCCESS/FAILURE). Note: Use tools for numerical fitting on RAW DATA. Supports 20+ experiment families including T1, T2, Rabi, Ramsey, spectroscopy, DRAG, pinchoff, and more."
+name: qubit_vqa_review
+description: "Quantum experiment VISUAL review and Question Answering (VQA) using Vision Language Models (VLM). Analyze experiment RESULT PLOTS to: (1) Describe plot types and axes, (2) Classify experiment outcomes (Expected/Suboptimal/Anomalous/Apparatus issue), (3) Scientific reasoning with next-step suggestions, (4) Assess fit reliability, (5) Extract physical parameters from plots, (6) Evaluate experiment status (SUCCESS/FAILURE). Note: Use tools for numerical fitting on RAW DATA. Supports 20+ experiment families including T1, T2, Rabi, Ramsey, spectroscopy, DRAG, pinchoff, and more."
 license: Proprietary. LICENSE.txt has complete terms
 ---
 

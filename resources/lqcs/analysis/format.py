@@ -181,7 +181,7 @@ def powershift_convert(result):
 
             # 验证：检查 amp_2d 是否与原始数据一致
 
-        data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d)
+        data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
         assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
         assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
     return data_formated

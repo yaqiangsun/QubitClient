@@ -132,7 +132,7 @@ def delta_convert(result):
             waveforms = raw.astype(np.float64)
         else:
             # iq_avg / iq 为复数，取模后取负，保持与原分析一致
-            waveforms = np.abs(raw.astype(np.complex64))
+            waveforms = raw.astype(np.float64)
 
         # 统一格式校验
         if waveforms.ndim != 2:
@@ -929,7 +929,7 @@ def powershift_convert(result):
         assert single_bit_s.shape[1] == len(power), "abs_s点数需与power轴一致"
         assert single_bit_s.shape[0] == len(freq), "abs_s点数需与freq轴一致"
 
-        data_formated["image"][qubit_name] = (freq, power, single_bit_s)
+        data_formated["image"][qubit_name] = (freq, power, single_bit_s.T)
 
     return data_formated
 

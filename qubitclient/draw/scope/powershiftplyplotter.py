@@ -104,7 +104,7 @@ class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
             # 调用父类方法添加热力图
             self.add_2dmap(
                 fig=fig,
-                z=values.T,
+                z=values,
                 x=x,
                 y=y,
                 row=row,

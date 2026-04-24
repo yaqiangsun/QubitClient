@@ -170,6 +170,13 @@ PROMPT_TWEEZER_ARRAY = """检查该光镊阵列相机图像<image>。
 {"grid_regularity": "regular" | "irregular", "spot_uniformity": "uniform" | "non-uniform", "aberration_corrected": true | false}"""
 
 
+# ========== Not in QCalEval ==========
+PROMPT_S21 = """从该S21透射图<image>中提取以下参数。
+
+以JSON格式报告：
+{"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
+
+
 # ========== Prompt 字典映射 ==========
 
 EXTRACT_PARAMS_PROMPTS_ZH = {
@@ -195,6 +202,8 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 

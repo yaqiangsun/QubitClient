@@ -71,6 +71,10 @@ PROMPT_T1 = PROMPT_STANDARD
 PROMPT_T1_FLUCTUATIONS = PROMPT_STANDARD
 PROMPT_TWEEZER_ARRAY = PROMPT_STANDARD
 
+# ========== Not in QCalEval ==========
+PROMPT_S21 = PROMPT_STANDARD
+
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -97,6 +101,8 @@ CLASSIFY_OUTCOME_PROMPTS_ZH = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 

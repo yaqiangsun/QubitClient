@@ -169,6 +169,13 @@ Extract the following properties.
 Report in JSON format:
 {"grid_regularity": "regular" | "irregular", "spot_uniformity": "uniform" | "non-uniform", "aberration_corrected": true | false}"""
 
+# ========== Not in QCalEval ==========
+PROMPT_S21 = """Extract the following parameters from this S21 transmission plot <image>.
+
+Report in JSON format:
+{"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
+
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -195,6 +202,8 @@ EXTRACT_PARAMS_PROMPTS = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 
@@ -438,6 +447,17 @@ SCHEMA_TWEEZER_ARRAY = {
     "required": ["aberration_corrected"],
 }
 
+# ========== Not in QCalEval ==========
+SCHEMA_S21 = {
+    "type": "object",
+    "properties": {
+        "resonance_freq_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "contrast": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "phase_slope_deg_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+    },
+    "required": [],
+}
+
 
 # ========== Schema 字典映射 ==========
 
@@ -464,6 +484,8 @@ EXTRACT_PARAMS_SCHEMAS = {
     "t1": SCHEMA_T1,
     "t1_fluctuations": SCHEMA_T1_FLUCTUATIONS,
     "tweezer_array": SCHEMA_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": SCHEMA_S21,
 }
 
 

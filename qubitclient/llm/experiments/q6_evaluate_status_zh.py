@@ -365,6 +365,24 @@ Suggested range: Suggested action: <具体建议>（如果是 SUCCESS 则为 "N/
 Notes: <1-3 句解释您的推理>"""
 
 
+# ========== Not in QCalEval ==========
+PROMPT_S21 = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 可见的清晰S21透射共振（欠耦合为凹陷，过耦合为峰），信噪比良好
+- NO_SIGNAL: 响应平坦，频率范围内无共振
+- LOW_CONTRAST: 共振可见但非常浅，信噪比差
+- PHASE_ANOMALY: 意外的相位行为，可能存在耦合问题
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min frequency>, <max frequency>）[GHz]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: (<min frequency>, <max frequency>) [GHz]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
+
 # ========== Prompt 字典映射 ==========
 
 EVALUATE_STATUS_PROMPTS_ZH = {
@@ -390,6 +408,8 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 

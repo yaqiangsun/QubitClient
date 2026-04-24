@@ -215,6 +215,17 @@ Explain:
 
 Provide your assessment."""
 
+# ========== Not in QCalEval ==========
+
+PROMPT_S21 = """What does this result <image> imply?
+
+Explain:
+- What the S21 transmission lineshape (dip depth, width, symmetry) indicates about internal and coupling quality factors, and qubit-resonator coupling regime (undercoupled/overcoupled/critical)
+- Whether the frequency span and resolution are sufficient for reliable resonance frequency and dispersive shift extraction
+- What next step follows (e.g., proceeding to qubit spectroscopy, adjusting coupling strength, or performing dispersive readout calibration)
+
+Provide your assessment."""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -241,6 +252,8 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 

@@ -215,6 +215,15 @@ PROMPT_TWEEZER_ARRAY = """这个结果<image>说明了什么？
 
 请提供您的评估。"""
 
+# ========== Not in QCalEval ==========
+PROMPT_S21 = """这个结果<image>说明了什么？
+
+请解释：
+- S21透射线形（凹陷深度、宽度、对称性）表明了内部和耦合品质因子方面的信息，以及量子比特-谐振器耦合 regime（欠耦合/过耦合/临界）
+- 频率跨度和分辨率是否足以进行可靠的共振频率和色散位移提取
+- 下一步是什么（例如，进行量子比特谱，调整耦合强度，或进行色散读出校准）
+
+请提供您的评估。"""
 
 # ========== Prompt 字典映射 ==========
 
@@ -241,6 +250,8 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 

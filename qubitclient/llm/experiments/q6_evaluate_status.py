@@ -364,6 +364,23 @@ Status: <one of the listed statuses>
 Suggested range: Suggested action: <specific recommendation> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
+# ========== Not in QCalEval ==========
+PROMPT_S21 = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear S21 transmission resonance visible (dip for undercoupled, peak for overcoupled), good signal-to-noise
+- NO_SIGNAL: Flat response, no resonance in frequency range
+- LOW_CONTRAST: Resonance visible but very shallow, poor signal-to-noise ratio
+- PHASE_ANOMALY: Unexpected phase behavior, possible coupling issue
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min frequency>, <max frequency>) [GHz].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: (<min frequency>, <max frequency>) [GHz] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -390,6 +407,8 @@ EVALUATE_STATUS_PROMPTS = {
     "t1": PROMPT_T1,
     "t1_fluctuations": PROMPT_T1_FLUCTUATIONS,
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
+    # ========== Not in QCalEval ==========
+    "s21": PROMPT_S21,
 }
 
 
@@ -446,6 +465,8 @@ EVALUATE_STATUS_RESPONSE_SCHEMA = {
                 "TOO_MANY_OSC",
                 "UNDERSAMPLED",
                 "WINDOW_TOO_SHORT",
+                # ========== Not in QCalEval ==========
+                "PHASE_ANOMALY",
             ],
         },
         "Suggested range": {"type": "string"},

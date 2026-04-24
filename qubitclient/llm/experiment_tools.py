@@ -41,6 +41,8 @@ class ExperimentFamily(Enum):
     T1 = "t1"
     T1_FLUCTUATIONS = "t1_fluctuations"
     TWEEZER_ARRAY = "tweezer_array"
+    # ========== Not in QCalEval ==========
+    S21 = "s21"
 
 
 @unique

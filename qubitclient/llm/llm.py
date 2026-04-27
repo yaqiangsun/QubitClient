@@ -12,9 +12,12 @@ QubitLLM 类 - 整合 LLM/VLM 功能用于量子测量数据分析
 """
 
 import base64
+import io
 import json
 import os
 from typing import Generator
+
+from PIL import Image
 
 try:
     from openai import OpenAI
@@ -33,16 +36,43 @@ def get_openai_client(api_key: str | None = None, base_url: str | None = None) -
     return OpenAI(api_key=api_key, base_url=base_url)
 
 
-def _encode_image(image_data: str | bytes) -> str:
-    """将图像数据编码为 base64 字符串"""
+def _encode_image(image_data: str | bytes, max_size: int | None = None) -> str:
+    """将图像数据编码为 base64 字符串
+
+    Args:
+        image_data: 图像文件路径或 bytes
+        max_size: 最大边长（像素），超过此尺寸的图像将被缩放
+
+    Returns:
+        base64 编码的图像字符串
+    """
+    # 读取图像
     if isinstance(image_data, str):
         if not os.path.exists(image_data):
             raise FileNotFoundError(f"Image file not found: {image_data}")
-        with open(image_data, "rb") as f:
-            image_bytes = f.read()
-        return base64.b64encode(image_bytes).decode("utf-8")
+        image = Image.open(image_data)
     else:
-        return base64.b64encode(image_data).decode("utf-8")
+        image = Image.open(io.BytesIO(image_data))
+
+    # 缩放图像（如果超过最大尺寸）
+    if max_size is not None:
+        width, height = image.size
+        if width > max_size or height > max_size:
+            # 保持宽高比
+            if width > height:
+                new_width = max_size
+                new_height = int(height * (max_size / width))
+            else:
+                new_height = max_size
+                new_width = int(width * (max_size / height))
+            image = image.resize((new_width, new_height), Image.LANCZOS)
+
+    # 转换为 PNG 并编码
+    if image.mode == "RGBA":
+        image = image.convert("RGB")
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
 class QubitLLM:
@@ -54,6 +84,7 @@ class QubitLLM:
         base_url: str | None = None,
         model: str | None = None,
         language: str = "en",
+        max_image_size: int | None = 640,
     ):
         """
         初始化 QubitLLM
@@ -63,6 +94,7 @@ class QubitLLM:
             base_url: 自定义 API 地址，默认从配置文件读取
             model: 默认使用的模型，默认从配置文件读取
             language: 默认语言，"en" 为英文，"zh" 为中文
+            max_image_size: 图像最大边长（像素），超过此尺寸的图像将被自动缩放
         """
         from qubitclient.utils.env_load import get_llm_config
 
@@ -71,6 +103,7 @@ class QubitLLM:
         self.base_url = config.get("base_url")
         self.model = config.get("model", "gpt-4o")
         self.language = language
+        self.max_image_size = max_image_size
         self._client = None
 
     @property
@@ -126,6 +159,7 @@ class QubitLLM:
         images: str | bytes | list[str | bytes] | None = None,
         image_detail: str = "high",
         response_schema: dict | None = None,
+        max_image_size: int | None = None,
         **kwargs
     ) -> str | dict | Generator[str, None, None]:
         """
@@ -138,11 +172,15 @@ class QubitLLM:
             images: 图像（单图/多图），支持路径、bytes 或列表
             image_detail: 图像 detail 级别 ("low", "high", "auto")
             response_schema: 指定则返回 JSON 格式
+            max_image_size: 图像最大边长（像素），覆盖实例默认值
             **kwargs: 其他 API 参数
 
         Returns:
             模型回复、JSON 对象或生成器
         """
+        # 使用实例默认值或参数覆盖
+        effective_max_size = max_image_size if max_image_size is not None else self.max_image_size
+
         # 处理图像
         if images is not None:
             if not isinstance(images, list):
@@ -150,7 +188,7 @@ class QubitLLM:
 
             image_contents = []
             for image_data in images:
-                base64_image = _encode_image(image_data)
+                base64_image = _encode_image(image_data, max_size=effective_max_size)
                 image_contents.append({
                     "type": "image_url",
                     "image_url": {

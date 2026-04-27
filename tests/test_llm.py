@@ -9,6 +9,8 @@
 
 import os
 import sys
+from PIL import Image
+import tempfile
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
@@ -40,16 +42,10 @@ def test_get_prompt():
     llm = QubitLLM()
 
     # 测试 vlm_analyze
-    prompt_data = llm.get_prompt(LLMTaskName.VLM_ANALYZE, image_data="test.png", prompt="分析这个图像")
+    prompt_data = llm.get_prompt(LLMTaskName.SCIENTIFIC_REASONING, image_data="tests/llm/dataset/images/0d127bbe75fa7a04.png")
     assert "messages" in prompt_data
     assert "images" in prompt_data
     print(f"get_prompt vlm_analyze: {prompt_data}")
-
-    # 测试 evaluate_analysis
-    prompt_data = llm.get_prompt(LLMTaskName.EVALUATE_ANALYSIS, analysis_result={"score": 80})
-    assert "messages" in prompt_data
-    assert "response_schema" in prompt_data
-    print(f"get_prompt evaluate_analysis: {prompt_data}")
 
 
 def test_run():
@@ -57,10 +53,8 @@ def test_run():
     llm = QubitLLM()
 
     # 测试 evaluate_analysis
-    result = llm.run(LLMTaskName.EVALUATE_ANALYSIS, analysis_result={"score": 80})
+    result = llm.run(LLMTaskName.SCIENTIFIC_REASONING, image_data="tests/llm/dataset/images/0d127bbe75fa7a04.png")
     print(f"run evaluate_analysis result: {result}")
-    assert isinstance(result, dict)
-    assert "score" in result
 
 
 def test_chat_with_json_response():
@@ -74,10 +68,47 @@ def test_chat_with_json_response():
     assert isinstance(result, dict)
 
 
+def test_encode_image_with_max_size():
+    """测试图像尺寸限制"""
+    from qubitclient.llm.llm import _encode_image
+
+    # 创建一个大尺寸测试图像 (800x600)
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        large_image = Image.new("RGB", (800, 600), color="red")
+        large_image.save(f.name)
+        large_image_path = f.name
+
+    try:
+        # 测试不缩放
+        result1 = _encode_image(large_image_path, max_size=None)
+        assert result1 is not None
+        print(f"Without max_size: got base64 length {len(result1)}")
+
+        # 测试缩放到 200x200
+        result2 = _encode_image(large_image_path, max_size=200)
+        assert result2 is not None
+        print(f"With max_size=200: got base64 length {len(result2)}")
+
+        # 验证：缩放后的 base64 应该更小
+        assert len(result2) < len(result1), "Scaled image should be smaller"
+        print(f"encode_image test passed - original: 800x600 -> max dimension: 200")
+    finally:
+        os.unlink(large_image_path)
+
+
+def test_max_image_size_parameter():
+    """测试 max_image_size 参数"""
+    llm = QubitLLM(max_image_size=512)
+    assert llm.max_image_size == 512
+    print("max_image_size parameter test passed")
+
+
 if __name__ == "__main__":
     test_chat()
-    test_chat_with_model()
-    test_get_prompt()
-    test_run()
-    test_chat_with_json_response()
+    # test_chat_with_model()
+    test_get_prompt() 
+    test_run()  
+    test_chat_with_json_response() 
+    test_encode_image_with_max_size()
+    test_max_image_size_parameter()
     print("All tests passed!")

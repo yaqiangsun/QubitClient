@@ -19,6 +19,49 @@ def main():
     pass
 
 
+@app.command("init")
+def client_init(
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing files"),
+):
+    """Initialize configuration files in current directory."""
+    current_dir = Path.cwd()
+    template_dir = Path(__file__).parent / "config_templates"
+
+    if not template_dir.exists():
+        typer.echo("Error: config_templates not found", err=True)
+        raise typer.Exit(1)
+
+    # Copy qubitclient.json (from .example template)
+    src_config = template_dir / "qubitclient.json.example"
+    dest_config = current_dir / "qubitclient.json"
+    if dest_config.exists():
+        if not overwrite:
+            typer.echo(f"Warning: {dest_config} already exists, skipping")
+        else:
+            dest_config.unlink()
+            shutil.copy2(src_config, dest_config)
+            typer.echo(f"Copied: {dest_config.relative_to(current_dir)}")
+    else:
+        shutil.copy2(src_config, dest_config)
+        typer.echo(f"Copied: {dest_config.relative_to(current_dir)}")
+
+    # Copy mcp.json
+    src_mcp = template_dir / "mcp.json"
+    dest_mcp = current_dir / ".mcp.json"
+    if dest_mcp.exists():
+        if not overwrite:
+            typer.echo(f"Warning: {dest_mcp} already exists, skipping")
+        else:
+            dest_mcp.unlink()
+            shutil.copy2(src_mcp, dest_mcp)
+            typer.echo(f"Copied: {dest_mcp.relative_to(current_dir)}")
+    else:
+        shutil.copy2(src_mcp, dest_mcp)
+        typer.echo(f"Copied: {dest_mcp.relative_to(current_dir)}")
+
+    typer.echo(f"\nConfiguration files initialized in {current_dir}")
+
+
 @serve_app.command("init")
 def serve_init(
     overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing files"),

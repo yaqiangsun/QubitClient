@@ -104,17 +104,19 @@ docker ps
 
 ### 1️⃣ 配置
 
-首先，复制配置文件模板并根据实际情况修改：
+初始化配置文件：
 
 ```bash
-cp config.py.example config.py
+qubitclient init
 ```
 
-编辑 `config.py`，填入您的服务器地址和 API 密钥：
+这会创建 `qubitclient.json` 和 `.mcp.json` 文件。然后编辑 `qubitclient.json`，填入您的服务器地址和 API 密钥：
 
-```python
-API_URL = "http://your-server-address:port"
-API_KEY = "your-api-key"
+```json
+{
+  "url": "https://your-api-server.com",
+  "api_key": "your-api-key"
+}
 ```
 
 ### 2️⃣ 使用示例

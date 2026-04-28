@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+      "quantum-service": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-http",
+          "http://127.0.0.1:8008/mcp"
+        ]
+      }
+    }
+  }

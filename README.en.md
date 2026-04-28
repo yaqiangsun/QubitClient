@@ -53,15 +53,19 @@ docker ps
 
 ### Configuration
 
-1. Copy the configuration template:
+Initialize configuration files:
+
 ```bash
-cp config.py.example config.py
+qubitclient init
 ```
 
-2. Modify the server address and API key in [config.py](config.py):
-```python
-API_URL = "http://your-server-address:port"
-API_KEY = "your-api-key"
+This will create `qubitclient.json` and `.mcp.json`. Then edit `qubitclient.json` with your server address and API key:
+
+```json
+{
+  "url": "https://your-api-server.com",
+  "api_key": "your-api-key"
+}
 ```
 
 ### Usage Examples

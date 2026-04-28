@@ -86,14 +86,18 @@ pip install qubitclient
 pip install qubitclient[full]
 ```
 
-### 源码安装
 
-如果你想使用最新开发版本，也可以从源码安装：
+#### 🐳 服务部署（Docker）
 
 ```bash
-git clone https://github.com/yaqiangsun/qubitclient.git
-cd qubitclient
-pip install -e .
+# 初始化部署文件（拷贝 serve_templates 到当前目录）
+qubitclient serve init
+
+# 启动所有服务（proxy、qubitserving、qubitscope）
+qubitclient serve up -d
+
+# 查看服务状态
+docker ps
 ```
 
 ## 🚀 快速开始
@@ -421,6 +425,7 @@ python tests/test_llm.py
 ## 📝 更新日志
 
 ### 近期更新
+- 🐳 **新增 Docker 服务部署**：新增 `qubitclient serve` 命令，支持一键初始化和启动 qubitscope、qubitserving、proxy 三个服务
 - 🤖 **新增 VLM 模型支持**：
   - 🔵 **NVIDIA Ising** (`Ising-Calibration-1-35B-A3B`)：专为量子校准任务优化的 VLM
   - 🟢 **Google Gemma 4** (`gemma-4-E4B-it`)：多模态推理能力，支持图表分析

@@ -36,11 +36,17 @@ If you need to use plotting features:
 pip install qubitclient[full]
 ```
 
-Or install from source:
+#### Service Deployment (Docker)
 
 ```bash
-cd QubitClient
-pip install -e .
+# Initialize deployment files (copy serve_templates to current directory)
+qubitclient serve init
+
+# Start all services (proxy, qubitserving, qubitscope)
+qubitclient serve up -d
+
+# Check service status
+docker ps
 ```
 
 ## Quick Start
@@ -322,6 +328,7 @@ Refer to the code in the [resources](resources) directory for different tools.
 
 Recent updates:
 
+- **Added Docker service deployment**: New `qubitclient serve` command for one-click initialization and startup of qubitscope, qubitserving, and proxy services
 - **Added QCalEval benchmark**: Integrated NVIDIA QCalEval dataset, supporting 6 VLM tasks (Q1-Q6) and 87 experiment types (2026-04-16)
 - **Added experiment background module**: Provides professional physics background descriptions for 22 experiment families (2026-04-16)
 - **Added LLM decision module**: Supports automatic decision-making for next measurement based on evaluation results (2026-04-16)

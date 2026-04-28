@@ -86,7 +86,7 @@ class S21VfluxScopeDataPltPlotter(QuantumDataPltPlotter):
                             self.add_annotation(ax,f"conf:{lineconfs_list[ii// 2][j]:.2f}",(final_x_line[centcol], final_y_line[centcol]))
 
             handles, labels = ax.get_legend_handles_labels()
-            self.add_legend(ax, handles, labels)
+            # self.add_legend(ax, handles, labels)
             self.configure_axis(ax,title=f"{file_name}",xlabel="Bias",ylabel="Frequency (GHz)")
 
         fig.tight_layout()

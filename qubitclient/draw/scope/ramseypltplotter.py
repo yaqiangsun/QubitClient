@@ -20,55 +20,79 @@ class RamseyDataPltPlotter(QuantumDataPltPlotter):
         result     = kwargs.get('result')
         dict_param = kwargs.get('dict_param')
 
-        if not result or not dict_param:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "No data", ha='center', transform=ax.transAxes)
-            plt.close(fig)
-            return fig
 
         data = dict_param.item() if isinstance(dict_param, np.ndarray) else dict_param
         image_dict = data.get('image', {})
         qubit_names = list(image_dict.keys())
-        cols = min(3, len(qubit_names))
-        rows = (len(qubit_names) + cols - 1) // cols
 
-        fig = plt.figure(figsize=(5.8 * cols, 4.8 * rows))
-        fig.suptitle("Ramsey Oscillation Fit", fontsize=14, y=0.96)
+        fig, axes, rows, cols = self.create_subplots(len(qubit_names))
+        axs = axes.flatten()
 
         params_list   = result.get("params_list", [])
         r2_list       = result.get("r2_list", [])
         fit_data_list = result.get("fit_data_list", [])
 
         for q_idx, q_name in enumerate(qubit_names):
-            ax = fig.add_subplot(rows, cols, q_idx + 1)
+            ax = axs[q_idx]
             item = image_dict[q_name]
             if not isinstance(item, (list, tuple)) or len(item) < 2:
+                ax.axis('off')
                 continue
 
             x_raw = np.asarray(item[0])
             y_raw = np.asarray(item[1])
 
-            ax.plot(x_raw, y_raw, 'o', color='orange', markersize=5, label='Data', alpha=0.8)
-
+            # 原始数据（散点）
+            scatter = self.add_scatter(
+                ax,
+                x_raw,
+                y_raw,
+                label="Data",
+                marker_index=1,  # 'o'
+                color_index=6,  # 橙色
+                alpha=0.7
+            )
             if q_idx < len(fit_data_list):
                 y_fit = np.asarray(fit_data_list[q_idx])
                 x_fit = x_raw if len(y_fit) == len(x_raw) else np.linspace(x_raw.min(), x_raw.max(), len(y_fit))
-                ax.plot(x_fit, y_fit, '-', color='blue', linewidth=2.2, label='Fit')
-
+                self.add_line(
+                    ax,
+                    x_fit,
+                    y_fit,
+                    label="Fit",
+                    color_index=0,
+                    line_style_index=0
+                )
+            handles, labels = ax.get_legend_handles_labels()
+            if handles:
+                self.add_legend(
+                    ax=ax,
+                    handles=handles,
+                    labels=labels,
+                )
             if q_idx < len(params_list):
                 A, B, freq, phi, T2 = params_list[q_idx]
                 r2 = r2_list[q_idx] if q_idx < len(r2_list) else 0.0
                 text = (f"A={A:.3f}\nB={B:.3f}\nf={freq/1e6:.3f}MHz\n"
                         f"φ={phi:.3f}\nT2={T2:.1f}µs\nR²={r2:.4f}")
-                ax.text(0.04, 0.96, text, transform=ax.transAxes, va='top', fontsize=8,
-                        bbox=dict(boxstyle="round,pad=0.4", facecolor="white", alpha=0.9))
+                self.add_annotation(
+                    ax,
+                    text,
+                    xy=(0, 1),  # 子图左上角
+                    annotation_xycoords="axes fraction",
+                    annotation_textcoords="offset points",  # 改为 offset points
+                    annotation_xytext=(10, -10),  # 向右10像素，向下10像素
+                    color_index=0,
+                    showarrow=False,
+                    ha='left',
+                    va='top'
+                )
 
-            ax.set_title(q_name, fontsize=11)
-            ax.set_xlabel("Time (ns)")
-            ax.set_ylabel("P(|1>)")
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.legend(fontsize=8)
-
-        plt.tight_layout(rect=[0, 0, 1, 0.94])
-        plt.close(fig)
+            self.configure_axis(
+                ax,
+                title=q_name,
+                xlabel="Time (ns)",
+                ylabel="P(|1>)"
+            )
+        fig.tight_layout()
         return fig

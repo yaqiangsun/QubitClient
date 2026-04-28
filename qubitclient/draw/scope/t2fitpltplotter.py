@@ -103,14 +103,14 @@ class T2FitDataPltPlotter(QuantumDataPltPlotter):
                 self.add_annotation(
                     ax,
                     text_str,
-                    xy=(0, 1),                 
+                    xy=(0, 1),  # 子图左上角
                     annotation_xycoords="axes fraction",
-                    annotation_textcoords="axes fraction",
-                    annotation_xytext=(0, 1),
+                    annotation_textcoords="offset points",  # 改为 offset points
+                    annotation_xytext=(10, -10),  # 向右10像素，向下10像素
                     color_index=0,
                     showarrow=False,
-                    ha='left',                      # 文字左对齐
-                    va='top'                      # 文字顶部对齐
+                    ha='left',
+                    va='top'
                 )
 
             # 坐标轴标题

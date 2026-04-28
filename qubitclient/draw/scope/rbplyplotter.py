@@ -95,18 +95,10 @@ class RBDataPlyPlotter(QuantumDataPlyPlotter):
                 )
 
                 y_max = max(y_raw) if len(y_raw) > 0 else 1.0
-                self.add_annotation(
-                    fig,
-                    text=text,
-                    row=row, col=col,
-                    x=min(x_raw) if len(x_raw) > 0 else 0.0,
-                    y=y_max * 1.08,
-                    xref="x", yref="y",
-                    showarrow=False,
-                    xanchor="left",
-                    yanchor="top"
-                )
 
+                self.add_annotation(fig, x=0, y=1, xref="x domain", yref="y domain", showarrow=False,
+                                    text=text, row=row,
+                                    col=col)
             fig.update_xaxes(title_text="X", row=row, col=col)
             fig.update_yaxes(title_text="Amp", row=row, col=col)
 

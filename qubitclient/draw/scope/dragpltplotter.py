@@ -31,6 +31,7 @@ class DragDataPltPlotter(QuantumDataPltPlotter):
             y0_list.append(y0)
             y1_list.append(y1)
             qname_list.append(q_name)
+            # break
 
 
         x_pred_list = result_param['x_pred_list']
@@ -72,7 +73,7 @@ class DragDataPltPlotter(QuantumDataPltPlotter):
 
                 self.add_scatter(ax,intersection_x, intersection_y,color_index=0,marker_index=0)
                 for i, (x_int, y_int) in enumerate(intersections):
-                    self.add_annotation(ax,f'({x_int:.2f}, {y_int:.2f}),conf:{intersections_confs[i]:.2f}',
+                    self.add_annotation(ax,f'{intersections_confs[i]:.2f}',
                                 (x_int, y_int),color_index=0)
 
             self.configure_axis(ax, title=qname_list[ii],

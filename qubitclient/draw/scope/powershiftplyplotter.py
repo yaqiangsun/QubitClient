@@ -178,7 +178,7 @@ class PowerShiftDataPlyPlotter(QuantumDataPlyPlotter):
             if conf is not None:
                 # 格式化置信度为两位小数
                 info_text += f"Confidence: {conf:.2f}"
-            self.add_annotation(fig, x=0, y=0.9, xref="x domain", yref="y domain", showarrow=False,
+            self.add_annotation(fig, x=0, y=1, xref="x domain", yref="y domain", showarrow=False,
                                 text=info_text, row=row,
                                 col=col)
 

@@ -77,7 +77,7 @@ class S21PeakNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
                 self.add_scatter(fig,x=[peak_xs[j]],y=[peak_ys[j]],name=legend_name,row=current_row, col=current_col,color_index=j,showlegend=True)
                 self.add_annotation(fig, x=peak_xs[j],
                                     y=peak_ys[j],
-                                    text=f"conf:{confs[j]:.2f}", row=current_row,
+                                    text=f'{confs[j]:.2f}<br>freq: {freqs[j]:.2e}Hz', row=current_row,
                                     col=current_col)
 
             x_coords = []
@@ -97,7 +97,7 @@ class S21PeakNNScopeDataPlyPlotter(QuantumDataPlyPlotter):
             #     y=peak_ys,
             #     text=annot_text,row=current_row, col=current_col,name="peak",color_index=0)   #add_scatter("text+marker")可以批量处理
 
-        self.update_layout(fig,row,col,showlegend=True)
+        self.update_layout(fig,row,col,showlegend=False)
 
         self.configure_axis(fig,row,col,xlable="Bias",ylable="Amplitude", secondary_y=False)
         self.configure_axis(fig,row,col,ylable="Phase", secondary_y=True)

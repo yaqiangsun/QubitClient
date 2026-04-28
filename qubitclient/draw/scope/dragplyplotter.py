@@ -81,7 +81,7 @@ class DragDataPlyPlotter(QuantumDataPlyPlotter):
                 for j in range(len(intersections)):
                     self.add_annotation(fig, x=intersections[j][0],
                                         y=intersections[j][1],
-                                        text=f"conf:{intersections_confs[j]:.2f}", row=r,
+                                        text=f'{intersections_confs[j]:.2f}', row=r,
                                         col=c)
 
         self.update_layout(fig, row, col)

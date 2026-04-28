@@ -70,7 +70,7 @@ class SpectrumNNscopeDataPltPlotter(QuantumDataPltPlotter):
                 
                 # 2. 调用父类方法添加峰值散点（统一风格）
                 self.add_scatter(ax, peaks, peak_amps, label='Peak', 
-                                 marker_index=1, color_index=1)
+                                 marker_index=1, color_index=0)
                 
                 # 添加置信度标注（调用父类注释方法）
                 for peak, conf, peak_amp in zip(peaks, confidences, peak_amps):
@@ -78,13 +78,13 @@ class SpectrumNNscopeDataPltPlotter(QuantumDataPltPlotter):
                         self.add_annotation(ax, f'conf: {conf:.4f}', 
                                            xy=(peak, peak_amp),
                                            annotation_xytext=(5, 5),
-                                           color_index=1,
+                                           color_index=0,
                                            showarrow=True)
                     else:
                         self.add_annotation(ax, f'{peak:.4f}', 
                                            xy=(peak, peak_amp),
                                            annotation_xytext=(5, 5),
-                                           color_index=1,
+                                           color_index=0,
                                            showarrow=False)
             
             # 3. 调用父类方法配置坐标轴（统一风格）

@@ -86,7 +86,7 @@ class SpectrumDataPlyPlotter(QuantumDataPlyPlotter):
                     y=peak_amps,
                     row=row,
                     col=col,
-                    color_index=1,  # 红色（对应原代码的red）
+                    color_index=0,  # 红色（对应原代码的red）
                     marker_index=0,
                     name='Peak',
                     showlegend=(idx == 0)  # 只在第一个子图显示图例
@@ -95,23 +95,28 @@ class SpectrumDataPlyPlotter(QuantumDataPlyPlotter):
                 # 添加置信度标注（调用父类add_annotation方法）
                 for peak, conf, amp_val in zip(peaks, confidences, peak_amps):
                     annotation_text = f'conf: {conf:.4f}' if conf is not None else f'{peak:.4f}'
-                    self.add_annotation(
-                        fig,
-                        text=annotation_text,
-                        x=peak,
-                        y=amp_val,
-                        xref="x",
-                        yref="y",
-                        row=row,
-                        col=col,
-                        xanchor='left',
-                        yanchor='bottom',
-                        showarrow=True,
-                        arrowhead=1,
-                        font=dict(size=8),
-                        bgcolor='yellow',
-                        opacity=0.5
-                    )
+                    # self.add_annotation(
+                    #     fig,
+                    #     text=annotation_text,
+                    #     x=peak,
+                    #     y=amp_val,
+                    #     xref="x",
+                    #     yref="y",
+                    #     row=row,
+                    #     col=col,
+                    #     xanchor='left',
+                    #     yanchor='bottom',
+                    #     showarrow=True,
+                    #     arrowhead=1,
+                    #     font=dict(size=8),
+                    #     bgcolor='yellow',
+                    #     opacity=0.5
+                    # )
+
+                    self.add_annotation(fig, x=peak,
+                                        y=amp_val,
+                                        text=annotation_text, row=row,
+                                        col=col)
 
         # 调用父类方法更新布局
         self.update_layout(fig, rows, cols, showlegend=True)

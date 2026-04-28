@@ -118,14 +118,24 @@ class PowerShiftDataPltPlotter(QuantumDataPltPlotter):
                 info_text += f"Confidence: {conf:.2f}"
             
             # 添加文本注释（使用父类的add_annotation方法）
+            # self.add_annotation(
+            #     ax,
+            #     info_text,
+            #     xy=(0.02, 0.85),annotation_xytext=(0.02, 0.85),annotation_xycoords="axes fraction",
+            #     annotation_textcoords="axes fraction",
+            #     showarrow=False  # 不显示箭头
+            # )
             self.add_annotation(
-                ax, 
-                info_text, 
-                xy=(0, 1),annotation_xytext=(0.05, 0.95),annotation_xycoords="axes fraction",
-                annotation_textcoords="axes fraction",
-                showarrow=False  # 不显示箭头
+                ax,
+                info_text,
+                xy=(0, 1),  # 子图左上角
+                annotation_xycoords="axes fraction",
+                annotation_textcoords="offset points",  # 改为 offset points
+                annotation_xytext=(10, -10),  # 向右10像素，向下10像素
+                showarrow=False,
+                ha='left',
+                va='top'
             )
-
             self.configure_axis(
                 ax,
                 title=f"{q_name}",

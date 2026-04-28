@@ -76,7 +76,7 @@ class Spectrum2DScopeDataPltPlotter(QuantumDataPltPlotter):
 
                         centcol = len(final_x_line) // 2
                         self.add_line(ax, final_x_line, final_line_pred, color_index=0, line_style_index=0)
-                        self.add_annotation(ax, f'confidence: {lineconfs[j]:.2f}',
+                        self.add_annotation(ax, f'conf: {lineconfs[j]:.2f}',
                                                 (final_x_line[centcol], final_line_pred[centcol]))
                 if (coslines):
                     for j, cosline in enumerate(coslines):
@@ -85,7 +85,7 @@ class Spectrum2DScopeDataPltPlotter(QuantumDataPltPlotter):
 
                         centcol = len(final_x_cos) // 2
                         self.add_line(ax, final_x_cos, final_cos_pred, color_index=1, line_style_index=0)
-                        self.add_annotation(ax, f'confidence: {cosconfs[j]:.2f}\ncompress: {coscompress[j]:.2f}',
+                        self.add_annotation(ax, f'conf: {cosconfs[j]:.2f},compress: {coscompress[j]:.2f}',
                                             (final_x_cos[centcol], final_cos_pred[centcol]))
             self.configure_axis(ax,title=f"{file_name}",xlabel="Bias",ylabel="Frequency (GHz)")
         fig.tight_layout()

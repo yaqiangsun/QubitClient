@@ -10,10 +10,13 @@
 from typing import List
 
 class PlyPlotStyleConfig:
-
     # create_subplots 参数
     subplots_per_row: int = 2
     horizontal_spacing: float = 0.1
+    subtitle_fontsize: int = 25
+    font_family: str = 'Arial'
+
+    tick_fontsize: int = 25
 
     # add_2dmap 参数
     colorbar_config = {
@@ -22,12 +25,11 @@ class PlyPlotStyleConfig:
         'yanchor': 'middle',
         'y': 0.5
     }
-    color_scale = ['Viridis',"RdBu"]
-   
+    color_scale = ['Viridis', "RdBu"]
 
     # add_scatter 参数
     marker_size: int = 10
-    marker_styles = ["circle","square","diamond"]
+    marker_styles = ["circle", "square", "diamond"]
     marker_opacity: float = 0.7
     marker_color_palette = [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF',  # 红、绿、蓝、黄、紫
@@ -36,10 +38,10 @@ class PlyPlotStyleConfig:
         '#32CD32', '#8A2BE2', '#DC143C', '#00CED1', '#FFD700',  # 酸橙、紫罗兰、深红、深青、金色
         '#006400', '#8B4513'  # 深绿、鞍褐
     ]
-    
+
     # add_line 参数
-    line_width: int = 2
-    line_styles = ["solid","dash","dot","dashdot","longdash"]
+    line_width: float = 2.5
+    line_styles = ["solid", "dash", "dot", "dashdot", "longdash"]
     line_colors: List[str] = [
         '#1f77b4',  # 蓝
         '#2ca02c',  # 绿
@@ -56,34 +58,27 @@ class PlyPlotStyleConfig:
         'C0',
         'C1'
     ]
-    
-
-    
-
-   
 
     # add_annotation 参数
-    annotation_font_size: int = 12
+    annotation_font_size: int = 20
     annotation_font_color: str = 'red'
-    annotation_bordercolor =  'black'
-    annotation_bgcolor =  'yellow'
+    annotation_bordercolor = 'black'
+    annotation_bgcolor = 'yellow'
     annotation_borderwidth = 1
 
-
     # update_layout 参数
-    figure_height_per_row: int = 400
-    figure_width_per_col: int = 800
+    figure_height_per_row: int = 900
+    figure_width_per_col: int = 900
     font_family: str = 'Arial'
-    font_size: int = 12
-    legend=dict(
-                x=1.05,
-                y=0.5,
-                xanchor='left',
-                yanchor='middle',
-                groupclick="toggleitem"
-            )
+    font_size: int = 25
+    legend = dict(
+        x=1.05,
+        y=0.5,
+        xanchor='left',
+        yanchor='middle',
+        groupclick="toggleitem"
+    )
     # add_histogram 参数
     opacity = 0.5
     histnorm = "probability density"
-
 

@@ -105,7 +105,7 @@ class Spectrum2DScopeDataPlyPlotter(QuantumDataPlyPlotter):
                             centcol = len(final_x_cos) // 2
                             self.add_annotation(fig, x=final_x_cos[centcol],
                                                 y=final_cos_pred[centcol],
-                                                text=f"conf: {cosconfs[j]:.2f}<br>compress: {coscompress[j]:.2f}", row=row_pos,
+                                                text=f"conf: {cosconfs[j]:.2f},compress: {coscompress[j]:.2f}", row=row_pos,
                                                 col=col_pos)
 
         self.update_layout(fig, rows, cols)

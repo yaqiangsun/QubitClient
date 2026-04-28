@@ -21,12 +21,12 @@ from qubitclient.ctrl import CtrlTaskName
 
 def main():
     qubit_ctrl_client = QubitCtrlClient()
-    delay_array = (np.logspace(np.log(0.001), np.log(80), 201, base=np.exp(1)) * 1e-6).tolist()
     
-    result = qubit_ctrl_client.run(CtrlTaskName.T1,
-                                   qubits=["Q0", "Q1"],
-                                   delay=delay_array
-                                   )
+    result = qubit_ctrl_client.run(CtrlTaskName.T2,
+                                    qubits=["q1lu7"],
+                                    delay=[0, 100e-6],
+                                    fringeFreq=[-100e6, 100e6],
+                                    ms=1.0)
     print(result)
 
 if __name__ == "__main__":

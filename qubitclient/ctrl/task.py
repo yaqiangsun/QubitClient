@@ -42,6 +42,7 @@ class CtrlTaskName(Enum):
     SPECTRUM = "spectrum"
     SPECTRUM_2D = "spectrum_2d"
     T1 = "t1"
+    T2 = "t2"
     RB = "rb"
     DATA = "get_data"
     QUERY_PARAM = "query_param"
@@ -266,6 +267,21 @@ def t1(qubits: list[str],
                       signal=signal
                       )
     return result
+
+@task_register
+def t2(qubits: list[str],
+       delay:list[float],
+       fringe_freq:list[float]=[-100e6, 100e6],
+       ms: float=0.1,
+       *args, **kwargs):
+    result = call_mcp("t2",
+                      qubits=qubits,
+                      delay=delay,
+                      fringe_freq=fringe_freq,
+                      ms=ms
+                      )
+    return result
+
 @task_register
 def rb(qubits:list[str],
        couplers:tuple=tuple([]),

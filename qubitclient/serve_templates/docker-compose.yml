@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  proxy:
+    image: yaqiangsun/proxy:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "9801:8000"
+    volumes:
+      - ./serve_templates/proxy/config:/app/config
+      - ./tmp:/app/tmp
+
+  qubitserving:
+    image: yaqiangsun/qubitserving:latest
+    restart: unless-stopped
+    ports:
+      - "9000:8000"
+    volumes:
+      - ./serve_templates/qubitserving/license/license.json:/app/license/license.json
+      - ./serve_templates/qubitserving/model_zoo:/app/model_zoo
+      - ./tmp:/app/tmp
+
+  qubitscope:
+    image: yaqiangsun/qubitscope:latest
+    restart: unless-stopped
+    ports:
+      - "9001:8000"
+    volumes:
+      - ./serve_templates/qubitscope/license/license.json:/fba/license/license.json

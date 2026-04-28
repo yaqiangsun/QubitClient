@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # CLI module for qubitclient using typer
 
+import subprocess
 import shutil
 from pathlib import Path
 
@@ -44,6 +45,25 @@ def serve_init(
 
     typer.echo(f"\nDeployment files initialized in {current_dir}")
     typer.echo("You can run: docker-compose up -d")
+
+
+@serve_app.command("up")
+def serve_up(
+    detach: bool = True,
+):
+    """Start all services via docker-compose."""
+    compose_file = Path.cwd() / "serve_templates" / "docker-compose.yml"
+    if not compose_file.exists():
+        typer.echo("Error: serve_templates/docker-compose.yml not found", err=True)
+        typer.echo("Run 'qubitclient serve init' first")
+        raise typer.Exit(1)
+
+    typer.echo("Starting services...")
+    result = subprocess.run(
+        ["docker-compose", "-f", str(compose_file), "up", "-d" if detach else ""],
+        cwd=Path.cwd(),
+    )
+    raise typer.Exit(result.returncode)
 
 
 app.add_typer(serve_app, name="serve")

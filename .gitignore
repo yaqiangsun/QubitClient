@@ -30,3 +30,4 @@ build/
 qubitclient.egg-info/
 py.typed
 .claude/
+serve_templates/*

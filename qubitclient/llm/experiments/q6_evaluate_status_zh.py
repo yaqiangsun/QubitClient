@@ -369,10 +369,10 @@ Notes: <1-3 句解释您的推理>"""
 PROMPT_S21 = """评估图像<image>并确定实验状态。
 
 决策标准
-- SUCCESS: 可见的清晰S21透射共振（欠耦合为凹陷，过耦合为峰），信噪比良好
-- NO_SIGNAL: 响应平坦，频率范围内无共振
+- SUCCESS: 在腔频位置有清晰的S21幅度向下尖谷，相位在共振附近有显著跳变，信噪比良好
+- NO_SIGNAL: 响应平坦，频率范围内无共振特征
 - LOW_CONTRAST: 共振可见但非常浅，信噪比差
-- PHASE_ANOMALY: 意外的相位行为，可能存在耦合问题
+- PHASE_ANOMALY: 相位行为异常，共振附近无明显相位跳变
 
 当状态不是 SUCCESS 时，提供一个具体的建议（<min frequency>, <max frequency>）[GHz]。
 

@@ -61,7 +61,7 @@ T1_FLUCTUATIONS = """This is a T1 stability measurement: T1 relaxation time is t
 TWEEZER_ARRAY = """This is a camera image of an optical tweezer array used to trap neutral atoms in a regular grid. A successful image shows sharp, uniform, well-separated spots indicating proper aberration correction."""
 
 # ========== Not in QCalEval ==========
-S21 = """This is an S21 transmission experiment: we sweep probe frequency and measure the complex transmission coefficient S21 from input port to output port. A successful result shows a clear transmission resonance (dip for undercoupled, peak for overcoupled) with measurable amplitude and phase response. S21 is commonly used for dispersive qubit readout."""
+S21 = """This is an S21 cavity frequency search experiment: we sweep probe frequency and measure the complex transmission coefficient S21 from input port to output port to characterize a superconducting resonator. The primary goal is to precisely determine the resonator's resonance frequency (f_r). A successful result shows a clear dip in S21 amplitude at the cavity frequency, accompanied by a sharp phase jump near resonance. The data should be well-fitted to extract f_r."""
 
 # ========== 配置字典 ==========
 

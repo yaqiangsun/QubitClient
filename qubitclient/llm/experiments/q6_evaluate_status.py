@@ -368,10 +368,10 @@ Notes: <1-3 sentences explaining your reasoning>"""
 PROMPT_S21 = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear S21 transmission resonance visible (dip for undercoupled, peak for overcoupled), good signal-to-noise
-- NO_SIGNAL: Flat response, no resonance in frequency range
+- SUCCESS: Clear S21 amplitude dip at cavity frequency with sharp phase jump nearby, good signal-to-noise
+- NO_SIGNAL: Flat response, no resonance feature in frequency range
 - LOW_CONTRAST: Resonance visible but very shallow, poor signal-to-noise ratio
-- PHASE_ANOMALY: Unexpected phase behavior, possible coupling issue
+- PHASE_ANOMALY: Unexpected phase behavior, no clear phase jump near resonance
 
 When the status is not SUCCESS, provide a SPECIFIC suggested (<min frequency>, <max frequency>) [GHz].
 

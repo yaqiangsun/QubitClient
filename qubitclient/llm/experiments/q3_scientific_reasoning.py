@@ -220,9 +220,9 @@ Provide your assessment."""
 PROMPT_S21 = """What does this result <image> imply?
 
 Explain:
-- What the S21 transmission lineshape (dip depth, width, symmetry) indicates about internal and coupling quality factors, and qubit-resonator coupling regime (undercoupled/overcoupled/critical)
-- Whether the frequency span and resolution are sufficient for reliable resonance frequency and dispersive shift extraction
-- What next step follows (e.g., proceeding to qubit spectroscopy, adjusting coupling strength, or performing dispersive readout calibration)
+- What the S21 transmission lineshape (dip depth, width, symmetry) indicates about cavity resonance quality and signal strength
+- Whether the frequency span and resolution are sufficient for reliable resonance frequency extraction
+- What next step follows (e.g., proceeding to qubit spectroscopy, adjusting frequency window, or performing further cavity characterization)
 
 Provide your assessment."""
 

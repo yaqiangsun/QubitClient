@@ -366,6 +366,11 @@ print(result)
 | `ExperimentFamily.T1_FLUCTUATIONS` | T1 涨落 | ⏸️
 | `ExperimentFamily.TWEEZER_ARRAY` | 光镊阵列 | ⏸️
 
+
+| 枚举值 | 描述 | 状态 |
+|--------|------|---------|
+| `ExperimentFamily.S21` | 腔频校准 | ⏸️
+
 #### 🎯 ExperimentType 实验类型
 
 使用 `ExperimentType` 枚举指定 QCalEval 数据集中的 87 个具体测试用例（用于评估）。详细列表请参考 [实验类型文档](docs/llm/EXPERIMENT_TYPE.md)。

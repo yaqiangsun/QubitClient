@@ -51,7 +51,7 @@ def test_pingpong_q1_zeroshot():
         experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "plot_type" in result
     print("  ✓")
 
@@ -66,7 +66,7 @@ def test_pingpong_q1_fewshot():
         experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "plot_type" in result
     print("  ✓")
 
@@ -81,7 +81,7 @@ def test_pingpong_q2_zeroshot():
         experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Classification" in result
     print("  ✓")
 
@@ -96,7 +96,7 @@ def test_pingpong_q2_fewshot():
         experiment_family=ExperimentFamily.PINGPONG,
         fewshot=True
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Classification" in result
     print("  ✓")
 
@@ -141,7 +141,7 @@ def test_pingpong_q4_zeroshot():
         experiment_family=ExperimentFamily.PINGPONG,
         fewshot=False
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Assessment" in result
     print("  ✓")
 
@@ -158,7 +158,7 @@ def test_pingpong_q4_fewshot():
     )
     print(f"  图片数: {len(prompt_data['images'])}")
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Assessment" in result
     print("  ✓")
 
@@ -175,7 +175,7 @@ def test_pingpong_q5_zeroshot():
     )
     print(f"  图片数: {len(prompt_data['images'])}")
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert result is not None
     print("  ✓")
 
@@ -192,7 +192,7 @@ def test_pingpong_q5_fewshot():
     )
     print(f"  图片数: {len(prompt_data['images'])}")
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert result is not None
     print("  ✓")
 
@@ -209,7 +209,7 @@ def test_pingpong_q6_zeroshot():
     )
     print(f"  图片数: {len(prompt_data['images'])}")
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Status" in result
     print(f"  预期: {TEST_SAMPLE['q6_expected_status']}")
     print("  ✓")
@@ -227,7 +227,7 @@ def test_pingpong_q6_fewshot():
     )
     print(f"  图片数: {len(prompt_data['images'])}")
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Status" in result
     print(f"  预期: {TEST_SAMPLE['q6_expected_status']}")
     print("  ✓")

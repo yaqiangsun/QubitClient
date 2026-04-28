@@ -56,7 +56,7 @@ def test_qubit_spectroscopy_power_frequency_q1_describe():
         experiment_family=ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "plot_type" in result
     print("  ✓")
 
@@ -70,7 +70,7 @@ def test_qubit_spectroscopy_power_frequency_q2_classify():
         experiment_family=ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Classification" in result
     print("  ✓")
 
@@ -98,7 +98,7 @@ def test_qubit_spectroscopy_power_frequency_q4_assess():
         experiment_family=ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Assessment" in result
     print("  ✓")
 
@@ -112,7 +112,7 @@ def test_qubit_spectroscopy_power_frequency_q5_extract():
         experiment_family=ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert result is not None
     print("  ✓")
 
@@ -126,7 +126,7 @@ def test_qubit_spectroscopy_power_frequency_q6_status():
         experiment_family=ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Status" in result
     print("  ✓")
 

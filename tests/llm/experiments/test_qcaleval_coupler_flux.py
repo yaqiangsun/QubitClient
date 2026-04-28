@@ -60,7 +60,7 @@ def test_coupler_flux_q1_describe():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "plot_type" in result
     print("  ✓")
 
@@ -79,7 +79,7 @@ def test_coupler_flux_q2_classify():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Classification" in result
     print("  ✓")
 
@@ -117,7 +117,7 @@ def test_coupler_flux_q4_assess():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Assessment" in result
     print("  ✓")
 
@@ -136,7 +136,7 @@ def test_coupler_flux_q5_extract():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert result is not None
     print("  ✓")
 
@@ -155,7 +155,7 @@ def test_coupler_flux_q6_status():
         image_data=get_image_path(TEST_SAMPLE["image_filename"]),
         experiment_family=ExperimentFamily.COUPLER_FLUX
     )
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Status" in result
     print("  ✓")
 

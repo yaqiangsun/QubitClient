@@ -58,7 +58,7 @@ def test_rydberg_ramsey_q1_describe():
         experiment_family=ExperimentFamily.RYDBERG_RAMSEY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "plot_type" in result
     print("  ✓")
 
@@ -72,7 +72,7 @@ def test_rydberg_ramsey_q2_classify():
         experiment_family=ExperimentFamily.RYDBERG_RAMSEY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Classification" in result
     print("  ✓")
 
@@ -100,7 +100,7 @@ def test_rydberg_ramsey_q4_assess():
         experiment_family=ExperimentFamily.RYDBERG_RAMSEY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Assessment" in result
     print("  ✓")
 
@@ -114,7 +114,7 @@ def test_rydberg_ramsey_q5_extract():
         experiment_family=ExperimentFamily.RYDBERG_RAMSEY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert result is not None
     print("  ✓")
 
@@ -128,7 +128,7 @@ def test_rydberg_ramsey_q6_status():
         experiment_family=ExperimentFamily.RYDBERG_RAMSEY
     )
     result = llm.chat(**prompt_data)
-    print(f"  结果: {str(result)[:200]}...")
+    print(f"  结果: {str(result)[:800]}...")
     assert "Status" in result
     print("  ✓")
 

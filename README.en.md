@@ -262,6 +262,7 @@ print(result)
 - `CtrlTaskName.SPECTRUM`: Spectrum analysis measurement, scanning qubit energy level structure, see [SPECTRUM Detailed Documentation](docs/ctrl/SPECTRUM.md)
 - `CtrlTaskName.SPECTRUM_2D`: 2D spectrum measurement, simultaneously scanning frequency and bias parameters, see [SPECTRUM_2D Detailed Documentation](docs/ctrl/SPECTRUM_2D.md)
 - `CtrlTaskName.T1`: T1 relaxation time measurement, measuring qubit energy relaxation time, see [T1 Detailed Documentation](docs/ctrl/T1.md)
+- `CtrlTaskName.T2`: T2 relaxation time measurement, measuring qubit dephasing time, see [T2 Detailed Documentation](docs/ctrl/T2.md)
 
 ### LLM Tasks
 

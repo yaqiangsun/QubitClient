@@ -25,6 +25,8 @@ dependencies = [
     "httpx>=0.28.1",
     "numpy>=1.26.4",
     "requests>=2.32.5",
+    "typer>=0.15.0",
+    "rich>=13.0.0",
 ]
 [tool.setuptools.dynamic]
 version = {attr = "qubitclient.__version__"}
@@ -51,9 +53,12 @@ full = [
 index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.setuptools.package-data]
-qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json"]
+qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json", "serve_templates/**/*"]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["qubitclient*"]  # match qubitscope and qubitscope.*
 exclude = ["tests", "tests.*", "tmp", "tmp.*"]
+
+[project.scripts]
+qubitclient = "qubitclient.cli:app"

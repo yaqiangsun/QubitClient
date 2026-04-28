@@ -1,0 +1,14 @@
+{
+  "TARGET_URLS": {
+    "default": "http://0.0.0.0:9000",
+    "api/v1/tasks/scope": "http://0.0.0.0:9001",
+    "api/v1/tasks/nnscope": "http://0.0.0.0:9000"
+  },
+  "TARGET_FILE_KEYS": {
+    "default": "files",
+    "api/v1/tasks/scope": "files",
+    "api/v1/tasks/nnscope": "request"
+  },
+  "API_KEY": "SELF-DEFINED-API_KEY",
+  "SAVE_FILES": true
+}

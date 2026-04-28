@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  proxy:
+    image: yaqiangsun/proxy:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "9801:8000"
+    volumes:
+      - ./tmp:/app/tmp
+      - ./config:/app/config

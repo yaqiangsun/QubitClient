@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  qubitserving:
+    image: yaqiangsun/qubitserving:latest
+    restart: unless-stopped
+    ports:
+      - "9000:8000"
+    volumes:
+      - ./license/license.json:/app/license/license.json
+      - ./model_zoo:/app/model_zoo
+      - ./tmp:/app/tmp

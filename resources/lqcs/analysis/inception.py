@@ -12,11 +12,19 @@ from qubitclient import NNTaskName,TaskName
 from .config import API_URL,API_KEY,ENABLE_API
 import logging
 from qubitclient import handle_exceptions, control_api_execution
-from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,\
-                    s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert,\
-                    t1fit_convert,t2fit_convert,rabicos_convert,nnspectrum_convert,\
-                    spectrum_convert, nns21_convert,powershift_convert,\
-                    rb_convert,delta_convert
+
+# from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,\
+#                     s21vsflux_convert,nns21vsflux_convert,spectrum2d_convert,\
+#                     t1fit_convert,t2fit_convert,rabicos_convert,nnspectrum_convert,\
+#                     spectrum_convert, nns21_convert,powershift_convert,\
+#                     rb_convert,delta_convert
+
+from .format import s21_convert,s21vsflux_convert,\
+                    singleshot_convert,\
+                    nns21vsflux_convert,t1fit_convert,\
+                    t2fit_convert,nnspectrum_convert,\
+                    spectrum_convert, powershift_convert, s21multi_convert
+
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
@@ -70,7 +78,7 @@ def nnspectrum(image):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def nns21(image):
-    image = nns21_convert(image)
+    image = s21_convert(image)
     results = nnscope_template(image,task_type=NNTaskName.S21PEAK)
     return results
 
@@ -83,9 +91,17 @@ def s21(image):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def s21multi(image):
-    image = s21_convert(image)
+    image = s21multi_convert(image)
     results = scope_template(image,task_type=TaskName.S21PEAKMULTI)
     return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def nns21multi(image):
+    image = s21multi_convert(image)
+    results = nnscope_template(image,task_type=NNTaskName.S21PEAKMULTI)
+    return results
+
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def rabi(image):

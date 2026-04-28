@@ -14,9 +14,6 @@ import scipy
 
 
 def singleshot_convert(result):
-  
-
-
     data_formated = {"image": {}}
 
     for index, qubit_name in enumerate(result.keys()):
@@ -24,15 +21,22 @@ def singleshot_convert(result):
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
         data = result[qubit_name]
-        if data.dtype.names:
-           
+        if type(data)==list:
+            data_arr = np.array(data)
+            I_channel = data_arr[:, 1]
+            Q_channel = data_arr[:, 2]
+            X_channel = data_arr[:, 3]
+            Y_channel = data_arr[:, 4]
+
+        elif data.dtype.names:
             time = data['f0']  # 时间/索引
             I_channel = data['f1']  # Is | I
             Q_channel = data['f2']  # Qs | I
             X_channel = data['f3']  # Is | X
             Y_channel = data['f4']  # Qs | X
-            s0 = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
-            s1 = X_channel + 1j * Y_channel  # 复数 s1 (X 通道)
+
+        s0 = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        s1 = X_channel + 1j * Y_channel  # 复数 s1 (X 通道)
         data_formated["image"][qubit_name] = (s0, s1)
     return data_formated
 
@@ -45,35 +49,84 @@ def s21_convert(result):
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
         data = result[qubit_name]
-        if data.dtype.names:
-            f0 = data['f0']
-            f1 = data['f1']
-            f2 = data['f2']
-            f3 = data['f3']
-            f4 = data['f4']
-            f5 = data['f5']
-            f6 = data['f6']
-            f7 = data['f7']
+        if type(data)==list:
+            # 双层[[0, 1, 2, 3..7],,,20个]
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]
+            phi = data_arr[:, 2]
+            I_channel = data_arr[:, 3]
+            Q_channel = data_arr[:, 4]
 
-
-
+        elif data.dtype.names:
+            # f0 = data['f0']
+            # f1 = data['f1']
+            # f2 = data['f2']
+            # f3 = data['f3']
+            # f4 = data['f4']
+            # f5 = data['f5']
+            # f6 = data['f6']
+            # f7 = data['f7']
             freq = data['f0']  # 时间/索引
             amp = data['f1']
             phi = data['f2']
             I_channel = data['f3']  # Is | I
             Q_channel = data['f4']  # Qs | I
 
-            s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
 
-            amp2 = np.abs(s)
-            phi2 = np.unwrap(np.angle(s))
-            phi_processed = scipy.signal.detrend(phi, type='linear')
-            phi2_processed = scipy.signal.detrend(phi2, type='linear')
+        amp2 = np.abs(s)
+        phi2 = np.unwrap(np.angle(s))
+        phi_processed = scipy.signal.detrend(phi, type='linear')
+        phi2_processed = scipy.signal.detrend(phi2, type='linear')
 
         data_formated["image"][qubit_name] = (freq, amp2,phi2_processed)
 
 
     return data_formated
+
+
+def s21multi_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data)==list:
+            # 双层[[0, 1, 2, 3..7],,,20个]
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]
+            phi = data_arr[:, 2]
+            I_channel = data_arr[:, 3]
+            Q_channel = data_arr[:, 4]
+
+        elif data.dtype.names:
+            # f0 = data['f0']
+            # f1 = data['f1']
+            # f2 = data['f2']
+            # f3 = data['f3']
+            # f4 = data['f4']
+            # f5 = data['f5']
+            # f6 = data['f6']
+            # f7 = data['f7']
+            freq = data['f0']  # 时间/索引
+            amp = data['f1']
+            phi = data['f2']
+            I_channel = data['f3']  # Is | I
+            Q_channel = data['f4']  # Qs | I
+
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+        amp2 = np.abs(s)
+        phi2 = np.unwrap(np.angle(s))
+        phi_processed = scipy.signal.detrend(phi, type='linear')
+        phi2_processed = scipy.signal.detrend(phi2, type='linear')
+
+        data_formated["image"][qubit_name] = (freq, amp2,phi2_processed)
+
+    return data_formated
+
 
 def s21vsflux_convert(result):
     data_formated = {"image": {}}
@@ -192,7 +245,13 @@ def t1fit_convert(result):
     for qubit_name, data in result.items():
         qubit_name = qubit_name.strip()
         
-        if data.dtype.names:  # 结构化数组
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+            p_x = data_arr[:, 2]
+            data_formated["image"][qubit_name] = (delay, p_x)
+
+        elif data.dtype.names:  # 结构化数组
             delay = data['f0']          # 自变量：延迟时间
             #p_i   = data['f1']          # Dependent0: P1 | I 
             p_x = data['f2']          # Dependent1: P1 | X 
@@ -212,7 +271,13 @@ def t2fit_convert(result):
     for qubit_name, data in result.items():
         qubit_name = qubit_name.strip()
         
-        if data.dtype.names:   
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+            amplitude = data_arr[:, 1]
+            data_formated["image"][qubit_name] = (delay, amplitude)
+
+        elif data.dtype.names:   
             delay = data['f0']      
             # p1    = data['f6']      
             amplitude = data['f1']

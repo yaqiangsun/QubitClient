@@ -22,11 +22,17 @@ import logging
 from .config import API_URL,API_KEY,ENABLE_API
 from qubitclient import handle_exceptions, control_api_execution
 
-from .format import optpipulse_convert,s21_convert,s21vsflux_convert,\
-                    drag_convert,singleshot_convert,nnspectrum2d_convert,\
-                    nns21vsflux_convert,spectrum2d_convert,t1fit_convert,\
-                    t2fit_convert,rabicos_convert,nnspectrum_convert,\
-                    spectrum_convert, nns21_convert, powershift_convert, rb_convert,delta_convert
+# from .format import optpipulse_convert,s21_convert,s21vsflux_convert,\
+#                     drag_convert,singleshot_convert,nnspectrum2d_convert,\
+#                     nns21vsflux_convert,spectrum2d_convert,t1fit_convert,\
+#                     t2fit_convert,rabicos_convert,nnspectrum_convert,\
+#                     spectrum_convert, nns21_convert, powershift_convert, rb_convert,delta_convert
+
+from .format import s21_convert,s21vsflux_convert,\
+                    singleshot_convert,\
+                    nns21vsflux_convert,t1fit_convert,\
+                    t2fit_convert,nnspectrum_convert,\
+                    spectrum_convert, powershift_convert, s21multi_convert
 
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
@@ -75,15 +81,23 @@ def plot_s21(data,results,save_path):
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAK)
     return fig_list
 @handle_exceptions
-def plot_s21multi(data,results,save_path):
+def plot_nns21(data,results,save_path):
+    # data = nns21_convert(data)
     data = s21_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21PEAK)
+    return fig_list
+
+@handle_exceptions
+def plot_s21multi(data,results,save_path):
+    data = s21multi_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAKMULTI)
     return fig_list
 @handle_exceptions
-def plot_nns21(data,results,save_path):
-    data = nns21_convert(data)
-    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21PEAK)
+def plot_nns21multi(data,results,save_path):
+    data = s21multi_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21PEAKMULTI)
     return fig_list
+
 @handle_exceptions
 def plot_s21vsflux(data,results,save_path):
     data = s21vsflux_convert(data)

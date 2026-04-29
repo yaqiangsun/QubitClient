@@ -47,6 +47,7 @@ class CtrlTaskName(Enum):
     DATA = "get_data"
     QUERY_PARAM = "query_param"
     UPDATE_PARAM = "update_param"
+    XEB = 'xeb'
 
 
 def run_task(task_type,*args,**kwargs):
@@ -270,7 +271,7 @@ def t1(qubits: list[str],
 
 @task_register
 def t2(qubits: list[str],
-       delay:list[float],
+       delay:list[float]=[0, 100e-6],
        fringe_freq:list[float]=[-100e6, 100e6],
        ms: float=0.1,
        *args, **kwargs):
@@ -301,6 +302,28 @@ def rb(qubits:list[str],
                       size=size
                       )
     return result
+
+@task_register
+def xeb(qubits:list[str],
+        m:int=3,
+        k:int=3,
+        gate:list=['ref'],
+        tbuffer:list=None,
+        stats:int=11,
+        *args, **kwargs):
+    if cycle is None:
+        cycle = np.unique(np.logspace(0, np.log10(1000), 21, dtype=int)).tolist()
+    result = call_mcp("xeb",
+                      qubits=qubits,
+                      m=m,
+                      k=k,
+                      gate=gate,
+                      tbuffer=tbuffer,
+                      stats=stats
+                      )
+    return result
+
+
 @task_register
 def get_data(rid,
        *args, **kwargs):

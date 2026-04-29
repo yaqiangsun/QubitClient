@@ -184,6 +184,12 @@ def rb(client,files: File):
     response: Response[BodyRbfitApiV1TasksScopeRbfitPost] = rbfit_api_v1_tasks_scope_rbfit_post.sync_detailed(client=client,body=body)
     return response
 
+@task_register
+def xeb(client,files: File):
+    body: BodyRbfitApiV1TasksScopeRbfitPost = BodyRbfitApiV1TasksScopeRbfitPost(files=files)
+    response: Response[BodyRbfitApiV1TasksScopeRbfitPost] = rbfit_api_v1_tasks_scope_rbfit_post.sync_detailed(client=client,body=body)
+    return response
+
 from enum import Enum, unique
 @unique
 class TaskName(Enum):
@@ -203,6 +209,7 @@ class TaskName(Enum):
     DRAG = "drag"
     RB = "rb"
     DELTA = "delta"
+    XEB = "xeb"
 
 
 

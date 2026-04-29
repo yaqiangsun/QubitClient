@@ -156,9 +156,10 @@ def serve_download(
 
 @serve_app.command("license")
 def serve_license(
-    output: str = typer.Option("tmp/device.json", "--output", "-o", help="Output file path"),
+    base_url: str = typer.Option("http://localhost:9008", "--url", help="License server base URL"),
+    # days: int = typer.Option(30, "--days", help="License validity days"),
 ):
-    """Collect device info using modellock and save to device.json."""
+    """Collect device info and request license from license server."""
     try:
         from modellock import collect_device_info
     except ImportError:
@@ -166,16 +167,51 @@ def serve_license(
         typer.echo("Install with: pip install modellock")
         raise typer.Exit(1)
 
-    output_path = Path.cwd() / output
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    device_path = Path.cwd() / "tmp" / "device.json"
+    device_path.parent.mkdir(parents=True, exist_ok=True)
 
-    typer.echo(f"Collecting device info to: {output_path.absolute()}")
+    typer.echo(f"Collecting device info to: {device_path.absolute()}")
 
     try:
-        collect_device_info(output=str(output_path))
-        typer.echo(f"Device info saved successfully to: {output_path}")
+        collect_device_info(output=str(device_path))
+        typer.echo(f"Device info saved to: {device_path}")
     except Exception as e:
         typer.echo(f"Error collecting device info: {e}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"Requesting license from: {base_url}/create-license")
+
+    try:
+        import requests
+        with open(device_path, "rb") as f:
+            files = {"device_fingerprint": f}
+            data = {
+                # "days": days,
+            }
+            response = requests.post(
+                f"{base_url}/create-license",
+                files=files,
+                data=data,
+            )
+
+        if response.status_code == 200:
+            # Save to qubitserving/license/
+            license_path = Path.cwd() / "serve_templates" / "qubitserving" / "license" / "license.json"
+            license_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(license_path, "wb") as f:
+                f.write(response.content)
+            typer.echo(f"License saved to: {license_path}")
+
+            # Copy to qubitscope/license/
+            license_dest = Path.cwd() / "serve_templates" / "qubitscope" / "license" / "license.json"
+            license_dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(license_path, license_dest)
+            typer.echo(f"License saved to: {license_dest}")
+        else:
+            typer.echo(f"Error creating license: {response.text}", err=True)
+            raise typer.Exit(1)
+    except requests.RequestException as e:
+        typer.echo(f"Error requesting license: {e}", err=True)
         raise typer.Exit(1)
 
 

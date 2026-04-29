@@ -12,7 +12,6 @@ import numpy as np
 import scipy
 
 
-
 def singleshot_convert(result):
     data_formated = {"image": {}}
 
@@ -34,6 +33,9 @@ def singleshot_convert(result):
             Q_channel = data['f2']  # Qs | I
             X_channel = data['f3']  # Is | X
             Y_channel = data['f4']  # Qs | X
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
 
         s0 = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
         s1 = X_channel + 1j * Y_channel  # 复数 s1 (X 通道)
@@ -71,6 +73,9 @@ def s21_convert(result):
             phi = data['f2']
             I_channel = data['f3']  # Is | I
             Q_channel = data['f4']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
 
         s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
 
@@ -115,6 +120,9 @@ def s21multi_convert(result):
             phi = data['f2']
             I_channel = data['f3']  # Is | I
             Q_channel = data['f4']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
 
         s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
 
@@ -158,6 +166,9 @@ def s21vsflux_convert(result):
             volt = data['f1']
             I_channel = data['f4']  # Is | I
             Q_channel = data['f5']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
 
         s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
 
@@ -202,7 +213,32 @@ def powershift_convert(result):
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
         data = result[qubit_name]
-        if data.dtype.names:
+        if type(data)==list:
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]
+            volt = data_arr[:, 1]
+            I_channel = data['f4']  # Is | I
+            Q_channel = data['f5']  # Qs | I
+
+            s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+            amp = np.abs(s)
+            unique_freq = np.unique(freq)  # 得到16个唯一频率值
+            unique_volt = np.unique(volt)  # 得到11个唯一电压值
+
+            n_freq = len(unique_freq)
+            n_volt = len(unique_volt)
+
+            first_n_volt_volt = volt[:n_volt]
+            is_row_major = len(np.unique(first_n_volt_volt)) == n_volt
+
+            if is_row_major:
+                # 行优先：每个频率的所有电压连续存储
+                amp_2d = s.reshape(n_freq, n_volt)
+            else:
+                # 列优先：每个电压的所有频率连续存储
+                amp_2d = s.reshape(n_volt, n_freq).T
+        elif data.dtype.names:
             f0 = data['f0']
             f1 = data['f1']
             f2 = data['f2']
@@ -240,6 +276,9 @@ def powershift_convert(result):
             # 重塑 amp 为2D
 
             # 验证：检查 amp_2d 是否与原始数据一致
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
 
         data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
         assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
@@ -305,7 +344,21 @@ def nnspectrum_convert(result):
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
         data = result[qubit_name]
-        if data.dtype.names:
+        if type(data)==list:
+            data_arr = np.array(data)
+            time = data_arr[:, 0]
+
+            num = data_arr.shape[1]
+            for channel_idx in range(1, num):
+                channel_data = data_arr[:, channel_idx]
+
+                # 生成名字：qubit_1, qubit_2
+                new_qubit_name = f"{qubit_name}_{channel_idx}"
+
+                data_formated["image"][new_qubit_name] = (time, channel_data)
+            
+
+        elif data.dtype.names:
             field_names = data.dtype.names
             
             # 时间轴 f0
@@ -319,6 +372,8 @@ def nnspectrum_convert(result):
                 new_qubit_name = f"{qubit_name}_{channel_idx}"
 
                 data_formated["image"][new_qubit_name] = (time, channel_data)
+        else:
+            data_formated["image"][qubit_name] = data
 
     return data_formated
 
@@ -331,7 +386,22 @@ def spectrum_convert(result):
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
         data = result[qubit_name]
-        if data.dtype.names:
+
+        if type(data)==list:
+            data_arr = np.array(data)
+            time = data_arr[:, 0]
+
+            num = data_arr.shape[1]
+            for channel_idx in range(1, num):
+                channel_data = data_arr[:, channel_idx]
+
+                # 生成名字：qubit_1, qubit_2
+                new_qubit_name = f"{qubit_name}_{channel_idx}"
+
+                data_formated["image"][new_qubit_name] = (time, channel_data)
+            
+
+        elif data.dtype.names:
             field_names = data.dtype.names
             
             # 时间轴 f0
@@ -345,7 +415,8 @@ def spectrum_convert(result):
                 new_qubit_name = f"{qubit_name}_{channel_idx}"
 
                 data_formated["image"][new_qubit_name] = (time, channel_data)
-
+        else:
+            data_formated["image"][qubit_name] = data
     return data_formated
 
 def rabicos_convert(result):
@@ -383,7 +454,30 @@ def rb_convert(result):
     for qubit_name, data in result.items():
         qubit_name = qubit_name.strip()
         
-        if data.dtype.names:
+        if type(data)==list:
+            data_arr = np.array(data)
+            m = data_arr[:, 1]
+            p1 = data_arr[:, 3]
+
+            # 1. 获取唯一的 m 值（作为最终横坐标）
+            unique_m = np.sort(np.unique(m))
+            
+            # 2. 对每个 m，收集所有 k 对应的 P1，并求平均
+            avg_p1 = np.zeros(len(unique_m))
+            
+            for i, um in enumerate(unique_m):
+                mask = (m == um)
+                avg_p1[i] = p1[mask].mean()          # 对相同 m 的所有 k 取平均
+            
+            # 可选：使用 1 - P0 作为激发态概率（根据服务器习惯选择）
+            # avg_p1 = (1.0 - p0[mask]).mean()
+            
+            # y_ref 使用零数组（reference 数据通常只有一条主曲线）
+            y_ref = np.zeros_like(avg_p1)
+            
+            # ==================== 输出格式 ====================
+            data_formated["image"][qubit_name] = [unique_m, [avg_p1, y_ref]]
+        elif data.dtype.names:
             k  = data['f0']   # 序列组索引
             m  = data['f1']   # 序列深度 (横坐标)
             p0 = data['f2']   # |0> 概率
@@ -426,7 +520,32 @@ def xeb_convert(result):
     for qubit_name, data in result.items():
         qubit_name = qubit_name.strip()
         
-        if data.dtype.names:
+        if type(data)==list:
+            data_arr = np.array(data)
+            m = data_arr[:, 1]
+            p1 = data_arr[:, 3]
+
+            # ==================== 关键处理逻辑 ====================
+            # 1. 获取唯一的 m 值（作为最终横坐标）
+            unique_m = np.sort(np.unique(m))
+            
+            # 2. 对每个 m，收集所有 k 对应的 P1，并求平均
+            avg_p1 = np.zeros(len(unique_m))
+            
+            for i, um in enumerate(unique_m):
+                mask = (m == um)
+                avg_p1[i] = p1[mask].mean()          # 对相同 m 的所有 k 取平均
+            
+            # 可选：使用 1 - P0 作为激发态概率（根据服务器习惯选择）
+            # avg_p1 = (1.0 - p0[mask]).mean()
+            
+            # y_ref 使用零数组（reference 数据通常只有一条主曲线）
+            y_ref = np.zeros_like(avg_p1)
+            
+            # ==================== 输出格式 ====================
+            data_formated["image"][qubit_name] = [unique_m, [avg_p1, y_ref]]
+            
+        elif data.dtype.names:
             k  = data['f0']   # 序列组索引
             m  = data['f1']   # 序列深度 (横坐标)
             p0 = data['f2']   # |0> 概率

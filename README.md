@@ -93,6 +93,9 @@ pip install qubitclient[full]
 # 初始化部署文件（拷贝 serve_templates 到当前目录）
 qubitclient serve init
 
+# 下载模型到 model_zoo 文件夹
+qubitclient serve download
+
 # 启动所有服务（proxy、qubitserving、qubitscope）
 qubitclient serve up -d
 

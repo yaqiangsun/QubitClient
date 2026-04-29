@@ -87,7 +87,9 @@ def serve_init(
     typer.echo(f"Copied: {dest_dir.relative_to(current_dir)}")
 
     typer.echo(f"\nDeployment files initialized in {current_dir}")
-    typer.echo("You can run: docker-compose up -d")
+    typer.echo("Next steps:")
+    typer.echo("  1. Download models: qubitclient serve download")
+    typer.echo("  2. Start services: qubitclient serve up -d")
 
 
 @serve_app.command("up")
@@ -100,6 +102,22 @@ def serve_up(
         typer.echo("Error: serve_templates/docker-compose.yml not found", err=True)
         typer.echo("Run 'qubitclient serve init' first")
         raise typer.Exit(1)
+
+    # Check if model_zoo has actual model files (exclude README)
+    model_zoo_dir = Path.cwd() / "serve_templates" / "qubitserving" / "model_zoo"
+    has_models = False
+    if model_zoo_dir.exists():
+        for item in model_zoo_dir.iterdir():
+            if item.is_file() and item.name.upper() != "README.md":
+                has_models = True
+                break
+            if item.is_dir():
+                has_models = True
+                break
+
+    if not has_models:
+        typer.echo("Warning: model_zoo folder is empty or missing models", err=True)
+        typer.echo("Download models first: qubitclient serve download")
 
     typer.echo("Starting services...")
     result = subprocess.run(

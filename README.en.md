@@ -42,6 +42,9 @@ pip install qubitclient[full]
 # Initialize deployment files (copy serve_templates to current directory)
 qubitclient serve init
 
+# Download models to model_zoo folder
+qubitclient serve download
+
 # Start all services (proxy, qubitserving, qubitscope)
 qubitclient serve up -d
 

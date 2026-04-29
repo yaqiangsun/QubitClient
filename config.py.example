@@ -10,3 +10,18 @@
 
 API_URL = "http://172.29.252.7:9801"
 API_KEY = "your_secret_api_key"  # 设置API密钥
+
+# mcpServers = {
+#     "quantum-service": { # 服务器名称，可自定义
+#         "transport": "streamable_http",
+#         "url": "http://127.0.0.1:8008/mcp", # MCP服务地址
+#         # 可选：如果需要认证，可以添加headers
+#         # "headers": {
+#         #     "Authorization": "Bearer YOUR_TOKEN"
+#         # }
+#     }
+#     # 可以在这里继续添加更多MCP服务器[citation:10]
+# }
+mcpServers = [
+    "http://127.0.0.1:8008/mcp"
+]

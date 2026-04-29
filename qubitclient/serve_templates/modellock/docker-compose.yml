@@ -1,0 +1,10 @@
+
+services:
+  modellock:
+    image: yaqiangsun/modellock:latest
+    pull_policy: always                  # 每次 docker compose up 都强制拉最新镜像
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      - "9008:8000"

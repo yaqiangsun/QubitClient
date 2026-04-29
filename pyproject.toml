@@ -44,6 +44,7 @@ mcp = [
 ]
 serve = [
     "modelscope>=1.20.0",
+    "modellock>=0.0.1",
 ]
 llm = [
     "openai>=1.58.0",

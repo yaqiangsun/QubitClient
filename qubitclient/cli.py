@@ -154,6 +154,31 @@ def serve_download(
         raise typer.Exit(1)
 
 
+@serve_app.command("license")
+def serve_license(
+    output: str = typer.Option("tmp/device.json", "--output", "-o", help="Output file path"),
+):
+    """Collect device info using modellock and save to device.json."""
+    try:
+        from modellock import collect_device_info
+    except ImportError:
+        typer.echo("Error: modellock is not installed", err=True)
+        typer.echo("Install with: pip install modellock")
+        raise typer.Exit(1)
+
+    output_path = Path.cwd() / output
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    typer.echo(f"Collecting device info to: {output_path.absolute()}")
+
+    try:
+        collect_device_info(output=str(output_path))
+        typer.echo(f"Device info saved successfully to: {output_path}")
+    except Exception as e:
+        typer.echo(f"Error collecting device info: {e}", err=True)
+        raise typer.Exit(1)
+
+
 app.add_typer(serve_app, name="serve")
 
 

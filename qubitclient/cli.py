@@ -109,6 +109,33 @@ def serve_up(
     raise typer.Exit(result.returncode)
 
 
+@serve_app.command("download")
+def serve_download(
+    model_name: str = typer.Option("yaqiangsun/qubitscope-enc", "--model", "-m", help="ModelScope model ID"),
+    target_dir: str = typer.Option("serve_templates/qubitserving/model_zoo", "--dir", "-d", help="Target directory to save model"),
+):
+    """Download models from ModelScope to model_zoo folder."""
+    try:
+        from modelscope import snapshot_download
+    except ImportError:
+        typer.echo("Error: modelscope is not installed", err=True)
+        typer.echo("Install with: pip install modelscope")
+        raise typer.Exit(1)
+
+    target_path = Path.cwd() / target_dir
+    target_path.mkdir(parents=True, exist_ok=True)
+
+    typer.echo(f"Downloading model: {model_name}")
+    typer.echo(f"Target directory: {target_path.absolute()}")
+
+    try:
+        model_dir = snapshot_download(model_name, local_dir=str(target_path))
+        typer.echo(f"Model downloaded successfully to: {model_dir}")
+    except Exception as e:
+        typer.echo(f"Error downloading model: {e}", err=True)
+        raise typer.Exit(1)
+
+
 app.add_typer(serve_app, name="serve")
 
 

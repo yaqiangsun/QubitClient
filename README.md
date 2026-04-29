@@ -97,7 +97,7 @@ qubitclient serve init
 qubitclient serve download
 
 # 启动所有服务（proxy、qubitserving、qubitscope）
-qubitclient serve up -d
+qubitclient serve up
 
 # 查看服务状态
 docker ps

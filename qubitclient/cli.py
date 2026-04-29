@@ -94,7 +94,7 @@ def serve_init(
 
 @serve_app.command("up")
 def serve_up(
-    detach: bool = True,
+    detach: bool = typer.Option(False, "--detach", "-d", help="Run containers in detached mode"),
 ):
     """Start all services via docker-compose."""
     compose_file = Path.cwd() / "serve_templates" / "docker-compose.yml"

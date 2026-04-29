@@ -46,7 +46,7 @@ qubitclient serve init
 qubitclient serve download
 
 # Start all services (proxy, qubitserving, qubitscope)
-qubitclient serve up -d
+qubitclient serve up
 
 # Check service status
 docker ps

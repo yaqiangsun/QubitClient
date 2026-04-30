@@ -90,6 +90,8 @@ pip install qubitclient
 pip install qubitclient[full]
 ```
 
+详细安装说明请参考 [安装指南](docs/install.md)。
+
 
 #### 🐳 服务部署（Docker）
 

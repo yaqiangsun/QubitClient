@@ -2,7 +2,7 @@
   "url": "https://your-api-server.com",
   "api_key": "your-api-key-here",
   "llm": {
-    "api_key": "xxxxxxx",
+    "api_key": "vllm_xxxxx",
     "base_url": "https://llm.xxx.xxx/v1",
     "model": "nv-community/Ising-Calibration-1-35B-A3B"
   },

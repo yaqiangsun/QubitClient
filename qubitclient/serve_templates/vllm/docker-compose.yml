@@ -5,7 +5,7 @@ services:
     image: vllm/vllm-openai:latest
     container_name: vllm-modelscope
     # 默认无EP，若模型兼容且希望尝试，可在此处添加 --enable-expert-parallel
-    command: --model ${MODEL_NAME} --trust-remote-code --tensor-parallel-size 2
+    command: --model ${MODEL_NAME} --trust-remote-code --tensor-parallel-size 2 --api-key ${VLLM_API_KEY}
     ports:
       - "9091:8000"
     environment:

@@ -25,7 +25,7 @@ def client_init(
 ):
     """Initialize configuration files in current directory."""
     current_dir = Path.cwd()
-    template_dir = Path(__file__).parent / "config_templates"
+    template_dir = Path(__file__).parent / "templates" / "config_templates"
 
     if not template_dir.exists():
         typer.echo("Error: config_templates not found", err=True)
@@ -68,7 +68,7 @@ def serve_init(
 ):
     """Initialize deployment files in current directory."""
     current_dir = Path.cwd()
-    template_dir = Path(__file__).parent / "serve_templates"
+    template_dir = Path(__file__).parent / "templates" / "serve_templates"
 
     if not template_dir.exists():
         typer.echo("Error: serve_templates not found", err=True)

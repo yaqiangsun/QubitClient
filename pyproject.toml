@@ -57,7 +57,7 @@ full = [
 index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.setuptools.package-data]
-qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json", "serve_templates/**/*", "config_templates/**/*"]
+qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json", "templates/serve_templates/**/*", "templates/config_templates/**/*"]
 
 [tool.setuptools.packages.find]
 where = ["."]

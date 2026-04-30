@@ -8,6 +8,7 @@ from pathlib import Path
 import typer
 
 from . import __version__
+from .utils.env_load import get_config
 
 app = typer.Typer(help="qubitclient - Quantum computing analysis client")
 serve_app = typer.Typer(help="Server deployment commands")
@@ -181,6 +182,15 @@ def serve_license(
 
     typer.echo(f"Requesting license from: {base_url}/create-license")
 
+    # 从配置文件获取 license token
+    config = get_config()
+    license_config = config.get("license", {})
+    token = license_config.get("token")
+    if not token:
+        typer.echo("Error: license.token not found in config", err=True)
+        typer.echo("Please set license.token in qubitclient.json")
+        raise typer.Exit(1)
+
     try:
         import requests
         with open(device_path, "rb") as f:
@@ -188,10 +198,12 @@ def serve_license(
             data = {
                 # "days": days,
             }
+            headers = {"Authorization": f"Bearer {token}"}
             response = requests.post(
                 f"{base_url}/create-license",
                 files=files,
                 data=data,
+                headers=headers,
             )
 
         if response.status_code == 200:

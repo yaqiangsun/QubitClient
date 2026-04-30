@@ -159,21 +159,23 @@ def get_config(url: Optional[str] = None, api_key: Optional[str] = None) -> Dict
     if 'url' not in merged or not merged.get('url'):
         raise ValueError(
             "URL configuration is required. Please provide it via:\n"
-            "1. Constructor parameter: QubitScopeClient(url='...')\n"
-            "2. Runtime config file: ./qubitclient.json\n"
-            "3. Environment variable: QUBITCLIENT_URL\n"
-            "4. User config file: ~/qubitclient.json\n"
-            "5. Default config.py: API_URL"
+            "1. Run 'qubitclient init' to generate qubitclient.json template\n"
+            "2. Constructor parameter: QubitScopeClient(url='...')\n"
+            "3. Runtime config file: ./qubitclient.json\n"
+            "4. Environment variable: QUBITCLIENT_URL\n"
+            "5. User config file: ~/qubitclient.json\n"
+            "6. Default config.py: API_URL"
         )
     
     if 'api_key' not in merged or not merged.get('api_key'):
         raise ValueError(
             "API_KEY configuration is required. Please provide it via:\n"
-            "1. Constructor parameter: QubitScopeClient(api_key='...')\n"
-            "2. Runtime config file: ./qubitclient.json\n"
-            "3. Environment variable: QUBITCLIENT_API_KEY\n"
-            "4. User config file: ~/qubitclient.json\n"
-            "5. Default config.py: API_KEY"
+            "1. Run 'qubitclient init' to generate qubitclient.json template\n"
+            "2. Constructor parameter: QubitScopeClient(api_key='...')\n"
+            "3. Runtime config file: ./qubitclient.json\n"
+            "4. Environment variable: QUBITCLIENT_API_KEY\n"
+            "5. User config file: ~/qubitclient.json\n"
+            "6. Default config.py: API_KEY"
         )
     
     return merged

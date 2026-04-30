@@ -5,5 +5,8 @@
     "api_key": "xxxxxxx",
     "base_url": "https://llm.xxx.xxx/v1",
     "model": "nv-community/Ising-Calibration-1-35B-A3B"
+  },
+  "license": {
+    "token":"token_xxxxx"
   }
 }

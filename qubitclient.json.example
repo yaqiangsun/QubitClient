@@ -4,6 +4,6 @@
   "llm": {
     "api_key": "xxxxxxx",
     "base_url": "https://llm.xxx.xxx/v1",
-    "model": "nvidia/Ising-Calibration-1-35B-A3B"
+    "model": "nv-community/Ising-Calibration-1-35B-A3B"
   }
 }

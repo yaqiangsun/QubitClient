@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-modelscope
+    # 默认无EP，若模型兼容且希望尝试，可在此处添加 --enable-expert-parallel
+    command: --model ${MODEL_NAME} --trust-remote-code --tensor-parallel-size 2
+    ports:
+      - "9091:8000"
+    environment:
+      - VLLM_USE_MODELSCOPE=True  # 👈 让vLLM从Modelscope下载模型
+      # - MODEL_NAME=nv-community/Ising-Calibration-1-35B-A3B  # 放在.env中,可替换为要部署的Modelscope模型ID,
+      # 可选：自定义缓存路径，避免占满根分区
+      - MODELSCOPE_CACHE=/modelscope_cache
+      - VLLM_GPU_MEMORY_UTIL=0.9
+      # 可选：为MoE模型增加超时时间
+      # - VLLM_RPC_TIMEOUT=7200
+    volumes:
+      # 可选：将缓存目录挂载到宿主机，避免重复下载，并方便后续迁移
+      - ./models:/modelscope_cache/models # modelscope缓存目录会将其放在{MODELSCOPE_CACHE}/models下
+    shm_size: '16g'  # 显著增加，推荐16g或更高
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0', '1']  # 使用0和1号GPU
+              capabilities: [gpu]

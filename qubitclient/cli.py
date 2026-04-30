@@ -156,7 +156,7 @@ def serve_download(
 
 @serve_app.command("license")
 def serve_license(
-    base_url: str = typer.Option("http://localhost:9008", "--url", help="License server base URL"),
+    base_url: str = typer.Option("https://license.deepvectories.top/", "--url", help="License server base URL"),
     # days: int = typer.Option(30, "--days", help="License validity days"),
 ):
     """Collect device info and request license from license server."""

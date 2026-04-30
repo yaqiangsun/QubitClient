@@ -1,9 +1,9 @@
 {
-  "url": "https://your-api-server.com",
-  "api_key": "your-api-key-here",
+  "url": "http://0.0.0.0:9801",
+  "api_key": "PROXY_SELF_DEFINED_API_KEY",
   "llm": {
     "api_key": "vllm_xxxxx",
-    "base_url": "https://llm.xxx.xxx/v1",
+    "base_url": "http://xx.xx.xx.xx:9091/v1",
     "model": "nv-community/Ising-Calibration-1-35B-A3B"
   },
   "license": {

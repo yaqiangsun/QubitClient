@@ -9,6 +9,6 @@
     "api/v1/tasks/scope": "files",
     "api/v1/tasks/nnscope": "request"
   },
-  "API_KEY": "SELF-DEFINED-API_KEY",
+  "API_KEY": "PROXY_SELF_DEFINED_API_KEY",
   "SAVE_FILES": true
 }

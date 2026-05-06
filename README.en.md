@@ -1,42 +1,84 @@
-<h1>QubitClient: AI Client for Quantum Systems</h1>
+<h1 align="center">
+  <img src="asset/qubitclient.png" alt="QubitClient Logo" width="200"/>
+  <br>
+  QubitClient: AI Agent for Quantum Computing
+</h1>
 
 <p align="center">
-    <br>
-    <img src="asset/qubitclient.png" width="200"/>
-    <br>
-<p>
-<p align="center">
-<a href="README.md">中文文档</a> | English Doc
-<br>
+  <a href="https://pypi.org/project/qubitclient/">
+    <img src="https://img.shields.io/pypi/v/qubitclient?style=flat-square&logo=pypi&logoColor=white" alt="PyPI version">
+  </a>
+  <a href="https://www.python.org/downloads/">
+    <img src="https://img.shields.io/pypi/pyversions/qubitclient?style=flat-square&logoColor=white&logo=python" alt="Python versions">
+  </a>
+  <a href="https://pypi.org/project/qubitclient/">
+    <img src="https://img.shields.io/pypi/dm/qubitclient?style=flat-square&logo=pypi&logoColor=white" alt="PyPI Downloads">
+  </a>
+  <a href="https://github.com/yaqiangsun/qubitclient/issues">
+    <img src="https://img.shields.io/github/issues/yaqiangsun/qubitclient?style=flat-square" alt="Issues">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/yaqiangsun/qubitclient?style=flat-square" alt="License">
+  </a>
+  <a href="https://github.com/yaqiangsun/qubitclient/commits/main">
+    <img src="https://img.shields.io/github/last-commit/yaqiangsun/qubitclient?style=flat-square&logo=github" alt="Last Commit">
+  </a>
+  <img src="https://img.shields.io/badge/Quantum-Computing-blue?style=flat-square&logo=ibm" alt="Quantum Computing">
+  <img src="https://img.shields.io/badge/Machine_Learning-AI-green?style=flat-square&logo=machinelearn" alt="AI/ML">
+  <br>
+  <a href="#-introduction">Introduction</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-supported-task-types">Task Types</a> •
+  <a href="#-documentation">Documentation</a> •
+  <a href="#-license">License</a>
 </p>
 
-## Introduction
+<p align="center">
+  <a href="README.md">中文</a> | <b>English</b>
+</p>
 
-**QubitClient** is a Python client library for interacting with Qubit services. It provides rich APIs supporting various quantum computing related tasks, including curve segmentation, parameter fitting, and other functions.
+---
 
-## Features
+## 📖 Introduction
 
-- **2D Data Analysis**: 2D spectrum analysis, power shift curve analysis, etc.
-- **Multiple Task Support**: Includes various quantum computing tasks such as S21 peak detection, optimal π pulse, Rabi oscillation, T1/T2 fitting, etc.
-- **Flexible Data Input**: Supports multiple data formats as input, including file paths, NumPy arrays, dictionaries, etc.
-- **Batch Processing**: Supports processing multiple data files simultaneously
-- **Easy Integration**: Provides clean and clear API interfaces for quick integration into existing projects
-- **MCP Protocol Support**: Real-time quantum measurement task control based on MCP protocol
-- **LLM/VLM Integration**: Supports large language models and vision-language models for quantum measurement data analysis and decision-making
+**QubitClient** is a powerful AI agent for efficient interaction with **Qubit services**. It provides rich API interfaces designed for quantum computing experiment data processing, supporting **feature extraction**, **parameter fitting**, **experiment control** and other tasks. It enables fast analysis of 2D spectrum, power shift curves and other key experiment data, with support for various data format conversions.
 
-## Installation
+## 📂 Project Structure
+
+![Project Structure](asset/structure_en.png)
+
+## ✨ Features
+
+- 🧠 **Intelligent Data Analysis**: Supports 2D spectrum analysis, power shift curve analysis and other complex tasks.
+- 🔬 **Multiple Quantum Computing Tasks**: Includes S21 peak detection, optimal π pulse, Rabi oscillation, T1/T2 fitting and other common experiment analysis.
+- 📦 **Flexible Data Input**: Accepts file paths, NumPy arrays, or dictionaries, adapting to different data sources.
+- ⚡ **Batch Processing**: Easily process multiple data files simultaneously.
+- 🔌 **Easy Integration**: Clean API design for quick integration into existing project workflows.
+- 🤝 **MCP Protocol Support**: Real-time quantum measurement task control based on MCP protocol for experiment automation.
+- 🤖 **LLM/VLM Integration**: Supports large language models and vision-language models for quantum measurement data analysis and decision-making.
+  - 🟢 **Google Gemma 4**: Supports `google/gemma-4-E4B-it` model
+  - 🔵 **NVIDIA Ising**: Supports `nv-community/Ising-Calibration-1-35B-A3B` model, optimized for quantum calibration
+
+## 📦 Installation
+
+Recommended installation using `pip`:
 
 ```bash
 pip install qubitclient
 ```
 
-If you need to use plotting features:
+For additional features like plotting, install the full version:
 
 ```bash
 pip install qubitclient[full]
 ```
 
-#### Service Deployment (Docker)
+For detailed installation instructions, see [Installation Guide](docs/install.md).
+
+
+#### 🐳 Service Deployment (Docker)
 
 ```bash
 # Initialize deployment files (copy serve_templates to current directory)
@@ -52,9 +94,9 @@ qubitclient serve up
 docker ps
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-### Configuration
+### 1️⃣ Configuration
 
 Initialize configuration files:
 
@@ -62,7 +104,7 @@ Initialize configuration files:
 qubitclient init
 ```
 
-This will create `qubitclient.json` and `.mcp.json`. Then edit `qubitclient.json` with your server address and API key:
+This will create `qubitclient.json` and `.mcp.json` files. Then edit `qubitclient.json` with your server address and API key:
 
 ```json
 {
@@ -71,8 +113,8 @@ This will create `qubitclient.json` and `.mcp.json`. Then edit `qubitclient.json
 }
 ```
 
-### Usage Examples
-#### NNScope Functions (Curve Segmentation)
+### 2️⃣ Usage Examples
+#### 🧠 NNScope Functions (SPECTRUM2D)
 
 ```python
 from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
@@ -103,7 +145,7 @@ response = client.request(
 results = client.get_result(response=response)
 ```
 
-#### Scope Functions
+#### 🔬 Scope Functions (OPTPIPULSE)
 
 ```python
 from qubitclient import QubitScopeClient, TaskName
@@ -112,22 +154,21 @@ import numpy as np
 # Initialize the client
 client = QubitScopeClient(url="http://your-server-address:port", api_key="your-api-key")
 
-# Prepare data
+# Prepare data (example)
 dict_list = [{
-    "some_key": np.ndarray(...)
+    "x_data": np.array([...]),
+    "y_data": np.array([...])
 }]
 
-# Make request
 response = client.request(
     file_list=dict_list,
     task_type=TaskName.OPTPIPULSE  # See task types list below for options
 )
 
-# Get results
 results = client.get_result(response=response)
 ```
 
-#### Ctrl Functions (MCP Protocol Measurement Tasks)
+#### 🤖 Ctrl Functions (MCP Protocol Measurement S21)
 
 ```python
 from qubitclient.ctrl import QubitCtrlClient, CtrlTaskName
@@ -147,7 +188,7 @@ result = client.run(
 print(result)
 ```
 
-#### LLM Functions (VLM Image Analysis)
+#### 🤖 LLM Functions (VLM Image Analysis)
 
 ```python
 from qubitclient.llm import QubitLLM, LLMTaskName, ExperimentFamily
@@ -227,69 +268,110 @@ result = llm.run(
 print(result)
 ```
 
-## Supported Task Types
+## 📋 Supported Task Types
 
-### NNScope Tasks
+### 🧠 NNScope Tasks
 
-- `NNTaskName.SPECTRUM2D`: 2D spectrum data curve segmentation, see [SPECTRUM2D Detailed Documentation](docs/nnscope/SPECTRUM2D.md)
-- `NNTaskName.POWERSHIFT`: Power shift curve segmentation, see [POWERSHIFT Detailed Documentation](docs/nnscope/POWERSHIFT.md)
-- `NNTaskName.S21VFLUX`: S21 vs Flux parameter curve segmentation, see [S21VFLUX Detailed Documentation](docs/nnscope/S21VFLUX.md)
-- `NNTaskName.SPECTRUM`: Spectrum analysis, see [SPECTRUM Detailed Documentation](docs/nnscope/SPECTRUM.md)
+| Task Name | Description | Documentation | Status |
+|-----------|-------------|---------------|--------|
+| `NNTaskName.SPECTRUM2D` | 2D spectrum data curve segmentation | [Docs](docs/nnscope/SPECTRUM2D.md) | ✅ |
+| `NNTaskName.POWERSHIFT` | Power shift curve segmentation | [Docs](docs/nnscope/POWERSHIFT.md) | ⏸️ |
+| `NNTaskName.S21VFLUX` | S21 vs Flux parameter curve segmentation | [Docs](docs/nnscope/S21VFLUX.md) | ⏸️ |
+| `NNTaskName.SPECTRUM` | Spectrum analysis | [Docs](docs/nnscope/SPECTRUM.md) | ✅ |
+| `NNTaskName.S21PEAK` | S21 peak detection | [Docs](docs/nnscope/S21PEAK.md) | ⏸️ |
+| `NNTaskName.S21PEAKMULTI` | S21 peak detection | [Docs](docs/nnscope/S21PEAKMULTI.md) | ⏸️ |
 
-### Scope Tasks
+### 🔬 Scope Tasks
 
-- `TaskName.S21PEAK`: S21 parameter peak detection, see [S21PEAK Detailed Documentation](docs/scope/S21PEAK.md)
-- `TaskName.OPTPIPULSE`: Optimal π pulse calculation, see [OPTPIPULSE Detailed Documentation](docs/scope/OPTPIPULSE.md)
-- `TaskName.RABICOS`: Rabi oscillation cosine first peak detection, see [RABICOS Detailed Documentation](docs/scope/RABICOS.md)
-- `TaskName.RAMSEY`: Ramsey decay oscillation cosine fitting, see [RAMSEY Detailed Documentation](docs/scope/RAMSEY.md)
-- `TaskName.S21VFLUX`: S21 vs Flux analysis, see [S21VFLUX Detailed Documentation](docs/scope/S21VFLUX.md)
-- `TaskName.SINGLESHOT`: Single shot analysis, see [SINGLESHOT Detailed Documentation](docs/scope/SINGLESHOT.md)
-- `TaskName.SPECTRUM`: Spectrum analysis, see [SPECTRUM Detailed Documentation](docs/scope/SPECTRUM.md)
-- `TaskName.T1FIT`: T1 time fitting, see [T1FIT Detailed Documentation](docs/scope/T1FIT.md)
-- `TaskName.T2FIT`: T2 time fitting, see [T2FIT Detailed Documentation](docs/scope/T2FIT.md)
-- `TaskName.POWERSHIFT`: Analyze power shift curves, see [POWERSHIFT Detailed Documentation](docs/scope/POWERSHIFT.md)
-- `TaskName.SPECTRUM2D`: 2D spectrum data curve segmentation, see [SPECTRUM2D Detailed Documentation](docs/scope/SPECTRUM2D.md)
-- `TaskName.DRAG`: DRAG cross-point avoidance, see [DRAG Detailed Documentation](docs/scope/DRAG.md)
+| Task Name | Description | Documentation | Status |
+|-----------|-------------|---------------|--------|
+| `TaskName.S21PEAKMULTI` | Full-band S21 full-chain peak detection | [Docs](docs/scope/S21PEAKMULTI.md) | ✅ |
+| `TaskName.S21PEAK` | S21 single peak optimization detection | [Docs](docs/scope/S21PEAK.md) | ✅ |
+| `TaskName.OPTPIPULSE` | Optimal π pulse calculation | [Docs](docs/scope/OPTPIPULSE.md) | ✅ |
+| `TaskName.RABICOS` | Rabi oscillation cosine first peak detection | [Docs](docs/scope/RABICOS.md) | ✅ |
+| `TaskName.RAMSEY` | RAMSY decay oscillation cosine fitting | [Docs](docs/scope/RAMSEY.md) | ✅ |
+| `TaskName.S21VFLUX` | S21 vs Flux analysis | [Docs](docs/scope/S21VFLUX.md) | ✅ |
+| `TaskName.SINGLESHOT` | Single shot analysis | [Docs](docs/scope/SINGLESHOT.md) | ✅ |
+| `TaskName.SPECTRUM` | Spectrum analysis | [Docs](docs/scope/SPECTRUM.md) | ✅ |
+| `TaskName.T1FIT` | T1 time fitting | [Docs](docs/scope/T1FIT.md) | ✅ |
+| `TaskName.T2FIT` | T2 time fitting | [Docs](docs/scope/T2FIT.md) | ✅ |
+| `TaskName.POWERSHIFT` | Power shift curve analysis | [Docs](docs/scope/POWERSHIFT.md) | ✅ |
+| `TaskName.SPECTRUM2D` | 2D spectrum data curve segmentation | [Docs](docs/scope/SPECTRUM2D.md) | ✅ |
+| `TaskName.DRAG` | DRAG cross-point avoidance analysis | [Docs](docs/scope/DRAG.md) | ✅ |
+| `TaskName.DELTA` | Delta optimization experiment | [Docs](docs/scope/DELTA.md) | ✅ |
+| `TaskName.RB` | Fidelity testing | [Docs](docs/scope/RB.md) | ✅ |
 
-### Ctrl Tasks
+### 🤖 Ctrl Tasks
 
-- `CtrlTaskName.S21`: S21 cavity frequency measurement experiment, measuring S21 response of specified qubits within frequency range, see [S21 Detailed Documentation](docs/ctrl/S21.md)
-- `CtrlTaskName.DRAG`: DRAG cross-point avoidance measurement, optimizing DRAG parameters for qubits, see [DRAG Detailed Documentation](docs/ctrl/DRAG.md)
-- `CtrlTaskName.DELTA`: Frequency offset calibration measurement, determining optimal working frequency offset for qubits, see [DELTA Detailed Documentation](docs/ctrl/DELTA.md)
-- `CtrlTaskName.OPTPIPULSE`: Optimal π pulse measurement, finding best π pulse amplitude, see [OPTPIPULSE Detailed Documentation](docs/ctrl/OPTPIPULSE.md)
-- `CtrlTaskName.POWERSHIFT`: Power shift curve measurement, analyzing qubit response under different power levels, see [POWERSHIFT Detailed Documentation](docs/ctrl/POWERSHIFT.md)
-- `CtrlTaskName.RABI`: Rabi oscillation measurement, observing qubit oscillation behavior under driving field, see [RABI Detailed Documentation](docs/ctrl/RABI.md)
-- `CtrlTaskName.RAMSEY`: Ramsey interference measurement, measuring qubit decoherence time, see [RAMSEY Detailed Documentation](docs/ctrl/RAMSEY.md)
-- `CtrlTaskName.S21VSFLUX`: S21 vs Flux measurement, analyzing flux impact on qubit frequency, see [S21VSFLUX Detailed Documentation](docs/ctrl/S21VSFLUX.md)
-- `CtrlTaskName.SINGLESHOT`: Single shot measurement analysis, evaluating qubit readout fidelity, see [SINGLESHOT Detailed Documentation](docs/ctrl/SINGLESHOT.md)
-- `CtrlTaskName.SPECTRUM`: Spectrum analysis measurement, scanning qubit energy level structure, see [SPECTRUM Detailed Documentation](docs/ctrl/SPECTRUM.md)
-- `CtrlTaskName.SPECTRUM_2D`: 2D spectrum measurement, simultaneously scanning frequency and bias parameters, see [SPECTRUM_2D Detailed Documentation](docs/ctrl/SPECTRUM_2D.md)
-- `CtrlTaskName.T1`: T1 relaxation time measurement, measuring qubit energy relaxation time, see [T1 Detailed Documentation](docs/ctrl/T1.md)
-- `CtrlTaskName.T2`: T2 relaxation time measurement, measuring qubit dephasing time, see [T2 Detailed Documentation](docs/ctrl/T2.md)
+| Task Name | Description | Documentation | Status |
+|-----------|-------------|---------------|--------|
+| `CtrlTaskName.S21` | S21 cavity frequency measurement experiment | [Docs](docs/ctrl/S21.md) | ✅ |
+| `CtrlTaskName.DRAG` | DRAG cross-point avoidance measurement | [Docs](docs/ctrl/DRAG.md) | ✅ |
+| `CtrlTaskName.DELTA` | Frequency offset calibration measurement | [Docs](docs/ctrl/DELTA.md) | ✅ |
+| `CtrlTaskName.OPTPIPULSE` | Optimal π pulse measurement | [Docs](docs/ctrl/OPTPIPULSE.md) | ✅ |
+| `CtrlTaskName.POWERSHIFT` | Power shift curve measurement | [Docs](docs/ctrl/POWERSHIFT.md) | ✅ |
+| `CtrlTaskName.RABI` | Rabi oscillation measurement | [Docs](docs/ctrl/RABI.md) | ✅ |
+| `CtrlTaskName.RAMSEY` | Ramsey interference measurement | [Docs](docs/ctrl/RAMSEY.md) | ✅ |
+| `CtrlTaskName.S21VSFLUX` | S21 vs Flux measurement | [Docs](docs/ctrl/S21VSFLUX.md) | ✅ |
+| `CtrlTaskName.SINGLESHOT` | Single shot measurement analysis | [Docs](docs/ctrl/SINGLESHOT.md) | ✅ |
+| `CtrlTaskName.SPECTRUM` | Spectrum analysis measurement | [Docs](docs/ctrl/SPECTRUM.md) | ✅ |
+| `CtrlTaskName.SPECTRUM_2D` | 2D spectrum measurement | [Docs](docs/ctrl/SPECTRUM_2D.md) | ✅ |
+| `CtrlTaskName.T1` | T1 relaxation time measurement | [Docs](docs/ctrl/T1.md) | ✅ |
+| `CtrlTaskName.T2` | T2 relaxation time measurement | [Docs](docs/ctrl/T2.md) | ✅ |
+| `CtrlTaskName.RB` | Random benchmarking | [Docs](docs/ctrl/RB.md) | ✅ |
+| `CtrlTaskName.DATA` | Get measurement data | [Docs](docs/ctrl/DATA.md) | ✅ |
 
-### LLM Tasks
+### 🤖 LLM Tasks
 
 | Task Name | Description | Reference | Status |
 |-----------|-------------|-----------|--------|
-| `LLMTaskName.DECIDE_NEXT_ACTION` | Decide next measurement target and parameters | - | ⏸️
-| `LLMTaskName.DESCRIBE_PLOT` | Describe chart type, axes, features | QCalEval-Q1 | ⏸️
-| `LLMTaskName.CLASSIFY_OUTCOME` | Classify experiment outcome (Expected/Suboptimal/Anomalous) | QCalEval-Q2 | ⏸️
-| `LLMTaskName.SCIENTIFIC_REASONING` | Scientific reasoning analysis | QCalEval-Q3 | ⏸️
-| `LLMTaskName.ASSESS_FIT` | Assess fit reliability | QCalEval-Q4 | ⏸️
-| `LLMTaskName.EXTRACT_PARAMS` | Extract parameters from plot | QCalEval-Q5 | ⏸️
-| `LLMTaskName.EVALUATE_STATUS` | Evaluate experiment status (success/failure with reason) | QCalEval-Q6 | ⏸️
+| `LLMTaskName.DECIDE_NEXT_ACTION` | Decide next measurement target and parameters | - | ⏸️ |
+| `LLMTaskName.DESCRIBE_PLOT` | Describe chart type, axes, features | QCalEval-Q1 | ⏸️ |
+| `LLMTaskName.CLASSIFY_OUTCOME` | Classify experiment outcome (Expected/Suboptimal/Anomalous) | QCalEval-Q2 | ⏸️ |
+| `LLMTaskName.SCIENTIFIC_REASONING` | Scientific reasoning analysis | QCalEval-Q3 | ⏸️ |
+| `LLMTaskName.ASSESS_FIT` | Assess fit reliability | QCalEval-Q4 | ⏸️ |
+| `LLMTaskName.EXTRACT_PARAMS` | Extract parameters from plot | QCalEval-Q5 | ⏸️ |
+| `LLMTaskName.EVALUATE_STATUS` | Evaluate experiment status (success/failure with reason) | QCalEval-Q6 | ⏸️ |
 
-## Data Format Specification
+#### 📊 ExperimentFamily
 
-### Input Format
+Use `ExperimentFamily` enum to specify different experiment types, automatically fetching corresponding prompt background and parameter extraction schema:
 
-Depending on the functionality, input formats may vary.
+| Enum Value | Description | Status |
+|------------|-------------|--------|
+| `ExperimentFamily.COUPLER_FLUX` | Tunable coupler spectroscopy | ⏸️ |
+| `ExperimentFamily.CZ_BENCHMARKING` | CZ gate benchmarking | ⏸️ |
+| `ExperimentFamily.DRAG` | DRAG calibration | ⏸️ |
+| `ExperimentFamily.GMM` | Gaussian Mixture Model | ⏸️ |
+| `ExperimentFamily.MICROWAVE_RAMSEY` | Microwave Ramsey | ⏸️ |
+| `ExperimentFamily.MOT_LOADING` | MOT loading | ⏸️ |
+| `ExperimentFamily.PINCHOFF` | Pinch-off measurement | ⏸️ |
+| `ExperimentFamily.PINGPONG` | PingPong calibration | ⏸️ |
+| `ExperimentFamily.QUBIT_FLUX_SPECTROSCOPY` | Qubit flux spectroscopy | ⏸️ |
+| `ExperimentFamily.QUBIT_SPECTROSCOPY` | Qubit spectroscopy | ⏸️ |
+| `ExperimentFamily.QUBIT_SPECTROSCOPY_POWER_FREQUENCY` | 2D power frequency spectroscopy | ⏸️ |
+| `ExperimentFamily.RABI` | Rabi oscillation | ⏸️ |
+| `ExperimentFamily.RABI_HW` | Rabi hardware | ⏸️ |
+| `ExperimentFamily.RAMSEY_CHARGE_TOMOGRAPHY` | Ramsey charge tomography | ⏸️ |
+| `ExperimentFamily.RAMSEY_FREQ_CAL` | Ramsey frequency calibration | ⏸️ |
+| `ExperimentFamily.RAMSEY_T2STAR` | T2* decoherence | ⏸️ |
+| `ExperimentFamily.RES_SPEC` | Resonator spectroscopy | ⏸️ |
+| `ExperimentFamily.RYDBERG_RAMSEY` | Rydberg Ramsey | ⏸️ |
+| `ExperimentFamily.RYDBERG_SPECTROSCOPY` | Rydberg spectroscopy | ⏸️ |
+| `ExperimentFamily.T1` | T1 relaxation | ⏸️ |
+| `ExperimentFamily.T1_FLUCTUATIONS` | T1 fluctuations | ⏸️ |
+| `ExperimentFamily.TWEEZER_ARRAY` | Optical tweezer array | ⏸️ |
+| `ExperimentFamily.S21` | Cavity frequency calibration | ⏸️ |
 
-### Output Format
+#### 🎯 ExperimentType
 
-Depending on the task, output formats may vary.
+Use `ExperimentType` enum to specify 87 specific test cases in QCalEval dataset (for evaluation). See [Experiment Type Documentation](docs/llm/EXPERIMENT_TYPE.md) for detailed list.
 
-## Running Test Examples
+## 📁 Data Format Specification
+
+Different tasks have different input/output data format requirements. Please refer to the detailed documentation for each task (links above) for specific information.
+
+## 🧪 Running Test Examples
 
 Test examples are located in the [tests](tests) directory, and you can run corresponding test code according to the filename:
 
@@ -307,46 +389,61 @@ python tests/test_ctrl_mcp.py
 python tests/test_llm.py
 ```
 
-## LLM Configuration
+## ⚙️ LLM/VLM Configuration
 
-Configure LLM in `qubitclient.json` (create or edit this file):
+Configure LLM/VLM in `qubitclient.json` (create or edit this file):
 
 ```json
 {
   "llm": {
     "api_key": "your-api-key",
     "base_url": "https://your-llm-endpoint.com/v1",
-    "model": "gpt-4o"
+    "model": "nvidia/Ising-Calibration-1-35B-A3B"
   }
 }
 ```
 
-Supported configuration methods (priority from low to high):
+### Supported Models
+
+| Model | Description | Recommended Use |
+|-------|-------------|-----------------|
+| `nvidia/Ising-Calibration-1-35B-A3B` | NVIDIA Ising, optimized for quantum calibration tasks | **Best for quantum measurement data analysis** |
+| `google/gemma-4-E4B-it` | Google Gemma 4, multimodal reasoning capability | General chart analysis and reasoning |
+| `gpt-4o` | OpenAI GPT-4o | General conversation and analysis |
+
+Supported configuration methods (priority from low to highest):
 1. Default values (gpt-4o)
 2. User directory `~/qubitclient.json`
 3. Environment variables `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`
 4. Runtime directory `./qubitclient.json`
 5. Constructor parameters (highest priority)
 
-## Format Conversion and Other Tool Integration
+## 🔧 Format Conversion and Tool Integration
 
 Refer to the code in the [resources](resources) directory for different tools.
 
-## Changelog
+## 📝 Changelog
 
-Recent updates:
+### Recent Updates
+- 🐳 **Added Docker service deployment**: New `qubitclient serve` command for one-click initialization and startup of qubitscope, qubitserving, and proxy services
+- 🤖 **Added VLM model support**:
+  - 🔵 **NVIDIA Ising** (`Ising-Calibration-1-35B-A3B`): VLM optimized for quantum calibration tasks
+  - 🟢 **Google Gemma 4** (`gemma-4-E4B-it`): Multimodal reasoning capability for chart analysis
+- 🤖 **Added QCalEval benchmark**: Integrated NVIDIA QCalEval dataset, supporting 6 VLM tasks (Q1-Q6) and 87 experiment types
+- 🤖 **Added experiment background module**: Provides professional physics background descriptions for 22 experiment families
+- 🤖 **Added LLM decision module**: Supports automatic decision-making for next measurement based on evaluation results
+- 🤖 **Added LLM module**: Integrated large language models and vision-language models for quantum measurement data analysis and decision-making
+- 🎨 **Optimized drawing functions**: Unified result drawing style
+- 🤝 **Added Ctrl package**: MCP protocol-based real-time measurement tasks
+- 📈 **Added DRAG analysis function**: Supports DRAG task data analysis
+- 🧩 **Added scope package**: Added multiple fitting tasks
+- 📐 **Added curve types**: Supports cosine type curve fitting
+- 🏗️ **Built basic project**: Basic functions and structure construction
 
-- **Added Docker service deployment**: New `qubitclient serve` command for one-click initialization and startup of qubitscope, qubitserving, and proxy services
-- **Added QCalEval benchmark**: Integrated NVIDIA QCalEval dataset, supporting 6 VLM tasks (Q1-Q6) and 87 experiment types (2026-04-16)
-- **Added experiment background module**: Provides professional physics background descriptions for 22 experiment families (2026-04-16)
-- **Added LLM decision module**: Supports automatic decision-making for next measurement based on evaluation results (2026-04-16)
-- **Added LLM module**: Integrated large language models and vision-language models for quantum measurement data analysis and decision-making (2026-04-16)
-- **Added Ctrl package**: MCP protocol-based measurement tasks (2026-02-06)
-- **Added DRAG analysis function**: Added DRAG task data analysis (2026-02-05)
-- **Added scope package**: Added multiple task functions (2025-10-22)
-- **Added curve types**: Added cosine type curve fitting (2025-06-06)
-- **Built basic project**: Basic functions and structure construction
+## 🤝 Contributing Guide
 
-## License
+Contributions are welcome! Please submit issues or suggestions via [Issues](https://github.com/yaqiangsun/qubitclient/issues). If you'd like to contribute code, please fork this repository and submit a Pull Request.
 
-This project is licensed under the GPL-3.0 license. See the [LICENSE](LICENSE) file for details.
+## 📄 License
+
+This project is licensed under **GPL-3.0**. See the [LICENSE](LICENSE) file for details.

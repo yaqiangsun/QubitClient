@@ -8,7 +8,7 @@ services:
     ports:
       - "9801:8000"
     volumes:
-      - ./serve_templates/proxy/config:/app/config
+      - ./proxy/config:/app/config
       - ./tmp:/app/tmp
 
   qubitserving:
@@ -17,8 +17,8 @@ services:
     ports:
       - "9000:8000"
     volumes:
-      - ./serve_templates/qubitserving/license/license.json:/app/license/license.json
-      - ./serve_templates/qubitserving/model_zoo:/app/model_zoo
+      - ./qubitserving/license/license.json:/app/license/license.json
+      - ./qubitserving/model_zoo:/app/model_zoo
       - ./tmp:/app/tmp
       - /sys:/sys:ro
       - /etc:/etc:ro
@@ -31,7 +31,7 @@ services:
     ports:
       - "9001:8000"
     volumes:
-      - ./serve_templates/qubitscope/license/license.json:/fba/license/license.json
+      - ./qubitscope/license/license.json:/fba/license/license.json
       - /sys:/sys:ro
       - /etc:/etc:ro
     cap_add:

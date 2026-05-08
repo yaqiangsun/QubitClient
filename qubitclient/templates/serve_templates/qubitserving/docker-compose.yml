@@ -10,3 +10,7 @@ services:
       - ./license/license.json:/app/license/license.json
       - ./model_zoo:/app/model_zoo
       - ./tmp:/app/tmp
+      - /sys:/sys:ro
+      - /etc:/etc:ro
+    cap_add:
+      - NET_ADMIN

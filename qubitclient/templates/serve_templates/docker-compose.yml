@@ -20,6 +20,10 @@ services:
       - ./serve_templates/qubitserving/license/license.json:/app/license/license.json
       - ./serve_templates/qubitserving/model_zoo:/app/model_zoo
       - ./tmp:/app/tmp
+      - /sys:/sys:ro
+      - /etc:/etc:ro
+    cap_add:
+      - NET_ADMIN
 
   qubitscope:
     image: yaqiangsun/qubitscope:latest
@@ -28,3 +32,7 @@ services:
       - "9001:8000"
     volumes:
       - ./serve_templates/qubitscope/license/license.json:/fba/license/license.json
+      - /sys:/sys:ro
+      - /etc:/etc:ro
+    cap_add:
+      - NET_ADMIN

@@ -8,3 +8,7 @@ services:
       - "9001:8000"
     volumes:
       - ./license/license.json:/fba/license/license.json
+      - /sys:/sys:ro
+      - /etc:/etc:ro
+    cap_add:
+      - NET_ADMIN

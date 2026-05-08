@@ -9,6 +9,12 @@
 
 ---
 
+### 初始化
+```bash
+# 在项目目录中初始化配置
+qubitclient init
+```
+
 ## Server 端安装
 
 Server 端通过 Docker 容器化部署，包含代理服务、量化分析服务和 License 服务。

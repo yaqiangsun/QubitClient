@@ -7,7 +7,7 @@
 # Created Time: 2026/04/21 13:21:03
 ########################################################################
 
-__version__ = "0.6.8"
+__version__ = "0.6.9"
 
 from .nnscope.nnscope_api.curve.curve_type import CurveType  # noqa: F401
 from .scope.scope import QubitScopeClient

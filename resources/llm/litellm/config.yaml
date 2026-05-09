@@ -1,0 +1,23 @@
+# 全局设置：自动丢弃不支持的参数
+litellm_settings:
+  drop_params: true
+
+# 模型列表
+model_list:
+  # 模型1：moonshotai/Kimi-K2.6
+  - model_name: moonshotai/Kimi-K2.6
+    litellm_params:
+      model: hosted_vllm/moonshotai/Kimi-K2.6
+      api_base: "http://xxx.xxx.xxx.xxx:8000/v1"
+      api_key: "vllm_xxxxxxxx"
+
+  # 模型2：nv-community/Ising-Calibration-1-35B-A3B
+  - model_name: nv-community/Ising-Calibration-1-35B-A3B
+    litellm_params:
+      model: hosted_vllm/nv-community/Ising-Calibration-1-35B-A3B
+      api_base: "http://xxx.xxx.xxx.xxx/v1"
+      api_key: "vllm_xxxxxxxx"
+
+# 可选配置：代理服务器的安全设置（如果不需要，这部分可以留空或删除）
+general_settings:
+  master_key: "vllm_xxxxxxxx" # 用于调用LiteLLM网关的认证，你可以任意设置

@@ -1,0 +1,12 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest   # 1. 官方镜像
+    container_name: litellm-proxy
+    restart: on-failure:5                        # 异常时重启，最多5次
+    volumes:
+      - ./config.yml:/app/config.yaml            # 2. 挂载配置文件
+    ports:
+      - "5008:5008"                              # 3. 端口映射
+    command:
+      - "--config=/app/config.yaml"
+      - "--port=5008"

@@ -75,6 +75,8 @@ S21VFLUX = """这是S21 vs Flux实验（腔频 vs 偏置磁通）：我们同时
 
 POWERSHIFT = """这是功率偏移实验：我们同时扫描探针频率和读取功率，以表征腔的功率依赖频率偏移（克尔效应/非线性）。在低功率下，腔表现为线性；在高功率下，非线性效应导致频率漂移。成功的结果显示共振频率随功率增加而降低，从而能够提取克尔系数和高保真度读取的最佳工作功率。"""
 
+SINGLESHOT = GMM
+
 # ========== 配置字典 ==========
 
 EXPERIMENT_BACKGROUNDS_ZH = {
@@ -108,6 +110,7 @@ EXPERIMENT_BACKGROUNDS_ZH = {
     "ramsey": RAMSEY,
     "s21vflux": S21VFLUX,
     "powershift": POWERSHIFT,
+    "singleshot": SINGLESHOT,
 }
 
 # 默认背景（用于未知实验类型）

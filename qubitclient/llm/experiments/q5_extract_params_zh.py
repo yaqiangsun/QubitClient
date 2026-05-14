@@ -206,6 +206,8 @@ PROMPT_OPTPIPULSE = """从该Opt_pi脉冲校准图<image>中提取以下参数�
 以JSON格式报告：
 {"pi_amp_relative": float | null, "contrast": float | null, "checkerboard_quality": "good" | "moderate" | "poor" | "none", "n_range": int}"""
 
+PROMPT_SINGLESHOT = PROMPT_GMM
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -240,6 +242,7 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "ramsey": PROMPT_RAMSEY,
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
+    "singleshot": PROMPT_SINGLESHOT,
 }
 
 

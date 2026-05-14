@@ -280,6 +280,8 @@ Explain:
 
 Provide your assessment."""
 
+PROMPT_SINGLESHOT = PROMPT_GMM
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -314,6 +316,7 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "ramsey": PROMPT_RAMSEY,
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
+    "singleshot": PROMPT_SINGLESHOT,
 }
 
 

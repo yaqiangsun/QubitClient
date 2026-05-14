@@ -279,6 +279,8 @@ PROMPT_POWERSHIFT = """这个结果<image>说明了什么？
 
 请提供您的评估。"""
 
+PROMPT_SINGLESHOT = PROMPT_GMM
+
 # ========== Prompt 字典映射 ==========
 
 SCIENTIFIC_REASONING_PROMPTS_ZH = {
@@ -312,6 +314,7 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     "ramsey": PROMPT_RAMSEY,
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
+    "singleshot": PROMPT_SINGLESHOT,
 }
 
 

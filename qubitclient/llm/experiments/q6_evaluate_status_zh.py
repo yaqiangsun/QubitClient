@@ -480,6 +480,7 @@ Status: <列出的状态之一>
 Suggested range: 幅度: (<min amp>, <max amp>) [相对], N: (<min N>, <max N>) [计数]（如果是 SUCCESS 则为 "N/A"）
 Notes: <1-3 句解释您的推理>"""
 
+PROMPT_SINGLESHOT = PROMPT_GMM
 
 # ========== Prompt 字典映射 ==========
 
@@ -514,6 +515,7 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     "ramsey": PROMPT_RAMSEY,
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
+    "singleshot": PROMPT_SINGLESHOT,
 }
 
 

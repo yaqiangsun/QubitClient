@@ -479,6 +479,7 @@ Status: <one of the listed statuses>
 Suggested range: Amp: (<min amp>, <max amp>) [rel], N: (<min N>, <max N>) [count] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
+PROMPT_SINGLESHOT = PROMPT_GMM
 
 # ========== Prompt 字典映射 ==========
 
@@ -513,6 +514,7 @@ EVALUATE_STATUS_PROMPTS = {
     "ramsey": PROMPT_RAMSEY,
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
+    "singleshot": PROMPT_SINGLESHOT,
 }
 
 

@@ -49,6 +49,7 @@ class ExperimentFamily(Enum):
     RAMSEY = "ramsey"
     S21VFLUX = "s21vflux"
     POWERSHIFT = "powershift"
+    SINGLESHOT = "singleshot"
 
 
 @unique

@@ -205,6 +205,7 @@ PROMPT_OPTPIPULSE = """Extract the following parameters from this Opt_pi pulse c
 Report in JSON format:
 {"pi_amp_relative": float | null, "contrast": float | null, "checkerboard_quality": "good" | "moderate" | "poor" | "none", "n_range": int}"""
 
+PROMPT_SINGLESHOT = PROMPT_GMM
 
 
 # ========== Prompt 字典映射 ==========
@@ -240,6 +241,7 @@ EXTRACT_PARAMS_PROMPTS = {
     "ramsey": PROMPT_RAMSEY,
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
+    "singleshot": PROMPT_SINGLESHOT,
 }
 
 
@@ -560,6 +562,8 @@ SCHEMA_POWERSHIFT = {
     "required": [],
 }
 
+SCHEMA_SINGLESHOT = SCHEMA_GMM
+
 
 # ========== Schema 字典映射 ==========
 
@@ -590,6 +594,7 @@ EXTRACT_PARAMS_SCHEMAS = {
     "s21": SCHEMA_S21,
     "spectrum_2d": SCHEMA_SPECTRUM_2D,
     "optpipulse": SCHEMA_OPTPIPULSE,
+    "singleshot": SCHEMA_SINGLESHOT,
 }
 
 

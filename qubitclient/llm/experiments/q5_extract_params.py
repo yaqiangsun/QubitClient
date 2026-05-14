@@ -208,6 +208,10 @@ Report in JSON format:
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
+PROMPT_RB = """Extract the following parameters from this Random Benchmarking plot <image>.
+
+Report in JSON format:
+{"survival_probability_per_clifford": float, "average_gate_error_rate": float, "decay_constant": float | null, "fit_quality": "good" | "moderate" | "poor" | "none"}"""
 
 
 # ========== Prompt 字典映射 ==========
@@ -246,6 +250,7 @@ EXTRACT_PARAMS_PROMPTS = {
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
     "t2": PROMPT_T2,
+    "rb": PROMPT_RB,
 }
 
 
@@ -569,6 +574,16 @@ SCHEMA_POWERSHIFT = {
 SCHEMA_SINGLESHOT = SCHEMA_GMM
 SCHEMA_SPECTRUM = SCHEMA_QUBIT_SPECTROSCOPY
 SCHEMA_T2 = SCHEMA_RAMSEY_T2STAR
+SCHEMA_RB = {
+    "type": "object",
+    "properties": {
+        "survival_probability_per_clifford": {"type": "number"},
+        "average_gate_error_rate": {"type": "number"},
+        "decay_constant": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "fit_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
+    },
+    "required": ["survival_probability_per_clifford", "average_gate_error_rate"],
+}
 
 
 # ========== Schema 字典映射 ==========
@@ -603,6 +618,7 @@ EXTRACT_PARAMS_SCHEMAS = {
     "singleshot": SCHEMA_SINGLESHOT,
     "spectrum": SCHEMA_SPECTRUM,
     "t2": SCHEMA_T2,
+    "rb": SCHEMA_RB,
 }
 
 

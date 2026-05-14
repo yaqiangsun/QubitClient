@@ -209,6 +209,10 @@ PROMPT_OPTPIPULSE = """从该Opt_pi脉冲校准图<image>中提取以下参数�
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
+PROMPT_RB = """从该随机基准测试图<image>中提取以下参数。
+
+以JSON格式报告：
+{"survival_probability_per_clifford": float, "average_gate_error_rate": float, "decay_constant": float | null, "fit_quality": "good" | "moderate" | "poor" | "none"}"""
 
 
 # ========== Prompt 字典映射 ==========
@@ -247,6 +251,7 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
     "t2": PROMPT_T2,
+    "rb": PROMPT_RB,
 }
 
 

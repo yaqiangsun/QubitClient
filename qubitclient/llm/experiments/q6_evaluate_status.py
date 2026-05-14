@@ -482,6 +482,22 @@ Notes: <1-3 sentences explaining your reasoning>"""
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
+PROMPT_RB = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear exponential decay of survival probability with sequence length, good fit quality
+- NO_DECAY: Survival probability remains flat near 1 — gates may be perfectly calibrated or measurement insensitive
+- LOW_FIDELITY: High error rate (low survival at short sequences) indicates gate calibration issues
+- FIT_POOR: Data visible but exponential fit fails
+- INSUFFICIENT_RANGE: Sequence length range too short to capture meaningful decay
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min cycles>, <max cycles>) [number of Clifford gates].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: (<min cycles>, <max cycles>) (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
 
 # ========== Prompt 字典映射 ==========
 
@@ -519,6 +535,7 @@ EVALUATE_STATUS_PROMPTS = {
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
     "t2": PROMPT_T2,
+    "rb": PROMPT_RB,
 }
 
 

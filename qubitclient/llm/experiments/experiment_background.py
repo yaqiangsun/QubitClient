@@ -78,6 +78,7 @@ POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency 
 SINGLESHOT = GMM
 SPECTRUM = QUBIT_SPECTROSCOPY
 T2 = RAMSEY_T2STAR
+RB = """This is a Random Benchmarking (RB) experiment: we apply random sequences of Clifford gates to a qubit and measure the survival probability (probability of returning to the initial state) as a function of sequence length. Each sequence ends with recovery gates that would perfectly undo the random gates if there were no errors. A successful result shows an exponential decay of survival probability with sequence length, from which the average gate error rate can be extracted. This measures the intrinsic fidelity of the Clifford gate set, excluding SPAM errors."""
 
 # ========== 配置字典 ==========
 
@@ -115,6 +116,7 @@ EXPERIMENT_BACKGROUNDS = {
     "singleshot": SINGLESHOT,
     "spectrum": SPECTRUM,
     "t2": T2,
+    "rb": RB,
 }
 
 # 默认背景（用于未知实验类型）

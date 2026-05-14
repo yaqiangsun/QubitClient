@@ -282,6 +282,14 @@ PROMPT_POWERSHIFT = """这个结果<image>说明了什么？
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
+PROMPT_RB = """这个结果<image>说明了什么？
+
+请解释：
+- 存活概率衰减率表明了关于平均门保真度的什么信息
+- 序列长度范围是否捕获了足够的衰减以提取有意义的保真度指标
+- 下一步校准是什么（例如，重新校准门，调查噪声源，或进行双比特RB）
+
+请提供您的评估。"""
 
 # ========== Prompt 字典映射 ==========
 
@@ -319,6 +327,7 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
     "t2": PROMPT_T2,
+    "rb": PROMPT_RB,
 }
 
 

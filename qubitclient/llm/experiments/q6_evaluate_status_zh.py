@@ -483,6 +483,22 @@ Notes: <1-3 句解释您的推理>"""
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
+PROMPT_RB = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 存活概率随序列长度清晰指数衰减，拟合质量良好
+- NO_DECAY: 存活概率在1附近保持平坦——门可能完全校准或测量不敏感
+- LOW_FIDELITY: 高错误率（短序列时存活率低）表明门校准有问题
+- FIT_POOR: 数据可见但指数拟合失败
+- INSUFFICIENT_RANGE: 序列长度范围太短，无法捕获有意义的衰减
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min cycles>, <max cycles>）[Clifford门数量]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: (<min cycles>, <max cycles>)（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
 
 # ========== Prompt 字典映射 ==========
 
@@ -520,6 +536,7 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
     "t2": PROMPT_T2,
+    "rb": PROMPT_RB,
 }
 
 

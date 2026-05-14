@@ -283,6 +283,14 @@ Provide your assessment."""
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
+PROMPT_RB = """What does this result <image> imply?
+
+Explain:
+- What the survival probability decay rate indicates about average gate fidelity
+- Whether the sequence length range captures enough decay to extract meaningful fidelity metrics
+- What calibration step follows (e.g., recalibrating gates, investigating noise sources, or proceeding to two-qubit RB)
+
+Provide your assessment."""
 
 
 # ========== Prompt 字典映射 ==========
@@ -321,6 +329,7 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
     "t2": PROMPT_T2,
+    "rb": PROMPT_RB,
 }
 
 

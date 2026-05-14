@@ -52,6 +52,7 @@ class ExperimentFamily(Enum):
     SINGLESHOT = "singleshot"
     SPECTRUM = "spectrum"
     T2 = "t2"
+    RB = "rb"
 
 
 @unique

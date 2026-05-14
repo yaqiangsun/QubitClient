@@ -138,6 +138,7 @@ def s21multi_convert(result):
 
 def s21vsflux_convert(result):
     data_formated = {"image": {}}
+    # print("result: ", result)
 
     for index, qubit_name in enumerate(result.keys()):
         qubit_name = qubit_name.strip()
@@ -215,10 +216,11 @@ def powershift_convert(result):
         data = result[qubit_name]
         if type(data)==list:
             data_arr = np.array(data)
+            # print("type(data_arr): ", type(data_arr))
             freq = data_arr[:, 0]
             volt = data_arr[:, 1]
-            I_channel = data['f4']  # Is | I
-            Q_channel = data['f5']  # Qs | I
+            I_channel = data_arr[:, 4]  # Is | I
+            Q_channel = data_arr[:, 5]  # Qs | I
 
             s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
 

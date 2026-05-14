@@ -244,6 +244,42 @@ Explain:
 
 Provide your assessment."""
 
+PROMPT_RABICOS = """What does this result <image> imply?
+
+Explain:
+- What the Rabi oscillation pattern (period, contrast, decay) indicates about drive amplitude calibration quality
+- Whether the amplitude range captures enough oscillation periods for reliable π-pulse extraction
+- What next step follows (e.g., fitting the oscillation to extract Rabi rate, proceeding to DRAG calibration, or adjusting drive power)
+
+Provide your assessment."""
+
+PROMPT_RAMSEY = """What does this result <image> imply?
+
+Explain:
+- What the Ramsey oscillation pattern (detuning frequency, contrast, decay) indicates about qubit frequency accuracy and coherence
+- Whether the delay range is sufficient to extract precise detuning and T2* values
+- What next step follows (e.g., updating drive frequency, proceeding to qubit gates, or investigating decoherence sources)
+
+Provide your assessment."""
+
+PROMPT_S21VFLUX = """What does this result <image> imply?
+
+Explain:
+- What the 2D cavity response (resonance shift with bias) indicates about dispersive coupling and bias dependence
+- Whether the frequency and bias ranges capture the full cavity tuning range for reliable parameter extraction
+- What next step follows (e.g., setting optimal readout bias, calibrating crosstalk compensation, or optimizing readout frequency)
+
+Provide your assessment."""
+
+PROMPT_POWERSHIFT = """What does this result <image> imply?
+
+Explain:
+- What the power-dependent frequency shift indicates about cavity nonlinearity (Kerr coefficient)
+- Whether the power range captures enough of the shift for reliable Kerr coefficient extraction
+- What next step follows (e.g., selecting optimal readout power, characterizing cavity linearity, or proceeding to readout optimization)
+
+Provide your assessment."""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -274,6 +310,10 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
     "optpipulse": PROMPT_OPTPIPULSE,
+    "rabicos": PROMPT_RABICOS,
+    "ramsey": PROMPT_RAMSEY,
+    "s21vflux": PROMPT_S21VFLUX,
+    "powershift": PROMPT_POWERSHIFT,
 }
 
 

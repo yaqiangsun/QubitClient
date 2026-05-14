@@ -382,6 +382,72 @@ Status: <列出的状态之一>
 Suggested range: (<min frequency>, <max frequency>) [GHz]（如果是 SUCCESS 则为 "N/A"）
 Notes: <1-3 句解释您的推理>"""
 
+PROMPT_RABICOS = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 清晰的Rabi振荡模式，对比度良好，拟合与数据吻合
+- NO_SIGNAL: 响应平坦或随机，看不到振荡
+- FIT_POOR: 振荡可见但拟合显著偏离
+- AMPLITUDE_TOO_LOW: 驱动功率不足，振荡很少或不可见
+- AMPLITUDE_TOO_HIGH: 驱动功率过高，振荡被压缩或失真
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min power>, <max power>）[a.u.]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: (<min power>, <max power>) [a.u.]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
+PROMPT_RAMSEY = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 清晰的Ramsey振荡模式，对比度良好，有衰减，拟合与数据吻合
+- NO_SIGNAL: 响应平坦，看不到振荡
+- NO_DETUNING: 信号平坦——驱动频率与量子比特频率完全一致
+- DETUNED: 振荡可见但失谐导致拟合质量差
+- FIT_POOR: 振荡可见但拟合显著偏离
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min delay>, <max delay>）[us]或驱动频率调整。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: (<min delay>, <max delay>) [us]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
+PROMPT_S21VFLUX = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 清晰的腔体共振迹线随偏置磁通移动，形成可见的色散曲线
+- NO_SIGNAL: 响应平坦，看不到腔体共振
+- POOR_CONTRAST: 共振可见但非常浅，信噪比差
+- NO_FLUX_DEPENDENCE: 腔体频率不随偏置变化——无色散耦合
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min frequency>, <max frequency>）[GHz]和（<min bias>, <max bias>）[V]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: 频率: (<min freq>, <max freq>) [GHz], 偏置: (<min bias>, <max bias>) [V]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
+PROMPT_POWERSHIFT = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 可见清晰的功率依赖频率偏移，可提取Kerr系数
+- NO_SIGNAL: 响应平坦，看不到共振特征
+- NO_POWER_SHIFT: 共振频率在功率范围内恒定——可忽略的Kerr效应或弱耦合
+- FIT_POOR: 数据可见但非线性拟合失败
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min power>, <max power>）[a.u.]和（<min frequency>, <max frequency>）[GHz]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: 功率: (<min power>, <max power>) [a.u.], 频率: (<min freq>, <max freq>) [GHz]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
 PROMPT_SPECTRUM_2D = """评估图像<image>并确定实验状态。
 
 决策标准
@@ -444,6 +510,10 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
     "optpipulse": PROMPT_OPTPIPULSE,
+    "rabicos": PROMPT_RABICOS,
+    "ramsey": PROMPT_RAMSEY,
+    "s21vflux": PROMPT_S21VFLUX,
+    "powershift": PROMPT_POWERSHIFT,
 }
 
 

@@ -381,6 +381,72 @@ Status: <one of the listed statuses>
 Suggested range: (<min frequency>, <max frequency>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
+PROMPT_RABICOS = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear Rabi oscillation pattern with good contrast, fit tracks data
+- NO_SIGNAL: Flat or random response, no oscillation visible
+- FIT_POOR: Oscillations visible but fit deviates significantly
+- AMPLITUDE_TOO_LOW: Drive power insufficient, few or no oscillations visible
+- AMPLITUDE_TOO_HIGH: Drive power too high, oscillations compressed or distorted
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: (<min power>, <max power>) [a.u.] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_RAMSEY = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear Ramsey oscillation pattern with good contrast and decay, fit tracks data
+- NO_SIGNAL: Flat response, no oscillations visible
+- NO_DETUNING: Signal is flat — drive frequency matches qubit frequency exactly
+- DETUNED: Oscillations visible but detuning causes poor fit quality
+- FIT_POOR: Oscillations visible but fit deviates significantly
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min delay>, <max delay>) [us] or drive frequency adjustment.
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: (<min delay>, <max delay>) [us] or "N/A" (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_S21VFLUX = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear cavity resonance trace that shifts with bias flux, forming a visible dispersion curve
+- NO_SIGNAL: Flat response, no cavity resonance visible
+- POOR_CONTRAST: Resonance visible but very shallow, poor signal-to-noise
+- NO_FLUX_DEPENDENCE: Cavity frequency does not shift with bias — no dispersive coupling
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min frequency>, <max frequency>) [GHz] and (<min bias>, <max bias>) [V].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: Freq: (<min freq>, <max freq>) [GHz], Bias: (<min bias>, <max bias>) [V] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
+PROMPT_POWERSHIFT = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear power-dependent frequency shift visible, Kerr coefficient extractable
+- NO_SIGNAL: Flat response, no resonance features visible
+- NO_POWER_SHIFT: Resonance frequency constant across power range — negligible Kerr effect or weak coupling
+- FIT_POOR: Data visible but nonlinear fit fails
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.] and (<min frequency>, <max frequency>) [GHz].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: Power: (<min power>, <max power>) [a.u.], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
 PROMPT_SPECTRUM_2D = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
@@ -443,6 +509,10 @@ EVALUATE_STATUS_PROMPTS = {
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
     "optpipulse": PROMPT_OPTPIPULSE,
+    "rabicos": PROMPT_RABICOS,
+    "ramsey": PROMPT_RAMSEY,
+    "s21vflux": PROMPT_S21VFLUX,
+    "powershift": PROMPT_POWERSHIFT,
 }
 
 

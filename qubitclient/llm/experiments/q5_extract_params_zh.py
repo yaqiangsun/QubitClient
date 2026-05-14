@@ -176,6 +176,26 @@ PROMPT_S21 = """从该S21透射图<image>中提取以下参数。
 以JSON格式报告：
 {"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
 
+PROMPT_RABICOS = """从该功率Rabi振荡图<image>中提取以下参数。
+
+以JSON格式报告：
+{"rabi_rate_MHz": float | null, "pi_amp": float | null, "pi_half_amp": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
+
+PROMPT_RAMSEY = """从该Ramsey振荡图<image>中提取以下参数。
+
+以JSON格式报告：
+{"detuning_Hz": float | null, "t2_star_us": float | null, "contrast": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
+
+PROMPT_S21VFLUX = """从该S21 vs Flux 二维图<image>中提取以下参数。
+
+以JSON格式报告：
+{"center_freq_GHz": float | null, "freq_vs_bias_slope": float | null, "dispersion_shift_MHz": float | null, "resonance_quality": "good" | "moderate" | "poor" | "none"}"""
+
+PROMPT_POWERSHIFT = """从该功率偏移图<image>中提取以下参数。
+
+以JSON格式报告：
+{"low_power_freq_GHz": float | null, "power_shift_MHz": float | null, "kerr_coefficient_kHz": float | null, "linearity": "good" | "moderate" | "poor" | "none"}"""
+
 PROMPT_SPECTRUM_2D = """从该二维量子比特谱图<image>中提取以下参数。
 
 以JSON格式报告：
@@ -216,6 +236,10 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
     "optpipulse": PROMPT_OPTPIPULSE,
+    "rabicos": PROMPT_RABICOS,
+    "ramsey": PROMPT_RAMSEY,
+    "s21vflux": PROMPT_S21VFLUX,
+    "powershift": PROMPT_POWERSHIFT,
 }
 
 

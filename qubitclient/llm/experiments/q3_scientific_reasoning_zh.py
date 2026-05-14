@@ -243,6 +243,42 @@ PROMPT_OPTPIPULSE = """这个结果<image>说明了什么？
 
 请提供您的评估。"""
 
+PROMPT_RABICOS = """这个结果<image>说明了什么？
+
+请解释：
+- Rabi振荡模式（周期、对比度、衰减）表明了驱动幅度校准质量方面的信息
+- 幅度范围是否捕获了足够的振荡周期以进行可靠的π脉冲提取
+- 下一步是什么（例如，拟合振荡以提取Rabi速率，进行DRAG校准，或调整驱动功率）
+
+请提供您的评估。"""
+
+PROMPT_RAMSEY = """这个结果<image>说明了什么？
+
+请解释：
+- Ramsey振荡模式（失谐频率、对比度、衰减）表明了量子比特频率准确性和相干性方面的信息
+- 延迟范围是否足以提取精确的失谐和T2*值
+- 下一步是什么（例如，更新驱动频率，进行量子比特门操作，或调查退相干源）
+
+请提供您的评估。"""
+
+PROMPT_S21VFLUX = """这个结果<image>说明了什么？
+
+请解释：
+- 二维腔响应（共振随偏置的偏移）表明了色散耦合和偏置依赖性方面的信息
+- 频率和偏置范围是否捕获了完整的腔调谐范围以进行可靠的参数提取
+- 下一步是什么（例如，设置最佳读取偏置，校准串扰补偿，或优化读取频率）
+
+请提供您的评估。"""
+
+PROMPT_POWERSHIFT = """这个结果<image>说明了什么？
+
+请解释：
+- 功率依赖的频率偏移表明了腔非线性（克尔系数）方面的信息
+- 功率范围是否捕获了足够的偏移以进行可靠的克尔系数提取
+- 下一步是什么（例如，选择最佳读取功率，表征腔线性度，或进行读取优化）
+
+请提供您的评估。"""
+
 # ========== Prompt 字典映射 ==========
 
 SCIENTIFIC_REASONING_PROMPTS_ZH = {
@@ -272,6 +308,10 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
     "optpipulse": PROMPT_OPTPIPULSE,
+    "rabicos": PROMPT_RABICOS,
+    "ramsey": PROMPT_RAMSEY,
+    "s21vflux": PROMPT_S21VFLUX,
+    "powershift": PROMPT_POWERSHIFT,
 }
 
 

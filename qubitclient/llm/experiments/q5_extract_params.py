@@ -175,6 +175,26 @@ PROMPT_S21 = """Extract the following parameters from this S21 transmission plot
 Report in JSON format:
 {"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
 
+PROMPT_RABICOS = """Extract the following parameters from this Power Rabi oscillation plot <image>.
+
+Report in JSON format:
+{"rabi_rate_MHz": float | null, "pi_amp": float | null, "pi_half_amp": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
+
+PROMPT_RAMSEY = """Extract the following parameters from this Ramsey oscillation plot <image>.
+
+Report in JSON format:
+{"detuning_Hz": float | null, "t2_star_us": float | null, "contrast": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
+
+PROMPT_S21VFLUX = """Extract the following parameters from this S21 vs Flux 2D plot <image>.
+
+Report in JSON format:
+{"center_freq_GHz": float | null, "freq_vs_bias_slope": float | null, "dispersion_shift_MHz": float | null, "resonance_quality": "good" | "moderate" | "poor" | "none"}"""
+
+PROMPT_POWERSHIFT = """Extract the following parameters from this Power Shift plot <image>.
+
+Report in JSON format:
+{"low_power_freq_GHz": float | null, "power_shift_MHz": float | null, "kerr_coefficient_kHz": float | null, "linearity": "good" | "moderate" | "poor" | "none"}"""
+
 PROMPT_SPECTRUM_2D = """Extract the following parameters from this 2D qubit spectroscopy plot <image>.
 
 Report in JSON format:
@@ -216,6 +236,10 @@ EXTRACT_PARAMS_PROMPTS = {
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
     "optpipulse": PROMPT_OPTPIPULSE,
+    "rabicos": PROMPT_RABICOS,
+    "ramsey": PROMPT_RAMSEY,
+    "s21vflux": PROMPT_S21VFLUX,
+    "powershift": PROMPT_POWERSHIFT,
 }
 
 
@@ -488,6 +512,50 @@ SCHEMA_OPTPIPULSE = {
         "contrast": {"oneOf": [{"type": "number"}, {"type": "null"}]},
         "checkerboard_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
         "n_range": {"type": "integer"},
+    },
+    "required": [],
+}
+
+SCHEMA_RABICOS = {
+    "type": "object",
+    "properties": {
+        "rabi_rate_MHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "pi_amp": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "pi_half_amp": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "oscillation_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
+    },
+    "required": [],
+}
+
+SCHEMA_RAMSEY = {
+    "type": "object",
+    "properties": {
+        "detuning_Hz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "t2_star_us": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "contrast": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "oscillation_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
+    },
+    "required": [],
+}
+
+SCHEMA_S21VFLUX = {
+    "type": "object",
+    "properties": {
+        "center_freq_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "freq_vs_bias_slope": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "dispersion_shift_MHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "resonance_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
+    },
+    "required": [],
+}
+
+SCHEMA_POWERSHIFT = {
+    "type": "object",
+    "properties": {
+        "low_power_freq_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "power_shift_MHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "kerr_coefficient_kHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "linearity": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
     },
     "required": [],
 }

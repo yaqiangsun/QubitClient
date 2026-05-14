@@ -45,6 +45,10 @@ class ExperimentFamily(Enum):
     S21 = "s21"
     SPECTRUM_2D = "spectrum_2d"
     OPTPIPULSE = "optpipulse"
+    RABICOS = "rabicos"
+    RAMSEY = "ramsey"
+    S21VFLUX = "s21vflux"
+    POWERSHIFT = "powershift"
 
 
 @unique

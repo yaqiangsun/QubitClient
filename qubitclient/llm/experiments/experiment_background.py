@@ -67,6 +67,14 @@ SPECTRUM_2D = """This is a single-qubit spectroscopy experiment with Z-control a
 
 OPTPIPULSE = """This is an Opt_pi pulse calibration experiment (repeated Rabi): we sweep drive amplitude and pulse repetition count (N) to precisely calibrate the π-pulse amplitude. The sequence applies N cycles of "double-R gate + delay", where each double-R gate is equivalent to a 2θ rotation. When θ equals π/2 (i.e., one R gate is π/2), the total rotation is Nπ, and the excited state population oscillates with N parity (odd N = high, even N = low). A successful result shows a clear checkerboard pattern in the 2D map (amplitude vs N), indicating proper π-pulse calibration. The optimal amplitude maximizes the contrast of this binary oscillation."""
 
+RABICOS = """This is a Power Rabi experiment (RabiCOS): we sweep drive pulse amplitude to observe Rabi oscillations. Two identical R gates (each with rotation angle θ ∝ amplitude) are applied consecutively, giving total rotation 2θ. As amplitude increases, the excited state population follows P_e = sin²(θ). A successful result shows clear sinusoidal oscillations with the first peak corresponding to π/2 pulse and first valley to π pulse. This is used to calibrate the drive amplitude for quantum gates."""
+
+RAMSEY = """This is a Ramsey experiment for precise qubit frequency calibration: two π/2 pulses are separated by a variable delay, during which the qubit evolves freely. The second pulse's phase encodes the detuning, creating interference oscillations. A successful result shows cosine oscillations at the detuning frequency, allowing extraction of the precise frequency offset with kHz-level resolution. This is typically performed after coarse frequency calibration via spectroscopy."""
+
+S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response. This 2D map reveals how the cavity resonance frequency changes with DC bias (Z control). A successful result shows a clear resonance curve that shifts with bias, enabling calibration of bias-dependent cavity frequency and dispersive shift. Used for optimizing readout frequency and understanding crosstalk."""
+
+POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency and readout power to characterize the cavity's power-dependent frequency shift (Kerr effect/nonlinearity). At low power, the cavity behaves linearly; at high power, nonlinear effects cause frequency drift. A successful result shows resonance frequency decreasing with increasing power, allowing extraction of the Kerr coefficient and optimal working power for high-fidelity readout."""
+
 # ========== 配置字典 ==========
 
 EXPERIMENT_BACKGROUNDS = {
@@ -96,6 +104,10 @@ EXPERIMENT_BACKGROUNDS = {
     "s21": S21,
     "spectrum_2d": SPECTRUM_2D,
     "optpipulse": OPTPIPULSE,
+    "rabicos": RABICOS,
+    "ramsey": RAMSEY,
+    "s21vflux": S21VFLUX,
+    "powershift": POWERSHIFT,
 }
 
 # 默认背景（用于未知实验类型）

@@ -311,8 +311,6 @@ def xeb(qubits:list[str],
         tbuffer:list=None,
         stats:int=11,
         *args, **kwargs):
-    if cycle is None:
-        cycle = np.unique(np.logspace(0, np.log10(1000), 21, dtype=int)).tolist()
     result = call_mcp("xeb",
                       qubits=qubits,
                       m=m,

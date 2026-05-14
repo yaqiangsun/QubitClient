@@ -368,6 +368,10 @@ Use `ExperimentFamily` enum to specify different experiment types, automatically
 | `ExperimentFamily.RAMSEY` | Ramsey interference | ⏸️ |
 | `ExperimentFamily.S21VFLUX` | S21 vs Flux 2D | ⏸️ |
 | `ExperimentFamily.POWERSHIFT` | Power shift | ⏸️ |
+| `ExperimentFamily.SINGLESHOT` | Single-shot readout | ⏸️ |
+| `ExperimentFamily.SPECTRUM` | Spectrum analysis | ⏸️ |
+| `ExperimentFamily.T2` | T2 decoherence | ⏸️ |
+| `ExperimentFamily.RB` | Random Benchmarking | ⏸️ |
 
 #### 🎯 ExperimentType
 

@@ -382,6 +382,10 @@ print(result)
 | `ExperimentFamily.RAMSEY` | Ramsey干涉 | ⏸️
 | `ExperimentFamily.S21VFLUX` | S21 vs Flux 2D | ⏸️
 | `ExperimentFamily.POWERSHIFT` | 功率偏移 | ⏸️
+| `ExperimentFamily.SINGLESHOT` | 单次读出 | ⏸️
+| `ExperimentFamily.SPECTRUM` | 频谱分析 | ⏸️
+| `ExperimentFamily.T2` | T2退相干 | ⏸️
+| `ExperimentFamily.RB` | 随机基准测试 | ⏸️
 
 #### 🎯 ExperimentType 实验类型
 

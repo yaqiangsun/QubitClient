@@ -225,6 +225,15 @@ PROMPT_S21 = """这个结果<image>说明了什么？
 
 请提供您的评估。"""
 
+PROMPT_SPECTRUM_2D = """这个结果<image>说明了什么？
+
+请解释：
+- 二维频谱线形（峰/谷位置、对比度、宽度）表明了量子比特通过Z控制的频率可调性方面的信息
+- Z幅度范围和频率分辨率是否足以绘制 f_q = f(V_Z) 校准曲线
+- 下一步是什么（例如，拟合色散曲线，进行量子比特门操作，或调整Z幅度范围）
+
+请提供您的评估。"""
+
 # ========== Prompt 字典映射 ==========
 
 SCIENTIFIC_REASONING_PROMPTS_ZH = {
@@ -252,6 +261,7 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 

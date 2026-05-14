@@ -226,6 +226,15 @@ Explain:
 
 Provide your assessment."""
 
+PROMPT_SPECTRUM_2D = """What does this result <image> imply?
+
+Explain:
+- What the 2D spectrum lineshape (peak/dip positions, contrast, width) indicates about qubit frequency tunability via Z control
+- Whether the Z amplitude range and frequency resolution are sufficient to map the f_q = f(V_Z) calibration curve
+- What next step follows (e.g., fitting the dispersion curve, proceeding to qubit gates, or adjusting Z amplitude range)
+
+Provide your assessment."""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -254,6 +263,7 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 

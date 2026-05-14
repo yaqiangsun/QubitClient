@@ -379,6 +379,7 @@ print(result)
 | 枚举值 | 描述 | 状态 |
 |--------|------|---------|
 | `ExperimentFamily.S21` | 腔频校准 | ⏸️
+| `ExperimentFamily.SPECTRUM_2D` | 二维频谱分析 | ⏸️
 
 #### 🎯 ExperimentType 实验类型
 

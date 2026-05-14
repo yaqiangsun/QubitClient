@@ -176,6 +176,11 @@ PROMPT_S21 = """从该S21透射图<image>中提取以下参数。
 以JSON格式报告：
 {"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
 
+PROMPT_SPECTRUM_2D = """从该二维量子比特谱图<image>中提取以下参数。
+
+以JSON格式报告：
+{"idle_freq_GHz": float | null, "freq_range_GHz": float | null, "calibration_curve_quality": "good" | "moderate" | "poor" | "none", "z_tunability": "high" | "moderate" | "low" | "none"}"""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -204,6 +209,7 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 

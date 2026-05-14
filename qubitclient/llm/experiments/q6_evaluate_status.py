@@ -381,6 +381,22 @@ Status: <one of the listed statuses>
 Suggested range: (<min frequency>, <max frequency>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
+PROMPT_SPECTRUM_2D = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear spectral features (peaks/dips) that shift with Z amplitude, forming a visible dispersion curve f_q = f(V_Z)
+- NO_SIGNAL: No clear spectral features, flat response in frequency-Z space
+- POOR_CALIBRATION: Spectral features visible but don't form a clean, monotonic calibration curve
+- LIMITED_RANGE: Z amplitude range insufficient to capture full frequency tuning range
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min Z amplitude>, <max Z amplitude>) [V] and (<min frequency>, <max frequency>) [GHz].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: Z: (<min Z>, <max Z>) [V], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -409,6 +425,7 @@ EVALUATE_STATUS_PROMPTS = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 

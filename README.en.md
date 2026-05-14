@@ -362,6 +362,7 @@ Use `ExperimentFamily` enum to specify different experiment types, automatically
 | `ExperimentFamily.T1_FLUCTUATIONS` | T1 fluctuations | ⏸️ |
 | `ExperimentFamily.TWEEZER_ARRAY` | Optical tweezer array | ⏸️ |
 | `ExperimentFamily.S21` | Cavity frequency calibration | ⏸️ |
+| `ExperimentFamily.SPECTRUM_2D` | 2D spectrum analysis | ⏸️ |
 
 #### 🎯 ExperimentType
 

@@ -382,6 +382,22 @@ Status: <列出的状态之一>
 Suggested range: (<min frequency>, <max frequency>) [GHz]（如果是 SUCCESS 则为 "N/A"）
 Notes: <1-3 句解释您的推理>"""
 
+PROMPT_SPECTRUM_2D = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 清晰的光谱特征（峰/谷）随Z幅度移动，形成可见的色散曲线 f_q = f(V_Z)
+- NO_SIGNAL: 无清晰的光谱特征，频率-Z空间响应平坦
+- POOR_CALIBRATION: 光谱特征可见但未形成干净的单调校准曲线
+- LIMITED_RANGE: Z幅度范围不足以捕获完整频率调谐范围
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min Z amplitude>, <max Z amplitude>）[V] 和（<min frequency>, <max frequency>）[GHz]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: Z: (<min Z>, <max Z>) [V], 频率: (<min freq>, <max freq>) [GHz]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -410,6 +426,7 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 

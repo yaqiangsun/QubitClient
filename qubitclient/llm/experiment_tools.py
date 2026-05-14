@@ -43,6 +43,7 @@ class ExperimentFamily(Enum):
     TWEEZER_ARRAY = "tweezer_array"
     # ========== Not in QCalEval ==========
     S21 = "s21"
+    SPECTRUM_2D = "spectrum_2d"
 
 
 @unique

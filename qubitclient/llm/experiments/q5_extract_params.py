@@ -175,6 +175,11 @@ PROMPT_S21 = """Extract the following parameters from this S21 transmission plot
 Report in JSON format:
 {"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
 
+PROMPT_SPECTRUM_2D = """Extract the following parameters from this 2D qubit spectroscopy plot <image>.
+
+Report in JSON format:
+{"idle_freq_GHz": float | null, "freq_range_GHz": float | null, "calibration_curve_quality": "good" | "moderate" | "poor" | "none", "z_tunability": "high" | "moderate" | "low" | "none"}"""
+
 
 
 # ========== Prompt 字典映射 ==========
@@ -204,6 +209,7 @@ EXTRACT_PARAMS_PROMPTS = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 
@@ -458,6 +464,17 @@ SCHEMA_S21 = {
     "required": [],
 }
 
+SCHEMA_SPECTRUM_2D = {
+    "type": "object",
+    "properties": {
+        "idle_freq_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "freq_range_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "calibration_curve_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
+        "z_tunability": {"type": "string", "enum": ["high", "moderate", "low", "none"]},
+    },
+    "required": [],
+}
+
 
 # ========== Schema 字典映射 ==========
 
@@ -486,6 +503,7 @@ EXTRACT_PARAMS_SCHEMAS = {
     "tweezer_array": SCHEMA_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": SCHEMA_S21,
+    "spectrum_2d": SCHEMA_SPECTRUM_2D,
 }
 
 

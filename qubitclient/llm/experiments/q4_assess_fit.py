@@ -67,6 +67,7 @@ PROMPT_TWEEZER_ARRAY = PROMPT_STANDARD
 
 # ========== Not in QCalEval ==========
 PROMPT_S21 = PROMPT_STANDARD
+PROMPT_SPECTRUM_2D = PROMPT_STANDARD
 
 
 
@@ -97,6 +98,7 @@ ASSESS_FIT_PROMPTS = {
     "tweezer_array": PROMPT_TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
+    "spectrum_2d": PROMPT_SPECTRUM_2D,
 }
 
 

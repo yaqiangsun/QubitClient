@@ -63,6 +63,8 @@ TWEEZER_ARRAY = """This is a camera image of an optical tweezer array used to tr
 # ========== Not in QCalEval ==========
 S21 = """This is an S21 cavity frequency search experiment: we sweep probe frequency and measure the complex transmission coefficient S21 from input port to output port to characterize a superconducting resonator. The primary goal is to precisely determine the resonator's resonance frequency (f_r). A successful result shows a clear dip in S21 amplitude at the cavity frequency, accompanied by a sharp phase jump near resonance. The data should be well-fitted to extract f_r."""
 
+SPECTRUM_2D = """This is a single-qubit spectroscopy experiment with Z-control amplitude scan: we sweep both microwave drive frequency and Z pulse amplitude (V_Z) to map the qubit frequency response. This is a 2D spectrum with X-axis showing drive frequency and Y-axis showing Z pulse amplitude. The primary goal is to establish the calibration curve f_q = f(V_Z) relating Z control voltage to qubit frequency. A successful result shows clear spectral features (resonance peaks or dips) that shift with Z pulse amplitude, forming a characteristic dispersion curve. The data enables precise qubit frequency tuning via Z control."""
+
 # ========== 配置字典 ==========
 
 EXPERIMENT_BACKGROUNDS = {
@@ -90,6 +92,7 @@ EXPERIMENT_BACKGROUNDS = {
     "tweezer_array": TWEEZER_ARRAY,
     # ========== Not in QCalEval ==========
     "s21": S21,
+    "spectrum_2d": SPECTRUM_2D,
 }
 
 # 默认背景（用于未知实验类型）

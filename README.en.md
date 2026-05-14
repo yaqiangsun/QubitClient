@@ -361,6 +361,7 @@ Use `ExperimentFamily` enum to specify different experiment types, automatically
 | `ExperimentFamily.T1` | T1 relaxation | ⏸️ |
 | `ExperimentFamily.T1_FLUCTUATIONS` | T1 fluctuations | ⏸️ |
 | `ExperimentFamily.TWEEZER_ARRAY` | Optical tweezer array | ⏸️ |
+| **--- Extra Experiments (non-QCalEval) ---** | | |
 | `ExperimentFamily.S21` | Cavity frequency calibration | ⏸️ |
 | `ExperimentFamily.SPECTRUM_2D` | 2D spectrum analysis | ⏸️ |
 | `ExperimentFamily.OPTPIPULSE` | Optimal π pulse calibration | ⏸️ |

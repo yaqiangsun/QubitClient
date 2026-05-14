@@ -373,9 +373,9 @@ print(result)
 | `ExperimentFamily.RYDBERG_SPECTROSCOPY` | Rydberg 光谱 | ⏸️
 | `ExperimentFamily.T1` | T1 弛豫 | ⏸️
 | `ExperimentFamily.T1_FLUCTUATIONS` | T1 涨落 | ⏸️
-| `ExperimentFamily.TWEEZER_ARRAY` | 光镊阵列 | ⏸️
-| Extra |  |  |
-| `ExperimentFamily.S21` | 腔频校准 | ⏸️
+| `ExperimentFamily.TWEEZER_ARRAY` | 光镊阵列 | ⏸️ |
+| **--- Extra 实验（非 QCalEval）---** | | |
+| `ExperimentFamily.S21` | 腔频校准 | ⏸️ |
 | `ExperimentFamily.SPECTRUM_2D` | 二维频谱分析 | ⏸️
 | `ExperimentFamily.OPTPIPULSE` | 最优π脉冲校准 | ⏸️
 | `ExperimentFamily.RABICOS` | 功率Rabi振荡 | ⏸️

@@ -76,6 +76,8 @@ S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux):
 POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency and readout power to characterize the cavity's power-dependent frequency shift (Kerr effect/nonlinearity). At low power, the cavity behaves linearly; at high power, nonlinear effects cause frequency drift. A successful result shows resonance frequency decreasing with increasing power, allowing extraction of the Kerr coefficient and optimal working power for high-fidelity readout."""
 
 SINGLESHOT = GMM
+SPECTRUM = QUBIT_SPECTROSCOPY
+T2 = RAMSEY_T2STAR
 
 # ========== 配置字典 ==========
 
@@ -111,6 +113,8 @@ EXPERIMENT_BACKGROUNDS = {
     "s21vflux": S21VFLUX,
     "powershift": POWERSHIFT,
     "singleshot": SINGLESHOT,
+    "spectrum": SPECTRUM,
+    "t2": T2,
 }
 
 # 默认背景（用于未知实验类型）

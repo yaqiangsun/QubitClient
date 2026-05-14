@@ -281,6 +281,8 @@ Explain:
 Provide your assessment."""
 
 PROMPT_SINGLESHOT = PROMPT_GMM
+PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
+PROMPT_T2 = PROMPT_RAMSEY_T2STAR
 
 
 # ========== Prompt 字典映射 ==========
@@ -317,6 +319,8 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
+    "spectrum": PROMPT_SPECTRUM,
+    "t2": PROMPT_T2,
 }
 
 

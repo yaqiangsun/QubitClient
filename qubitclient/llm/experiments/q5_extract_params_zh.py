@@ -207,6 +207,8 @@ PROMPT_OPTPIPULSE = """从该Opt_pi脉冲校准图<image>中提取以下参数�
 {"pi_amp_relative": float | null, "contrast": float | null, "checkerboard_quality": "good" | "moderate" | "poor" | "none", "n_range": int}"""
 
 PROMPT_SINGLESHOT = PROMPT_GMM
+PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
+PROMPT_T2 = PROMPT_RAMSEY_T2STAR
 
 
 # ========== Prompt 字典映射 ==========
@@ -243,6 +245,8 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "s21vflux": PROMPT_S21VFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
+    "spectrum": PROMPT_SPECTRUM,
+    "t2": PROMPT_T2,
 }
 
 

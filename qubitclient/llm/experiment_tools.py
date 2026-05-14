@@ -50,6 +50,8 @@ class ExperimentFamily(Enum):
     S21VFLUX = "s21vflux"
     POWERSHIFT = "powershift"
     SINGLESHOT = "singleshot"
+    SPECTRUM = "spectrum"
+    T2 = "t2"
 
 
 @unique

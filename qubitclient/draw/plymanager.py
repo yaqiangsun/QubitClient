@@ -17,6 +17,7 @@ from qubitclient.draw.nnscope.spectrum2dnnscopeplyplotter import Spectrum2DNNSco
 from qubitclient.draw.scope.s21vfluxscopeplyplotter import S21VfluxScopeDataPlyPlotter
 from qubitclient.draw.nnscope.s21vfluxnnscopeplyplotter import S21VfluxNNScopeDataPlyPlotter
 from qubitclient.draw.nnscope.s21peaknnscopeplyplotter import S21PeakNNScopeDataPlyPlotter
+from qubitclient.draw.nnscope.s21peakmultinnscopeplyplotter import S21PeakMultiNNScopeDataPlyPlotter
 
 from qubitclient.draw.scope.singleshotplyplotter import SingleShotDataPlyPlotter
 from qubitclient.draw.scope.spectrum2dscopeplyplotter import Spectrum2DScopeDataPlyPlotter
@@ -50,6 +51,7 @@ class QuantumPlotPlyManager:
         self.plotters["powershiftnnscope"] = PowershiftNNScopeDataPlyPlotter()
         self.plotters["spectrumnnscope"] = SpectrumNNScopeDataPlyPlotter()
         self.plotters["s21peaknnscope"] = S21PeakNNScopeDataPlyPlotter()
+        self.plotters["s21peakmultinnscope"] = S21PeakMultiNNScopeDataPlyPlotter()
 
         self.plotters["singleshot"] = SingleShotDataPlyPlotter()
         self.plotters["spectrum2dscope"] = Spectrum2DScopeDataPlyPlotter()

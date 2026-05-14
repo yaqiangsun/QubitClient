@@ -363,6 +363,11 @@ Use `ExperimentFamily` enum to specify different experiment types, automatically
 | `ExperimentFamily.TWEEZER_ARRAY` | Optical tweezer array | ⏸️ |
 | `ExperimentFamily.S21` | Cavity frequency calibration | ⏸️ |
 | `ExperimentFamily.SPECTRUM_2D` | 2D spectrum analysis | ⏸️ |
+| `ExperimentFamily.OPTPIPULSE` | Optimal π pulse calibration | ⏸️ |
+| `ExperimentFamily.RABICOS` | Power Rabi oscillation | ⏸️ |
+| `ExperimentFamily.RAMSEY` | Ramsey interference | ⏸️ |
+| `ExperimentFamily.S21VFLUX` | S21 vs Flux 2D | ⏸️ |
+| `ExperimentFamily.POWERSHIFT` | Power shift | ⏸️ |
 
 #### 🎯 ExperimentType
 

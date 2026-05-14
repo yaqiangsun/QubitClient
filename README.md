@@ -380,6 +380,11 @@ print(result)
 |--------|------|---------|
 | `ExperimentFamily.S21` | 腔频校准 | ⏸️
 | `ExperimentFamily.SPECTRUM_2D` | 二维频谱分析 | ⏸️
+| `ExperimentFamily.OPTPIPULSE` | 最优π脉冲校准 | ⏸️
+| `ExperimentFamily.RABICOS` | 功率Rabi振荡 | ⏸️
+| `ExperimentFamily.RAMSEY` | Ramsey干涉 | ⏸️
+| `ExperimentFamily.S21VFLUX` | S21 vs Flux 2D | ⏸️
+| `ExperimentFamily.POWERSHIFT` | 功率偏移 | ⏸️
 
 #### 🎯 ExperimentType 实验类型
 

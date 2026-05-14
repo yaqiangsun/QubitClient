@@ -31,7 +31,8 @@ from qubitclient.draw.scope.t2fitpltplotter import T2FitDataPltPlotter
 from qubitclient.draw.scope.rabicospltplotter import RabiCosDataPltPlotter
 from qubitclient.draw.scope.powershiftpltplotter import PowerShiftDataPltPlotter
 from qubitclient.draw.scope.dragpltplotter import DragDataPltPlotter
-from qubitclient.draw.scope.rbpltplotter import RBDataPltPlotter  
+from qubitclient.draw.scope.rbpltplotter import RBDataPltPlotter
+from qubitclient.draw.scope.xebpltplotter import XEBDataPltPlotter
 from qubitclient.draw.scope.deltapltplotter import DeltaDataPltPlotter
 
 
@@ -62,6 +63,7 @@ class QuantumPlotPltManager:
         self.plotters["powershift"] = PowerShiftDataPltPlotter()
         self.plotters["drag"] = DragDataPltPlotter()
         self.plotters["rb"] = RBDataPltPlotter() 
+        self.plotters["xeb"] = XEBDataPltPlotter() 
         self.plotters["delta"] = DeltaDataPltPlotter()
 
     def get_plotter(self, task_type: str) -> QuantumDataPltPlotter:

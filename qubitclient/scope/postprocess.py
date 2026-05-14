@@ -645,6 +645,64 @@ def postprocess_result_rb(response, threshold):
     response_data['results'] = results_filtered
     return response_data
 
+
+def postprocess_result_xeb(response, threshold):
+    result = response.parsed
+    results = result.get("results", [])
+    results_filtered = []
+
+    for idx, item in enumerate(results):
+        state = item.get("status")
+        if state == 'failed':
+            logging.warning(f"Error in request: {item.get('error')}")
+        result_filtered = {}
+        params_list         = item.get('params_list', [])
+        r2_list             = item.get('r2_list', [])
+        fit_data_list       = item.get('fit_data_list', [])          
+        fit_data_dense_list = item.get('fit_data_dense_list', [])   
+        fit_x_dense_list    = item.get('x_dense_list', [])          
+        status              = item.get('status', 'failed')
+
+        filtered_params         = []
+        filtered_r2             = []
+        filtered_fit_data       = []
+        filtered_fit_data_dense = []
+        filtered_x_dense        = []
+
+        for params, r2, fit_data, fit_data_dense, x_dense in zip(
+            params_list,
+            r2_list,
+            fit_data_list,
+            fit_data_dense_list,
+            fit_x_dense_list
+        ):
+            if r2 >= threshold:
+                filtered_params.append(params)
+                filtered_r2.append(r2)
+                filtered_fit_data.append(fit_data)
+                filtered_fit_data_dense.append(fit_data_dense)
+                filtered_x_dense.append(x_dense)
+            else:
+                filtered_params.append([])
+                filtered_r2.append([])           
+                filtered_fit_data.append([])
+                filtered_fit_data_dense.append([])
+                filtered_x_dense.append([])
+
+        result_filtered['params_list']         = filtered_params
+        result_filtered['r2_list']             = filtered_r2
+        result_filtered['fit_data_list']       = filtered_fit_data
+        result_filtered['fit_data_dense_list'] = filtered_fit_data_dense
+        result_filtered['x_dense_list']        = filtered_x_dense
+        result_filtered['status'] = status if any(filtered_params) else 'failed'
+
+        results_filtered.append(result_filtered)
+
+    response_data = {}
+    response_data['results'] = results_filtered
+    return response_data
+
+
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
     's21peakmulti': postprocess_result_s21peak,
@@ -661,7 +719,8 @@ TASK_MAP: Dict[str, Callable] = {
     'spectrum': postprocess_result_spectrum,
     'powershift': postprocess_result_powershift,
     'rb': postprocess_result_rb,
-    'delta': postprocess_result_delta
+    'delta': postprocess_result_delta,
+    'xeb': postprocess_result_xeb,
     
 }
 

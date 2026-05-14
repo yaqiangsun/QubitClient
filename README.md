@@ -374,10 +374,7 @@ print(result)
 | `ExperimentFamily.T1` | T1 弛豫 | ⏸️
 | `ExperimentFamily.T1_FLUCTUATIONS` | T1 涨落 | ⏸️
 | `ExperimentFamily.TWEEZER_ARRAY` | 光镊阵列 | ⏸️
-
-
-| 枚举值 | 描述 | 状态 |
-|--------|------|---------|
+| Extra |  |  |
 | `ExperimentFamily.S21` | 腔频校准 | ⏸️
 | `ExperimentFamily.SPECTRUM_2D` | 二维频谱分析 | ⏸️
 | `ExperimentFamily.OPTPIPULSE` | 最优π脉冲校准 | ⏸️

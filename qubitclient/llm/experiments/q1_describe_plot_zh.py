@@ -114,6 +114,7 @@ PROMPT_TWEEZER_ARRAY = PROMPT_TWEEZER
 # ========== Not in QCalEval ==========
 PROMPT_S21 = PROMPT_STANDARD
 PROMPT_SPECTRUM_2D = PROMPT_STANDARD
+PROMPT_OPTPIPULSE = PROMPT_STANDARD
 
 
 # ========== Prompt 字典映射 ==========
@@ -144,6 +145,7 @@ DESCRIBE_PLOT_PROMPTS_ZH = {
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
+    "optpipulse": PROMPT_OPTPIPULSE,
 }
 
 

@@ -397,6 +397,22 @@ Status: <one of the listed statuses>
 Suggested range: Z: (<min Z>, <max Z>) [V], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
+PROMPT_OPTPIPULSE = """Evaluate the image <image> and determine the experiment status.
+
+DECISION CRITERIA
+- SUCCESS: Clear checkerboard pattern with high contrast between odd/even N, indicating proper π-pulse calibration
+- NO_CONTRAST: Flat response, no clear binary oscillation with N parity
+- POOR_CALIBRATION: Contrast visible but not optimal, amplitude offset from ideal π-pulse value
+- LIMITED_N_RANGE: N range insufficient to establish clear parity oscillation
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min amplitude>, <max amplitude>) [relative units] and (<min N>, <max N>) [count].
+
+The response MUST follow this exact format:
+
+Status: <one of the listed statuses>
+Suggested range: Amp: (<min amp>, <max amp>) [rel], N: (<min N>, <max N>) [count] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning>"""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -426,6 +442,7 @@ EVALUATE_STATUS_PROMPTS = {
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
+    "optpipulse": PROMPT_OPTPIPULSE,
 }
 
 

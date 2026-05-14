@@ -65,6 +65,8 @@ S21 = """This is an S21 cavity frequency search experiment: we sweep probe frequ
 
 SPECTRUM_2D = """This is a single-qubit spectroscopy experiment with Z-control amplitude scan: we sweep both microwave drive frequency and Z pulse amplitude (V_Z) to map the qubit frequency response. This is a 2D spectrum with X-axis showing drive frequency and Y-axis showing Z pulse amplitude. The primary goal is to establish the calibration curve f_q = f(V_Z) relating Z control voltage to qubit frequency. A successful result shows clear spectral features (resonance peaks or dips) that shift with Z pulse amplitude, forming a characteristic dispersion curve. The data enables precise qubit frequency tuning via Z control."""
 
+OPTPIPULSE = """This is an Opt_pi pulse calibration experiment (repeated Rabi): we sweep drive amplitude and pulse repetition count (N) to precisely calibrate the π-pulse amplitude. The sequence applies N cycles of "double-R gate + delay", where each double-R gate is equivalent to a 2θ rotation. When θ equals π/2 (i.e., one R gate is π/2), the total rotation is Nπ, and the excited state population oscillates with N parity (odd N = high, even N = low). A successful result shows a clear checkerboard pattern in the 2D map (amplitude vs N), indicating proper π-pulse calibration. The optimal amplitude maximizes the contrast of this binary oscillation."""
+
 # ========== 配置字典 ==========
 
 EXPERIMENT_BACKGROUNDS = {
@@ -93,6 +95,7 @@ EXPERIMENT_BACKGROUNDS = {
     # ========== Not in QCalEval ==========
     "s21": S21,
     "spectrum_2d": SPECTRUM_2D,
+    "optpipulse": OPTPIPULSE,
 }
 
 # 默认背景（用于未知实验类型）

@@ -44,6 +44,7 @@ class ExperimentFamily(Enum):
     # ========== Not in QCalEval ==========
     S21 = "s21"
     SPECTRUM_2D = "spectrum_2d"
+    OPTPIPULSE = "optpipulse"
 
 
 @unique

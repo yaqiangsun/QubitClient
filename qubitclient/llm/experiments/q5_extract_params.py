@@ -180,6 +180,11 @@ PROMPT_SPECTRUM_2D = """Extract the following parameters from this 2D qubit spec
 Report in JSON format:
 {"idle_freq_GHz": float | null, "freq_range_GHz": float | null, "calibration_curve_quality": "good" | "moderate" | "poor" | "none", "z_tunability": "high" | "moderate" | "low" | "none"}"""
 
+PROMPT_OPTPIPULSE = """Extract the following parameters from this Opt_pi pulse calibration plot <image>.
+
+Report in JSON format:
+{"pi_amp_relative": float | null, "contrast": float | null, "checkerboard_quality": "good" | "moderate" | "poor" | "none", "n_range": int}"""
+
 
 
 # ========== Prompt 字典映射 ==========
@@ -210,6 +215,7 @@ EXTRACT_PARAMS_PROMPTS = {
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
+    "optpipulse": PROMPT_OPTPIPULSE,
 }
 
 
@@ -475,6 +481,17 @@ SCHEMA_SPECTRUM_2D = {
     "required": [],
 }
 
+SCHEMA_OPTPIPULSE = {
+    "type": "object",
+    "properties": {
+        "pi_amp_relative": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "contrast": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+        "checkerboard_quality": {"type": "string", "enum": ["good", "moderate", "poor", "none"]},
+        "n_range": {"type": "integer"},
+    },
+    "required": [],
+}
+
 
 # ========== Schema 字典映射 ==========
 
@@ -504,6 +521,7 @@ EXTRACT_PARAMS_SCHEMAS = {
     # ========== Not in QCalEval ==========
     "s21": SCHEMA_S21,
     "spectrum_2d": SCHEMA_SPECTRUM_2D,
+    "optpipulse": SCHEMA_OPTPIPULSE,
 }
 
 

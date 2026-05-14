@@ -398,6 +398,22 @@ Status: <列出的状态之一>
 Suggested range: Z: (<min Z>, <max Z>) [V], 频率: (<min freq>, <max freq>) [GHz]（如果是 SUCCESS 则为 "N/A"）
 Notes: <1-3 句解释您的推理>"""
 
+PROMPT_OPTPIPULSE = """评估图像<image>并确定实验状态。
+
+决策标准
+- SUCCESS: 清晰的棋盘格图案，奇偶N之间对比度高，表明正确的π脉冲校准
+- NO_CONTRAST: 响应平坦，无清晰的N奇偶性二进制振荡
+- POOR_CALIBRATION: 对比度可见但不是最优，幅度偏离理想π脉冲值
+- LIMITED_N_RANGE: N范围不足以建立清晰的奇偶振荡
+
+当状态不是 SUCCESS 时，提供一个具体的建议（<min amplitude>, <max amplitude>）[相对单位] 和（<min N>, <max N>）[计数]。
+
+响应必须遵循以下精确格式：
+
+Status: <列出的状态之一>
+Suggested range: 幅度: (<min amp>, <max amp>) [相对], N: (<min N>, <max N>) [计数]（如果是 SUCCESS 则为 "N/A"）
+Notes: <1-3 句解释您的推理>"""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -427,6 +443,7 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
+    "optpipulse": PROMPT_OPTPIPULSE,
 }
 
 

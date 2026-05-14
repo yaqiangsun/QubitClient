@@ -235,6 +235,15 @@ Explain:
 
 Provide your assessment."""
 
+PROMPT_OPTPIPULSE = """What does this result <image> imply?
+
+Explain:
+- What the checkerboard pattern (contrast between odd/even N) indicates about π-pulse calibration accuracy
+- Whether the amplitude range and N values are sufficient to locate the optimal π-pulse amplitude
+- What next step follows (e.g., fitting the oscillation contrast, proceeding to gate calibration, or adjusting pulse shape)
+
+Provide your assessment."""
+
 
 # ========== Prompt 字典映射 ==========
 
@@ -264,6 +273,7 @@ SCIENTIFIC_REASONING_PROMPTS = {
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
+    "optpipulse": PROMPT_OPTPIPULSE,
 }
 
 

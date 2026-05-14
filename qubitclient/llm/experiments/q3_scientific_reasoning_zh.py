@@ -234,6 +234,15 @@ PROMPT_SPECTRUM_2D = """这个结果<image>说明了什么？
 
 请提供您的评估。"""
 
+PROMPT_OPTPIPULSE = """这个结果<image>说明了什么？
+
+请解释：
+- 棋盘格图案（奇偶N之间的对比度）表明了π脉冲校准精度方面的信息
+- 幅度范围和N值是否足以定位最优π脉冲幅度
+- 下一步是什么（例如，拟合振荡对比度，进行门校准，或调整脉冲形状）
+
+请提供您的评估。"""
+
 # ========== Prompt 字典映射 ==========
 
 SCIENTIFIC_REASONING_PROMPTS_ZH = {
@@ -262,6 +271,7 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     # ========== Not in QCalEval ==========
     "s21": PROMPT_S21,
     "spectrum_2d": PROMPT_SPECTRUM_2D,
+    "optpipulse": PROMPT_OPTPIPULSE,
 }
 
 

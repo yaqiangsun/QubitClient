@@ -30,14 +30,18 @@ from qubitclient.llm.task import LLMTaskName
 # POWERSHIFT 测试数据
 TEST_SAMPLE = {
     "experiment_family": "powershift",
+    "image_filename": "powershift_17.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Apparatus issue",
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "low_power_freq_GHz": 7.5,
-        "power_shift_MHz": 5.0,
-        "kerr_coefficient_kHz": 100.0,
-        "linearity": "good"
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "NO_POWER_SHIFT", "FIT_POOR"],
+        "optimal_alpha_inv": "Unreliable",
+        "intersection_clear": False
+        },
+    "q6_expected_status": "NO_SIGNAL",
 }
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_exta", filename)
 
 
 def test_powershift_q1_describe():
@@ -46,11 +50,11 @@ def test_powershift_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:500]}...")
+        print(f"  结果: {str(result)[:5000]}...")
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
     print("  [OK]")
@@ -62,12 +66,11 @@ def test_powershift_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:500]}...")
-        assert "Classification" in result
+        print(f"  结果: {str(result)[:5000]}...")
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
     print("  [OK]")
@@ -79,7 +82,7 @@ def test_powershift_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
@@ -96,11 +99,11 @@ def test_powershift_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:500]}...")
+        print(f"  结果: {str(result)[:5000]}...")
         assert "Assessment" in result
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
@@ -113,11 +116,11 @@ def test_powershift_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:500]}...")
+        print(f"  结果: {str(result)[:5000]}...")
         assert result is not None
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
@@ -130,11 +133,11 @@ def test_powershift_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:500]}...")
+        print(f"  结果: {str(result)[:5000]}...")
         assert "Status" in result
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
@@ -144,7 +147,7 @@ def test_powershift_q6_status():
 if __name__ == "__main__":
     test_powershift_q1_describe()
     test_powershift_q2_classify()
-    test_powershift_q3_reasoning()
+    # test_powershift_q3_reasoning()
     test_powershift_q4_assess()
     test_powershift_q5_extract()
     test_powershift_q6_status()

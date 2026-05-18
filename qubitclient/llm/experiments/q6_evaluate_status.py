@@ -434,17 +434,21 @@ Notes: <1-3 sentences explaining your reasoning>"""
 PROMPT_POWERSHIFT = """Evaluate the image <image> and determine the experiment status.
 
 DECISION CRITERIA
-- SUCCESS: Clear power-dependent frequency shift visible, Kerr coefficient extractable
-- NO_SIGNAL: Flat response, no resonance features visible
-- NO_POWER_SHIFT: Resonance frequency constant across power range — negligible Kerr effect or weak coupling
-- FIT_POOR: Data visible but nonlinear fit fails
+- SUCCESS: Clear dip trajectory exists. Trajectory may be straight, bent, straight→bent→straight, OR include vertical jumps (mode hops). As long as the path is coherent and dip points exist in most rows, status is SUCCESS.
+- NO_SIGNAL: No discernible dip in any row — flat or monotonic gradient, no localized minimum.
+- NO_POWER_SHIFT: Dip trajectory exists but frequency remains constant across power (vertical line in heatmap, no horizontal movement) — negligible Kerr effect or weak coupling.
+- NO_DIP_TRACKING: Dip exists in some rows BUT has large gaps (missing dip points across multiple rows) due to noise or signal loss, preventing coherent tracking. A single vertical jump does NOT count as NO_DIP_TRACKING.
 
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.] and (<min frequency>, <max frequency>) [GHz].
+IMPORTANT:
+- Vertical jump (same power, different frequency between adjacent rows) = VALID feature, status SUCCESS.
+- Missing dip points in a row = if isolated (1-2 rows), still SUCCESS. If large continuous gap (>3 rows), then NO_DIP_TRACKING.
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.] and (<min frequency>, <max frequency>) [GHz] if a reasonable guess can be made from the data. If no reasonable guess is possible (e.g., NO_SIGNAL), use "N/A" for both ranges.
 
 The response MUST follow this exact format:
 
 Status: <one of the listed statuses>
-Suggested range: Power: (<min power>, <max power>) [a.u.], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
+Suggested range: Power: (<min power>, <max power>) [a.u.], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS or no guess possible)
 Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_SPECTRUM_2D = """Evaluate the image <image> and determine the experiment status.

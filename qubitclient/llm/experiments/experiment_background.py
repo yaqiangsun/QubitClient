@@ -73,8 +73,35 @@ RAMSEY = """This is a Ramsey experiment for precise qubit frequency calibration:
 
 S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response. This 2D map reveals how the cavity resonance frequency changes with DC bias (Z control). A successful result shows a clear resonance curve that shifts with bias, enabling calibration of bias-dependent cavity frequency and dispersive shift. Used for optimizing readout frequency and understanding crosstalk."""
 
-POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency and readout power to characterize the cavity's power-dependent frequency shift (Kerr effect/nonlinearity). At low power, the cavity behaves linearly; at high power, nonlinear effects cause frequency drift. A successful result shows resonance frequency decreasing with increasing power, allowing extraction of the Kerr coefficient and optimal working power for high-fidelity readout."""
+POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency and readout power, and track the position of the resonance dip (darkest point) row by row in the 2D power-frequency heatmap to characterize the cavity's frequency response.
 
+The dip trajectory is constructed by clustering dip positions row by row. The trajectory may consist of ONE or MULTIPLE line segments. Each segment has:
+- START point: (power_start, freq_start) where the segment begins
+- END point: (power_end, freq_end) where the segment ends
+- SLOPE: (freq_end - freq_start) / (power_end - power_start)
+
+Segment types:
+- STRAIGHT segment: constant slope
+- BENT segment: continuously changing slope (non-linear region)
+
+The trajectory may appear in the following forms:
+- No valid trajectory: no dip detected in any row
+- Single straight segment: one straight line only
+- Two segments: straight → bent, OR bent → straight, OR straight → straight (different slopes, discontinuous jump at boundary)
+- Three segments: straight → bent → straight
+
+IMPORTANT RULES for segment boundaries:
+1. A segment boundary (start/end of a bend) is where the slope STARTS to change or FINISHES changing
+2. A vertical discontinuity (same power, different frequency) is a SEGMENT BOUNDARY but NOT a "bend" — it indicates a mode jump
+3. The "turning point" (bend start) is the START point of a bent segment
+4. The "turn end point" (bend end) is the END point of a bent segment
+
+The experimental goal is to extract:
+- All segment start and end points (power, frequency)
+- Segment slopes (linear regime boundaries, Kerr coefficient approximation)
+- Bend start and end points (transition power range)
+- Mode jump locations (if any)
+"""
 SINGLESHOT = GMM
 SPECTRUM = QUBIT_SPECTROSCOPY
 T2 = RAMSEY_T2STAR

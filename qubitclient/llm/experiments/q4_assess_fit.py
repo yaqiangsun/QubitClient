@@ -72,7 +72,40 @@ PROMPT_OPTPIPULSE = PROMPT_STANDARD
 PROMPT_RABICOS = PROMPT_STANDARD
 PROMPT_RAMSEY = PROMPT_STANDARD
 PROMPT_S21VFLUX = PROMPT_STANDARD
-PROMPT_POWERSHIFT = PROMPT_STANDARD
+PROMPT_POWERSHIFT = """Assess whether the dip trajectory clustering in this plot <image> is reliable.
+
+BACKGROUND:
+The trajectory is obtained by:
+1. For each row (power level), finding the darkest column (frequency) — the resonance dip
+2. Clustering these dip points across rows to form continuous segments
+3. Connecting segments that are physically meaningful
+
+Possible trajectory shapes (ALL are valid as long as clustering is correct):
+- No dip points found in any row
+- Single straight line
+- Single bent line (continuous slope change)
+- Two segments: straight → bent, OR bent → straight, OR straight → straight (with possible vertical jump at boundary)
+- Three segments: straight → bent → straight
+
+CRITICAL RULES:
+- A vertical jump (same power, different frequency between consecutive rows) is a VALID trajectory feature — it indicates a mode jump or bistability. Do NOT mark as unreliable solely because of a vertical jump.
+- "Fragmented" means gaps where no dip point exists between segments. This is different from a vertical jump (where dip exists in every row, just at different frequencies).
+- Only mark as UNRELIABLE if:
+  1. No dip points found in any row (completely empty trajectory), OR
+  2. Clustering is clearly wrong (e.g., points randomly scattered with no coherent path, or obvious outliers connected incorrectly)
+
+Reliability criteria:
+- Reliable: Dip points form a coherent path (straight, bent, or with vertical jumps). Segments are correctly connected. Clustering captures the physical resonance movement.
+- Unreliable: No dip points at all, OR clustering is erroneous (random noise, obviously wrong connections, points do not follow a clear trend).
+
+Options:
+- Reliable
+- Unreliable
+
+Provide your answer as:
+Assessment: <your choice>
+Reason: <brief explanation>"""
+
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR

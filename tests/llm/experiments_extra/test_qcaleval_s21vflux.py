@@ -29,15 +29,19 @@ from qubitclient.llm.task import LLMTaskName
 
 # S21VFLUX 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "s21vflux",
+    "image_filename": "s21vflux_6834.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Apparatus issue",
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "center_freq_GHz": 7.5,
-        "freq_vs_bias_slope": 0.5,
-        "dispersion_shift_MHz": 10.0,
-        "resonance_quality": "good"
+        "optimal_alpha_inv": "Unreliable",
+        "intersection_clear": False
     },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "POOR_CONTRAST", "NO_FLUX_DEPENDENCE"],
+    "q6_expected_status": "NO_SIGNAL",
 }
+
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_s21vflux_q1_describe():
@@ -46,7 +50,7 @@ def test_s21vflux_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21VFLUX
         )
         result = llm.chat(**prompt_data)
@@ -62,7 +66,7 @@ def test_s21vflux_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21VFLUX
         )
         result = llm.chat(**prompt_data)
@@ -79,7 +83,7 @@ def test_s21vflux_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21VFLUX
         )
         result = llm.chat(**prompt_data)
@@ -96,7 +100,7 @@ def test_s21vflux_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21VFLUX
         )
         result = llm.chat(**prompt_data)
@@ -113,7 +117,7 @@ def test_s21vflux_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21VFLUX
         )
         result = llm.chat(**prompt_data)
@@ -130,7 +134,7 @@ def test_s21vflux_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21VFLUX
         )
         result = llm.chat(**prompt_data)
@@ -144,7 +148,7 @@ def test_s21vflux_q6_status():
 if __name__ == "__main__":
     test_s21vflux_q1_describe()
     test_s21vflux_q2_classify()
-    test_s21vflux_q3_reasoning()
+    # test_s21vflux_q3_reasoning()
     test_s21vflux_q4_assess()
     test_s21vflux_q5_extract()
     test_s21vflux_q6_status()

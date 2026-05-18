@@ -71,7 +71,19 @@ RABICOS = """This is a Power Rabi experiment (RabiCOS): we sweep drive pulse amp
 
 RAMSEY = """This is a Ramsey experiment for precise qubit frequency calibration: two π/2 pulses are separated by a variable delay, during which the qubit evolves freely. The second pulse's phase encodes the detuning, creating interference oscillations. A successful result shows cosine oscillations at the detuning frequency, allowing extraction of the precise frequency offset with kHz-level resolution. This is typically performed after coarse frequency calibration via spectroscopy."""
 
-S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response. This 2D map reveals how the cavity resonance frequency changes with DC bias (Z control). A successful result shows a clear resonance curve that shifts with bias, enabling calibration of bias-dependent cavity frequency and dispersive shift. Used for optimizing readout frequency and understanding crosstalk."""
+S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response.
+
+The 2D heatmap may contain up to FOUR possible resonance-like features:
+- cos_dark: low-intensity cosine-shaped curve
+- cos_light: high-intensity cosine-shaped curve
+- line_dark: low-intensity straight/linear curve
+- line_light: high-intensity straight/linear curve
+
+The fitting algorithm identifies and fits ANY of these four features that are present in the data. It does NOT always fit the brightest feature — fitting any coherent feature (dark or light, cosine or line) is considered a valid fit, as different coupling conditions can make the true resonance appear at different intensities.
+
+VISUAL INDICATOR: All fitted curves (regardless of type) are plotted in RED color on top of the heatmap.
+
+A successful fit means the algorithm has accurately tracked a continuous, coherent feature in the data, regardless of its intensity or shape (cosine or line). Parameter extraction will later determine which feature corresponds to the physical cavity resonance."""
 
 POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency and readout power, and track the position of the resonance dip (darkest point) row by row in the 2D power-frequency heatmap to characterize the cavity's frequency response.
 

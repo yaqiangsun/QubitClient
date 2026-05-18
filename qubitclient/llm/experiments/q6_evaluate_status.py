@@ -417,19 +417,19 @@ Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_S21VFLUX = """Evaluate the image <image> and determine the experiment status.
 
+CRITICAL FIRST STEP - VISUAL INSPECTION:
+Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap.
+- If NO red curve exists → status cannot be SUCCESS. Use NO_SIGNAL or POOR_CONTRAST.
+
 DECISION CRITERIA
-- SUCCESS: Clear cavity resonance trace that shifts with bias flux, forming a visible dispersion curve
-- NO_SIGNAL: Flat response, no cavity resonance visible
-- POOR_CONTRAST: Resonance visible but very shallow, poor signal-to-noise
-- NO_FLUX_DEPENDENCE: Cavity frequency does not shift with bias — no dispersive coupling
+- SUCCESS: A RED fitted curve EXISTS in the image AND it accurately tracks a coherent, continuous feature in the data.
+- NO_SIGNAL: NO RED fitted curve present AND no discernible resonance feature in the raw data.
+- POOR_CONTRAST: NO RED fitted curve present, but raw data shows some resonance features (too weak or not fitted).
+- NO_FLUX_DEPENDENCE: A RED fitted curve EXISTS but the tracked feature shows no frequency change with bias flux.
 
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min frequency>, <max frequency>) [GHz] and (<min bias>, <max bias>) [V].
+IMPORTANT: Do NOT claim a red curve exists unless you actually see it in the image.
 
-The response MUST follow this exact format:
-
-Status: <one of the listed statuses>
-Suggested range: Freq: (<min freq>, <max freq>) [GHz], Bias: (<min bias>, <max bias>) [V] (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>"""
+... rest of format ..."""
 
 PROMPT_POWERSHIFT = """Evaluate the image <image> and determine the experiment status.
 

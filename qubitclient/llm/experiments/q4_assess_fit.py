@@ -71,7 +71,31 @@ PROMPT_SPECTRUM_2D = PROMPT_STANDARD
 PROMPT_OPTPIPULSE = PROMPT_STANDARD
 PROMPT_RABICOS = PROMPT_STANDARD
 PROMPT_RAMSEY = PROMPT_STANDARD
-PROMPT_S21VFLUX = PROMPT_STANDARD
+PROMPT_S21VFLUX = """Assess whether the fit to the data in this plot  <image> is reliable for parameter extraction.
+
+CRITICAL FIRST STEP - VISUAL INSPECTION:
+Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap. 
+- If NO red curve exists in the image → answer "No fit"
+- Only if a red curve EXISTS, then evaluate whether it tracks the data features
+
+BACKGROUND:
+- The data may contain multiple features (cos_dark, cos_light, line_dark, line_light).
+- All fitted curves, when they exist, are plotted in RED color.
+
+CRITERIA:
+- Reliable: A RED fitted curve EXISTS in the image AND it accurately follows a visible, continuous feature (dark or bright, cosine or line) in the data.
+- Unreliable: A RED fitted curve EXISTS but it does NOT follow any coherent feature in the data.
+- No fit: NO RED fitted curve is present in the image. (Do not invent or assume a fit exists)
+
+Options:
+- Reliable
+- Unreliable
+- No fit
+
+Provide your answer as:
+Assessment: <your choice>
+Reason: <brief explanation>"""
+
 PROMPT_POWERSHIFT = """Assess whether the dip trajectory clustering in this plot <image> is reliable.
 
 BACKGROUND:

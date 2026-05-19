@@ -44,7 +44,26 @@ Reason: <brief explanation>"""
 # Aliases for all experiments
 PROMPT_COUPLER_FLUX = PROMPT_STANDARD
 PROMPT_CZ_BENCHMARKING = PROMPT_STANDARD
-PROMPT_DRAG = PROMPT_STANDARD
+# ORIGIN DRAG PROMPT
+# PROMPT_DRAG = PROMPT_STANDARD
+PROMPT_DRAG = """Evaluate the image <image> and determine the experiment status.
+Red curve: fitted to green curve
+Orange curve: fitted to blue curve
+
+CRITICAL: The fit does NOT need to perfectly match every noise peak or oscillation.
+If the fitted curves(Red and Orange curves) captures the correct crossing trend near x=0, it is Reliable.
+If the fitted curves(Red and Orange curves) captures the crossing trend not near  x=0, it is Unreliable.
+If the fitted curves(Red and Orange curves)  do not captures any crossing, it is Unreliable.
+
+Options:
+- Reliable
+- Unreliable
+- No fit
+
+Provide your answer as:
+Assessment: <your choice>
+Reason: <brief explanation>"""
+
 PROMPT_GMM = PROMPT_STANDARD
 PROMPT_MICROWAVE_RAMSEY = PROMPT_STANDARD
 PROMPT_MOT_LOADING = PROMPT_STANDARD

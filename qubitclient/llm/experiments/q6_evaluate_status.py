@@ -44,12 +44,31 @@ Status: <one of the listed statuses>
 Suggested range: Suggested action: <specific recommendation for gate calibration or circuit depth adjustment> (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
+# ORIGIN DRAG PROMPT
+# PROMPT_DRAG = """Evaluate the image <image> and determine the experiment status.
+
+# DECISION CRITERIA
+# - SUCCESS: Zero-crossing clearly observable in sweep window
+# - NO_SIGNAL: Flat or random, no crossing pattern
+# - OPTIMAL_NOT_CENTERED: Crossing exists but in first/last quarter or outside range
+
+# When the status is not SUCCESS, provide a SPECIFIC suggested (<min 1/alpha>, <max 1/alpha>).
+
+# The response MUST follow this exact format:
+
+# Status: <one of the listed statuses>
+# Suggested range: (<min 1/alpha>, <max 1/alpha>) (or "N/A" if SUCCESS)
+# Notes: <1-3 sentences explaining your reasoning>"""
 PROMPT_DRAG = """Evaluate the image <image> and determine the experiment status.
 
+Red curve: fitted to green curve
+Orange curve: fitted to blue curve
+CRITICAL: The fit does NOT need to perfectly match every noise peak or oscillation.
+
 DECISION CRITERIA
-- SUCCESS: Zero-crossing clearly observable in sweep window
-- NO_SIGNAL: Flat or random, no crossing pattern
-- OPTIMAL_NOT_CENTERED: Crossing exists but in first/last quarter or outside range
+- SUCCESS: The fitted curves(Red and Orange curves) captures the correct crossing trend near x=0
+- NO_SIGNAL: The fitted curves(Red and Orange curves)  do not captures any crossing
+- OPTIMAL_NOT_CENTERED: The fitted curves(Red and Orange curves)  captures the crossing trend not near x=0
 
 When the status is not SUCCESS, provide a SPECIFIC suggested (<min 1/alpha>, <max 1/alpha>).
 

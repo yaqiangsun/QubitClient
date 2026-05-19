@@ -381,107 +381,142 @@ Status: <one of the listed statuses>
 Suggested range: (<min frequency>, <max frequency>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_RABICOS = """Evaluate the image <image> and determine the experiment status.
+PROMPT_RABICOS = """Evaluate the image <image> and determine the first peak detection status.
+
+VISUAL INDICATOR:
+- Red vertical dashed line = first peak detected at that X position (π/2 pulse amplitude)
+- No red dashed line = no first peak detected
 
 DECISION CRITERIA
-- SUCCESS: Clear Rabi oscillation pattern with good contrast, fit tracks data
-- NO_SIGNAL: Flat or random response, no oscillation visible
-- FIT_POOR: Oscillations visible but fit deviates significantly
-- AMPLITUDE_TOO_LOW: Drive power insufficient, few or no oscillations visible
-- AMPLITUDE_TOO_HIGH: Drive power too high, oscillations compressed or distorted
+- SUCCESS: A red vertical dashed line EXISTS, and it accurately aligns with the first peak of the waveform. First peak is correctly identified.
+- NO_FIRST_PEAK: No red dashed line present, and the waveform does NOT show a clear first peak (flat, monotonic, or only noise).
+- MISSED_DETECTION: No red dashed line present, but the waveform DOES have a clear first peak — algorithm failed to detect.
+- POOR_OSCILLATION: A red dashed line exists but the overall oscillation pattern is weak, noisy, or distorted (low confidence).
+- INSUFFICIENT_DATA: Waveform too short or amplitude range insufficient to capture the first peak.
 
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.].
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.] for drive amplitude scan range.
 
 The response MUST follow this exact format:
 
-Status: <one of the listed statuses>
+Status: <SUCCESS | NO_FIRST_PEAK | MISSED_DETECTION | POOR_OSCILLATION | INSUFFICIENT_DATA>
 Suggested range: (<min power>, <max power>) [a.u.] (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>"""
+Notes: <1-3 sentences explaining your reasoning, including the first peak X position if found>"""
 
-PROMPT_RAMSEY = """Evaluate the image <image> and determine the experiment status.
+PROMPT_RAMSEY = """Evaluate the image <image> and determine the experiment status based on the fit quality.
+
+CRITICAL CONSISTENCY RULE:
+- If the fit does NOT accurately track the data (systematic deviations, early-time misfit), status MUST be FIT_POOR, not SUCCESS.
+- Only when the fit is accurate across the ENTIRE range should status be SUCCESS.
 
 DECISION CRITERIA
-- SUCCESS: Clear Ramsey oscillation pattern with good contrast and decay, fit tracks data
-- NO_SIGNAL: Flat response, no oscillations visible
-- NO_DETUNING: Signal is flat — drive frequency matches qubit frequency exactly
-- DETUNED: Oscillations visible but detuning causes poor fit quality
-- FIT_POOR: Oscillations visible but fit deviates significantly
+- SUCCESS: The fitted curve accurately tracks the raw data points across the entire time range. No systematic deviations. Parameters are reliable.
+- NO_SIGNAL: No oscillation visible in data (flat or random response).
+- FIT_POOR: Oscillations are visible in raw data, BUT the fitted curve shows significant deviation (e.g., early-time misfit, phase shift, wrong frequency).
+- LOW_CONTRAST: Oscillations visible but amplitude is very small (low signal-to-noise).
 
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min delay>, <max delay>) [us] or drive frequency adjustment.
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min time>, <max time>) [ns] or (<min detuning>, <max detuning>) [Hz] as appropriate.
 
 The response MUST follow this exact format:
 
-Status: <one of the listed statuses>
-Suggested range: (<min delay>, <max delay>) [us] or "N/A" (or "N/A" if SUCCESS)
+Status: <SUCCESS | NO_SIGNAL | FIT_POOR | LOW_CONTRAST>
+Suggested range: (<min>, <max>) [unit] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
+
+
 
 PROMPT_S21VFLUX = """Evaluate the image <image> and determine the experiment status.
 
 CRITICAL FIRST STEP - VISUAL INSPECTION:
-Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap.
-- If NO red curve exists → status cannot be SUCCESS. Use NO_SIGNAL or POOR_CONTRAST.
+Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap.Do NOT claim a red curve exists unless you actually see it in the image.
+- If NO red curve exists → status is NO_FIT.
 
 DECISION CRITERIA
 - SUCCESS: A RED fitted curve EXISTS in the image AND it accurately tracks a coherent, continuous feature in the data.
-- NO_SIGNAL: NO RED fitted curve present AND no discernible resonance feature in the raw data.
+- NO_FIT: NO RED fitted curve present AND no discernible resonance feature in the raw data.
 - POOR_CONTRAST: NO RED fitted curve present, but raw data shows some resonance features (too weak or not fitted).
 - NO_FLUX_DEPENDENCE: A RED fitted curve EXISTS but the tracked feature shows no frequency change with bias flux.
 
-IMPORTANT: Do NOT claim a red curve exists unless you actually see it in the image.
+The response MUST follow this exact format:
 
-... rest of format ..."""
+Status: <SUCCESS | NO_FIT | POOR_CONTRAST | NO_FLUX_DEPENDENCE>
+Notes: <1-3 sentences explaining your reasoning>"""
 
 PROMPT_POWERSHIFT = """Evaluate the image <image> and determine the experiment status.
 
+CRITICAL: Base your assessment ONLY on what you can SEE. Do not invent or guess.
+
+FIRST, describe what you observe:
+- Total number of rows (power levels) with visible dip points: <approx count>
+- Number of continuous segments: <count>
+- Segment types (straight/bent): <describe>
+- Any vertical jumps: <yes/no>
+- Any gaps (>3 consecutive rows missing dip): <yes/no>
+
 DECISION CRITERIA
-- SUCCESS: Clear dip trajectory exists. Trajectory may be straight, bent, straight→bent→straight, OR include vertical jumps (mode hops). As long as the path is coherent and dip points exist in most rows, status is SUCCESS.
-- NO_SIGNAL: No discernible dip in any row — flat or monotonic gradient, no localized minimum.
-- NO_POWER_SHIFT: Dip trajectory exists but frequency remains constant across power (vertical line in heatmap, no horizontal movement) — negligible Kerr effect or weak coupling.
-- NO_DIP_TRACKING: Dip exists in some rows BUT has large gaps (missing dip points across multiple rows) due to noise or signal loss, preventing coherent tracking. A single vertical jump does NOT count as NO_DIP_TRACKING.
+- SUCCESS: Dip trajectory is coherent and trackable across most rows. May be straight, bent, segmented, or include vertical jumps.
+- NO_SIGNAL: No dip visible in any row.
+- NO_POWER_SHIFT: Dip exists but frequency constant (vertical line).
+- NO_DIP_TRACKING: Large gaps (>3 rows) with no dip points.
 
-IMPORTANT:
-- Vertical jump (same power, different frequency between adjacent rows) = VALID feature, status SUCCESS.
-- Missing dip points in a row = if isolated (1-2 rows), still SUCCESS. If large continuous gap (>3 rows), then NO_DIP_TRACKING.
-
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min power>, <max power>) [a.u.] and (<min frequency>, <max frequency>) [GHz] if a reasonable guess can be made from the data. If no reasonable guess is possible (e.g., NO_SIGNAL), use "N/A" for both ranges.
+When status is not SUCCESS, provide suggested scan range ONLY if you can identify a region where the dip is visible but the scan didn't cover it fully. Otherwise use "N/A".
 
 The response MUST follow this exact format:
 
-Status: <one of the listed statuses>
-Suggested range: Power: (<min power>, <max power>) [a.u.], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS or no guess possible)
-Notes: <1-3 sentences explaining your reasoning>"""
+Status: <SUCCESS | NO_SIGNAL | NO_POWER_SHIFT | NO_DIP_TRACKING>
+Observed: <brief factual description of what the trajectory actually looks like>
+Suggested range: Power: (<min>, <max>) [a.u.], Freq: (<min>, <max>) [GHz] (or "N/A")
+Notes: <1-2 sentences explaining the status decision>"""
+
 
 PROMPT_SPECTRUM_2D = """Evaluate the image <image> and determine the experiment status.
 
-DECISION CRITERIA
-- SUCCESS: Clear spectral features (peaks/dips) that shift with Z amplitude, forming a visible dispersion curve f_q = f(V_Z)
-- NO_SIGNAL: No clear spectral features, flat response in frequency-Z space
-- POOR_CALIBRATION: Spectral features visible but don't form a clean, monotonic calibration curve
-- LIMITED_RANGE: Z amplitude range insufficient to capture full frequency tuning range
+CRITICAL FIRST STEP - VISUAL INSPECTION:
+Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap.
+- If NO red curve exists → status cannot be SUCCESS. Use NO_SIGNAL or POOR_CALIBRATION based on raw data quality.
 
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min Z amplitude>, <max Z amplitude>) [V] and (<min frequency>, <max frequency>) [GHz].
+VISUAL INDICATOR: The fitted curve (when present) is plotted in RED color.
+
+DECISION CRITERIA
+- SUCCESS: A RED fitted curve EXISTS in the image AND it accurately tracks the cos_dark feature (the low-intensity dark band that shifts with Z amplitude, forming a dispersion curve).
+- NO_FIT: No RED fitted curve present AND no discernible spectral features in the raw data (flat response).
+- POOR_CALIBRATION: No RED fitted curve present, but raw data shows some spectral features that are weak, noisy, or do not form a clean monotonic curve.
+- LIMITED_RANGE: A RED fitted curve EXISTS but the Z amplitude range is insufficient to capture the full frequency tuning range (the curve extends to the edge of the plot).
+
+IMPORTANT:
+- The cos_dark feature is typically low-intensity. Do NOT downgrade to POOR_CALIBRATION just because the tracked feature is not bright.
+- Do NOT claim a red curve exists unless you actually see it in the image.
+- If a red curve exists but is misaligned with the visible dark band, status should be POOR_CALIBRATION (not SUCCESS).
+
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min Z amplitude>, <max Z amplitude>) [V] and (<min frequency>, <max frequency>) [GHz]. If no guess is possible, use "N/A".
 
 The response MUST follow this exact format:
 
-Status: <one of the listed statuses>
+Status: <SUCCESS | NO_FIT | POOR_CALIBRATION | LIMITED_RANGE>
 Suggested range: Z: (<min Z>, <max Z>) [V], Freq: (<min freq>, <max freq>) [GHz] (or "N/A" if SUCCESS)
 Notes: <1-3 sentences explaining your reasoning>"""
 
-PROMPT_OPTPIPULSE = """Evaluate the image <image> and determine the experiment status.
+PROMPT_OPTPIPULSE = """Evaluate the image <image> and determine the common peak detection status.
+
+VISUAL INDICATOR:
+- Red vertical dashed line = common peak detected at that X position
+- No red dashed line = no common peak detected
 
 DECISION CRITERIA
-- SUCCESS: Clear checkerboard pattern with high contrast between odd/even N, indicating proper π-pulse calibration
-- NO_CONTRAST: Flat response, no clear binary oscillation with N parity
-- POOR_CALIBRATION: Contrast visible but not optimal, amplitude offset from ideal π-pulse value
-- LIMITED_N_RANGE: N range insufficient to establish clear parity oscillation
+- SUCCESS: A red vertical dashed line EXISTS, and it accurately passes through the peaks of ALL visible waveforms. Common peak is correctly identified.
+- NO_COMMON_PEAK: A red dashed line exists BUT it does NOT align with the peaks of all waveforms (algorithm error), OR waveforms have peaks but they don't converge (no true common peak).
+- MISSED_DETECTION: No red dashed line present, but waveforms DO have clear peaks that appear to align — algorithm failed to detect.
+- NO_PEAK: Waveforms present but NONE has a clear peak (all flat or monotonic).
+- INSUFFICIENT_DATA: Only one waveform present (need multiple for common peak detection).
 
-When the status is not SUCCESS, provide a SPECIFIC suggested (<min amplitude>, <max amplitude>) [relative units] and (<min N>, <max N>) [count].
+When the status is not SUCCESS, provide a SPECIFIC suggested (<min amplitude>, <max amplitude>) [relative units] for drive amplitude scan range.
 
 The response MUST follow this exact format:
 
-Status: <one of the listed statuses>
-Suggested range: Amp: (<min amp>, <max amp>) [rel], N: (<min N>, <max N>) [count] (or "N/A" if SUCCESS)
-Notes: <1-3 sentences explaining your reasoning>"""
+Status: <SUCCESS | NO_COMMON_PEAK | MISSED_DETECTION | NO_PEAK | INSUFFICIENT_DATA>
+Suggested range: Amp: (<min amp>, <max amp>) [rel] (or "N/A" if SUCCESS)
+Notes: <1-3 sentences explaining your reasoning, including the common peak X position if found>"""
+
+
 
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY

@@ -61,15 +61,64 @@ T1_FLUCTUATIONS = """This is a T1 stability measurement: T1 relaxation time is t
 TWEEZER_ARRAY = """This is a camera image of an optical tweezer array used to trap neutral atoms in a regular grid. A successful image shows sharp, uniform, well-separated spots indicating proper aberration correction."""
 
 # ========== Not in QCalEval ==========
-S21 = """This is an S21 cavity frequency search experiment: we sweep probe frequency and measure the complex transmission coefficient S21 from input port to output port to characterize a superconducting resonator. The primary goal is to precisely determine the resonator's resonance frequency (f_r). A successful result shows a clear dip in S21 amplitude at the cavity frequency, accompanied by a sharp phase jump near resonance. The data should be well-fitted to extract f_r."""
+S21 = """This is an S21 cavity frequency search experiment: we sweep probe frequency and measure the complex transmission coefficient S21 from input port to output port to characterize a superconducting resonator. The primary goal is to precisely determine the resonator's resonance frequency (f_r). A successful result shows a clear dip in S21 amplitude at the cavity frequency, accompanied by a sharp phase jump near resonance. The data should be extract f_r."""
 
-SPECTRUM_2D = """This is a single-qubit spectroscopy experiment with Z-control amplitude scan: we sweep both microwave drive frequency and Z pulse amplitude (V_Z) to map the qubit frequency response. This is a 2D spectrum with X-axis showing drive frequency and Y-axis showing Z pulse amplitude. The primary goal is to establish the calibration curve f_q = f(V_Z) relating Z control voltage to qubit frequency. A successful result shows clear spectral features (resonance peaks or dips) that shift with Z pulse amplitude, forming a characteristic dispersion curve. The data enables precise qubit frequency tuning via Z control."""
+SPECTRUM_2D = """This is a single-qubit spectroscopy experiment with Z-control amplitude scan: we sweep both microwave drive frequency and Z pulse amplitude (V_Z) to map the qubit frequency response. This is a 2D spectrum with X-axis showing drive frequency and Y-axis showing Z pulse amplitude.
 
-OPTPIPULSE = """This is an Opt_pi pulse calibration experiment (repeated Rabi): we sweep drive amplitude and pulse repetition count (N) to precisely calibrate the π-pulse amplitude. The sequence applies N cycles of "double-R gate + delay", where each double-R gate is equivalent to a 2θ rotation. When θ equals π/2 (i.e., one R gate is π/2), the total rotation is Nπ, and the excited state population oscillates with N parity (odd N = high, even N = low). A successful result shows a clear checkerboard pattern in the 2D map (amplitude vs N), indicating proper π-pulse calibration. The optimal amplitude maximizes the contrast of this binary oscillation."""
+The 2D heatmap contains resonance-like features (peaks or dips) that shift with Z amplitude. The primary feature type is:
+- cos_dark: low-intensity cosine-shaped curve (the qubit frequency vs Z voltage)
 
-RABICOS = """This is a Power Rabi experiment (RabiCOS): we sweep drive pulse amplitude to observe Rabi oscillations. Two identical R gates (each with rotation angle θ ∝ amplitude) are applied consecutively, giving total rotation 2θ. As amplitude increases, the excited state population follows P_e = sin²(θ). A successful result shows clear sinusoidal oscillations with the first peak corresponding to π/2 pulse and first valley to π pulse. This is used to calibrate the drive amplitude for quantum gates."""
+The fitting algorithm identifies and fits the cos_dark feature in the data. 
 
-RAMSEY = """This is a Ramsey experiment for precise qubit frequency calibration: two π/2 pulses are separated by a variable delay, during which the qubit evolves freely. The second pulse's phase encodes the detuning, creating interference oscillations. A successful result shows cosine oscillations at the detuning frequency, allowing extraction of the precise frequency offset with kHz-level resolution. This is typically performed after coarse frequency calibration via spectroscopy."""
+VISUAL INDICATOR: The fitted curve is plotted in RED color on top of the heatmap.
+
+A successful result shows clear spectral features that shift with Z pulse amplitude, forming a characteristic dispersion curve f_q = f(V_Z). The data enables precise qubit frequency tuning via Z control."""
+
+OPTPIPULSE = """This is an Opt_pi pulse calibration experiment (repeated Rabi) for multi-qubit common peak detection.
+
+The plot displays MULTIPLE raw waveforms (curves) — each curve represents a different qubit or measurement channel. The X-axis is drive amplitude, Y-axis is signal intensity.
+
+PEAK DETECTION TASK (NOT curve fitting):
+- The algorithm detects the peak position (maximum or minimum) of EACH raw waveform
+- It then identifies a COMMON peak position where all waveforms peak simultaneously
+- When a common peak is detected, a RED VERTICAL DASHED LINE is drawn at that X position on the plot
+
+VISUAL INDICATOR: 
+- Red vertical dashed line = detected common peak position
+- No red dashed line = no common peak detected
+
+The experimental goal is to extract:
+1. Peak position for each qubit/waveform
+2. Common peak position across all waveforms
+3. Confidence level (0-100%) based on peak sharpness and alignment consistency"""
+
+RABICOS = """This is a Power Rabi experiment (RabiCOS): we sweep drive pulse amplitude to observe Rabi oscillations. Two identical R gates (each with rotation angle θ ∝ amplitude) are applied consecutively, giving total rotation 2θ. As amplitude increases, the excited state population follows P_e = sin²(θ).
+
+PEAK DETECTION TASK (NOT curve fitting):
+- The algorithm detects the FIRST PEAK position (maximum) in the Rabi oscillation waveform
+- The first peak corresponds to the π/2 pulse calibration point
+- When the first peak is detected, a RED VERTICAL DASHED LINE is drawn at that X position on the plot
+
+VISUAL INDICATOR: 
+- Red vertical dashed line = detected first peak position (π/2 pulse amplitude)
+- No red dashed line = no first peak detected
+
+The experimental goal is to extract:
+1. First peak position (π/2 pulse amplitude)
+2. Confidence level (0-100%) based on peak sharpness and signal-to-noise ratio
+
+A successful result shows a clear Rabi oscillation pattern with a well-defined first peak."""
+
+RAMSEY = """This is a Ramsey experiment: we sweep the time delay between two π/2 pulses to measure qubit coherence (T2*). The data shows the excited state population P(|1>) vs time delay, exhibiting sinusoidal oscillations due to detuning between qubit and drive frequency.
+
+FITTING TASK: A sinusoidal decay model is fit to the data to extract:
+- Detuning (oscillation frequency)
+- T2* (decay time constant)
+- Contrast (oscillation amplitude)
+
+VISUAL INDICATOR: The fitted curve is plotted on top of the raw data points.
+
+The experimental goal is to extract reliable coherence parameters from a high-quality fit."""
 
 S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response.
 
@@ -87,32 +136,15 @@ A successful fit means the algorithm has accurately tracked a continuous, cohere
 
 POWERSHIFT = """This is a Power Shift experiment: we sweep both probe frequency and readout power, and track the position of the resonance dip (darkest point) row by row in the 2D power-frequency heatmap to characterize the cavity's frequency response.
 
-The dip trajectory is constructed by clustering dip positions row by row. The trajectory may consist of ONE or MULTIPLE line segments. Each segment has:
-- START point: (power_start, freq_start) where the segment begins
-- END point: (power_end, freq_end) where the segment ends
-- SLOPE: (freq_end - freq_start) / (power_end - power_start)
-
-Segment types:
-- STRAIGHT segment: constant slope
-- BENT segment: continuously changing slope (non-linear region)
-
-The trajectory may appear in the following forms:
-- No valid trajectory: no dip detected in any row
-- Single straight segment: one straight line only
-- Two segments: straight → bent, OR bent → straight, OR straight → straight (different slopes, discontinuous jump at boundary)
-- Three segments: straight → bent → straight
-
-IMPORTANT RULES for segment boundaries:
-1. A segment boundary (start/end of a bend) is where the slope STARTS to change or FINISHES changing
-2. A vertical discontinuity (same power, different frequency) is a SEGMENT BOUNDARY but NOT a "bend" — it indicates a mode jump
-3. The "turning point" (bend start) is the START point of a bent segment
-4. The "turn end point" (bend end) is the END point of a bent segment
+The dip trajectory is constructed by clustering dip positions row by row. The trajectory may consist of ONE or MULTIPLE line segments.
 
 The experimental goal is to extract:
-- All segment start and end points (power, frequency)
-- Segment slopes (linear regime boundaries, Kerr coefficient approximation)
+- All segment start and end points (power, frequency) from the actual image
+- Segment slopes
 - Bend start and end points (transition power range)
 - Mode jump locations (if any)
+
+When reporting, ONLY describe what is actually visible in the image. Do not invent shapes or coordinates.
 """
 SINGLESHOT = GMM
 SPECTRUM = QUBIT_SPECTROSCOPY

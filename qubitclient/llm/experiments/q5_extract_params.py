@@ -192,9 +192,18 @@ Report in JSON format:
 
 PROMPT_POWERSHIFT = """Extract the following parameters from this Power Shift plot <image>.
 
-Report in JSON format:
-{"low_power_freq_GHz": float | null, "power_shift_MHz": float | null, "kerr_coefficient_kHz": float | null, "linearity": "good" | "moderate" | "poor" | "none"}"""
+STEP 1: Look at the heatmap. Is there a visible dark/light streak (resonance dip) that changes position with power?
+- YES: Continue to STEP 2
+- NO: Output EXACTLY: {"valid": false, "low_power_freq_GHz": null, "power_shift_MHz": null, "kerr_coefficient_kHz": null, "linearity": null}
 
+STEP 2: From the visible dip trajectory, extract:
+Output EXACTLY: {"valid": true, "low_power_freq_GHz": <float>, "power_shift_MHz": <float>, "kerr_coefficient_kHz": <float>, "linearity": "good"|"moderate"|"poor"}
+
+CRITICAL RULES:
+- DO NOT output any default values
+- If you cannot clearly see the dip, output valid=false with all nulls
+- DO NOT guess
+"""
 PROMPT_SPECTRUM_2D = """Extract the following parameters from this 2D qubit spectroscopy plot <image>.
 
 Report in JSON format:

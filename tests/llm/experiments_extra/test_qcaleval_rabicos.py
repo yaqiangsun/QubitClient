@@ -29,15 +29,22 @@ from qubitclient.llm.task import LLMTaskName
 
 # RABICOS 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "rabicos",
+    "id": "RABICOS_success",
+    "experiment_type": "RABICOS_success",
+    "experiment_family": "RABICOS",
+    "image_filename": "rabicos_1320.png",
+    "q1_answer": {"plot_type": "line"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
     "q5_answer": {
-        "rabi_rate_MHz": 10.0,
-        "pi_amp": 0.5,
-        "pi_half_amp": 0.25,
-        "oscillation_quality": "good"
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "FIT_POOR", "AMPLITUDE_TOO_LOW", "AMPLITUDE_TOO_HIGH"],
+    'rabi_rate_MHz': 3.33, 'pi_amp': 0.3, 'pi_half_amp': 0.15, 'oscillation_quality': 'good'
+},
+    "q6_expected_status": "SUCCESS",
 }
+
+
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_rabicos_q1_describe():
@@ -46,7 +53,7 @@ def test_rabicos_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RABICOS
         )
         result = llm.chat(**prompt_data)
@@ -62,7 +69,7 @@ def test_rabicos_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RABICOS
         )
         result = llm.chat(**prompt_data)
@@ -79,7 +86,7 @@ def test_rabicos_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RABICOS
         )
         result = llm.chat(**prompt_data)
@@ -96,7 +103,7 @@ def test_rabicos_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RABICOS
         )
         result = llm.chat(**prompt_data)
@@ -113,7 +120,7 @@ def test_rabicos_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RABICOS
         )
         result = llm.chat(**prompt_data)
@@ -130,7 +137,7 @@ def test_rabicos_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RABICOS
         )
         result = llm.chat(**prompt_data)
@@ -144,7 +151,7 @@ def test_rabicos_q6_status():
 if __name__ == "__main__":
     test_rabicos_q1_describe()
     test_rabicos_q2_classify()
-    test_rabicos_q3_reasoning()
+    # test_rabicos_q3_reasoning()
     test_rabicos_q4_assess()
     test_rabicos_q5_extract()
     test_rabicos_q6_status()

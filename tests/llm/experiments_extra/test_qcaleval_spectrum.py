@@ -29,14 +29,35 @@ from qubitclient.llm.task import LLMTaskName
 
 # SPECTRUM 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "spectrum",
+    "id": "SPECTRUM_failure_MULTIPLE_PEAKS",
+    "experiment_type": "SPECTRUM_failure_MULTIPLE_PEAKS",
+    "experiment_family": "SPECTRUM",
+    "image_filename": "spectrum_988.png",
+    "q1_answer": {"plot_type": "line"},
+    "q2_answer": "Suboptimal parameters",
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "num_resonances": 1,
-        "resonance_freq_GHz": 5.0,
-        "resonance_type": "peak"
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "MULTIPLE_PEAKS"],
+    'num_resonances': 3, 'resonance_freq_GHz': 4.75, 'resonance_type': 'peak'
+},
+    "q6_expected_status": "MULTIPLE_PEAKS",
 }
+
+TEST_SAMPLE2 = {
+    "id": "SPECTRUM_failure_MULTIPLE_PEAKS",
+    "experiment_type": "SPECTRUM_failure_MULTIPLE_PEAKS",
+    "experiment_family": "SPECTRUM",
+    "image_filename": "spectrum_3645.png",
+    "q1_answer": {"plot_type": "line"},
+    "q2_answer": "Suboptimal parameters",
+    "q4_answer": "Unreliable",
+    "q5_answer": {
+    'num_resonances': 3, 'resonance_freq_GHz': 4.42, 'resonance_type': 'peak'
+},
+    "q6_expected_status": "MULTIPLE_PEAKS",
+}
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
+
 
 
 def test_spectrum_q1_describe():
@@ -45,7 +66,7 @@ def test_spectrum_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM
         )
         result = llm.chat(**prompt_data)
@@ -61,7 +82,7 @@ def test_spectrum_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM
         )
         result = llm.chat(**prompt_data)
@@ -78,7 +99,7 @@ def test_spectrum_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM
         )
         result = llm.chat(**prompt_data)
@@ -95,7 +116,7 @@ def test_spectrum_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM
         )
         result = llm.chat(**prompt_data)
@@ -112,7 +133,7 @@ def test_spectrum_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM
         )
         result = llm.chat(**prompt_data)
@@ -129,7 +150,7 @@ def test_spectrum_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM
         )
         result = llm.chat(**prompt_data)
@@ -143,7 +164,7 @@ def test_spectrum_q6_status():
 if __name__ == "__main__":
     test_spectrum_q1_describe()
     test_spectrum_q2_classify()
-    test_spectrum_q3_reasoning()
+    # test_spectrum_q3_reasoning()
     test_spectrum_q4_assess()
     test_spectrum_q5_extract()
     test_spectrum_q6_status()

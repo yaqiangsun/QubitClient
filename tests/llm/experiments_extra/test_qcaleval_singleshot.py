@@ -29,14 +29,46 @@ from qubitclient.llm.task import LLMTaskName
 
 # SINGLESHOT 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "singleshot",
+    "id": "SINGLESHOT_failure_NO_EXCITATION",
+    "experiment_type": "SINGLESHOT_failure_NO_EXCITATION",
+    "experiment_family": "SINGLESHOT",
+    "image_filename": "singleshot_1309.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Suboptimal parameters",
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "separation": "well-separated",
-        "cluster0_center": [0, 0],
-        "cluster1_center": [5, 5]
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "NO_EXCITATION", "HIGH_POWER", "NO_RES_RESPONSE"],
+    'separation': 'overlapping', 'cluster0_center': [0.0, 0.0], 'cluster1_center': [0.5, 0.5]
+},
+    "q6_expected_status": "NO_EXCITATION",
 }
+TEST_SAMPLE3 = {
+    "id": "SINGLESHOT_failure_NO_EXCITATION",
+    "experiment_type": "SINGLESHOT_failure_NO_EXCITATION",
+    "experiment_family": "SINGLESHOT",
+    "image_filename": "singleshot_1653.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Suboptimal parameters",
+    "q4_answer": "Unreliable",
+    "q5_answer": {
+    'separation': 'overlapping', 'cluster0_center': [0.5, 0.5], 'cluster1_center': [0.0, 0.0]
+},
+    "q6_expected_status": "NO_EXCITATION",
+}
+TEST_SAMPLE2 = {
+    "id": "SINGLESHOT_failure_NO_EXCITATION",
+    "experiment_type": "SINGLESHOT_failure_NO_EXCITATION",
+    "experiment_family": "SINGLESHOT",
+    "image_filename": "singleshot_6177.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Suboptimal parameters",
+    "q4_answer": "Unreliable",
+    "q5_answer": {
+    'separation': 'overlapping', 'cluster0_center': [-0.058, 0.071], 'cluster1_center': [0.054, -0.066]
+},
+    "q6_expected_status": "NO_EXCITATION",
+}
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_singleshot_q1_describe():
@@ -45,7 +77,7 @@ def test_singleshot_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SINGLESHOT
         )
         result = llm.chat(**prompt_data)
@@ -61,7 +93,7 @@ def test_singleshot_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SINGLESHOT
         )
         result = llm.chat(**prompt_data)
@@ -78,7 +110,7 @@ def test_singleshot_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SINGLESHOT
         )
         result = llm.chat(**prompt_data)
@@ -95,7 +127,7 @@ def test_singleshot_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SINGLESHOT
         )
         result = llm.chat(**prompt_data)
@@ -112,7 +144,7 @@ def test_singleshot_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SINGLESHOT
         )
         result = llm.chat(**prompt_data)
@@ -129,7 +161,7 @@ def test_singleshot_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SINGLESHOT
         )
         result = llm.chat(**prompt_data)
@@ -143,7 +175,7 @@ def test_singleshot_q6_status():
 if __name__ == "__main__":
     test_singleshot_q1_describe()
     test_singleshot_q2_classify()
-    test_singleshot_q3_reasoning()
+    # test_singleshot_q3_reasoning()
     test_singleshot_q4_assess()
     test_singleshot_q5_extract()
     test_singleshot_q6_status()

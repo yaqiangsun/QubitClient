@@ -29,15 +29,22 @@ from qubitclient.llm.task import LLMTaskName
 
 # OPTPIPULSE 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "optpipulse",
+    "id": "OPTPIPULSE_success",
+    "experiment_type": "OPTPIPULSE_success",
+    "experiment_family": "OPTPIPULSE",
+    "image_filename": "optpipulse_4749.png",
+    "q1_answer": {"plot_type": "line"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
     "q5_answer": {
-        "pi_amp_relative": 0.5,
-        "contrast": 0.95,
-        "checkerboard_quality": "good",
-        "n_range": 20
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_CONTRAST", "POOR_CALIBRATION", "LIMITED_N_RANGE"],
+    'pi_amp_relative': 0.36, 'contrast': 0.95, 'checkerboard_quality': 'good', 'n_range': 4
+},
+    "q6_expected_status": "SUCCESS",
 }
+
+
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_optpipulse_q1_describe():
@@ -46,7 +53,7 @@ def test_optpipulse_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.OPTPIPULSE
         )
         result = llm.chat(**prompt_data)
@@ -62,7 +69,7 @@ def test_optpipulse_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.OPTPIPULSE
         )
         result = llm.chat(**prompt_data)
@@ -79,7 +86,7 @@ def test_optpipulse_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.OPTPIPULSE
         )
         result = llm.chat(**prompt_data)
@@ -96,7 +103,7 @@ def test_optpipulse_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.OPTPIPULSE
         )
         result = llm.chat(**prompt_data)
@@ -113,7 +120,7 @@ def test_optpipulse_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.OPTPIPULSE
         )
         result = llm.chat(**prompt_data)
@@ -130,7 +137,7 @@ def test_optpipulse_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.OPTPIPULSE
         )
         result = llm.chat(**prompt_data)

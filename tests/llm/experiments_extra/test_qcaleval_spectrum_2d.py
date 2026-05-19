@@ -29,15 +29,34 @@ from qubitclient.llm.task import LLMTaskName
 
 # SPECTRUM_2D 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "spectrum_2d",
+    "id": "SPECTRUM_2D_failure_NO_FIT",
+    "experiment_type": "SPECTRUM_2D_failure_NO_FIT",
+    "experiment_family": "SPECTRUM_2D",
+    "image_filename": "spectrum2d_4905_Q2.png",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "No fit",
     "q5_answer": {
-        "idle_freq_GHz": 5.0,
-        "freq_range_GHz": 0.5,
-        "calibration_curve_quality": "good",
-        "z_tunability": "high"
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "POOR_CALIBRATION", "LIMITED_RANGE"],
+    'idle_freq_GHz': 4.191, 'freq_range_GHz': 0.382, 'calibration_curve_quality': 'good', 'z_tunability': 'high'
+},
+    "q6_expected_status": "NO_FIT",
 }
+
+TEST_SAMPLE2 = {
+    "id": "SPECTRUM_2D_success",
+    "experiment_type": "SPECTRUM_2D_success",
+    "experiment_family": "SPECTRUM_2D",
+    "image_filename": "spectrum2d_4905_Q1.png",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
+    "q5_answer": {
+    'idle_freq_GHz': 4.35, 'freq_range_GHz': 0.4, 'calibration_curve_quality': 'good', 'z_tunability': 'high'
+},
+    "q6_expected_status": "SUCCESS",
+}
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_spectrum_2d_q1_describe():
@@ -47,7 +66,7 @@ def test_spectrum_2d_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM_2D
         )
         result = llm.chat(**prompt_data)
@@ -63,7 +82,7 @@ def test_spectrum_2d_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM_2D
         )
         result = llm.chat(**prompt_data)
@@ -80,7 +99,7 @@ def test_spectrum_2d_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM_2D
         )
         result = llm.chat(**prompt_data)
@@ -97,7 +116,7 @@ def test_spectrum_2d_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM_2D
         )
         result = llm.chat(**prompt_data)
@@ -114,7 +133,7 @@ def test_spectrum_2d_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM_2D
         )
         result = llm.chat(**prompt_data)
@@ -131,7 +150,7 @@ def test_spectrum_2d_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.SPECTRUM_2D
         )
         result = llm.chat(**prompt_data)
@@ -145,7 +164,7 @@ def test_spectrum_2d_q6_status():
 if __name__ == "__main__":
     test_spectrum_2d_q1_describe()
     test_spectrum_2d_q2_classify()
-    test_spectrum_2d_q3_reasoning()
+    # test_spectrum_2d_q3_reasoning()
     test_spectrum_2d_q4_assess()
     test_spectrum_2d_q5_extract()
     test_spectrum_2d_q6_status()

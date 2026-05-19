@@ -29,17 +29,48 @@ from qubitclient.llm.task import LLMTaskName
 
 # S21VFLUX 测试数据
 TEST_SAMPLE = {
-    "image_filename": "s21vflux_6834.png",
-    "q1_answer": {"plot_type": "scatter"},
-    "q2_answer": "Apparatus issue",
-    "q4_answer": "Unreliable",
+    "id": "S21VFLUX_failure_NO_FIT",
+    "experiment_type": "S21VFLUX_failure_NO_FIT",
+    "experiment_family": "S21VFLUX",
+    "image_filename": "s21vflux_6844_Q2.png",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "No fit",
     "q5_answer": {
-        "optimal_alpha_inv": "Unreliable",
-        "intersection_clear": False
-    },
-    "q6_expected_status": "NO_SIGNAL",
+    'center_freq_GHz': 7.0905, 'freq_vs_bias_slope': 0.0, 'dispersion_shift_MHz': 0.0, 'resonance_quality': 'good'
+},
+    "q6_expected_status": "NO_FIT",
 }
 
+
+
+TEST_SAMPLE3 = {
+    "id": "S21VFLUX_success",
+    "experiment_type": "S21VFLUX_success",
+    "experiment_family": "S21VFLUX",
+    "image_filename": "s21vflux_6844_Q1.png",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
+    "q5_answer": {
+    'center_freq_GHz': 6.8384, 'freq_vs_bias_slope': 0.002, 'dispersion_shift_MHz': 1.33, 'resonance_quality': 'good'
+},
+    "q6_expected_status": "SUCCESS",
+}
+
+TEST_SAMPLE2 = {
+    "id": "S21VFLUX_success",
+    "experiment_type": "S21VFLUX_success",
+    "experiment_family": "S21VFLUX",
+    "image_filename": "s21vflux_6834.png",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
+    "q5_answer": {
+    'center_freq_GHz': 7.2579, 'freq_vs_bias_slope': 0.002, 'dispersion_shift_MHz': 1.4, 'resonance_quality': 'good'
+},
+    "q6_expected_status": "SUCCESS",
+}
 def get_image_path(filename: str) -> str:
     return os.path.join(DATASET_DIR, "images_extra", filename)
 

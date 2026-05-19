@@ -29,19 +29,34 @@ from qubitclient.llm.task import LLMTaskName
 
 # POWERSHIFT 测试数据
 TEST_SAMPLE = {
+    "id": "powershift_success",
+    "experiment_type": "powershift_success",
     "experiment_family": "powershift",
     "image_filename": "powershift_17.png",
-    "q1_answer": {"plot_type": "scatter"},
-    "q2_answer": "Apparatus issue",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "reliable",
+    "q5_answer": {
+    'valid': True, 'low_power_freq_GHz': -0.2761, 'power_shift_MHz': 104.84, 'kerr_coefficient_kHz': 128.5, 'linearity': 'good'
+},
+    "q6_expected_status": "SUCCESS",
+}
+TEST_SAMPLE2 = {
+    "id": "powershift_failure_no_signal",
+    "experiment_type": "powershift_failure_no_signal",
+    "experiment_family": "powershift",
+    "image_filename": "powershift_83.png",
+    "q1_answer": {"plot_type": "heatmap"},
+    "q2_answer": "Expected behavior",
     "q4_answer": "Unreliable",
     "q5_answer": {
-        "optimal_alpha_inv": "Unreliable",
-        "intersection_clear": False
-        },
-    "q6_expected_status": "NO_SIGNAL",
+    'valid': False, 'low_power_freq_GHz': None, 'power_shift_MHz': None, 'kerr_coefficient_kHz': None, 'linearity': 'poor'
+},
+    "q6_expected_status": "NO_POWER_SHIFT",
 }
+
 def get_image_path(filename: str) -> str:
-    return os.path.join(DATASET_DIR, "images_exta", filename)
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_powershift_q1_describe():
@@ -54,7 +69,7 @@ def test_powershift_q1_describe():
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:5000]}...")
+        print(f"  结果: {str(result)[:500]}...")
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
     print("  [OK]")
@@ -70,7 +85,8 @@ def test_powershift_q2_classify():
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:5000]}...")
+        print(f"  结果: {str(result)[:500]}...")
+        assert "Classification" in result
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
     print("  [OK]")
@@ -103,7 +119,7 @@ def test_powershift_q4_assess():
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:5000]}...")
+        print(f"  结果: {str(result)[:500]}...")
         assert "Assessment" in result
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
@@ -120,7 +136,7 @@ def test_powershift_q5_extract():
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:5000]}...")
+        print(f"  结果: {str(result)[:500]}...")
         assert result is not None
     except Exception as e:
         print(f"  (跳过实际调用: {e})")
@@ -137,7 +153,7 @@ def test_powershift_q6_status():
             experiment_family=ExperimentFamily.POWERSHIFT
         )
         result = llm.chat(**prompt_data)
-        print(f"  结果: {str(result)[:5000]}...")
+        print(f"  结果: {str(result)[:500]}...")
         assert "Status" in result
     except Exception as e:
         print(f"  (跳过实际调用: {e})")

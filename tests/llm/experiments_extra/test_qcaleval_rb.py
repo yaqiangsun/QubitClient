@@ -29,15 +29,47 @@ from qubitclient.llm.task import LLMTaskName
 
 # RB 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "rb",
+    "id": "RB_failure_FIT_POOR",
+    "experiment_type": "RB_failure_FIT_POOR",
+    "experiment_family": "RB",
+    "image_filename": "rb_16715.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": 'Anomalous behavior',
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "survival_probability_per_clifford": 0.999,
-        "average_gate_error_rate": 0.001,
-        "decay_constant": 0.996,
-        "fit_quality": "good"
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_DECAY", "LOW_FIDELITY", "FIT_POOR", "INSUFFICIENT_RANGE"],
+    'survival_probability_per_clifford': 0.99, 'average_gate_error_rate': 0.01, 'decay_constant': 0.002, 'fit_quality': 'poor'
+},
+    "q6_expected_status": "FIT_POOR",
 }
+TEST_SAMPLE3 = {
+    "id": "RB_failure_FIT_POOR",
+    "experiment_type": "RB_failure_FIT_POOR",
+    "experiment_family": "RB",
+    "image_filename": "rb_16702.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": 'Anomalous behavior',
+    "q4_answer": "Unreliable",
+    "q5_answer": {
+    'survival_probability_per_clifford': 0.988, 'average_gate_error_rate': 0.012, 'decay_constant': 0.4172, 'fit_quality': 'good'
+},
+    "q6_expected_status": "FIT_POOR",
+}
+TEST_SAMPLE2 = {
+    "id": "RB_failure_NO_DECAY",
+    "experiment_type": "RB_failure_NO_DECAY",
+    "experiment_family": "RB",
+    "image_filename": "rb_16712.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Apparatus issue",
+    "q4_answer": "Unreliable",
+    "q5_answer": {
+    'survival_probability_per_clifford': 0.9871, 'average_gate_error_rate': 0.0129, 'decay_constant': 0.013, 'fit_quality': 'good'
+},
+    "q6_expected_status": "NO_DECAY",
+}
+
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_rb_q1_describe():
@@ -46,7 +78,7 @@ def test_rb_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RB
         )
         result = llm.chat(**prompt_data)
@@ -62,7 +94,7 @@ def test_rb_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RB
         )
         result = llm.chat(**prompt_data)
@@ -79,7 +111,7 @@ def test_rb_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RB
         )
         result = llm.chat(**prompt_data)
@@ -96,7 +128,7 @@ def test_rb_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RB
         )
         result = llm.chat(**prompt_data)
@@ -113,7 +145,7 @@ def test_rb_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RB
         )
         result = llm.chat(**prompt_data)
@@ -130,7 +162,7 @@ def test_rb_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RB
         )
         result = llm.chat(**prompt_data)
@@ -144,7 +176,7 @@ def test_rb_q6_status():
 if __name__ == "__main__":
     test_rb_q1_describe()
     test_rb_q2_classify()
-    test_rb_q3_reasoning()
+    # test_rb_q3_reasoning()
     test_rb_q4_assess()
     test_rb_q5_extract()
     test_rb_q6_status()

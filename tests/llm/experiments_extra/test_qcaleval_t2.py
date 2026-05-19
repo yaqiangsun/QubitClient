@@ -29,14 +29,22 @@ from qubitclient.llm.task import LLMTaskName
 
 # T2 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "t2",
+    "id": "T2_failure_TOO_MANY_OSC",
+    "experiment_type": "T2_failure_TOO_MANY_OSC",
+    "experiment_family": "T2",
+    "image_filename": "t2fit_1607.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Suboptimal parameters",
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "T2_star_us": 50.0,
-        "detuning_MHz": 1.0,
-        "fringes_visible": 5
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_DETUNING", "BEATING", "TOO_MANY_OSC", "TOO_FEW_OSC", "WINDOW_TOO_SHORT", "SAMPLING_TOO_COARSE"],
+    'T2_star_us': 0.247, 'detuning_MHz': 46.379, 'fringes_visible': 9.5
+},
+    "q6_expected_status": "TOO_MANY_OSC",
 }
+
+
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
 
 
 def test_t2_q1_describe():
@@ -45,7 +53,7 @@ def test_t2_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.T2
         )
         result = llm.chat(**prompt_data)
@@ -61,7 +69,7 @@ def test_t2_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.T2
         )
         result = llm.chat(**prompt_data)
@@ -78,7 +86,7 @@ def test_t2_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.T2
         )
         result = llm.chat(**prompt_data)
@@ -95,7 +103,7 @@ def test_t2_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.T2
         )
         result = llm.chat(**prompt_data)
@@ -112,7 +120,7 @@ def test_t2_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.T2
         )
         result = llm.chat(**prompt_data)
@@ -129,7 +137,7 @@ def test_t2_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.T2
         )
         result = llm.chat(**prompt_data)
@@ -143,7 +151,7 @@ def test_t2_q6_status():
 if __name__ == "__main__":
     test_t2_q1_describe()
     test_t2_q2_classify()
-    test_t2_q3_reasoning()
+    # test_t2_q3_reasoning()
     test_t2_q4_assess()
     test_t2_q5_extract()
     test_t2_q6_status()

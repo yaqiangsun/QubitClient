@@ -29,15 +29,23 @@ from qubitclient.llm.task import LLMTaskName
 
 # RAMSEY 测试数据
 TEST_SAMPLE = {
-    "experiment_family": "ramsey",
+    "id": "RAMSEY_failure",
+    "experiment_type": "RAMSEY_failure",
+    "experiment_family": "RAMSEY",
+    "image_filename": "ramsey_1607.png",
+    "q1_answer": {"plot_type": "scatter"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Unreliable",
     "q5_answer": {
-        "detuning_Hz": 1000.0,
-        "t2_star_us": 50.0,
-        "contrast": 0.9,
-        "oscillation_quality": "good"
-    },
-    "q6_expected_statuses": ["SUCCESS", "NO_SIGNAL", "NO_DETUNING", "DETUNED", "FIT_POOR"],
+    'detuning_Hz': 46142276.903, 't2_star_us': 1.1, 'contrast': 0.678, 'oscillation_quality': 'good'
+},
+    "q6_expected_status": "FIT_POOR",
 }
+
+
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
+
 
 
 def test_ramsey_q1_describe():
@@ -46,7 +54,7 @@ def test_ramsey_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RAMSEY
         )
         result = llm.chat(**prompt_data)
@@ -62,7 +70,7 @@ def test_ramsey_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RAMSEY
         )
         result = llm.chat(**prompt_data)
@@ -79,7 +87,7 @@ def test_ramsey_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RAMSEY
         )
         result = llm.chat(**prompt_data)
@@ -96,7 +104,7 @@ def test_ramsey_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RAMSEY
         )
         result = llm.chat(**prompt_data)
@@ -113,7 +121,7 @@ def test_ramsey_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RAMSEY
         )
         result = llm.chat(**prompt_data)
@@ -130,7 +138,7 @@ def test_ramsey_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.RAMSEY
         )
         result = llm.chat(**prompt_data)
@@ -144,7 +152,7 @@ def test_ramsey_q6_status():
 if __name__ == "__main__":
     test_ramsey_q1_describe()
     test_ramsey_q2_classify()
-    test_ramsey_q3_reasoning()
+    # test_ramsey_q3_reasoning()
     test_ramsey_q4_assess()
     test_ramsey_q5_extract()
     test_ramsey_q6_status()

@@ -25,6 +25,37 @@ if project_root not in sys.path:
 
 from qubitclient.llm import QubitLLM, ExperimentFamily
 from qubitclient.llm.task import LLMTaskName
+# S21 测试数据
+TEST_SAMPLE = {
+    "id": "S21_success",
+    "experiment_type": "S21_success",
+    "experiment_family": "S21",
+    "image_filename": "s21peak_4894.png",
+    "q1_answer": {"plot_type": "line"},
+    "q2_answer": "Expected behavior",
+    "q4_answer": "Reliable",
+    "q5_answer": {
+    'resonance_freq_GHz': 6.958, 'contrast': 0.96, 'phase_slope_deg_GHz': 180.0
+},
+    "q6_expected_status": "SUCCESS",
+}
+
+TEST_SAMPLE2= {
+    "id": "S21_failure_LOW_CONTRAST",
+    "experiment_type": "S21_failure_LOW_CONTRAST",
+    "experiment_family": "S21",
+    "image_filename": "s21peak_2926.png",
+    "q1_answer": {"plot_type": "line"},
+    "q2_answer": "Anomalous behavior",
+    "q4_answer": "Unreliable",
+    "q5_answer": {
+    'resonance_freq_GHz': 'Unreliable', 'contrast': 'Unreliable', 'phase_slope_deg_GHz': 'Unreliable'
+},
+    "q6_expected_status": "LOW_CONTRAST",
+}
+def get_image_path(filename: str) -> str:
+    return os.path.join(DATASET_DIR, "images_extra", filename)
+
 
 
 def test_s21_q1_describe():
@@ -33,7 +64,7 @@ def test_s21_q1_describe():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21
         )
         result = llm.chat(**prompt_data)
@@ -49,7 +80,7 @@ def test_s21_q2_classify():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21
         )
         result = llm.chat(**prompt_data)
@@ -66,7 +97,7 @@ def test_s21_q3_reasoning():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21
         )
         result = llm.chat(**prompt_data)
@@ -83,7 +114,7 @@ def test_s21_q4_assess():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21
         )
         result = llm.chat(**prompt_data)
@@ -100,7 +131,7 @@ def test_s21_q5_extract():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21
         )
         result = llm.chat(**prompt_data)
@@ -117,7 +148,7 @@ def test_s21_q6_status():
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
-            image_data="dummy.png",
+            image_data=get_image_path(TEST_SAMPLE["image_filename"]),
             experiment_family=ExperimentFamily.S21
         )
         result = llm.chat(**prompt_data)
@@ -131,7 +162,7 @@ def test_s21_q6_status():
 if __name__ == "__main__":
     test_s21_q1_describe()
     test_s21_q2_classify()
-    test_s21_q3_reasoning()
+    # test_s21_q3_reasoning()
     test_s21_q4_assess()
     test_s21_q5_extract()
     test_s21_q6_status()

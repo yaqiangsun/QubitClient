@@ -138,7 +138,6 @@ def s21multi_convert(result):
 
 def s21vsflux_convert(result):
     data_formated = {"image": {}}
-    # print("result: ", result)
 
     for index, qubit_name in enumerate(result.keys()):
         qubit_name = qubit_name.strip()
@@ -216,7 +215,6 @@ def powershift_convert(result):
         data = result[qubit_name]
         if type(data)==list:
             data_arr = np.array(data)
-            # print("type(data_arr): ", type(data_arr))
             freq = data_arr[:, 0]
             volt = data_arr[:, 1]
             I_channel = data_arr[:, 4]  # Is | I
@@ -420,6 +418,78 @@ def spectrum_convert(result):
         else:
             data_formated["image"][qubit_name] = data
     return data_formated
+
+def spectrum2d_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data) == list:
+            data_arr = np.array(data)
+
+            freq = data_arr[:, 0]  # 时间/索引
+            zpa = data_arr[:, 1]
+            p1 = data_arr[:, 7]  # Is | I
+            I_channel = data_arr[:, 4]  # Is | I
+            Q_channel = data_arr[:, 5]  # Qs | I
+        elif data.dtype.names:
+            f0 = data['f0']
+            f1 = data['f1']
+            f2 = data['f2']
+            f3 = data['f3']
+            f4 = data['f4']
+            f5 = data['f5']
+            f6 = data['f6']
+            f7 = data['f7']
+            f8 = data['f8']
+
+            freq = data['f0']  # 时间/索引
+            zpa = data['f1']
+            p1 = data['f7']  # Is | I
+            I_channel = data['f4']  # Is | I
+            Q_channel = data['f5']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        amp = np.abs(p1)
+        # amp = s
+        unique_freq = np.unique(freq)  # 得到16个唯一频率值
+        unique_zpa = np.unique(zpa)  # 得到11个唯一电压值
+
+        n_freq = len(unique_freq)
+        n_zpa = len(unique_zpa)
+
+        first_n_volt_volt = zpa[:n_zpa]
+        is_row_major = len(np.unique(first_n_volt_volt)) == n_zpa
+
+        if is_row_major:
+            # 行优先：每个频率的所有电压连续存储
+            amp_2d = amp.reshape(n_freq, n_zpa)
+        else:
+            # 列优先：每个电压的所有频率连续存储
+            amp_2d = amp.reshape(n_zpa, n_freq).T
+
+        # 重塑 amp 为2D
+
+        # 验证：检查 amp_2d 是否与原始数据一致
+
+        data_formated["image"][qubit_name] = (amp_2d, unique_zpa, unique_freq)
+        # data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
+
+        assert len(unique_zpa) > 1, "DATA ERROR: volt length must be > 1"
+        assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
+    return data_formated
+
+def nnspectrum2d_convert(result):
+    data_formated = spectrum2d_convert(result)
+    return data_formated
+
+
 
 def rabicos_convert(result):
     data_formated = {"image": {}}

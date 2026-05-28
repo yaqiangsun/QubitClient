@@ -193,7 +193,7 @@ def s21vsflux_convert(result):
 
         # 验证：检查 amp_2d 是否与原始数据一致
 
-        data_formated["image"][qubit_name] = (unique_volt, unique_freq, amp_2d)
+        data_formated["image"][qubit_name] = (unique_freq,unique_volt, amp_2d.T)
         # data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
 
         assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
@@ -337,44 +337,7 @@ def t2fit_convert(result):
 
 
 def nnspectrum_convert(result):
-    data_formated = {"image": {}}
-
-    for index, qubit_name in enumerate(result.keys()):
-        qubit_name = qubit_name.strip()
-        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
-
-        data = result[qubit_name]
-        if type(data)==list:
-            data_arr = np.array(data)
-            time = data_arr[:, 0]
-
-            num = data_arr.shape[1]
-            for channel_idx in range(1, num):
-                channel_data = data_arr[:, channel_idx]
-
-                # 生成名字：qubit_1, qubit_2
-                new_qubit_name = f"{qubit_name}_{channel_idx}"
-
-                data_formated["image"][new_qubit_name] = (time, channel_data)
-            
-
-        elif data.dtype.names:
-            field_names = data.dtype.names
-            
-            # 时间轴 f0
-            time = data[field_names[0]]
-
-            for channel_idx in range(1, len(field_names)):
-                channel_field = field_names[channel_idx]
-                channel_data = data[channel_field]
-
-                # 生成名字：qubit_1, qubit_2
-                new_qubit_name = f"{qubit_name}_{channel_idx}"
-
-                data_formated["image"][new_qubit_name] = (time, channel_data)
-        else:
-            data_formated["image"][qubit_name] = data
-
+    data_formated = spectrum_convert(result)
     return data_formated
 
 
@@ -386,37 +349,30 @@ def spectrum_convert(result):
         assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
 
         data = result[qubit_name]
-
-        if type(data)==list:
+        if type(data) == list:
             data_arr = np.array(data)
-            time = data_arr[:, 0]
 
-            num = data_arr.shape[1]
-            for channel_idx in range(1, num):
-                channel_data = data_arr[:, channel_idx]
-
-                # 生成名字：qubit_1, qubit_2
-                new_qubit_name = f"{qubit_name}_{channel_idx}"
-
-                data_formated["image"][new_qubit_name] = (time, channel_data)
-            
+            freq = data_arr[:, 0]
+            amp = data_arr[:, 1]
 
         elif data.dtype.names:
-            field_names = data.dtype.names
-            
-            # 时间轴 f0
-            time = data[field_names[0]]
+            f0 = data['f0']
+            f1 = data['f1']
+            f2 = data['f2']
+            f3 = data['f3']
+            f4 = data['f4']
+            f5 = data['f5']
+            f6 = data['f6']
+            f7 = data['f7']
 
-            for channel_idx in range(1, len(field_names)):
-                channel_field = field_names[channel_idx]
-                channel_data = data[channel_field]
+            freq = data['f0']  # 时间/索引
+            amp = data['f1']
 
-                # 生成名字：qubit_1, qubit_2
-                new_qubit_name = f"{qubit_name}_{channel_idx}"
-
-                data_formated["image"][new_qubit_name] = (time, channel_data)
         else:
             data_formated["image"][qubit_name] = data
+            return data_formated
+
+        data_formated["image"][qubit_name] = (freq, amp)
     return data_formated
 
 def spectrum2d_convert(result):

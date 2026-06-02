@@ -45,9 +45,6 @@
 
 **QubitClient** is a powerful AI agent for efficient interaction with **Qubit services**. It provides rich API interfaces designed for quantum computing experiment data processing, supporting **feature extraction**, **parameter fitting**, **experiment control** and other tasks. It enables fast analysis of 2D spectrum, power shift curves and other key experiment data, with support for various data format conversions.
 
-## 📂 Project Structure
-
-![Project Structure](asset/structure_en.png)
 
 ## ✨ Features
 

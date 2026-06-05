@@ -129,7 +129,7 @@ TASK_UPDATE_CONFIG = {
     'opt_pipulse': {'params': ['PiGate.amp', 'PiGate.alpha','PiHalf.amp', 'PiHalf.alpha']},
     'TimingXYZ': {'params': ['timing.xy']},
     'PulseShape': {'params': []},
-    'T1': {'params': ['']},
+    'T1': {'params': []},
     'spinecho_t2': {'params': []},
     'Ramsey_T2': {'params': []},
     'xeb': {'params': []}
@@ -144,7 +144,7 @@ def update_param(qname, task_type, values):
     if len(values) != len(params):
         raise ValueError(f"{task_type} update {len(params)} params, but got {len(values)} : {values}")
     for param, val in zip(params, values):
-        if val is not "Null":
+        if val != "Null":
             eval(f"{qname}.regs.{param} = {val}")
 
 
@@ -168,7 +168,6 @@ def s21(qubits:list[str]=['Q0','Q1'],
 
         frequency_center=6.5,
         frequency_half_bandwidth=0.0005,
-
         frequency_sample_num=101,
         
         *args,**kwargs):
@@ -232,7 +231,7 @@ def rabi(qubits:list[str]=['Q0','Q1'],
     result = lqcs_rabi(qubits=qubits,
                       amp_start=amp_start,
                       amp_end=amp_end,
-                      amp_sample_num=amp_sample_num                      )
+                      amp_sample_num=amp_sample_num)
     hdf5_path = find_latest_filename(task_type='rabi')
     return hdf5_path
 
@@ -339,17 +338,13 @@ def s21vsflux(qubits_scan:list[str]=['Q0','Q1'],
               qubits_read:list[str]=None,
               freq:list[float]=None,
               read_bias:list[float]=None,
-
               freq_center:float=6.5,
               freq_half_bandwidth:float=0.03,
               freq_sample_num:int=11,
               read_bias_start:float=-3,
               read_bias_end:float=3,
               read_bias_sample_num:int=16,
-
               *args, **kwargs):
-    if qubits_read is None:
-        qubits_read = qubits_scan
     result = lqcs_s21vsflux(qubits_scan=qubits_scan,
                       freq_center=freq_center,
                       freq_half_bandwidth=freq_half_bandwidth,

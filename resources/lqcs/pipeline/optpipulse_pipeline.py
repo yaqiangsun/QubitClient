@@ -37,7 +37,11 @@ def get_opt_pipulse_hdf5_res():
     fig_list = optpipulse(data, analysis_result, save_path=img_save_path)
 
     # 4.更新PiGate.amp和PiGate.alpha
-   
+    if type(analysis_result)==dict:
+            if "results" not in analysis_result.keys():
+                analysis_result = analysis_result.get("results")
+            elif "result" in analysis_result.keys():
+                analysis_result = analysis_result.get("result")
     for result in analysis_result:
         params_list = result['params']
         confs_list = result['confs']

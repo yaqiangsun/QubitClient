@@ -8,8 +8,8 @@ import json
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import pulseshape
-from analysis.visualization import plot_pulseshape
+# from analysis.inception import pulseshape
+# from analysis.visualization import plot_pulseshape
 
 SAVE_PLOT_FOLDER = './tmp'
 
@@ -27,15 +27,15 @@ def get_pulseshape_hdf5_res():
 
     data = json.loads(data[0]["text"])
 
-    # 2.分析数据
-    analysis_result = pulseshape(data)
+    # # 2.分析数据
+    # analysis_result = pulseshape(data)
 
-    # 3.绘图
-    pure_name = qubit_name_list[0]
-    img_save_path = f'{SAVE_PLOT_FOLDER}/pulseshape_{pure_name}.png'
-    fig_list = plot_pulseshape(data, analysis_result, save_path=img_save_path)
+    # # 3.绘图
+    # pure_name = qubit_name_list[0]
+    # img_save_path = f'{SAVE_PLOT_FOLDER}/pulseshape_{pure_name}.png'
+    # fig_list = plot_pulseshape(data, analysis_result, save_path=img_save_path)
 
-    # 无参数更新
+    # # 无参数更新
 
 
 if __name__ == '__main__':

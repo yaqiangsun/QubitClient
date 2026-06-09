@@ -21,6 +21,8 @@ def get_s21_hdf5_res():
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.S21
     fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
+    fread = float(fread[0]["text"])
+
     data = qubit_ctrl_client.run(CtrlTaskName.S21,
                                     qubits=qubit_name_list,
                                     frequency_center=fread,
@@ -41,6 +43,11 @@ def get_s21_hdf5_res():
 
 
     #  4.更新
+    if type(analysis_result)==dict:
+        if "results" not in analysis_result.keys():
+            analysis_result = analysis_result.get("results")
+        elif "result" in analysis_result.keys():
+            analysis_result = analysis_result.get("result")
     for result in analysis_result:
         peaks_list = result['peaks']
         confs_list = result['confs']

@@ -41,6 +41,11 @@ def get_rabi_hdf5_res():
 
     # 4.更新PiGate.amp
     # 根据扫描结果更新
+    if type(analysis_result)==dict:
+        if "results" not in analysis_result.keys():
+            analysis_result = analysis_result.get("results")
+        elif "result" in analysis_result.keys():
+            analysis_result = analysis_result.get("result")
     for result in analysis_result:
         peaks_list = result['peaks']
         confs_list = result['confs']

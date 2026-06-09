@@ -22,6 +22,8 @@ def get_s21vflux_hdf5_res():
     
     task_type=CtrlTaskName.S21VSFLUX
     fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
+    fread = float(fread[0]["text"])
+
     data = qubit_ctrl_client.run(CtrlTaskName.S21VSFLUX,
                                     qubits_scan=qubit_name_list,
                                     freq_center=fread,
@@ -45,6 +47,11 @@ def get_s21vflux_hdf5_res():
 
     # 4.更新参数 - 在余弦曲线上选一点，避开频率极值点
     # 根据扫描结果选择zpa值，例如选择zpa=-1.5
+    if type(analysis_result)==dict:
+        if "results" not in analysis_result.keys():
+            analysis_result = analysis_result.get("results")
+        elif "result" in analysis_result.keys():
+            analysis_result = analysis_result.get("result")
     for result in analysis_result:
         coscurves_list = result['coscurves_list']
         cosconfs_list = result['cosconfs_list']

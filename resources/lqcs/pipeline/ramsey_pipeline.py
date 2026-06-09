@@ -39,6 +39,11 @@ def get_ramsey_hdf5_res():
     fig_list = plot_ramsey(data, analysis_result, save_path=img_save_path)
 
     # 4.更新f10, f21
+    if type(analysis_result)==dict:
+        if "results" not in analysis_result.keys():
+            analysis_result = analysis_result.get("results")
+        elif "result" in analysis_result.keys():
+            analysis_result = analysis_result.get("result")
     for result in analysis_result:
             params_list = result['params_list']
             r2_list = result['r2_list']

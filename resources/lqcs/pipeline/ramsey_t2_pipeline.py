@@ -8,8 +8,8 @@ import json
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import ramseyt2
-from analysis.visualization import plot_ramseyt2
+# from analysis.inception import ramseyt2
+# from analysis.visualization import plot_ramseyt2
 
 SAVE_PLOT_FOLDER = './tmp'
 
@@ -30,15 +30,15 @@ def get_ramsey_t2_hdf5_res():
 
     data = json.loads(data[0]["text"])
 
-    # 2.分析数据
-    analysis_result = ramseyt2(data)
+    # # 2.分析数据
+    # analysis_result = ramseyt2(data)
 
-    # 3.绘图
-    pure_name = qubit_name_list[0]
-    img_save_path = f'{SAVE_PLOT_FOLDER}/ramseyt2_{pure_name}.png'
-    fig_list = plot_ramseyt2(data, analysis_result, save_path=img_save_path)
+    # # 3.绘图
+    # pure_name = qubit_name_list[0]
+    # img_save_path = f'{SAVE_PLOT_FOLDER}/ramseyt2_{pure_name}.png'
+    # fig_list = plot_ramseyt2(data, analysis_result, save_path=img_save_path)
 
-    # 无参数更新
+    # # 无参数更新
 
 
 if __name__ == '__main__':

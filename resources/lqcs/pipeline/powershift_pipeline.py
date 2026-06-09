@@ -25,6 +25,7 @@ def get_powershift_hdf5_res():
     task_type=CtrlTaskName.POWERSHIFT
     fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
     
+    fread = float(fread[0]["text"])
 
 
     data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
@@ -53,6 +54,11 @@ def get_powershift_hdf5_res():
 
 
     # 4 更新 power
+    if type(analysis_result)==dict:
+        if "results" not in analysis_result.keys():
+            analysis_result = analysis_result.get("results")
+        elif "result" in analysis_result.keys():
+            analysis_result = analysis_result.get("result")
     for result in analysis_result:
             keypoints_list = result['keypoints_list']
             class_num_list = result['class_num_list']

@@ -24,7 +24,7 @@ _all_qubits = generate_qubit(globals(), info=info, sample=s)
 _all_couplers = generate_coupler(globals(), info=info, sample=s)
 
 
-def t1_2d(qubits:list[str]=['Q0','Q1'],
+def t1(qubits:list[str]=['Q0','Q1'],
           delay_start:float=0,
           delay_end:float=80000,
           delay_sample_num:int=17):

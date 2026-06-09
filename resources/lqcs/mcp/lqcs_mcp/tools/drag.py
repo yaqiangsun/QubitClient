@@ -25,4 +25,4 @@ _all_couplers = generate_coupler(globals(), info=info, sample=s)
 
 def drag(qubits:list[str]=['Q0','Q1']):
 
-    return None
+    return 

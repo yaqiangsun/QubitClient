@@ -22,7 +22,6 @@ def get_pipulsef10_hdf5_res():
     
     data = qubit_ctrl_client.run(CtrlTaskName.PIPULSEF10,
                                    qubits=qubit_name_list,
-                                   fc=None,
                                    df_start=0,
                                    df_end=0.03,
                                    df_sample_num=21)

@@ -38,9 +38,8 @@ def spectrum(qubits:list[str]=['Q0','Q1'],
              sb_freq:float=0
              ):
 
-    sample_rate = (freq_end - freq_start) / freq_sample_num
-    freq_array = np.arange(freq_start, freq_end, sample_rate)
     qubit = eval(qubits[0])
+    freq_array = np.linspace(freq_start, freq_end, freq_sample_num)
 
     result = sq.spectroscopy(qubit, freq=freq_array, zpa=zpa, spec_amp=spec_amp, sb_freq=sb_freq,update=False)
     

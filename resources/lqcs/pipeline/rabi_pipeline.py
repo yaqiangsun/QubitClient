@@ -19,7 +19,6 @@ def get_rabi_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
     qubit_name_list = ["q3lu7"]
-    drive_amp_array = np.linspace(0.01, 0.1, 25).tolist()
 
     data = qubit_ctrl_client.run(CtrlTaskName.RABI,
                                    qubits=qubit_name_list,

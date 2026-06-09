@@ -30,12 +30,12 @@ def s21(qubits:list[str]=['Q0','Q1'],
         ):
     frequency_start = frequency_center - frequency_half_bandwidth
     frequency_end = frequency_center + frequency_half_bandwidth
-    sample_rate = (frequency_end - frequency_start) / frequency_sample_num
+    freq = np.linspace(frequency_start, frequency_end, frequency_sample_num)
 
     qubit = eval(qubits[0])
 
     result = sq.s21(qubit, 
-                    freq=np.arange(frequency_start, frequency_end, sample_rate),
+                    freq=freq,
                     update=False,
                     do_plot=False,
                     des='')

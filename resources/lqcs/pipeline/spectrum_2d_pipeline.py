@@ -9,37 +9,47 @@ import numpy as np
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import t1fit
-from analysis.visualization import plot_t1fit
+from analysis.inception import nnspectrum2d
+from analysis.visualization import plot_nnspectrum2d
 
 SAVE_PLOT_FOLDER = './tmp'
 
 
-def get_t1_hdf5_res():
+def get_spectrum2d_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
-
     qubit_name_list = ["q3lu7"]
-
-    data = qubit_ctrl_client.run(CtrlTaskName.T1,
+    
+    data = qubit_ctrl_client.run(CtrlTaskName.SPECTRUM_2D,
                                    qubits=qubit_name_list,
-                                   delay_start=0,
-                                   delay_end=80000,
-                                   delay_sample_num=17)
+                                   freq_start=-3,
+                                   freq_end=3,
+                                   freq_sample_num=200,
+                                   bias_start=-1,
+                                   bias_end=1,
+                                   bias_sample_num=200,
+                                   drive_amp=0.0)
     data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
     data = json.loads(data[0]["text"])
 
     # 2.分析数据
-    analysis_result = t1fit(data)
+    analysis_result = nnspectrum2d(data)
 
     # 3.绘图
     pure_name = qubit_name_list[0]
-    img_save_path = f'{SAVE_PLOT_FOLDER}/t1decay_{pure_name}.png'
-    fig_list = plot_t1fit(data, analysis_result, save_path=img_save_path)
+    img_save_path = f'{SAVE_PLOT_FOLDER}/spectrum2d_{pure_name}.png'
+    fig_list = plot_nnspectrum2d(data, analysis_result, save_path=img_save_path)
 
-    # 无参数更新
+    # 4.更新f10, f21
+    # 根据扫描结果更新
+    # 4.更新f10, f21
+    
+    qname=qubit_name_list[0]
+    task_type=CtrlTaskName.SPECTRUM_2D
+    values="3.193120459017055,3.193120459017055"   
+    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
      # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
@@ -63,5 +73,6 @@ def get_t1_hdf5_res():
     # print("\nQubit_Spectroscopy tests passed!")
 
 
+
 if __name__ == '__main__':
-    get_t1_hdf5_res()
+    get_spectrum2d_hdf5_res()

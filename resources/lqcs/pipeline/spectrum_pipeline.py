@@ -25,9 +25,8 @@ def get_spectrum_hdf5_res():
                                    freq_start=-3,
                                    freq_end=3,
                                    freq_sample_num=200,
-                                   zpa=0,
-                                   spec_amp=0.0,
-                                   sb_freq=0)
+                                   bias=0,
+                                   drive_amp=0.0)
     data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 

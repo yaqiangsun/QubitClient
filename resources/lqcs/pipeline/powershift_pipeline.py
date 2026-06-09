@@ -23,7 +23,7 @@ def get_powershift_hdf5_res():
     qubit_name_list = ["q3lu7"]
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.POWERSHIFT
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, task_type=task_type, key="fread")
+    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
     
 
 

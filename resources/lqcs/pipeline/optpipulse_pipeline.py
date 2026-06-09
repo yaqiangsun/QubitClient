@@ -21,8 +21,8 @@ def get_opt_pipulse_hdf5_res():
     
     data = qubit_ctrl_client.run(CtrlTaskName.OPTPIPULSE,
                                    qubits=qubit_name_list,
-                                   ms=None,
-                                   gate='X')
+                                   N_list=[1,4,8],
+                                   amp_list=None)
     data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
@@ -40,15 +40,15 @@ def get_opt_pipulse_hdf5_res():
    
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.OPTPIPULSE
-    values="3.193120459017055,3.193120459017055,Null,Null"   
+    values="3.193120459017055,3.193120459017055"   
     qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
-    # 4.更新PiHalf.amp和PiHalf.alpha
+    # # 4.更新PiHalf.amp和PiHalf.alpha
    
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.OPTPIPULSE
-    values="Null,Null,3.193120459017055,3.193120459017055"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    # qname=qubit_name_list[0]
+    # task_type=CtrlTaskName.OPTPIPULSE
+    # values="Null,Null,3.193120459017055,3.193120459017055"   
+    # qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 if __name__ == '__main__':
     get_opt_pipulse_hdf5_res()

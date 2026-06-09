@@ -18,14 +18,14 @@ def get_s21_hdf5_res():
     # 1.数据采集
     qubit_ctrl_client = QubitCtrlClient()
     qubit_name_list = ["q3lu7"]
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM, key="fread")
-
+    qname=qubit_name_list[0]
+    task_type=CtrlTaskName.S21
+    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
     data = qubit_ctrl_client.run(CtrlTaskName.S21,
                                     qubits=qubit_name_list,
                                     frequency_center=fread,
                                     frequency_half_bandwidth=0.005,
                                     frequency_sample_num=200)
-
     data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
 

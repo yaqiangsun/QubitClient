@@ -33,13 +33,11 @@ def s21vsflux(qubits_scan:list[str],
               read_bias_sample_num:int=16):
     freq_start = freq_center - freq_half_bandwidth
     freq_end = freq_center + freq_half_bandwidth
-    freq_sample_rate = (freq_end - freq_start) / freq_sample_num
-    freq_array = np.arange(freq_start, freq_end, freq_sample_rate)
     
-    read_bias_sample_rate = (read_bias_end - read_bias_start) / read_bias_sample_num
-    read_bias_array = np.arange(read_bias_start, read_bias_end, read_bias_sample_rate)
 
-    
+    freq_array = np.linspace(freq_start, freq_end, freq_sample_num)
+    read_bias_array = np.linspace(read_bias_start, read_bias_end, read_bias_sample_num)
+
     qubit = eval(qubits_scan[0])
 
     result = sq.s21_zpa2d(qubit, freq=freq_array, zpa=read_bias_array, freq_span=None, update=False)

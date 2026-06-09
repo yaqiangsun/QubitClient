@@ -35,11 +35,14 @@ def powershift(qubits:list[str]=['Q0','Q1'],
 
     frequency_start = frequency_center - frequency_half_bandwidth
     frequency_end = frequency_center + frequency_half_bandwidth
-    frequency_sample_rate = (frequency_end - frequency_start) / frequency_sample_num
-    power_sample_rate = (power_end - power_start) / power_sample_num
+    
 
-    freq = np.arange(frequency_start, frequency_end, frequency_sample_rate)
-    power = np.arange(power_start, power_end, power_sample_rate)
+   
+
+    freq = np.linspace(frequency_start, frequency_end, frequency_sample_num)
+    power = np.linspace(power_start, power_end, power_sample_num)
+
+
 
     result = sq.s21_power2d(qubit, freq=freq, power=power,update=False)
     

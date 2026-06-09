@@ -23,8 +23,7 @@ def get_timingxyz_hdf5_res():
                                    qubits=qubit_name_list,
                                    delay_start=-60,
                                    delay_end=60,
-                                   delay_sample_num=31,
-                                   zpa=None)
+                                   delay_sample_num=31)
     data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
@@ -40,7 +39,7 @@ def get_timingxyz_hdf5_res():
 
     # 4.更新timing.xy
     qname=qubit_name_list[0]
-    task_type=CtrlTaskName.S21MULTI
+    task_type=CtrlTaskName.TIMINGXYZ
     values="3.193120459017055"
     qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 

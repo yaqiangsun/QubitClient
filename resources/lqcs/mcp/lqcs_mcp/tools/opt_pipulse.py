@@ -26,17 +26,13 @@ _all_couplers = generate_coupler(globals(), info=info, sample=s)
 
 
 def opt_pipulse(qubits:list[str]=['Q0','Q1'],
-               ms:float=None,
+               ms:list[int]=[1, 3, 5],
                gate:str='X',
                ):
     
     qubit = eval(qubits[0])
 
-    if gate == 'X':
-        result = sq.set_pi_alpha(qubit, ms=ms, gate='X', update=False)
-    elif gate == 'X/2':
-        result = sq.set_pi_alpha(qubit, ms=ms, gate='X/2', update=False)
-    else:
-        result = sq.set_pi_alpha(qubit, ms=ms, gate=gate, update=False)
+    result = sq.set_pi_alpha(qubit, ms=ms, gate=gate, update=False)
+    
     
     return result

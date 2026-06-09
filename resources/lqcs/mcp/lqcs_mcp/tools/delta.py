@@ -29,4 +29,4 @@ _all_couplers = generate_coupler(globals(), info=info, sample=s)
 
 def delta(qubits:list[str]=['Q0','Q1']):
 
-    return None
+    return 

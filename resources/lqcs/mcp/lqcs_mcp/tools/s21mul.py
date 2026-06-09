@@ -30,9 +30,12 @@ def s21multi(qubits:list[str]=['Q0','Q1'],
         frequency_end:float=6.9,
         frequency_sample_rate:float=0.0001):
     qubit = eval(qubits[0])
+    frequency_sample_num = int((frequency_end - frequency_start) / frequency_sample_rate) + 1
 
+    # 然后用 linspace
+    freq = np.linspace(frequency_start, frequency_end, frequency_sample_num)
     result = sq.s21(qubit, 
-                    freq=np.arange(frequency_start, frequency_end, frequency_sample_rate),
+                    freq=freq,
                     update=False,
                     do_plot=False,
                     des='')

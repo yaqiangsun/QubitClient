@@ -31,7 +31,8 @@ def rabi(qubits:list[str]=['Q0','Q1'],
     qubit = eval(qubits[0])
 
     sample_rate = (amp_end - amp_start) / amp_sample_num
-    amp_array=np.arange(amp_start, amp_end, sample_rate)
+    amp_array = np.linspace(amp_start, amp_end, amp_sample_num)
+
     result = sq.piamp(qubit, fc=None, amp=amp_array, update=False)
     
     return result

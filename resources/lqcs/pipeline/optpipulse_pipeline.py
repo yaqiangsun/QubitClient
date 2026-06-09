@@ -38,10 +38,24 @@ def get_opt_pipulse_hdf5_res():
 
     # 4.更新PiGate.amp和PiGate.alpha
    
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.OPTPIPULSE
-    values="3.193120459017055,3.193120459017055"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    for result in analysis_result:
+        params_list = result['params']
+        confs_list = result['confs']
+
+
+        params_list = result.get("params", [])
+        confs_list  = result.get("confs", [])
+        for i in range(len(qubit_name_list)):
+            peaks = params_list[i]
+            confs = confs_list[i]
+            best_idx = confs.index(max(confs))
+            best_peak = peaks[best_idx]
+            target_amp =best_peak
+            target_alpha="Null"
+            values=str(target_amp) + ',' + target_alpha
+            qname=qubit_name_list[i]
+            task_type=CtrlTaskName.OPTPIPULSE
+            qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
     # # 4.更新PiHalf.amp和PiHalf.alpha
    

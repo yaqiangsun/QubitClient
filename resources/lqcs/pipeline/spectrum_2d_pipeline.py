@@ -42,14 +42,7 @@ def get_spectrum2d_hdf5_res():
     img_save_path = f'{SAVE_PLOT_FOLDER}/spectrum2d_{pure_name}.png'
     fig_list = plot_nnspectrum2d(data, analysis_result, save_path=img_save_path)
 
-    # 4.更新f10, f21
-    # 根据扫描结果更新
-    # 4.更新f10, f21
     
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.SPECTRUM_2D
-    values="3.193120459017055,3.193120459017055"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
      # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)

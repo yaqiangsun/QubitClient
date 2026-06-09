@@ -8,8 +8,8 @@ import json
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import optqubitreadfreq
-from analysis.visualization import plot_optqubitreadfreq
+# from analysis.inception import optqubitreadfreq
+# from analysis.visualization import plot_optqubitreadfreq
 
 SAVE_PLOT_FOLDER = './tmp'
 
@@ -34,19 +34,19 @@ def get_optqubitreadfreq_hdf5_res():
 
     data = json.loads(data[0]["text"])
 
-    # 2.分析数据
-    analysis_result = optqubitreadfreq(data)
+    # # 2.分析数据
+    # analysis_result = optqubitreadfreq(data)
 
-    # 3.绘图
-    pure_name = qubit_name_list[0]
-    img_save_path = f'{SAVE_PLOT_FOLDER}/optqubitreadfreq_{pure_name}.png'
-    fig_list = plot_optqubitreadfreq(data, analysis_result, save_path=img_save_path)
+    # # 3.绘图
+    # pure_name = qubit_name_list[0]
+    # img_save_path = f'{SAVE_PLOT_FOLDER}/optqubitreadfreq_{pure_name}.png'
+    # fig_list = plot_optqubitreadfreq(data, analysis_result, save_path=img_save_path)
 
-    # 4.更新fread
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.OPTQUBITREADFREQ
-    values="6.590"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    # # 4.更新fread
+    # qname=qubit_name_list[0]
+    # task_type=CtrlTaskName.OPTQUBITREADFREQ
+    # values="6.590"   
+    # qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 if __name__ == '__main__':
     get_optqubitreadfreq_hdf5_res()

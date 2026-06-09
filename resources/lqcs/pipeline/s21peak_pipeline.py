@@ -41,10 +41,19 @@ def get_s21_hdf5_res():
 
 
     #  4.更新
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.S21
-    values="6.590"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    for result in analysis_result:
+        peaks_list = result['peaks']
+        confs_list = result['confs']
+        freqs_list = result['freqs_list']
+        for i in range(len(qubit_name_list)):
+            peaks = peaks_list[i]
+            confs = confs_list[i]
+            freqs = freqs_list[i]
+            qname=qubit_name_list[i]
+            if (len(freqs)):
+                values=str(freqs[0])  
+                task_type=CtrlTaskName.S21
+                qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 
     # resize更小

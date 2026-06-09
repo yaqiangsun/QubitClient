@@ -41,10 +41,19 @@ def get_rabi_hdf5_res():
 
     # 4.更新PiGate.amp
     # 根据扫描结果更新
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.RABI
-    values="1.0670387859748918"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    for result in analysis_result:
+        peaks_list = result['peaks']
+        confs_list = result['confs']
+        for i in range(len(qubit_name_list)):
+            peaks = peaks_list[i]
+            confs = confs_list[i]
+            best_idx = confs.index(max(confs))
+            best_peak = peaks[best_idx]
+            target_amp =best_peak
+            values=str(target_amp)
+            qname=qubit_name_list[i]
+            task_type=CtrlTaskName.RABI
+            qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
     # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)

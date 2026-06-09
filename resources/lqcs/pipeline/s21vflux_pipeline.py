@@ -20,7 +20,6 @@ def get_s21vflux_hdf5_res():
     qubit_ctrl_client = QubitCtrlClient()
     qubit_name_list = ["q3lu7"]
     
-    qname=qubit_name_list[0]
     task_type=CtrlTaskName.S21VSFLUX
     fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
     data = qubit_ctrl_client.run(CtrlTaskName.S21VSFLUX,
@@ -46,10 +45,30 @@ def get_s21vflux_hdf5_res():
 
     # 4.更新参数 - 在余弦曲线上选一点，避开频率极值点
     # 根据扫描结果选择zpa值，例如选择zpa=-1.5
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.S21VSFLUX
-    values="-1.5"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)     # resize更小
+    for result in analysis_result:
+        coscurves_list = result['coscurves_list']
+        cosconfs_list = result['cosconfs_list']
+        lines_list = result['lines_list']
+        lineconfs_list = result['lineconfs_list']
+        confs = result['confs']
+        for i in range(len(qubit_name_list)):
+            coscurves = coscurves_list[i]
+            cosconfs = cosconfs_list[i]
+
+            best_idx = cosconfs.index(max(cosconfs))
+            best_curve = coscurves[best_idx]
+            y_vals = [y for x, y in best_curve]
+            index_max_y = y_vals.index(max(y_vals))  
+            half_index = index_max_y // 2 
+
+            x_result = best_curve[half_index][0]
+
+            
+            target_bias =x_result
+            values=str(target_bias) 
+            qname=qubit_name_list[i]
+            task_type=CtrlTaskName.S21VSFLUX
+            qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
     

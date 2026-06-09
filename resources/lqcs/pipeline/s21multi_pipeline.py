@@ -13,6 +13,21 @@ from analysis.visualization import plot_nns21multi, plot_s21multi
 
 SAVE_PLOT_FOLDER = './tmp'
 
+base_freq_dict = {
+    'q1lu7': 6.561,
+    'q2lu7': 6.759,
+    'q3lu7': 6.590,
+    'q4lu7': 6.762,
+    'q5lu7': 6.539,
+    'q6lu7': 6.763,
+    'q7lu7': 6.611,
+    'q8lu7': 6.803,
+    'q9lu7': 6.634,
+    'q10lu7': 6.855,
+    'q11lu7': 6.666,
+    'q12lu7': 6.876,
+}
+
 def get_s21multi_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
@@ -37,12 +52,25 @@ def get_s21multi_hdf5_res():
 
 
     #  4.更新
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.S21MULTI
-    values="6.590"
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
-
-    # resize更小
+    for result in analysis_result:
+        peaks_list = result['peaks']
+        confs_list = result['confs']
+        freqs_list = result['freqs_list']
+        for i in range(len(qubit_name_list)):
+            peaks = peaks_list[i]
+            confs = confs_list[i]
+            freqs = freqs_list[i]
+            qname=qubit_name_list[i]
+            base_freq = base_freq_dict.get(qname) 
+            if(len(freqs)): 
+                closest_freq = min(freqs, key=lambda f: abs(f - base_freq))
+                values=str(closest_freq)
+                task_type=CtrlTaskName.S21MULTI
+                qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, 
+                                    qname=qname, 
+                                    task_type=task_type, 
+                                    values=values)
+        # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
     

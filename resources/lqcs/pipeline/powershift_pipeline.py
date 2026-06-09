@@ -53,10 +53,29 @@ def get_powershift_hdf5_res():
 
 
     # 4 更新 power
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.POWERSHIFT
-    values="-30"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    for result in analysis_result:
+            keypoints_list = result['keypoints_list']
+            class_num_list = result['class_num_list']
+            confs = result['confs']
+            for i in range(len(qubit_name_list)):
+                keypoints = keypoints_list[i]
+                class_num = class_num_list[i]
+                conf = confs[i]
+                keypoints_segments=[]
+                if class_num==1:
+                    keypoints_segments.append([keypoints[1],keypoints[0]])
+                if class_num==2:
+                    keypoints_segments.append([keypoints[3],keypoints[2]])
+                if class_num==3:
+                    keypoints_segments.append([keypoints[2],keypoints[1]])
+                qname=qubit_name_list[i]
+                if (keypoints_segments):
+                    target_power = keypoints_segments[0][1] + (keypoints_segments[1][1] - keypoints_segments[0][1]) * 0.8
+                    values=str(target_power) 
+                    task_type=CtrlTaskName.POWERSHIFT
+                    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+
+
     # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)

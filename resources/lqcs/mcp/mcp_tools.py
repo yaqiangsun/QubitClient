@@ -39,6 +39,9 @@ import os
 import numpy as np
 import h5py
 from swiftmcp import mcp
+from backend import s, info, generate_qubit, generate_coupler
+_all_qubits = generate_qubit(globals(), info=info, sample=s)
+_all_couplers = generate_coupler(globals(), info=info, sample=s)
 
 def find_latest_filename(task_type):
     ROOT_FOLDER = 'D:/DataVault/LQHL.dir/test.dir/20260324.dir/'
@@ -110,7 +113,7 @@ class TaskUpdateConfig:
             'powershift': {'params': ['ReadIn.power']},
             's21vflux': {'params': ['bias_z']},
             'spectrum': {'params': ['f10', 'f21']},
-            'spectrum_2d': {'params': ['f10', 'f21']},
+            'spectrum_2d': {'params': []},
             'singleshot': {'params': []},
             'rabi': {'params': ['PiGate.amp']},
             'pipulsef10': {'params': ['f10', 'f21']},

@@ -43,11 +43,20 @@ def get_spectrum_hdf5_res():
     # 4.更新f10, f21
     # 根据扫描结果更新
     # 4.更新f10, f21
-    
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.SPECTRUM
-    values="3.193120459017055,3.193120459017055"   
-    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    for result in analysis_result:
+        peaks_list = result['peaks_list']
+        confidences_list = result['confidences_list']
+        for i in range(len(qubit_name_list)):
+            peaks = peaks_list[i]
+            confidences = confidences_list[i]
+            best_idx = confidences.index(max(confidences))
+            best_peak = peaks[best_idx]
+            target_freq =best_peak
+            non=-0.2
+            values=str(target_freq) + ',' + str(target_freq + non)
+            qname=qubit_name_list[i]
+            task_type=CtrlTaskName.SPECTRUM
+            qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
      # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)

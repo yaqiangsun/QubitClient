@@ -9,9 +9,6 @@
 
 
 
-from qubitctrl.task.lqcs import call_interface
-# from ..templates import spectrum as spectrum_template
-from lqcs_templates import spectrum as spectrum_template
 
 
 import sys

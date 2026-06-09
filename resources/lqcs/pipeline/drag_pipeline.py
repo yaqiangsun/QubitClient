@@ -35,7 +35,7 @@ def get_drag_hdf5_res():
 
 
     # 2.分析数据
-    analysis_result = drag(data)
+    # analysis_result = drag(data)
 
     # 3.绘图
     # pure_name = qubit_name_list[0]

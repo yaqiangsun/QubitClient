@@ -6,21 +6,33 @@
 
 import os
 import numpy as np
-import cv2
 import matplotlib.pyplot as plt
 
 # -----------配置常量---------------
-data_type = 't1_2d'
+data_type = 't1_repeat'
 root_folder = f'./tmp/dataset/run/{data_type}'
 plot_save_folder = f'./plot_{data_type}_matplotlib'
-plot_lines_folder = f'./lines_plots_{data_type}'
+cnt = 0
 
 # -----------创建目录---------------
 os.makedirs(plot_save_folder, exist_ok=True)
-os.makedirs(plot_lines_folder, exist_ok=True)
 
 
-def plot_heatmap(file_path):
+def inspect_info_structure(each_qubit_info):
+    '''打印 数据的类型和结构，便于解析数据'''
+    for i in range(len(each_qubit_info)):
+        tmp = each_qubit_info[i]
+        if type(tmp) == np.ndarray:
+            print("1-------tmp is ndarray, len(tmp):  ", i, len(tmp), tmp.shape, "\n", tmp)
+        elif type(tmp) == list:
+            print("2-------tmp is list, len(tmp): ", i, len(tmp), "\n", tmp)
+        elif type(tmp) == tuple:
+            print("3-------tmp is tuple, len(tmp): ", i, len(tmp), "\n", tmp)
+        else:
+            print("4-------tmp: ", i, type(tmp), tmp)
+
+
+def plot_pic(file_path):
     '''处理单个npy文件，将多个量子比特的 图形 解析并绘制'''
     with open(file_path, 'rb') as f:
         data = np.load(f, allow_pickle=True)
@@ -34,13 +46,8 @@ def plot_heatmap(file_path):
         print("each_qubit_name: ", each_qubit_name)
         print("each_qubit_info: ", len(each_qubit_info))
 
-        # each qubit has n columns
-        # for i in range(len(each_qubit_info)):
-        #     tmp = each_qubit_info[i]
-        #     if type(tmp) == np.ndarray:
-        #         print("len(tmp): ", i, len(tmp), tmp.shape, "\n",)
-        #     else:
-        #         print("tmp: ", i, type(tmp), tmp)
+        # ------打印数据类型和结构------------
+        # inspect_info_structure(each_qubit_info)
 
         # ---------解析数据---------
         data = each_qubit_info[0]
@@ -67,22 +74,25 @@ def plot_heatmap(file_path):
 
         # ---------绘制热力图---------
         plt.figure(figsize=(img_width // 10, img_height // 10))
-        plt.imshow(img, cmap='viridis', aspect='auto', origin='upper' )
+        plt.imshow(img, cmap='viridis', aspect='auto', origin='lower' )
 
-        plt.xlabel('X-axis')
-        plt.ylabel('Y-axis')
+        plt.xlabel('X Delay Time')
+        plt.ylabel('Y Zpa')
         plt.xticks(
             ticks=np.arange(0, len(x_axis), 6),
             labels=np.round(x_axis[::6], 6),
             rotation=45
         )
         plt.yticks(ticks=np.arange(0, len(y_axis), 10), labels=np.round(y_axis[::10] * 1e6, 2) )
-        plt.title(f'{data_type} Heatmap \n {file_name} \n {each_qubit_name}')
+        plt.title(f'{data_type} \n {file_name} \n {each_qubit_name}')
 
         # ---------保存图像---------
-        plt.savefig(os.path.join(plot_save_folder, f"heatmap_{file_name}_{each_qubit_name}.png"))
+        plt.tight_layout()
+        save_path = os.path.join(plot_save_folder, f"pic_{file_name}_{each_qubit_name}.png")
+        plt.savefig(save_path, bbox_inches='tight', dpi=150, pad_inches=0.2)
+        
         plt.close()
-        print("plot heatmap saved to ", os.path.join(plot_save_folder, f"heatmap_{file_name}_{each_qubit_name}.png"))
+        print("plot pic saved to ", os.path.join(plot_save_folder, f"pic_{file_name}_{each_qubit_name}.png"))
 
 
 if __name__ == "__main__":
@@ -94,4 +104,8 @@ if __name__ == "__main__":
         file_path = os.path.join(root_folder, file_name)
         print("Processing:  ", file_path)
 
-        plot_heatmap(file_path)
+        plot_pic(file_path)
+
+        # cnt += 1
+        # if cnt >= 1:
+        #     break

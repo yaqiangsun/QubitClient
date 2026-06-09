@@ -167,12 +167,14 @@ def ramsey(qubits:list[str]=['Q0','Q2'],
            delay_start=0,
            delay_end=100,
            delay_sample_num=100,
+           fringeFreq=0.05,
            *args, **kwargs):
     result = call_mcp("ramsey",
                       qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,
-                      delay_sample_num=delay_sample_num
+                      delay_sample_num=delay_sample_num,
+                      fringeFreq=fringeFreq
                       )
     return result
 
@@ -282,12 +284,14 @@ def spinecho_t2(qubits: list[str],
        delay_start=0,
        delay_end=10000,
        delay_sample_num=200,
+       fringeFreq=0.05,
        *args, **kwargs):
     result = call_mcp("spinecho_t2",
                       qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,
-                      delay_sample_num=delay_sample_num
+                      delay_sample_num=delay_sample_num,
+                      fringeFreq=fringeFreq
                       )
     return result
 
@@ -296,12 +300,14 @@ def ramsey_t2(qubits: list[str],
              delay_start=0,
              delay_end=10000,
              delay_sample_num=100,
+             fringeFreq=0.05,
              *args, **kwargs):
     result = call_mcp("ramsey_t2",
                       qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,
-                      delay_sample_num=delay_sample_num
+                      delay_sample_num=delay_sample_num,
+                      fringeFreq=fringeFreq
                       )
     return result
 

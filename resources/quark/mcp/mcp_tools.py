@@ -106,6 +106,7 @@ def ramsey(qubits:list[str]=['Q0','Q2'],
            delay_start=0,
            delay_end=100,
            delay_sample_num=100,
+           fringeFreq=0.05,
            *args, **kwargs):
     delta:float=20e6
     # delay:float=10e-6

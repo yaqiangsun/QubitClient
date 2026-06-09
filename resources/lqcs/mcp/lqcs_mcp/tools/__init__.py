@@ -21,3 +21,4 @@ from .spectrum_2d import spectrum_2d
 from .spectrum import spectrum
 from .t1_2d import t1_2d
 from .powershift import powershift
+from .s21multi import s21multi

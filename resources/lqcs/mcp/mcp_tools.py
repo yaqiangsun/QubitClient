@@ -9,7 +9,7 @@
 
 import os
 from  lqcs_mcp.tools import s21 as lqcs_s21
-from  lqcs_mcp.tools import s21mul as lqcs_s21mul
+from  lqcs_mcp.tools import s21multi  as lqcs_s21multi
 from  lqcs_mcp.tools import rabi as lqcs_rabi
 from  lqcs_mcp.tools import ramsey as lqcs_ramsey
 from  lqcs_mcp.tools import t1 as lqcs_t1
@@ -189,7 +189,7 @@ def s21multi(qubits:list[str]=['Q0','Q1'],
         frequency_end:float=6.9,
         frequency_sample_rate=0.0001,
         *args,**kwargs):
-    result = lqcs_s21mul(qubits=qubits,
+    result = lqcs_s21multi(qubits=qubits,
                       frequency_start=frequency_start,
                       frequency_end=frequency_end,
                       frequency_sample_rate=frequency_sample_rate

@@ -2,8 +2,8 @@
 本文档以pipeline/**_pipeline.py脚本，以及比特q3lu7为例，讲解所有任务的测量实验部分接口与调用实例，分析与绘图部分参考docs/nnscope docs/nnscope
 ## 测量实验顺序
 
-s21mul s21peak powershift s21vflux s21peak(bias_z=-1.5) spectrum singleshot rabi PiPulseF10 
-ramsey optQubitReadFreq opt_pipulse(X) opt_pipulse(X/2) TimingXYZ PulseShape T1Decay spinecho_T2 Ramsey_T2 xeb
+s21mul s21peak powershift s21vflux s21peak(bias_z=-1.5) spectrum spectrum2d singleshot rabi PiPulseF10 
+ramsey optQubitReadFreq opt_pipulse(X) TimingXYZ PulseShape T1 T1_2d spinecho_T2 Ramsey_T2 xeb
 
 ## 测量实验步骤1 s21mul
 ### 测量初始化
@@ -54,7 +54,7 @@ qubit_ctrl_client = QubitCtrlClient()
 ### 测量调用示例
 ```python
   qubit_name_list = ["q3lu7"]
-  fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM, key="fread")
+  fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM, key="fread_star")
   data = qubit_ctrl_client.run(CtrlTaskName.S21,
                                     qubits=qubit_name_list,
                                     frequency_center=fread,
@@ -72,7 +72,7 @@ qubit_ctrl_client = QubitCtrlClient()
 根据扫描结果，更新fread = 6.5898  
 ```python                                  
 qname=qubit_name_list[0]
-    task_type=CtrlTaskName.S21MULTI
+    task_type=CtrlTaskName.S21PEAK
     values="6.590"   
     qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 ```
@@ -91,10 +91,9 @@ qubit_ctrl_client = QubitCtrlClient()
 ### 测量调用示例
 ```python
   qubit_name_list = ["q3lu7"]
- qubit_name_list = ["q3lu7"]
-    qname=qubit_name_list[0]
-    task_type=CtrlTaskName.POWERSHIFT
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, task_type=task_type, key="fread")
+  qname=qubit_name_list[0]
+  task_type=CtrlTaskName.POWERSHIFT
+  fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
     
   data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
                                 qubits=qubit_name_list,
@@ -137,7 +136,7 @@ qubit_ctrl_client = QubitCtrlClient()
   
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.S21VSFLUX
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, task_type=task_type, key="fread")
+    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
     
   data = qubit_ctrl_client.run(CtrlTaskName.S21VSFLUX,
                                     qubits_scan=qubit_name_list,
@@ -163,7 +162,6 @@ qname=qubit_name_list[0]
     values="-1.5"   
     qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values) 
     ```
-qobj.regs.bias_z = -1.5
 
 
 ## 测量实验步骤5 s21peak
@@ -177,7 +175,7 @@ qubit_ctrl_client = QubitCtrlClient()
 ### 测量调用示例
 ```python
   qubit_name_list = ["q3lu7"]
-  fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM, key="fread")
+  fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
 
   data = qubit_ctrl_client.run(CtrlTaskName.S21,
                                     qubits=qubit_name_list,
@@ -196,10 +194,12 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新fread = 6.5896 
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="fread",value=6.5896 )
-```
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.S21PEAK
+values="6.5896"  
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
-qobj.regs.fread = 6.5896
+```
 
 
 
@@ -218,14 +218,12 @@ qubit_ctrl_client = QubitCtrlClient()
   qubit_name_list = ["q3lu7"]
 
   data = qubit_ctrl_client.run(CtrlTaskName.SPECTRUM,
-                                  qubits=qubit_name_list,
-                                  freq_start=-3,
-                                  freq_end=3,
-                                  freq_sample_num=200
-                                  zpa=0, 
-                                  spec_amp=0.0, 
-                                  sb_freq=0
-                                  )
+                                   qubits=qubit_name_list,
+                                   freq_start=-3,
+                                   freq_end=3,
+                                   freq_sample_num=200,
+                                   bias=0,
+                                   drive_amp=0.0)
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
 ```
@@ -238,20 +236,56 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新f10,f21
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="f10",value=3.193120459017055 )
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="f21",value=2.993120459017054 )
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.SPECTRUM
+values="3.193120459017055,3.193120459017055"   
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 ```
 
-qobj.regs.f10 = 3.193120459017055
-qobj.regs.f21 = 2.993120459017054
 
 
+## 测量实验步骤7 spectrum2d
+### 测量初始化
+```python
+from qubitclient.ctrl import QubitCtrlClient
+from qubitclient.ctrl import CtrlTaskName
+qubit_ctrl_client = QubitCtrlClient()
+```
+调用示例
+### 测量调用示例
+```python
+  qubit_name_list = ["q3lu7"]
+  data = qubit_ctrl_client.run(CtrlTaskName.SPECTRUM_2D,
+                                   qubits=qubit_name_list,
+                                   freq_start=-3,
+                                   freq_end=3,
+                                   freq_sample_num=200,
+                                   bias_start=-1,
+                                   bias_end=1,
+                                   bias_sample_num=200,
+                                   drive_amp=0.0)
+  data_id = data[0]["text"]
+  data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
+```
+
+### 注意事项
+1. qubit_name_list = ["q3lu7"] 填写当前测试的比特，切勿填写其他比特
 
 
+### 参数更新
+
+根据扫描结果，更新f10,f21
+```python                                  
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.SPECTRUM_2D
+values="3.193120459017055,3.193120459017055"   
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+
+```
 
 
-## 测量实验步骤7 singleshot
+## 测量实验步骤8 singleshot
 ### 测量初始化
 ```python
 from qubitclient.ctrl import QubitCtrlClient
@@ -264,8 +298,7 @@ qubit_ctrl_client = QubitCtrlClient()
   qubit_name_list = ["q3lu7"]
 
   data = qubit_ctrl_client.run(CtrlTaskName.SINGLESHOT,
-                                   qubits=qubit_name_list,
-                                   stage=1
+                                   qubits=qubit_name_list
                                    )
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
@@ -282,7 +315,7 @@ qubit_ctrl_client = QubitCtrlClient()
 
 
 
-## 测量实验步骤8 rabi
+## 测量实验步骤9 rabi
 ### 测量初始化
 ```python
 from qubitclient.ctrl import QubitCtrlClient
@@ -313,17 +346,19 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新PiGate.amp
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="PiGate.amp",value=1.0670387859748918 )
+ qname=qubit_name_list[0]
+  task_type=CtrlTaskName.RABI
+  values="1.0670387859748918"   
+  qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 ```
 
-qobj.regs.PiGate.amp = 1.0670387859748918
 
 
 
 
 
-## 测量实验步骤9 PiPulseF10
+## 测量实验步骤10 PiPulseF10
 ### 测量初始化
 ```python
 from qubitclient.ctrl import QubitCtrlClient
@@ -336,10 +371,10 @@ qubit_ctrl_client = QubitCtrlClient()
   qubit_name_list = ["q3lu7"]
  
   data = qubit_ctrl_client.run(CtrlTaskName.PIPULSEF10,
-                                  fc=None, 
-                                  df_start=0,
-                                  df_end=0.03,
-                                  df_sample_num=21)
+                                   qubits=qubit_name_list,
+                                   df_start=0,
+                                   df_end=0.03,
+                                   df_sample_num=21)
                               
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
@@ -354,21 +389,14 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新f10,f21
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="f10",value=3.193120459017055 )
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="f21",value=2.993120459017054 )
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.PIPULSEF10
+values="3.193120459017055,3.193120459017055"   
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 ```
 
-qobj.regs.f10 = 3.193120459017055
-qobj.regs.f21 = 2.993120459017054
-
-
-
-
-
-
-
-## 测量实验步骤10 ramsey
+## 测量实验步骤11 ramsey
 ### 测量初始化
 ```python
 from qubitclient.ctrl import QubitCtrlClient
@@ -404,18 +432,17 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新f10,f21
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="f10",value=3.193120459017055 )
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="f21",value=2.993120459017054 )
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.PIPULSEF10
+values="3.193120459017055,3.193120459017055"   
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 ```
 
-qobj.regs.f10 = 3.193120459017055
-qobj.regs.f21 = 2.993120459017054
 
 
 
-
-## 测量实验步骤11 optQubitReadFreq
+## 测量实验步骤12 optQubitReadFreq
 ### 测量初始化
 ```python
 from qubitclient.ctrl import QubitCtrlClient
@@ -428,15 +455,14 @@ qubit_ctrl_client = QubitCtrlClient()
   qubit_name_list = ["q3lu7"]
 
 
-
-
-  
+  fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname,key="fread_star")
+    
   data = qubit_ctrl_client.run(CtrlTaskName.OPTQUBITREADFREQ,
-                                   qubits=qubit_name_list,
-                                   freq_span_center=fread,
-                                    freq_span_half_bandwidth=0.0055,
-                                    freq_span_sample_num=40
-                                   )
+                                  qubits=qubit_name_list,
+                                  freq_span_center=fread,
+                                  freq_span_half_bandwidth=0.0055,
+                                  freq_span_sample_num=40) 
+
                               
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
@@ -451,54 +477,12 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新fread
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="fread",value=3.193120459017055 )
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.OPTQUBITREADFREQ
+values="6.590"   
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
 ```
-qobj.regs.fread = 3.193120459017055
-
-
-
-## 测量实验步骤12 opt_pipulse
-### 测量初始化
-```python
-from qubitclient.ctrl import QubitCtrlClient
-from qubitclient.ctrl import CtrlTaskName
-qubit_ctrl_client = QubitCtrlClient()
-```
-调用示例
-### 测量调用示例
-```python
-  qubit_name_list = ["q3lu7"]
-
-
-
-
-  data = qubit_ctrl_client.run(CtrlTaskName.OPTPIPULSE,
-                                   qubits=qubit_name_list,
-                                   ms=None,
-                                   gate='X'
-                                   )
-                              
-  data_id = data[0]["text"]
-  data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
-```
-
-### 注意事项
-1. qubit_name_list = ["q3lu7"] 填写当前测试的比特，切勿填写其他比特
-
-
-### 参数更新
-
-
-根据扫描结果，更新最新m=8的，PiGate.amp  PiGate.alpha
-```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="PiGate.amp",value=3.193120459017055 )
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="PiGate.alpha",value=3.193120459017055 )
-
-```
-qobj.regs.PiGate.amp = 3.193120459017055
-qobj.regs.PiGate.alpha = 3.193120459017055
-
 
 
 
@@ -514,14 +498,10 @@ qubit_ctrl_client = QubitCtrlClient()
 ```python
   qubit_name_list = ["q3lu7"]
 
-
-
-
-  data = qubit_ctrl_client.run(CtrlTaskName.OPTPIPULSE,
+ data = qubit_ctrl_client.run(CtrlTaskName.OPTPIPULSE,
                                    qubits=qubit_name_list,
-                                   ms=None,
-                                   gate='X/2'
-                                   )
+                                   N_list=[1,4,8],
+                                   amp_list=None)
                               
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
@@ -534,16 +514,13 @@ qubit_ctrl_client = QubitCtrlClient()
 ### 参数更新
 
 
-根据扫描结果，更新最新m=8的，PiHalf.amp  PiHalf.alpha
+根据扫描结果，更新最新m=8的，PiGate.amp  PiGate.alpha
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="PiHalf.amp",value=3.193120459017055 )
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="PiHalf.alpha",value=3.193120459017055 )
-
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.OPTPIPULSE
+values="3.193120459017055,3.193120459017055"   
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 ```
-qobj.regs.PiHalf.amp = 3.193120459017055
-qobj.regs.PiHalf.alpha = 3.193120459017055
-
-
 
 
 
@@ -565,9 +542,7 @@ qubit_ctrl_client = QubitCtrlClient()
                                    qubits=qubit_name_list,
                                    delay_start=-60,
                                    delay_end=60,
-                                   delay_sample_num=31,
-                                    zpa=None
-                                   )
+                                   delay_sample_num=31)
                               
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
@@ -582,10 +557,11 @@ qubit_ctrl_client = QubitCtrlClient()
 
 根据扫描结果，更新最新timing.xy
 ```python                                  
-qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, key="timing.xy",value=3.193120459017055 )
-
+qname=qubit_name_list[0]
+task_type=CtrlTaskName.TIMINGXYZ
+values="3.193120459017055"
+qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 ```
-qobj.regs.timing.xy = 3.193120459017055
 
 
 
@@ -639,14 +615,11 @@ qubit_ctrl_client = QubitCtrlClient()
 
 
 
-  data = qubit_ctrl_client.run(CtrlTaskName.T1,
-                                  zpa_start=-1.0,
-                                   zpa_end=0.4,
-                                   zpa_sample_num=71,
+ data = qubit_ctrl_client.run(CtrlTaskName.T1,
+                                   qubits=qubit_name_list,
                                    delay_start=0,
                                    delay_end=80000,
-                                   delay_sample_num=17
-                                   )
+                                   delay_sample_num=17)
                               
   data_id = data[0]["text"]
   data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
@@ -660,6 +633,40 @@ qubit_ctrl_client = QubitCtrlClient()
 
 无更新
 
+
+
+## 测量实验步骤16 T1_2d
+### 测量初始化
+```python
+from qubitclient.ctrl import QubitCtrlClient
+from qubitclient.ctrl import CtrlTaskName
+qubit_ctrl_client = QubitCtrlClient()
+```
+调用示例
+### 测量调用示例
+```python
+  qubit_name_list = ["q3lu7"]
+
+ data = qubit_ctrl_client.run(CtrlTaskName.T1_2D,
+                                   qubits=qubit_name_list,
+                                   bias_start=-1.0,
+                                   bias_end=0.4,
+                                   bias_sample_num=71,
+                                   delay_start=0,
+                                   delay_end=80000,
+                                   delay_sample_num=17)
+                              
+  data_id = data[0]["text"]
+  data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
+```
+
+### 注意事项
+1. qubit_name_list = ["q3lu7"] 填写当前测试的比特，切勿填写其他比特
+
+
+### 参数更新
+
+无更新
 
 
 ## 测量实验步骤17 spinecho_t2

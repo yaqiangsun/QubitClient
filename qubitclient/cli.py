@@ -233,8 +233,13 @@ def ui_start(
     host: str = typer.Option("0.0.0.0", "--host", help="Host to bind"),
     port: int = typer.Option(8000, "--port", help="Port to bind"),
     reload: bool = typer.Option(False, "--reload", help="Enable auto-reload"),
+    storage_root: str = typer.Option("", "--storage-root", help="Storage root path (default: tmp/db/result)"),
 ):
     """Start the pipeline result web UI server."""
+    if storage_root:
+        from qubitclient.ui.server import set_storage_root
+        set_storage_root(storage_root)
+
     try:
         import uvicorn
         from qubitclient.ui import app as fastapi_app

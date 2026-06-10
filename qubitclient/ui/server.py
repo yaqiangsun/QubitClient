@@ -21,6 +21,12 @@ from qubitclient.storage.result_store import PipelineResultStore
 
 _sse_queues: list[asyncio.Queue[bytes]] = []
 _seen_ids: set[str] = set()
+_storage_root: str = ""
+
+
+def set_storage_root(path: str) -> None:
+    global _storage_root
+    _storage_root = path
 
 
 # ---------------------------------------------------------------------------
@@ -29,8 +35,10 @@ _seen_ids: set[str] = set()
 
 async def _watch_directory() -> None:
     """Scan tmp/db/result/pipeline/ every 2s, broadcast new records via SSE."""
-    project_root = Path(__file__).parent.parent.parent
-    pipeline_dir = project_root / "tmp" / "db" / "result" / "pipeline"
+    if _storage_root:
+        pipeline_dir = Path(_storage_root) / "pipeline"
+    else:
+        pipeline_dir = Path.cwd() / "tmp" / "db" / "result" / "pipeline"
     pipeline_dir.mkdir(parents=True, exist_ok=True)
     print(f"[watcher] scanning: {pipeline_dir}")
 

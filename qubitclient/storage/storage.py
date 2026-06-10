@@ -34,9 +34,8 @@ class DataStore:
         self._cache: dict[str, Any] = {}
 
     def _default_root(self) -> Path:
-        """Get default storage root directory."""
-        project_root = Path(__file__).parent.parent.parent
-        storage_dir = project_root / "tmp" / "db" / "result"
+        """Get default storage root directory, relative to current working directory."""
+        storage_dir = Path.cwd() / "tmp" / "db" / "result"
         storage_dir.mkdir(parents=True, exist_ok=True)
         return storage_dir
 

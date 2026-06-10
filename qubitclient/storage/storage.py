@@ -3,7 +3,6 @@
 # This source code is licensed under the license found in the LICENSE file
 # in the root directory of this source tree.
 
-import os
 import json
 from enum import Enum
 from pathlib import Path
@@ -37,8 +36,8 @@ class DataStore:
     def _default_root(self) -> Path:
         """Get default storage root directory."""
         project_root = Path(__file__).parent.parent.parent
-        storage_dir = project_root / "data"
-        storage_dir.mkdir(exist_ok=True)
+        storage_dir = project_root / "tmp" / "db" / "result"
+        storage_dir.mkdir(parents=True, exist_ok=True)
         return storage_dir
 
     def save(self, key: str, data: Any, fmt: str = "json") -> str:

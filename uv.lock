@@ -1810,6 +1810,7 @@ dependencies = [
     { name = "attrs" },
     { name = "httpx" },
     { name = "numpy" },
+    { name = "pydantic" },
     { name = "requests" },
     { name = "rich" },
     { name = "typer" },
@@ -1817,6 +1818,7 @@ dependencies = [
 
 [package.optional-dependencies]
 full = [
+    { name = "fastapi" },
     { name = "langchain-mcp-adapters" },
     { name = "matplotlib" },
     { name = "modellock" },
@@ -1824,12 +1826,16 @@ full = [
     { name = "openai" },
     { name = "opencv-python" },
     { name = "opencv-python-headless" },
+    { name = "pillow" },
     { name = "plotly" },
+    { name = "python-multipart" },
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scipy", version = "1.16.3", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "uvicorn" },
 ]
 llm = [
     { name = "openai" },
+    { name = "pillow" },
 ]
 mcp = [
     { name = "langchain-mcp-adapters" },
@@ -1846,10 +1852,16 @@ serve = [
     { name = "modellock" },
     { name = "modelscope" },
 ]
+ui = [
+    { name = "fastapi" },
+    { name = "python-multipart" },
+    { name = "uvicorn" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "attrs", specifier = ">=25.4.0" },
+    { name = "fastapi", marker = "extra == 'ui'", specifier = ">=0.115.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "langchain-mcp-adapters", marker = "extra == 'mcp'", specifier = ">=0.2.1" },
     { name = "matplotlib", marker = "extra == 'plot'", specifier = ">=3.9" },
@@ -1859,14 +1871,18 @@ requires-dist = [
     { name = "openai", marker = "extra == 'llm'", specifier = ">=1.58.0" },
     { name = "opencv-python", marker = "extra == 'plot'", specifier = ">=4.12" },
     { name = "opencv-python-headless", marker = "extra == 'plot'", specifier = ">=4.12" },
+    { name = "pillow", marker = "extra == 'llm'", specifier = ">=10.0.0" },
     { name = "plotly", marker = "extra == 'plot'", specifier = ">=6.4.0" },
-    { name = "qubitclient", extras = ["llm", "mcp", "plot", "serve"], marker = "extra == 'full'" },
+    { name = "pydantic", specifier = ">=2.0.0" },
+    { name = "python-multipart", marker = "extra == 'ui'", specifier = ">=0.0.20" },
+    { name = "qubitclient", extras = ["llm", "mcp", "plot", "serve", "ui"], marker = "extra == 'full'" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "scipy", marker = "extra == 'plot'", specifier = ">=1.10" },
     { name = "typer", specifier = ">=0.15.0" },
+    { name = "uvicorn", marker = "extra == 'ui'", specifier = ">=0.32.0" },
 ]
-provides-extras = ["plot", "mcp", "serve", "llm", "full"]
+provides-extras = ["plot", "mcp", "serve", "llm", "ui", "full"]
 
 [[package]]
 name = "referencing"

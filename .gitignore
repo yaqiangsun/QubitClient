@@ -31,3 +31,4 @@ qubitclient.egg-info/
 py.typed
 .claude/
 serve_templates/*
+CLAUDE_PLAN.md

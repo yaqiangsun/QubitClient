@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QubitClient Pipeline Results</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+       background: #f0f2f5; color: #1a1a2e; }
+
+header { background: #fff; border-bottom: 1px solid #e4e6eb; color: #1a1a2e;
+         padding: 14px 20px; position: sticky; top: 0; z-index: 100;
+         display: flex; gap: 14px; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+header h1 { font-size: 1rem; font-weight: 700; color: #333; letter-spacing: -0.3px; }
+#taskFilter { padding: 5px 10px; border: 1px solid #d0d3da; border-radius: 6px; font-size: 0.82rem;
+              background: #fff; color: #333; cursor: pointer; }
+button { padding: 5px 14px; border: none; border-radius: 6px; font-size: 0.82rem;
+         background: #4f46e5; color: #fff; cursor: pointer; font-weight: 500; }
+button:hover { background: #4338ca; }
+#status { font-size: 0.78rem; color: #888; margin-left: auto; }
+
+#grid { padding: 20px; max-width: 860px; margin: 0 auto; }
+
+.card { background: #fff; border: 1px solid #e8e9ed; border-radius: 10px;
+        margin-bottom: 10px; cursor: pointer; display: flex; gap: 14px; align-items: center;
+        padding: 12px 16px; transition: all 0.15s; }
+.card:hover { border-color: #c7c9d1; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.card-body { flex: 1; }
+.card-title { font-size: 0.85rem; font-weight: 600; color: #222; margin-bottom: 2px; }
+.card-meta { font-size: 0.72rem; color: #999; }
+.card-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; background: #e8e9ed; flex-shrink: 0; }
+
+.badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.7rem; color: #fff; }
+.badge-running { background: #f59e0b; }
+.badge-completed { background: #10b981; }
+.badge-failed { background: #ef4444; }
+
+#modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex;
+         align-items: center; justify-content: center; z-index: 200; }
+#modal.hidden { display: none; }
+#modalContent { background: #fff; border-radius: 14px; width: 90%; max-width: 860px;
+                max-height: 88vh; overflow-y: auto; padding: 24px; position: relative; }
+#modalClose { position: absolute; top: 12px; right: 16px; font-size: 1.5rem;
+              cursor: pointer; color: #aaa; }
+#modalClose:hover { color: #555; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.info-box { background: #f8f9fb; border: 1px solid #e8e9ed; border-radius: 8px; padding: 14px; font-size: 0.82rem; }
+.info-box h3 { font-size: 0.78rem; font-weight: 600; color: #555; margin-bottom: 8px;
+               text-transform: uppercase; letter-spacing: 0.5px; }
+.info-row { display: flex; gap: 8px; margin-bottom: 4px; }
+.info-key { font-weight: 500; color: #666; min-width: 88px; }
+.info-val { color: #222; word-break: break-all; }
+pre { font-size: 0.75rem; white-space: pre-wrap; word-break: break-all;
+      background: #f0f2f5; padding: 10px; border-radius: 6px; margin-top: 8px;
+      border: 1px solid #e8e9ed; }
+pre { font-size: 0.75rem; white-space: pre-wrap; word-break: break-all;
+      background: #f8f8f8; padding: 8px; border-radius: 4px; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>QubitClient Pipeline Results</h1>
+  <select id="taskFilter">
+    <option value="">All Tasks</option>
+  </select>
+  <button id="refreshBtn">Refresh</button>
+  <span id="status"></span>
+</header>
+
+<main id="grid"></main>
+
+<div id="modal" class="hidden">
+  <div id="modalContent">
+    <span id="modalClose">&times;</span>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+let allRuns = [];
+let taskFilterVal = "";
+
+// Build task filter options from data
+function initTaskFilter() {
+  const names = [...new Set(allRuns.map(r => r.task_name))].sort();
+  const sel = document.getElementById("taskFilter");
+  sel.innerHTML = '<option value="">All Tasks</option>';
+  names.forEach(n => { sel.innerHTML += `<option value="${n}">${n}</option>`; });
+}
+
+// Render cards in the grid
+function render() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const filtered = taskFilterVal ? allRuns.filter(r => r.task_name === taskFilterVal) : allRuns;
+  if (filtered.length === 0) {
+    grid.innerHTML = "<p style='padding:24px;color:#888'>No results yet. Run demo_pipeline.py to feed data.</p>";
+    return;
+  }
+  filtered.forEach(run => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.onclick = () => showDetail(run);
+    div.innerHTML = `
+      <div class="card-title">
+        ${run.task_name} <span class="badge badge-${run.status}">${run.status}</span>
+      </div>
+      <div class="card-meta">${(run.qubits || []).join(", ")} &nbsp;·&nbsp; ${new Date(run.created_at).toLocaleString()}</div>`;
+    grid.appendChild(div);
+  });
+  document.getElementById("status").textContent = `${filtered.length} / ${allRuns.length} results`;
+}
+
+// Load all runs from API
+async function loadRuns() {
+  try {
+    const resp = await fetch("/api/runs?limit=200");
+    const data = await resp.json();
+    allRuns = data.items || [];
+    // Deduplicate by id
+    const seen = new Set();
+    allRuns = allRuns.filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true; });
+    // Sort newest first
+    allRuns.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    initTaskFilter();
+    render();
+  } catch (e) {
+    console.error("Failed to load runs:", e);
+  }
+}
+
+// Show detail in modal
+function showDetail(run) {
+  const body = document.getElementById("modalBody");
+  let paramsHtml = "";
+  for (const [k, v] of Object.entries(run.params || {})) {
+    paramsHtml += `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${typeof v === "object" ? JSON.stringify(v) : v}</span></div>`;
+  }
+  body.innerHTML = `
+    <h2>${run.task_name} <span class="badge badge-${run.status}">${run.status}</span></h2>
+    <p style="color:#888;font-size:0.8rem;margin-top:4px">ID: ${run.id}</p>
+    <div class="info-grid">
+      <div class="info-box">
+        <h3>Info</h3>
+        <div class="info-row"><span class="info-key">Qubits</span><span class="info-val">${(run.qubits || []).join(", ")}</span></div>
+        <div class="info-row"><span class="info-key">Pipeline</span><span class="info-val">${run.task_type}</span></div>
+        <div class="info-row"><span class="info-key">Created</span><span class="info-val">${new Date(run.created_at).toLocaleString()}</span></div>
+        ${run.completed_at ? `<div class="info-row"><span class="info-key">Completed</span><span class="info-val">${new Date(run.completed_at).toLocaleString()}</span></div>` : ""}
+        ${run.error ? `<div class="info-row"><span class="info-key">Error</span><span class="info-val" style="color:#e74c3c">${run.error}</span></div>` : ""}
+      </div>
+      <div class="info-box">
+        <h3>Parameters</h3>
+        ${paramsHtml || "<p>None</p>"}
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:12px">
+      <h3>Analysis Result</h3>
+      <pre>${run.analysis_result ? (typeof run.analysis_result === "string" ? run.analysis_result : JSON.stringify(run.analysis_result, null, 2)) : "N/A"}</pre>
+    </div>`;
+  document.getElementById("modal").classList.remove("hidden");
+}
+
+// SSE live update
+function connectSSE() {
+  const es = new EventSource("/api/stream");
+  es.onmessage = (e) => {
+    try {
+      const record = JSON.parse(e.data);
+      if (!allRuns.find(r => r.id === record.id)) {
+        allRuns.unshift(record);
+        allRuns.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        initTaskFilter();
+        render();
+      }
+    } catch (err) {}
+  };
+  es.onerror = () => {
+    es.close();
+    setTimeout(connectSSE, 3000);
+  };
+}
+
+// Event listeners
+document.getElementById("taskFilter").addEventListener("change", (e) => {
+  taskFilterVal = e.target.value;
+  render();
+});
+document.getElementById("refreshBtn").addEventListener("click", loadRuns);
+document.getElementById("modalClose").addEventListener("click", () => {
+  document.getElementById("modal").classList.add("hidden");
+});
+document.getElementById("modal").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("modal")) {
+    document.getElementById("modal").classList.add("hidden");
+  }
+});
+
+// Init
+loadRuns();
+connectSSE();
+</script>
+</body>
+</html>

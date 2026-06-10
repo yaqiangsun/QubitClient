@@ -27,6 +27,7 @@ dependencies = [
     "requests>=2.32.5",
     "typer>=0.15.0",
     "rich>=13.0.0",
+    "pydantic>=2.0.0",
 ]
 [tool.setuptools.dynamic]
 version = {attr = "qubitclient.__version__"}
@@ -50,15 +51,20 @@ llm = [
     "openai>=1.58.0",
     "pillow>=10.0.0",
 ]
+ui = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.32.0",
+    "python-multipart>=0.0.20",
+]
 full = [
-    "qubitclient[plot,mcp,llm,serve]",
+    "qubitclient[plot,mcp,llm,serve,ui]",
 ]
 
 [tool.uv]
 index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.setuptools.package-data]
-qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json", "templates/serve_templates/**/*", "templates/config_templates/**/*"]
+qubitclient = ["llm/fewshot/samples/**/*.png", "llm/fewshot/samples/metadata.json", "templates/serve_templates/**/*", "templates/config_templates/**/*", "ui/templates/**/*"]
 
 [tool.setuptools.packages.find]
 where = ["."]

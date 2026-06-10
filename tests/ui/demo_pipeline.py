@@ -21,15 +21,58 @@ Usage:
 """
 
 import os
+import shutil
 import sys
 import time
 import uuid
 import random
 from datetime import datetime
+from pathlib import Path
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
+
+
+# ---------------------------------------------------------------------------
+# Demo image index
+# ---------------------------------------------------------------------------
+
+_IMAGE_DIR = Path(project_root) / "tests" / "llm" / "dataset" / "images_exta"
+_DEMO_PLOT_DIR = Path(project_root) / "tmp" / "demo_plots"
+_DEMO_PLOT_DIR.mkdir(parents=True, exist_ok=True)
+
+# Map task_name → list of image filenames in images_exta
+_TASK_TO_IMAGES = {}
+for f in _IMAGE_DIR.glob("*.png"):
+    name = f.stem
+    # e.g. t1fit_1297.png → "t1", ramsey_1607.png → "ramsey"
+    for prefix in ["t1fit", "t2fit", "ramsey", "drag", "spectrum", "spectrum2d",
+                   "s21peak", "s21peakmulti", "s21vflux", "singleshot",
+                   "powershift", "optpipulse", "rabicos", "rb"]:
+        if name.startswith(prefix):
+            key = {
+                "t1fit": "t1", "t2fit": "spinecho_t2",
+                "spectrum2d": "spectrum_2d",
+            }.get(prefix, prefix)
+            _TASK_TO_IMAGES.setdefault(key, []).append(f.name)
+            break
+
+# Fallback: tasks with no dedicated images use a generic image
+_GENERIC_IMAGES = ["t1fit_1297.png", "ramsey_1607.png", "drag_16343.png"]
+
+
+def _pick_image(task_name: str) -> str | None:
+    """Pick a random image for the task, copy it to demo_plots/, return new path."""
+    candidates = _TASK_TO_IMAGES.get(task_name, _GENERIC_IMAGES)
+    src_name = random.choice(candidates)
+    src_path = _IMAGE_DIR / src_name
+    if not src_path.exists():
+        return None
+    dst_name = f"{uuid.uuid4().hex[:8]}_{src_name}"
+    dst_path = _DEMO_PLOT_DIR / dst_name
+    shutil.copy2(src_path, dst_path)
+    return str(dst_path)
 
 
 # ---------------------------------------------------------------------------
@@ -168,10 +211,12 @@ def run_demo(n_runs: int = 20, interval: float = 2.0):
             print(f"[{i+1}/{n_runs}] [{task_name}] FAILED   id={run_id[:8]}...")
         else:
             analysis = _make_fake_analysis(task_name, params)
+            plot_path = _pick_image(task_name)
             store.update_run(
                 run_id,
                 status="completed",
                 analysis_result=analysis,
+                plot_paths=[plot_path] if plot_path else [],
                 completed_at=datetime.now(),
             )
             print(f"[{i+1}/{n_runs}] [{task_name}] done      id={run_id[:8]}...")

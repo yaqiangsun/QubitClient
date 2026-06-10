@@ -24,9 +24,9 @@ button:hover { background: #4338ca; }
 
 .card { background: #fff; border: 1px solid #e8e9ed; border-radius: 10px;
         margin-bottom: 10px; cursor: pointer; display: flex; gap: 14px; align-items: center;
-        padding: 12px 16px; transition: all 0.15s; }
+        padding: 10px 14px; transition: all 0.15s; overflow: hidden; }
 .card:hover { border-color: #c7c9d1; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-.card-body { flex: 1; }
+.card-body { flex: 1; overflow: hidden; }
 .card-title { font-size: 0.85rem; font-weight: 600; color: #222; margin-bottom: 2px; }
 .card-meta { font-size: 0.72rem; color: #999; }
 .card-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; background: #e8e9ed; flex-shrink: 0; }
@@ -104,11 +104,17 @@ function render() {
     const div = document.createElement("div");
     div.className = "card";
     div.onclick = () => showDetail(run);
+    const imgHtml = run.plot_paths && run.plot_paths.length > 0 && run.plot_paths[0]
+      ? `<img src="/api/plots/${run.id}/0" style="width:52px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#e8e9ed" onerror="this.style.display='none'"/>`
+      : '';
     div.innerHTML = `
-      <div class="card-title">
-        ${run.task_name} <span class="badge badge-${run.status}">${run.status}</span>
-      </div>
-      <div class="card-meta">${(run.qubits || []).join(", ")} &nbsp;·&nbsp; ${new Date(run.created_at).toLocaleString()}</div>`;
+      ${imgHtml}
+      <div class="card-body">
+        <div class="card-title">
+          ${run.task_name} <span class="badge badge-${run.status}">${run.status}</span>
+        </div>
+        <div class="card-meta">${(run.qubits || []).join(", ")} &nbsp;·&nbsp; ${new Date(run.created_at).toLocaleString()}</div>
+      </div>`;
     grid.appendChild(div);
   });
   document.getElementById("status").textContent = `${filtered.length} / ${allRuns.length} results`;

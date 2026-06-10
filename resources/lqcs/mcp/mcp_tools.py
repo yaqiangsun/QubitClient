@@ -49,7 +49,7 @@ def find_latest_filename(task_type):
     max_num = -1
     latest_file_name = None
     for filename in os.listdir(ROOT_FOLDER):
-        print("filename: ", filename)
+        # print("filename: ", filename)
         if not filename.endswith('.hdf5'):
             continue
         number_id = int(filename.split(' - ')[0])
@@ -175,7 +175,7 @@ def s21(qubits:list[str]=['Q0','Q1'],
         frequency_center=6.5,
         frequency_half_bandwidth=0.0005,
         frequency_sample_num=101,
-        *args,**kwargs):
+        ):
     result = lqcs_s21(qubits=qubits,
                       frequency_center=frequency_center,
                       frequency_half_bandwidth=frequency_half_bandwidth,
@@ -189,13 +189,13 @@ def s21multi(qubits:list[str]=['Q0','Q1'],
         frequency_start:float=6.3,
         frequency_end:float=6.9,
         frequency_sample_rate=0.0001,
-        *args,**kwargs):
+        ):
     result = lqcs_s21multi(qubits=qubits,
                       frequency_start=frequency_start,
                       frequency_end=frequency_end,
                       frequency_sample_rate=frequency_sample_rate
                       )
-    hdf5_path = find_latest_filename(task_type='s21multi')
+    hdf5_path = find_latest_filename(task_type='s21')
     return hdf5_path
 
 @mcp.tool
@@ -205,7 +205,7 @@ def drag(qubits:list[str]=['Q0','Q1'],
          N_repeat:int=1,
          pulsePair:list[int]=[0, 1],
          signal:str='population',
-         *args, **kwargs):
+         ):
     result = lqcs_drag(qubits=qubits)
     hdf5_path = find_latest_filename(task_type='drag')
     return hdf5_path
@@ -215,7 +215,7 @@ def rabi(qubits:list[str]=['Q0','Q1'],
          amp_start=0,
          amp_end=2,
          amp_sample_num=16,   
-         *args, **kwargs):
+         ):
     result = lqcs_rabi(qubits=qubits,
                       amp_start=amp_start,
                       amp_end=amp_end,
@@ -229,7 +229,7 @@ def ramsey(qubits:list[str]=['Q0','Q2'],
            delay_end=100,
            delay_sample_num=100,
            fringeFreq=0.05,
-           *args, **kwargs):
+           ):
     result = lqcs_ramsey(qubits=qubits,
                       fringeFreq=fringeFreq,
                       delay_start=delay_start,
@@ -247,7 +247,7 @@ def t1_2d(qubits:list[str]=['Q0','Q1'],
        delay_start=0,
        delay_end=80000,
        delay_sample_num=17,
-       *args, **kwargs):
+       ):
        result = lqcs_t1_2d(qubits=qubits,
                          zpa_start=bias_start,
                          zpa_end=bias_end,
@@ -263,7 +263,7 @@ def t1(qubits:list[str]=['Q0','Q1'],
        delay_start=0,
        delay_end=80000,
        delay_sample_num=17,
-       *args, **kwargs):
+       ):
        result = lqcs_t1(qubits=qubits,
                         delay_start=delay_start,
                         delay_end=delay_end,
@@ -278,7 +278,7 @@ def spectrum(qubits:list[str]=['Q0','Q1'],
              freq_sample_num=200,
              bias=0,
              drive_amp=0.0,
-             *args, **kwargs):
+             ):
     sb_freq=0
     result = lqcs_spectrum(qubits=qubits,
                            freq_start=freq_start,
@@ -300,7 +300,7 @@ def spectrum_2d(qubits:list[str]=['Q0','Q1'],
                 bias_end=1,
                 bias_sample_num=100,
                 drive_amp=0.0,
-                *args, **kwargs):
+                ):
     sb_freq=0
     result = lqcs_spectrum_2d(qubits=qubits,
                             freq_start=freq_start,
@@ -323,7 +323,7 @@ def s21vsflux(qubits:list[str]=['Q0','Q1'],
               read_bias_start:float=-3,
               read_bias_end:float=3,
               read_bias_sample_num:int=16,
-              *args, **kwargs):
+              ):
     result = lqcs_s21vsflux(qubits=qubits,
                       freq_center=freq_center,
                       freq_half_bandwidth=freq_half_bandwidth,
@@ -336,7 +336,7 @@ def s21vsflux(qubits:list[str]=['Q0','Q1'],
 
 @mcp.tool
 def singleshot(qubits:list[str]=['Q0','Q1'],
-               *args, **kwargs):
+               ):
     result = lqcs_singleshot(qubits=qubits)
     hdf5_path = find_latest_filename(task_type='singleshot')
     return hdf5_path
@@ -345,7 +345,7 @@ def singleshot(qubits:list[str]=['Q0','Q1'],
 def opt_pipulse(qubits:list[str]=['Q0','Q1'],
                 N_list:list[int]=[1, 3, 5],
                 amp_list:list[float]=None,
-                *args, **kwargs):
+                ):
     gate="X"
     result = lqcs_opt_pipulse(qubits=qubits,
                       ms=N_list,
@@ -356,17 +356,17 @@ def opt_pipulse(qubits:list[str]=['Q0','Q1'],
 
 @mcp.tool
 def powershift(qubits:list[str]=['Q0','Q1'],
-               freq_center=6.539,
-               freq_half_bandwidth=0.0015,
-               freq_sample_num=16,
+               frequency_center=6.539,
+               frequency_half_bandwidth=0.0015,
+               frequency_sample_num=16,
                power_start=-40,
                power_end=-16,
                power_sample_num=13,
-               *args, **kwargs):
+               ):
     result = lqcs_powershift(qubits=qubits,
-                      freq_center=freq_center,
-                      freq_half_bandwidth=freq_half_bandwidth,
-                      freq_sample_num=freq_sample_num,
+                      frequency_center=frequency_center,
+                      frequency_half_bandwidth=frequency_half_bandwidth,
+                      frequency_sample_num=frequency_sample_num,
                       power_start=power_start,
                       power_end=power_end,
                       power_sample_num=power_sample_num
@@ -380,7 +380,7 @@ def delta(qubits:list[str]=['Q0','Q1'],
           delta_list:list[float]=None,
           stage:int=1,
           delay:float=20e-9,
-          *args, **kwargs):
+          ):
     result = lqcs_delta(qubits=qubits)
     hdf5_path = find_latest_filename(task_type='delta')
     return hdf5_path
@@ -393,7 +393,7 @@ def rb(qubits:list[str],
        cycle:list=None,
        size:int=11,
        plot:bool=True,
-       *args, **kwargs):
+       ):
     result = lqcs_rb(qubits=qubits)
     hdf5_path = find_latest_filename(task_type='rb')
     return hdf5_path
@@ -401,7 +401,7 @@ def rb(qubits:list[str],
 @mcp.tool
 def pulseshape(qubits:list[str],
                step_height=0.2,
-               *args, **kwargs):
+               ):
     result = lqcs_pulseshape(qubits=qubits,
                       step_height=step_height
                       )
@@ -417,7 +417,7 @@ def xeb(qubits:list[str],
         gate='reference',
         tbuffer=0,
         stats=300,
-        *args, **kwargs):
+        ):
     result = lqcs_xeb(qubits=qubits,
                       m_start=m_start,
                       m_end=m_end,
@@ -435,7 +435,7 @@ def pipulsef10(qubits:list[str],
                df_start=0,
                df_end=0.03,
                df_sample_num=21,
-               *args, **kwargs):
+               ):
     fc=None
     result = lqcs_pipulsef10(qubits=qubits,
                       fc=fc,
@@ -451,7 +451,7 @@ def optqubitreadfreq(qubits:list[str],
                      freq_span_center,
                      freq_span_half_bandwidth=0.0055,
                      freq_span_sample_num=40,
-                     *args, **kwargs):
+                     ):
     result = lqcs_optqubitreadfreq(qubits=qubits,
                       freq_span_center=freq_span_center,
                       freq_span_half_bandwidth=freq_span_half_bandwidth,
@@ -465,7 +465,7 @@ def timingxyz(qubits:list[str],
               delay_start=-60,
               delay_end=60,
               delay_sample_num=31,
-              *args, **kwargs):
+              ):
     zpa=None
     result = lqcs_timingxyz(qubits=qubits,
                       delay_start=delay_start,
@@ -482,7 +482,7 @@ def spinecho_t2(qubits: list[str],
                 delay_end=10000,
                 delay_sample_num=200,
                 fringeFreq=0.05,
-                *args, **kwargs):
+                ):
     
     result = lqcs_spinecho_t2(qubits=qubits,
                        delay_start=delay_start,
@@ -499,7 +499,7 @@ def ramsey_t2(qubits: list[str],
              delay_end=10000,
              delay_sample_num=100,
              fringeFreq=0.05,
-             *args, **kwargs):
+             ):
     result = lqcs_ramsey_t2(qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,

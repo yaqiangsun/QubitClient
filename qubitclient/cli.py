@@ -12,6 +12,7 @@ from .utils.env_load import get_config
 
 app = typer.Typer(help="qubitclient - Quantum computing analysis client")
 serve_app = typer.Typer(help="Server deployment commands")
+ui_app = typer.Typer(help="Pipeline result web UI")
 
 
 @app.callback()
@@ -227,7 +228,27 @@ def serve_license(
         raise typer.Exit(1)
 
 
+@ui_app.command("start")
+def ui_start(
+    host: str = typer.Option("0.0.0.0", "--host", help="Host to bind"),
+    port: int = typer.Option(8000, "--port", help="Port to bind"),
+    reload: bool = typer.Option(False, "--reload", help="Enable auto-reload"),
+):
+    """Start the pipeline result web UI server."""
+    try:
+        import uvicorn
+        from qubitclient.ui import app as fastapi_app
+    except ImportError as e:
+        typer.echo(f"Error: required package not installed — {e}", err=True)
+        typer.echo("Run: pip install -e '.[ui]'", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"Starting QubitClient Pipeline UI at http://{host}:{port}/")
+    uvicorn.run(fastapi_app, host=host, port=port, reload=reload)
+
+
 app.add_typer(serve_app, name="serve")
+app.add_typer(ui_app, name="ui")
 
 
 def cli_main():

@@ -110,7 +110,7 @@ class TaskUpdateConfig:
     def __init__(self):
         self._config = {
             's21': {'params': ['fread']},
-            's21mul': {'params': ['fread']},
+            's21multi': {'params': ['fread']},
             'powershift': {'params': ['ReadIn.power']},
             's21vflux': {'params': ['bias_z']},
             'spectrum': {'params': ['f10', 'f21']},
@@ -158,9 +158,12 @@ def update_param(qname, task_type, values):
     values = [float(v.strip()) for v in values.split(',')]
     if len(values) != len(params):
         raise ValueError(f"{task_type} update {len(params)} params, but got {len(values)} : {values}")
+    
+    qubit = globals()[qname]
     for param, val in zip(params, values):
         if val != "Null":
-            eval(f"{qname}.regs.{param} = {val}")
+            # eval(f"{qname}.regs.{param} = {val}")
+            setattr(qubit.regs, param, val)
 
 
 @mcp.tool
@@ -356,22 +359,22 @@ def opt_pipulse(qubits:list[str]=['Q0','Q1'],
 
 @mcp.tool
 def powershift(qubits:list[str]=['Q0','Q1'],
-               frequency_center=6.539,
-               frequency_half_bandwidth=0.0015,
-               frequency_sample_num=16,
+               freq_center=6.539,
+               freq_half_bandwidth=0.0015,
+               freq_sample_num=16,
                power_start=-40,
                power_end=-16,
                power_sample_num=13,
                ):
     result = lqcs_powershift(qubits=qubits,
-                      frequency_center=frequency_center,
-                      frequency_half_bandwidth=frequency_half_bandwidth,
-                      frequency_sample_num=frequency_sample_num,
+                      frequency_center=freq_center,
+                      frequency_half_bandwidth=freq_half_bandwidth,
+                      frequency_sample_num=freq_sample_num,
                       power_start=power_start,
                       power_end=power_end,
                       power_sample_num=power_sample_num
                       )
-    hdf5_path = find_latest_filename(task_type='powershift')
+    hdf5_path = find_latest_filename(task_type='power')
     return hdf5_path
 
 @mcp.tool

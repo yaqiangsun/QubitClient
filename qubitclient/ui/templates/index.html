@@ -174,12 +174,15 @@ function connectSSE() {
   es.onmessage = (e) => {
     try {
       const record = JSON.parse(e.data);
-      if (!allRuns.find(r => r.id === record.id)) {
-        allRuns.unshift(record);
-        allRuns.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        initTaskFilter();
-        render();
+      const idx = allRuns.findIndex(r => r.id === record.id);
+      if (idx >= 0) {
+        allRuns[idx] = record;  // update existing record (e.g. running → completed)
+      } else {
+        allRuns.unshift(record);  // new record
       }
+      allRuns.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      initTaskFilter();
+      render();
     } catch (err) {}
   };
   es.onerror = () => {

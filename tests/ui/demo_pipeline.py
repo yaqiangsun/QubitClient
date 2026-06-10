@@ -197,7 +197,7 @@ def run_demo(n_runs: int = 20, interval: float = 2.0):
         print(f"[{i+1}/{n_runs}] [{task_name}] started  id={run_id[:8]}...")
 
         # Simulate a short "measurement + analysis" delay
-        delay = random.uniform(0.5, 2.0)
+        delay = random.uniform(2.0, 5.0)
         time.sleep(delay)
 
         # Sometimes fail for realism

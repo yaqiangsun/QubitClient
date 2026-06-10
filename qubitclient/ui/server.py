@@ -21,6 +21,7 @@ from qubitclient.storage.result_store import PipelineResultStore
 
 _sse_queues: list[asyncio.Queue[bytes]] = []
 _seen_ids: set[str] = set()
+_seen_mtimes: dict[str, float] = {}  # run_id -> last known mtime
 _storage_root: str = ""
 
 
@@ -42,31 +43,45 @@ async def _watch_directory() -> None:
     pipeline_dir.mkdir(parents=True, exist_ok=True)
     print(f"[watcher] scanning: {pipeline_dir}")
 
-    # Seed seen set with existing files
+    # Seed seen set with existing files and their mtimes
     for f in sorted(pipeline_dir.glob("*.json")):
         _seen_ids.add(f.stem)
+        try:
+            _seen_mtimes[f.stem] = f.stat().st_mtime
+        except Exception:
+            pass
     print(f"[watcher] seed {len(_seen_ids)} existing files, queues={len(_sse_queues)}")
 
     while True:
         for fpath in sorted(pipeline_dir.glob("*.json")):
-            if fpath.stem in _seen_ids:
-                continue
-            _seen_ids.add(fpath.stem)
+            stem = fpath.stem
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
-                    record = json.load(f)
-                payload = f"data: {json.dumps(record)}\n\n".encode()
-                dead = []
-                for q in _sse_queues:
-                    try:
-                        q.put_nowait(payload)
-                    except Exception:
-                        dead.append(q)
-                for q in dead:
-                    _sse_queues.remove(q)
-                print(f"[watcher] broadcasted: {fpath.stem}, queues={len(_sse_queues)}")
-            except Exception as e:
-                print(f"[watcher] error: {e}")
+                current_mtime = fpath.stat().st_mtime
+            except Exception:
+                continue
+            is_new = stem not in _seen_ids
+            prev_mtime = _seen_mtimes.get(stem)
+            content_changed = (prev_mtime is not None) and (prev_mtime != current_mtime)
+            if is_new or content_changed:
+                _seen_ids.add(stem)
+                _seen_mtimes[stem] = current_mtime
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        record = json.load(f)
+                    payload = f"data: {json.dumps(record)}\n\n".encode()
+                    dead = []
+                    for q in _sse_queues:
+                        try:
+                            q.put_nowait(payload)
+                        except Exception:
+                            dead.append(q)
+                    for q in dead:
+                        _sse_queues.remove(q)
+                    reason = "new" if is_new else f"updated(mtime {prev_mtime:.2f}→{current_mtime:.2f})"
+                    status = record.get("status", "?")
+                    print(f"[watcher] broadcasted ({reason}): {stem} status={status}, queues={len(_sse_queues)}")
+                except Exception as e:
+                    print(f"[watcher] error: {e}")
         await asyncio.sleep(2)
 
 

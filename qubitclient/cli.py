@@ -231,7 +231,7 @@ def serve_license(
 @ui_app.command("start")
 def ui_start(
     host: str = typer.Option("0.0.0.0", "--host", help="Host to bind"),
-    port: int = typer.Option(8000, "--port", help="Port to bind"),
+    port: int = typer.Option(8581, "--port", help="Port to bind"),
     reload: bool = typer.Option(False, "--reload", help="Enable auto-reload"),
     storage_root: str = typer.Option("", "--storage-root", help="Storage root path (default: tmp/db/result)"),
 ):

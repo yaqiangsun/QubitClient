@@ -11,9 +11,9 @@
 Usage:
     python -m tests.ui.serve
     # or
-    uvicorn qubitclient.ui:app --reload --port 8000
+    uvicorn qubitclient.ui:app --reload --port 8581
 
-The server will be available at http://localhost:8000
+The server will be available at http://localhost:8581
 """
 
 import os
@@ -29,7 +29,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="QubitClient Pipeline Result Web UI")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind (default: 0.0.0.0)")
-    parser.add_argument("--port", type=int, default=8000, help="Port to bind (default: 8000)")
+    parser.add_argument("--port", type=int, default=8581, help="Port to bind (default: 8581)")
     parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
     args = parser.parse_args()
 

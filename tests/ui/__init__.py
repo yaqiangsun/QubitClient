@@ -5,7 +5,7 @@
 
 """tests.ui — demo package for the pipeline result web UI.
 
-serve.py   — start the web server (port 8000)
+serve.py   — start the web server (port 8581)
 demo_pipeline.py — simulate live pipeline runs feeding into the store + SSE stream
 
 Run:

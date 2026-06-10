@@ -14,7 +14,7 @@ pip install -e ".[ui]"
 ```bash
 python -m tests.ui.serve
 ```
-浏览器打开 http://localhost:8000/
+浏览器打开 http://localhost:8581/
 
 **终端 2 — 模拟 pipeline 数据写入：**
 ```bash

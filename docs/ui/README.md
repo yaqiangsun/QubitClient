@@ -20,7 +20,7 @@ qubitclient ui start --port 9000
 qubitclient ui start --reload
 ```
 
-然后浏览器打开 http://localhost:8000/
+然后浏览器打开 http://localhost:8581/
 
 ## 模拟 Pipeline 数据
 

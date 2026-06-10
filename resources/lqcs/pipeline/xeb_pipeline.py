@@ -42,7 +42,8 @@ def get_xeb_hdf5_res():
     fig_list = plot_xeb(data, analysis_result, save_path=img_save_path)
 
     # 无参数更新
-     # resize更小
+    
+    # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
     

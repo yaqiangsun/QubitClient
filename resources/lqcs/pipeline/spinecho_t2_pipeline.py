@@ -21,7 +21,6 @@ def get_t2_hdf5_res():
     
     data = qubit_ctrl_client.run(CtrlTaskName.T2,
                                    qubits=qubit_name_list,
-                                   
                                    fringeFreq=0.05,
                                    delay_start=0,
                                    delay_end=10000,
@@ -40,7 +39,8 @@ def get_t2_hdf5_res():
     fig_list = plot_t2fit(data, analysis_result, save_path=img_save_path)
 
     # 无参数更新
-     # resize更小
+    
+    # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
     

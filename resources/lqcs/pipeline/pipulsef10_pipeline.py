@@ -43,7 +43,7 @@ def get_pipulsef10_hdf5_res():
     # qname=qubit_name_list[0]
     # task_type=CtrlTaskName.PIPULSEF10
     # values="3.193120459017055,3.193120459017055"   
-    # qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    # qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
 if __name__ == '__main__':
     get_pipulsef10_hdf5_res()

@@ -35,8 +35,9 @@ def get_s21multi_hdf5_res():
     data = qubit_ctrl_client.run(CtrlTaskName.S21MULTI,
                                     qubits=qubit_name_list,
                                     frequency_start=6.5,
-                                    frequency_end=6.9,
-                                    frequency_sample_rate=0.0001)
+                                    frequency_end=6.8,
+                                    frequency_sample_rate=0.0002)
+    
     data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA,rid=data_id)
 
@@ -69,13 +70,17 @@ def get_s21multi_hdf5_res():
             base_freq = base_freq_dict.get(qname) 
             if(len(freqs)): 
                 closest_freq = min(freqs, key=lambda f: abs(f - base_freq))
+                print("[INFO] update : ", closest_freq, qname)
                 values=str(closest_freq)
                 task_type=CtrlTaskName.S21MULTI
-                qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, 
-                                    qname=qname, 
+                # qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, 
+                #                     qname=qname, 
+                #                     task_type=task_type, 
+                #                     values=values)
+                qubit_ctrl_client.update_param(qname=qname, 
                                     task_type=task_type, 
                                     values=values)
-        # resize更小
+    # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
     

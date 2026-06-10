@@ -20,7 +20,7 @@ def get_s21_hdf5_res():
     qubit_name_list = ["q3lu7"]
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.S21
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
+    fread = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
     fread = float(fread[0]["text"])
 
     data = qubit_ctrl_client.run(CtrlTaskName.S21,
@@ -60,7 +60,7 @@ def get_s21_hdf5_res():
             if (len(freqs)):
                 values=str(freqs[0])  
                 task_type=CtrlTaskName.S21
-                qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
 
     # resize更小

@@ -45,25 +45,25 @@ def get_ramsey_hdf5_res():
         elif "result" in analysis_result.keys():
             analysis_result = analysis_result.get("result")
     for result in analysis_result:
-            params_list = result['params_list']
-            r2_list = result['r2_list']
-            fit_data_list = result['fit_data_list']
-            for i in range(len(qubit_name_list)):
-                params = params_list[i]
-                w = params[4]
-                qname=qubit_name_list[i]
-                task_type=CtrlTaskName.RAMSEY
-                f10 = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="f10_star")
-                deltaf = w /(2*math.pi)         # 失谐量（Hz）
-                if(fringeFreq>f10):
-                    target_freq = fringeFreq - deltaf    # 如果 f_measure > f10
-                
-                else:
-                     target_freq = fringeFreq + deltaf    # 如果 f_measure < f10
-                non=-0.2
-                values=str(target_freq) + ',' + str(target_freq + non)
-                task_type=CtrlTaskName.RAMSEY
-                qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+        params_list = result['params_list']
+        r2_list = result['r2_list']
+        fit_data_list = result['fit_data_list']
+        for i in range(len(qubit_name_list)):
+            params = params_list[i]
+            w = params[4]
+            qname=qubit_name_list[i]
+            task_type=CtrlTaskName.RAMSEY
+            f10 = qubit_ctrl_client.query_param(qname=qname, key="f10_star")
+            deltaf = w /(2*math.pi)         # 失谐量（Hz）
+            if(fringeFreq>f10):
+                target_freq = fringeFreq - deltaf    # 如果 f_measure > f10
+            
+            else:
+                 target_freq = fringeFreq + deltaf    # 如果 f_measure < f10
+            non=-0.2
+            values=str(target_freq) + ',' + str(target_freq + non)
+            task_type=CtrlTaskName.RAMSEY
+            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
      # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)

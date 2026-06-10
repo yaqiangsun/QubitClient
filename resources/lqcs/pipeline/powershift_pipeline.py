@@ -23,19 +23,30 @@ def get_powershift_hdf5_res():
     qubit_name_list = ["q3lu7"]
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.POWERSHIFT
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname, key="fread_star")
+    fread = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
     
     fread = float(fread[0]["text"])
 
 
+    # data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
+    #                              qubits=qubit_name_list,
+    #                              frequency_center=fread,
+    #                              frequency_half_bandwidth=0.0015,
+    #                              frequency_sample_num=16,
+    #                              power_start=-40,
+    #                              power_end=-16,
+    #                              power_sample_num=13
+    #                              )
+
+    # 简短化 复现问题
     data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
                                  qubits=qubit_name_list,
                                  frequency_center=fread,
                                  frequency_half_bandwidth=0.0015,
-                                 frequency_sample_num=16,
+                                 frequency_sample_num=2,
                                  power_start=-40,
                                  power_end=-16,
-                                 power_sample_num=13
+                                 power_sample_num=4
                                  )
     
     data_id = data[0]["text"]
@@ -75,11 +86,14 @@ def get_powershift_hdf5_res():
                 if class_num==3:
                     keypoints_segments.append([keypoints[2],keypoints[1]])
                 qname=qubit_name_list[i]
-                if (keypoints_segments):
+                if (keypoints_segments): # example:[[[6.539499999999999, -40.0], [6.539499999999999, -20.0]]]
+                    keypoints_segments = keypoints_segments[0]
+                    print("[INFO] keypoints_segments: ", keypoints_segments)
                     target_power = keypoints_segments[0][1] + (keypoints_segments[1][1] - keypoints_segments[0][1]) * 0.8
                     values=str(target_power) 
+
                     task_type=CtrlTaskName.POWERSHIFT
-                    qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+                    qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
 
     # resize更小

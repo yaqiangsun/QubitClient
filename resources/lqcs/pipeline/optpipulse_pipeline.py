@@ -59,7 +59,7 @@ def get_opt_pipulse_hdf5_res():
             values=str(target_amp) + ',' + target_alpha
             qname=qubit_name_list[i]
             task_type=CtrlTaskName.OPTPIPULSE
-            qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
     # # 4.更新PiHalf.amp和PiHalf.alpha
    

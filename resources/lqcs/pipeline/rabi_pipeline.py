@@ -58,7 +58,7 @@ def get_rabi_hdf5_res():
             values=str(target_amp)
             qname=qubit_name_list[i]
             task_type=CtrlTaskName.RABI
-            qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
     # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)

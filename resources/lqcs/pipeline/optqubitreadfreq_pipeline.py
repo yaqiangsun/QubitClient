@@ -22,7 +22,7 @@ def get_optqubitreadfreq_hdf5_res():
 
     qname=qubit_name_list[0]
     task_type=CtrlTaskName.OPTQUBITREADFREQ
-    fread = qubit_ctrl_client.run(CtrlTaskName.QUERY_PARAM,qname=qname,key="fread_star")
+    fread = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
     
     data = qubit_ctrl_client.run(CtrlTaskName.OPTQUBITREADFREQ,
                                    qubits=qubit_name_list,
@@ -46,7 +46,7 @@ def get_optqubitreadfreq_hdf5_res():
     # qname=qubit_name_list[0]
     # task_type=CtrlTaskName.OPTQUBITREADFREQ
     # values="6.590"   
-    # qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
+    # qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
 if __name__ == '__main__':
     get_optqubitreadfreq_hdf5_res()

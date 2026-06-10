@@ -43,7 +43,7 @@ def get_spectrum2d_hdf5_res():
     fig_list = plot_nnspectrum2d(data, analysis_result, save_path=img_save_path)
 
     
-     # resize更小
+    # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
     

@@ -6,6 +6,10 @@
 # Author: yaqiangsun
 # Created Time: 2026/03/26 15:50:15
 ########################################################################
+import numpy as np
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent))
 
 import os
 from  lqcs_mcp.tools import s21 as lqcs_s21
@@ -31,10 +35,7 @@ from  lqcs_mcp.tools import optqubitreadfreq as lqcs_optqubitreadfreq
 from  lqcs_mcp.tools import pulseshape as lqcs_pulseshape
 from  lqcs_mcp.tools import timingxyz as lqcs_timingxyz
 
-import numpy as np
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent))
+
 import os
 import numpy as np
 import h5py

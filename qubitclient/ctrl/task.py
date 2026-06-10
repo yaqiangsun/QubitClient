@@ -11,9 +11,9 @@ import numpy as np
 from qubitclient.ctrl import MCPClient
 import json
 
-def call_mcp(task_type:str,*args,**kwargs):
+def call_mcp(func_name:str,*args,**kwargs):
     mcp = MCPClient(mcpServers=None)
-    result = mcp.call(task_type,*args,**kwargs)
+    result = mcp.call(func_name,*args,**kwargs)
     try:
         result = json.loads(result)
     except Exception as e:
@@ -44,8 +44,8 @@ class CtrlTaskName(Enum):
     T1 = "t1"
     RB = "rb"
     DATA = "get_data"
-    QUERY_PARAM = "query_param"
-    UPDATE_PARAM = "update_param"
+    # QUERY_PARAM = "query_param"
+    # UPDATE_PARAM = "update_param"
     ########################################
     T1_2D = "t1_2d"
     SPINECH_T2 = "spinecho_t2"
@@ -413,21 +413,21 @@ def get_data(rid,
                       )
     return result
 
-@task_register
-def query_param(qname, key,
-       *args, **kwargs):
-    result = call_mcp("query_param",
-                      qname=qname,
-                      key=key
-                      )
-    return result
+# @task_register
+# def query_param(qname, key,
+#        *args, **kwargs):
+#     result = call_mcp("query_param",
+#                       qname=qname,
+#                       key=key
+#                       )
+#     return result
 
-@task_register
-def update_param(qname, task_type, values,
-       *args, **kwargs):
-    result = call_mcp("update_param",
-                      qname=qname,
-                      task_type=task_type,
-                      values=values
-                      )
-    return result
+# @task_register
+# def update_param(qname, task_type, values,
+#        *args, **kwargs):
+#     result = call_mcp("update_param",
+#                       qname=qname,
+#                       task_type=task_type,
+#                       values=values
+#                       )
+#     return result

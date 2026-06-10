@@ -9,6 +9,7 @@
 
 
 from .task import run_task
+from .task import call_mcp
 
 
 class QubitCtrlClient(object):
@@ -17,3 +18,15 @@ class QubitCtrlClient(object):
 
     def run(self,task_type:str="s21peak",*args,**kwargs):
         return run_task(task_type,*args,**kwargs)
+
+    def query_param(self, *args, **kwargs):
+        result = call_mcp("query_param",*args,**kwargs)
+        return result
+    def update_param(self, *args, **kwargs):
+        result = call_mcp("update_param",*args,**kwargs)
+        return result
+    def get_data(rid, *args, **kwargs):
+        result = call_mcp("get_data",
+                        rid=rid
+                        )
+        return result

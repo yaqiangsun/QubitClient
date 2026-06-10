@@ -15,6 +15,7 @@ from .nnscope.nnscope import QubitNNScopeClient
 from .scope.task import TaskName
 from .nnscope.task import NNTaskName
 from .wrapper_handler import handle_exceptions, control_api_execution
+from .generate import QubitGenerate, GeneratedImage, ImageSize, ResponseFormat
 
 __all__ = [
     "__version__",
@@ -25,4 +26,8 @@ __all__ = [
     "CurveType",
     "handle_exceptions",
     "control_api_execution",
+    "QubitGenerate",
+    "GeneratedImage",
+    "ImageSize",
+    "ResponseFormat",
 ]

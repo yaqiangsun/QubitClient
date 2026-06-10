@@ -82,6 +82,16 @@ def load_env_config() -> Dict[str, Any]:
         if llm_model:
             config['llm']['model'] = llm_model
 
+    # Generate 配置（图像生成，与 LLM 共用同一套环境变量）
+    if llm_api_key or llm_base_url or llm_model:
+        config['generate'] = {}
+        if llm_api_key:
+            config['generate']['api_key'] = llm_api_key
+        if llm_base_url:
+            config['generate']['base_url'] = llm_base_url
+        if llm_model:
+            config['generate']['model'] = llm_model
+
     return config
 
 
@@ -209,6 +219,56 @@ def get_llm_config(
     user_config = load_json_config(get_user_config_path()).get('llm', {})  # 优先级 2
     env_config = load_env_config().get('llm', {})  # 优先级 3
     runtime_config = load_json_config(get_runtime_config_path()).get('llm', {})  # 优先级 4
+
+    # 构造函数参数（优先级 5）
+    param_config = {}
+    if api_key is not None:
+        param_config['api_key'] = api_key
+    if base_url is not None:
+        param_config['base_url'] = base_url
+    if model is not None:
+        param_config['model'] = model
+
+    # 合并所有配置（高优先级的会覆盖低优先级的）
+    merged = merge_configs(
+        default_config,
+        user_config,
+        env_config,
+        runtime_config,
+        param_config
+    )
+
+    return merged
+
+
+def get_generate_config(
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    model: Optional[str] = None
+) -> Dict[str, str]:
+    """
+    获取图像生成配置，按照优先级合并所有配置源
+
+    优先级从低到高：
+    1. 默认 config.py
+    2. 用户目录 qubitclient.json
+    3. 环境变量 (OPENAI_API_KEY, OPENAI_BASE_URL, OPENAI_MODEL)
+    4. 运行目录 qubitclient.json
+    5. 构造函数参数（最高优先级）
+
+    Args:
+        api_key: 构造函数传入的 api_key 参数
+        base_url: 构造函数传入的 base_url 参数
+        model: 构造函数传入的 model 参数
+
+    Returns:
+        包含 api_key, base_url, model 的配置字典
+    """
+    # 按优先级从低到高收集配置
+    default_config = load_default_config().get('generate', {})  # 优先级 1
+    user_config = load_json_config(get_user_config_path()).get('generate', {})  # 优先级 2
+    env_config = load_env_config().get('generate', {})  # 优先级 3
+    runtime_config = load_json_config(get_runtime_config_path()).get('generate', {})  # 优先级 4
 
     # 构造函数参数（优先级 5）
     param_config = {}

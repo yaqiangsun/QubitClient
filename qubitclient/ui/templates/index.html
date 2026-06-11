@@ -30,11 +30,13 @@ button:hover { background: #4338ca; }
 .card-body { padding: 10px 14px; }
 .card-title { font-size: 0.85rem; font-weight: 600; color: #222; margin-bottom: 2px; }
 .card-meta { font-size: 0.72rem; color: #999; }
+.card-updates { font-size: 0.68rem; color: #8b5cf6; margin-top: 3px; }
 
 .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.7rem; color: #fff; }
 .badge-running { background: #f59e0b; }
 .badge-completed { background: #10b981; }
 .badge-failed { background: #ef4444; }
+.badge-updated { background: #8b5cf6; }
 
 #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex;
          align-items: center; justify-content: center; z-index: 200; }
@@ -106,12 +108,35 @@ function render() {
     div.onclick = () => showDetail(run);
     const imgHtml = run.plot_paths && run.plot_paths[0]
       ? `<img class="card-img" src="/api/plots/${run.id}/0" onerror="this.remove()"/>` : '';
+
+    // Build param-updates badge + preview
+    let updatesHtml = '';
+    if (run.param_updates && run.param_updates.length > 0) {
+      const n = run.param_updates.length;
+      // show first up to 2 updates as preview
+      const previews = run.param_updates.slice(0, 2).map(u => {
+        const ov = (u.old_value === null || u.old_value === undefined) ? 'null' :
+                   typeof u.old_value === 'object' ? JSON.stringify(u.old_value) : String(u.old_value);
+        const nv = (u.new_value === null || u.new_value === undefined) ? 'null' :
+                   typeof u.new_value === 'object' ? JSON.stringify(u.new_value) : String(u.new_value);
+        return `${u.param_name}: ${ov} → ${nv}`;
+      }).join(' | ');
+      updatesHtml = `<div class="card-updates">🔄 ${n} update${n > 1 ? 's' : ''}: ${previews}${n > 2 ? ' …' : ''}</div>`;
+    }
+
+    // raw_data_id if present
+    const rawIdHtml = run.raw_data_id
+      ? `<div class="card-meta">📦 raw: ${run.raw_data_id.slice(0, 8)}…</div>` : '';
+
     div.innerHTML = `
       <div class="card-body">
         <div class="card-title">
           ${run.task_name} <span class="badge badge-${run.status}">${run.status}</span>
+          ${updatesHtml ? '<span class="badge badge-updated">updated</span>' : ''}
         </div>
+        ${updatesHtml}
         <div class="card-meta">${(run.qubits || []).join(", ")} &nbsp;·&nbsp; ${new Date(run.created_at).toLocaleString()}</div>
+        ${rawIdHtml}
       </div>
       ${imgHtml}`;
     grid.appendChild(div);
@@ -144,6 +169,16 @@ function showDetail(run) {
   for (const [k, v] of Object.entries(run.params || {})) {
     paramsHtml += `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${typeof v === "object" ? JSON.stringify(v) : v}</span></div>`;
   }
+
+  // param updates history
+  let updatesHtml = "";
+  if (run.param_updates && run.param_updates.length > 0) {
+    updatesHtml = `<div class="info-box" style="margin-top:12px">
+      <h3>Param Updates (${run.param_updates.length})</h3>
+      <pre>${JSON.stringify(run.param_updates, null, 2)}</pre>
+    </div>`;
+  }
+
   body.innerHTML = `
     <h2>${run.task_name} <span class="badge badge-${run.status}">${run.status}</span></h2>
     <p style="color:#888;font-size:0.8rem;margin-top:4px">ID: ${run.id}</p>
@@ -152,6 +187,7 @@ function showDetail(run) {
         <h3>Info</h3>
         <div class="info-row"><span class="info-key">Qubits</span><span class="info-val">${(run.qubits || []).join(", ")}</span></div>
         <div class="info-row"><span class="info-key">Pipeline</span><span class="info-val">${run.task_type}</span></div>
+        <div class="info-row"><span class="info-key">Raw Data ID</span><span class="info-val">${run.raw_data_id || "N/A"}</span></div>
         <div class="info-row"><span class="info-key">Created</span><span class="info-val">${new Date(run.created_at).toLocaleString()}</span></div>
         ${run.completed_at ? `<div class="info-row"><span class="info-key">Completed</span><span class="info-val">${new Date(run.completed_at).toLocaleString()}</span></div>` : ""}
         ${run.error ? `<div class="info-row"><span class="info-key">Error</span><span class="info-val" style="color:#e74c3c">${run.error}</span></div>` : ""}
@@ -164,7 +200,8 @@ function showDetail(run) {
     <div class="info-box" style="margin-top:12px">
       <h3>Analysis Result</h3>
       <pre>${run.analysis_result ? (typeof run.analysis_result === "string" ? run.analysis_result : JSON.stringify(run.analysis_result, null, 2)) : "N/A"}</pre>
-    </div>`;
+    </div>
+    ${updatesHtml}`;
   document.getElementById("modal").classList.remove("hidden");
 }
 

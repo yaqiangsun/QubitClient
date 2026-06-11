@@ -12,6 +12,14 @@ from pydantic import BaseModel, Field
 from qubitclient.storage.storage import DataStore, StorageBackend
 
 
+class ParamUpdate(BaseModel):
+    """Record of a single parameter update."""
+
+    param_name: str = ""
+    old_value: Any = None
+    new_value: Any = None
+
+
 class PipelineResultRecord(BaseModel):
     """Schema for a single pipeline run record."""
 
@@ -21,12 +29,16 @@ class PipelineResultRecord(BaseModel):
     qubits: list[str] = Field(default_factory=list)
     params: dict[str, Any] = Field(default_factory=dict)
     raw_data: Any = None
+    raw_data_id: str = ""  # ID of the original raw data
     analysis_result: Any = None
     plot_paths: list[str] = Field(default_factory=list)
     status: str = "running"  # "running" | "completed" | "failed"
     error: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
     completed_at: Optional[datetime] = None
+    # Parameter update tracking
+    original_params: dict[str, Any] = Field(default_factory=dict)  # params before any update
+    param_updates: list[ParamUpdate] = Field(default_factory=list)  # history of param changes
 
 
 class PipelineResultStore:
@@ -64,10 +76,12 @@ class PipelineResultStore:
         *,
         status: Optional[str] = None,
         raw_data: Any = None,
+        raw_data_id: Optional[str] = None,
         analysis_result: Any = None,
         plot_paths: Optional[list[str]] = None,
         error: Optional[str] = None,
         completed_at: Optional[datetime] = None,
+        new_params: Optional[dict[str, Any]] = None,
     ) -> bool:
         """Update fields of an existing pipeline run record.
 
@@ -75,10 +89,13 @@ class PipelineResultStore:
             run_id: The run ID to update.
             status: New status value.
             raw_data: New raw data.
+            raw_data_id: ID of the original raw data.
             analysis_result: New analysis result.
             plot_paths: New plot paths list.
             error: Error message if failed.
             completed_at: Completion timestamp.
+            new_params: New params dict — if provided, diff vs original_params is
+                recorded in param_updates.
 
         Returns:
             True if the record was found and updated, False otherwise.
@@ -91,6 +108,8 @@ class PipelineResultStore:
             record.status = status
         if raw_data is not None:
             record.raw_data = raw_data
+        if raw_data_id is not None:
+            record.raw_data_id = raw_data_id
         if analysis_result is not None:
             record.analysis_result = analysis_result
         if plot_paths is not None:
@@ -99,6 +118,14 @@ class PipelineResultStore:
             record.error = error
         if completed_at is not None:
             record.completed_at = completed_at
+        if new_params is not None:
+            if not record.original_params:
+                record.original_params = dict(record.params)
+            for k, new_val in new_params.items():
+                old_val = record.params.get(k)
+                if old_val != new_val:
+                    record.param_updates.append(ParamUpdate(param_name=k, old_value=old_val, new_value=new_val))
+            record.params = new_params
 
         self._store.save(self._key(run_id), record.model_dump(mode="json"), fmt="json")
         return True

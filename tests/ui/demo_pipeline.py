@@ -182,6 +182,7 @@ def run_demo(n_runs: int = 20, interval: float = 2.0):
         task_name = random.choice(_TASK_NAMES)
         pipeline = f"{task_name}_pipeline"
         params = _TASK_PARAM_FACTORIES.get(task_name, _make_t1_params)()
+        raw_data_id = uuid.uuid4().hex  # simulate ID of raw measurement data
 
         # Create running record first
         record = PipelineResultRecord(
@@ -190,6 +191,7 @@ def run_demo(n_runs: int = 20, interval: float = 2.0):
             task_type=pipeline,
             qubits=params.get("qubits", []),
             params=params,
+            raw_data_id=raw_data_id,
             status="running",
             created_at=datetime.now(),
         )
@@ -199,6 +201,21 @@ def run_demo(n_runs: int = 20, interval: float = 2.0):
         # Simulate a short "measurement + analysis" delay
         delay = random.uniform(2.0, 5.0)
         time.sleep(delay)
+
+        # Sometimes update params during the run (simulating real-time calibration)
+        if random.random() < 0.4 and task_name in ["t1", "ramsey", "rabi"]:
+            updated_params = dict(params)
+            # tweak one key that exists in params
+            if task_name == "t1" and "delay_end" in updated_params:
+                updated_params["delay_end"] = int(updated_params["delay_end"] * random.uniform(0.8, 1.2))
+            elif task_name == "rabi" and "amp_end" in updated_params:
+                updated_params["amp_end"] = round(updated_params["amp_end"] * random.uniform(0.9, 1.1), 2)
+            store.update_run(
+                run_id,
+                new_params=updated_params,
+            )
+            print(f"[{i+1}/{n_runs}] [{task_name}] params updated  id={run_id[:8]}...")
+            time.sleep(0.3)
 
         # Sometimes fail for realism
         if random.random() < 0.1:

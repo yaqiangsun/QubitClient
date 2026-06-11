@@ -105,7 +105,7 @@ def test_chat_generate():
 
 def test_chat_edit():
     """测试 Chat API 单图像编辑"""
-    input_image = "tmp/generate/generated_image.png"
+    input_image = "tmp/generate/chat_generated_image.png"
     if os.path.exists(input_image):
         gen = QubitGenerate(
             # base_url="http://xx.xx.xx.xx:8091/v1",
@@ -156,6 +156,6 @@ if __name__ == "__main__":
     # test_image_edit()
 
     test_chat_generate()
-    # test_chat_edit()
+    test_chat_edit()
     # test_chat_variation()
     print("All tests passed!")

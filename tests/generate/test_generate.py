@@ -69,9 +69,9 @@ def test_image_edit():
     if os.path.exists(input_image):
         gen = QubitGenerate(
             # base_url="http://xx.xx.xx.xx:8091/v1",
-            # model="Qwen/Qwen-Image-Edit",
+            # model="Qwen/Qwen-Image",
         )
-        images = gen.generate(
+        images = gen.edit(
             prompt="Convert to watercolor painting style",
             image=input_image,
             size="1024x1024",
@@ -85,9 +85,77 @@ def test_image_edit():
         print("test_image_edit skipped (no input image)")
 
 
+
+def test_chat_generate():
+    """测试 Chat API 文本生成图像（纯文本，无输入图像）"""
+    gen = QubitGenerate(
+        # base_url="http://xx.xx.xx.xx:8091/v1",
+        model="Qwen/Qwen-Image",
+    )
+    images = gen.chat(
+        prompt="A beautiful sunset over mountains, digital art style",
+        image=None,
+        size="1024x1024",
+        n=1,
+    )
+    assert len(images) >= 1, f"Expected at least 1 image, got {len(images)}"
+    images[0].save("tmp/generate/chat_generated_image.png")
+    print(f"Chat generated image saved to tmp/generate/chat_generated_image.png")
+
+
+def test_chat_edit():
+    """测试 Chat API 单图像编辑"""
+    input_image = "tmp/generate/generated_image.png"
+    if os.path.exists(input_image):
+        gen = QubitGenerate(
+            # base_url="http://xx.xx.xx.xx:8091/v1",
+            model="Qwen/Qwen-Image-Edit",
+        )
+        images = gen.chat(
+            prompt="Convert to watercolor painting style",
+            image=input_image,
+            size="1024x1024",
+            n=1,
+        )
+        assert len(images) >= 1, f"Expected at least 1 image, got {len(images)}"
+        images[0].save("tmp/generate/chat_single_edit.png")
+        print(f"Chat single edit saved to tmp/generate/chat_single_edit.png")
+    else:
+        print("test_chat_edit skipped (no input image)")
+
+
+def test_chat_variation():
+    """测试 Chat API 多图像编辑/变体"""
+    input_images = [
+        "tmp/generate/generated_image.png",
+        "tmp/generate/chat_single_edit.png",
+    ]
+    existing_images = [img for img in input_images if os.path.exists(img)]
+    if len(existing_images) >= 2:
+        gen = QubitGenerate(
+            # base_url="http://xx.xx.xx.xx:8091/v1",
+            model="Qwen/Qwen-Image-Edit-2511",
+        )
+        images = gen.chat(
+            prompt="Combine these two images into a surreal landscape",
+            image=existing_images,
+            size="1024x1024",
+            n=1,
+        )
+        assert len(images) >= 1, f"Expected at least 1 image, got {len(images)}"
+        images[0].save("tmp/generate/chat_variation.png")
+        print(f"Chat variation saved to tmp/generate/chat_variation.png")
+    else:
+        print(f"test_chat_variation skipped (need 2 images, found {len(existing_images)})")
+
+
 if __name__ == "__main__":
     # test_generate_init()
     # test_response_format_enum()
-    test_image_generation()
-    test_image_edit()
+    # test_image_generation()
+    # test_image_edit()
+
+    test_chat_generate()
+    # test_chat_edit()
+    # test_chat_variation()
     print("All tests passed!")

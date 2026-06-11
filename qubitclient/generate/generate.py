@@ -9,12 +9,13 @@
 
 """
 图像生成模块 - 整合图像生成和编辑功能
-支持文本生成图像、单图像编辑、多图像编辑
+支持文本生成图像、图像编辑、Chat API 图像生成
 """
 
 import os
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Union
 
 from PIL import Image
@@ -97,9 +98,9 @@ class QubitGenerate:
     """图像生成客户端
 
     支持：
-    - 文本生成图像（text-to-image）
-    - 单图像编辑（image editing）
-    - 多图像编辑（multi-image editing）
+    - generate: 文本生成图像（/v1/images/generations）
+    - edit: 图像编辑（/v1/images/edits）
+    - chat: Chat API 图像生成（/v1/chat/completions + extra_body）
     """
 
     def __init__(
@@ -141,13 +142,110 @@ class QubitGenerate:
     def generate(
         self,
         prompt: str,
+        model: str | None = None,
+        size: ImageSize | str = ImageSize.SIZE_1024x1024,
+        n: int = 1,
+        **kwargs,
+    ) -> list[GeneratedImage]:
+        """文本生成图像（使用 /v1/images/generations）
+
+        Args:
+            prompt: 图像描述
+            model: 模型（默认使用 self.model）
+            size: 图像尺寸（如 "1024x1024"）
+            n: 生成图像数量（1-10）
+            **kwargs: 其他 API 参数（如 guidance_scale, num_inference_steps 等）
+
+        Returns:
+            生成的图像列表
+        """
+        model_name = model or self.model
+        size_val = size.value if isinstance(size, ImageSize) else size
+        n_val = min(max(1, n), 10)
+
+        api_params = {
+            "model": model_name,
+            "prompt": prompt,
+            "size": size_val,
+            "n": n_val,
+            "response_format": "b64_json",
+        }
+
+        # 添加可选参数
+        if "response_format" in kwargs:
+            api_params["response_format"] = kwargs.pop("response_format")
+        if "guidance_scale" in kwargs:
+            api_params["guidance_scale"] = kwargs.pop("guidance_scale")
+        if "num_inference_steps" in kwargs:
+            api_params["num_inference_steps"] = kwargs.pop("num_inference_steps")
+
+        # 其他额外参数
+        api_params.update(kwargs)
+
+        response = self.client.images.generate(**api_params)
+        return self._parse_images_response(response)
+
+    def edit(
+        self,
+        prompt: str,
+        image: Union[str, bytes],
+        model: str | None = None,
+        size: ImageSize | str = ImageSize.SIZE_1024x1024,
+        n: int = 1,
+        **kwargs,
+    ) -> list[GeneratedImage]:
+        """图像编辑（使用 /v1/images/edits）
+
+        Args:
+            prompt: 编辑指令
+            image: 输入图像（文件路径或 bytes）
+            model: 模型（默认使用 self.model）
+            size: 图像尺寸（如 "1024x1024"）
+            n: 生成图像数量（1-10）
+            **kwargs: 其他 API 参数（如 guidance_scale, num_inference_steps 等）
+
+        Returns:
+            编辑后的图像列表
+        """
+        model_name = model or self.model
+        size_val = size.value if isinstance(size, ImageSize) else size
+        n_val = min(max(1, n), 10)
+
+        # images.edit() 接受 PathLike / bytes / file-like object，不接受 plain str
+        # 将字符串路径转换为 Path 对象
+        image_param = Path(image) if isinstance(image, (str, os.PathLike)) else image
+
+        api_params = {
+            "model": model_name,
+            "prompt": prompt,
+            "image": image_param,
+            "size": size_val,
+            "n": n_val,
+            "response_format": "b64_json",
+        }
+
+        # 添加可选参数
+        if "guidance_scale" in kwargs:
+            api_params["guidance_scale"] = kwargs.pop("guidance_scale")
+        if "num_inference_steps" in kwargs:
+            api_params["num_inference_steps"] = kwargs.pop("num_inference_steps")
+
+        # 其他额外参数
+        api_params.update(kwargs)
+
+        response = self.client.images.edit(**api_params)
+        return self._parse_images_response(response)
+
+    def chat(
+        self,
+        prompt: str,
         image: Union[str, bytes, list[Union[str, bytes]], None] = None,
         model: str | None = None,
         size: ImageSize | str = ImageSize.SIZE_1024x1024,
         n: int = 1,
         **kwargs,
     ) -> list[GeneratedImage]:
-        """图像生成/编辑接口（基于 chat.completions.create + extra_body）
+        """图像生成/编辑（使用 /v1/chat/completions + extra_body）
 
         支持三种模式：
         - 文本生成图像：image=None
@@ -210,6 +308,30 @@ class QubitGenerate:
         )
 
         return self._parse_chat_response(response)
+
+    def _parse_images_response(self, response) -> list[GeneratedImage]:
+        """解析 /v1/images/generations 或 /v1/images/edits 响应
+
+        标准 OpenAI Images API 返回格式:
+        {
+          "created": 1234567890,
+          "data": [
+            {"b64_json": "...", "url": null, "revised_prompt": "..."},
+            ...
+          ]
+        }
+        """
+        results = []
+        for item in response.data:
+            b64_json = getattr(item, "b64_json", None) or ""
+            url = getattr(item, "url", None)
+            revised_prompt = getattr(item, "revised_prompt", None)
+            results.append(GeneratedImage(
+                b64_json=b64_json if b64_json else None,
+                url=url,
+                revised_prompt=revised_prompt,
+            ))
+        return results
 
     def _parse_chat_response(self, response) -> list[GeneratedImage]:
         """解析 chat.completions 图像生成/编辑响应

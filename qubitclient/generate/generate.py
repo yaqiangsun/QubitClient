@@ -142,12 +142,12 @@ class QubitGenerate:
         self,
         prompt: str,
         image: Union[str, bytes, list[Union[str, bytes]], None] = None,
-        mask: Union[str, bytes, None] = None,
         model: str | None = None,
         size: ImageSize | str = ImageSize.SIZE_1024x1024,
+        n: int = 1,
         **kwargs,
     ) -> list[GeneratedImage]:
-        """统一图像生成/编辑接口（基于 chat.completions.create）
+        """图像生成/编辑接口（基于 chat.completions.create + extra_body）
 
         支持三种模式：
         - 文本生成图像：image=None
@@ -160,55 +160,47 @@ class QubitGenerate:
                    - None：纯文本生成
                    - 单图（str/bytes）：单图像编辑
                    - 列表：多图像编辑
-            mask: 可选蒙版图像（暂不支持）
             model: 模型（默认使用 self.model）
-            size: 图像尺寸
+            size: 图像尺寸（如 "1024x1024"）
+            n: 生成图像数量（1-10）
             **kwargs: 其他 API 参数（如 num_inference_steps, guidance_scale 等）
 
         Returns:
             生成的图像列表
         """
-        if isinstance(size, str):
-            size = ImageSize(size)
-
         model_name = model or self.model
+        size_val = size.value if isinstance(size, ImageSize) else size
+        n_val = min(max(1, n), 10)
+
+        # 构建消息内容
         content = []
 
-        # 根据 image 参数类型决定模式
-        if image is None:
-            # 纯文本生成：只包含文本
-            content.append({"type": "text", "text": prompt})
-        elif isinstance(image, list):
-            # 多图像编辑
+        # 添加图像（支持单图和多图）
+        if isinstance(image, list):
             for img in image:
                 b64 = encode_image_to_base64(img, max_size=self.max_image_size)
                 content.append({
                     "type": "image_url",
                     "image_url": {"url": f"data:image/png;base64,{b64}"}
                 })
-            content.append({"type": "text", "text": prompt})
-        else:
-            # 单图像编辑
-            image_b64 = encode_image_to_data_uri(
+        elif image is not None:
+            image_b64_uri = encode_image_to_data_uri(
                 image,
                 max_size=self.max_image_size,
                 mime_type="image/png",
             )
             content.append({
                 "type": "image_url",
-                "image_url": {"url": image_b64}
+                "image_url": {"url": image_b64_uri}
             })
-            content.append({"type": "text", "text": prompt})
 
-        # mask 暂不支持（chat completions API 架构不同）
-        if mask is not None:
-            import warnings
-            warnings.warn("mask parameter is not yet supported for chat-based image editing models")
+        # 添加文本提示
+        content.append({"type": "text", "text": prompt})
 
         messages = [{"role": "user", "content": content}]
 
-        # 构建 extra_body
-        extra_body = {"size": size.value if isinstance(size, ImageSize) else size, **kwargs}
+        # 通过 extra_body 传递 size, n 及扩展参数
+        extra_body = {"size": size_val, "n": n_val, **kwargs}
 
         response = self.client.chat.completions.create(
             model=model_name,
@@ -220,9 +212,9 @@ class QubitGenerate:
         return self._parse_chat_response(response)
 
     def _parse_chat_response(self, response) -> list[GeneratedImage]:
-        """解析 chat.completions 图像编辑响应
+        """解析 chat.completions 图像生成/编辑响应
 
-        Qwen/Qwen-Image-Edit 等模型通过 chat API 返回 base64 图像
+        Qwen/Qwen-Image 等模型通过 chat API 返回 base64 图像
         message.content 可能是:
         - 字符串: 直接是 base64 数据
         - 列表: content blocks (如 [{"type": "image_url", ...}])
@@ -235,34 +227,17 @@ class QubitGenerate:
             return results
 
         if isinstance(content, str):
-            # 直接是 base64 字符串
-            b64_json = content
+            results.append(GeneratedImage(b64_json=content, url=None, revised_prompt=None))
         elif isinstance(content, list):
-            # 是 content blocks，查找 image_url 类型的 block
-            b64_json = None
             for block in content:
                 if isinstance(block, dict) and block.get("type") == "image_url":
                     url = block.get("image_url", {}).get("url", "")
-                    # url 格式可能是 "data:image/png;base64,xxxx" 或直接是 base64
                     if url.startswith("data:"):
                         b64_json = url.split(",", 1)[1] if "," in url else url
                     else:
                         b64_json = url
-                    break
-                elif isinstance(block, dict) and block.get("type") == "text":
-                    # 文本块，可能是纯文本响应
-                    pass
-        else:
-            b64_json = None
+                    results.append(GeneratedImage(b64_json=b64_json, url=None, revised_prompt=None))
 
-        if b64_json:
-            results.append(
-                GeneratedImage(
-                    b64_json=b64_json,
-                    url=None,
-                    revised_prompt=None,
-                )
-            )
         return results
 
 

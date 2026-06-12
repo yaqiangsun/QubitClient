@@ -9,11 +9,11 @@ from attrs import field as _attrs_field
 from .. import types
 from ..types import File
 
-T = TypeVar("T", bound="BodyRbfitApiV1TasksScopeRbfitPost")
+T = TypeVar("T", bound="BodyT12DfitApiV1TasksScopeT12DfitPost")
 
 
 @_attrs_define
-class BodyRbfitApiV1TasksScopeRbfitPost:
+class BodyT12DfitApiV1TasksScopeT12DfitPost:
     """
     Attributes:
         files (list[str]):
@@ -54,12 +54,12 @@ class BodyRbfitApiV1TasksScopeRbfitPost:
         d = dict(src_dict)
         files = cast(list[str], d.pop("files"))
 
-        body_rbfit_api_v1_tasks_scope_rbfit_post = cls(
+        body_t12_dfit_api_v1_tasks_scope_t12_dfit_post = cls(
             files=files,
         )
 
-        body_rbfit_api_v1_tasks_scope_rbfit_post.additional_properties = d
-        return body_rbfit_api_v1_tasks_scope_rbfit_post
+        body_t12_dfit_api_v1_tasks_scope_t12_dfit_post.additional_properties = d
+        return body_t12_dfit_api_v1_tasks_scope_t12_dfit_post
 
     @property
     def additional_keys(self) -> list[str]:

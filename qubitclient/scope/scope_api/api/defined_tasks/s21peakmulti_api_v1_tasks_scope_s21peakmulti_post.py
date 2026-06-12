@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2026 yaqiang.sun.
-# This source code is licensed under the license found in the LICENSE file
-# in the root directory of this source tree.
-#########################################################################
-# Author: yaqiangsun
-# Created Time: 2026/04/21 13:21:03
-########################################################################
-
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any
 
 import httpx
 
@@ -24,7 +15,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     body: BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost,
-    type_: Union[Unset, str] = "s21peakmulti",
+    type_: str | Unset = "s21peakmulti",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -47,8 +38,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Any, HTTPValidationError]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | HTTPValidationError | None:
     if response.status_code == 200:
         response_200 = response.json()
         return response_200
@@ -65,8 +56,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Any, HTTPValidationError]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | HTTPValidationError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -77,10 +68,10 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost,
-    type_: Union[Unset, str] = "s21peakmulti",
-) -> Response[Union[Any, HTTPValidationError]]:
+    type_: str | Unset = "s21peakmulti",
+) -> Response[Any | HTTPValidationError]:
     r"""S21Peakmulti
 
      S21峰值检测接口
@@ -93,7 +84,7 @@ def sync_detailed(
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 's21peakmulti'.
+        type_ (str | Unset): 任务类型 Default: 's21peakmulti'.
         body (BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost):
 
     Raises:
@@ -101,7 +92,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, HTTPValidationError]]
+        Response[Any | HTTPValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -118,10 +109,10 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost,
-    type_: Union[Unset, str] = "s21peakmulti",
-) -> Optional[Union[Any, HTTPValidationError]]:
+    type_: str | Unset = "s21peakmulti",
+) -> Any | HTTPValidationError | None:
     r"""S21Peakmulti
 
      S21峰值检测接口
@@ -134,7 +125,7 @@ def sync(
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 's21peakmulti'.
+        type_ (str | Unset): 任务类型 Default: 's21peakmulti'.
         body (BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost):
 
     Raises:
@@ -142,7 +133,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, HTTPValidationError]
+        Any | HTTPValidationError
     """
 
     return sync_detailed(
@@ -154,10 +145,10 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost,
-    type_: Union[Unset, str] = "s21peakmulti",
-) -> Response[Union[Any, HTTPValidationError]]:
+    type_: str | Unset = "s21peakmulti",
+) -> Response[Any | HTTPValidationError]:
     r"""S21Peakmulti
 
      S21峰值检测接口
@@ -170,7 +161,7 @@ async def asyncio_detailed(
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 's21peakmulti'.
+        type_ (str | Unset): 任务类型 Default: 's21peakmulti'.
         body (BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost):
 
     Raises:
@@ -178,7 +169,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, HTTPValidationError]]
+        Response[Any | HTTPValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -193,10 +184,10 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost,
-    type_: Union[Unset, str] = "s21peakmulti",
-) -> Optional[Union[Any, HTTPValidationError]]:
+    type_: str | Unset = "s21peakmulti",
+) -> Any | HTTPValidationError | None:
     r"""S21Peakmulti
 
      S21峰值检测接口
@@ -209,7 +200,7 @@ async def asyncio(
         dict: 包含检测结果的字典
 
     Args:
-        type_ (Union[Unset, str]): 任务类型 Default: 's21peakmulti'.
+        type_ (str | Unset): 任务类型 Default: 's21peakmulti'.
         body (BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost):
 
     Raises:
@@ -217,7 +208,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, HTTPValidationError]
+        Any | HTTPValidationError
     """
 
     return (

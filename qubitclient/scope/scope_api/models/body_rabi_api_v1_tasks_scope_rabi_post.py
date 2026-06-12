@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2026 yaqiang.sun.
-# This source code is licensed under the license found in the LICENSE file
-# in the root directory of this source tree.
-#########################################################################
-# Author: yaqiangsun
-# Created Time: 2026/04/21 13:21:03
-########################################################################
+from __future__ import annotations
 
 from collections.abc import Mapping
-from io import BytesIO
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -24,18 +16,14 @@ T = TypeVar("T", bound="BodyRabiApiV1TasksScopeRabiPost")
 class BodyRabiApiV1TasksScopeRabiPost:
     """
     Attributes:
-        files (list[File]):
+        files (list[str]):
     """
 
-    files: list[File]
+    files: list[str]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        files = []
-        for files_item_data in self.files:
-            files_item = files_item_data.to_tuple()
-
-            files.append(files_item)
+        files = self.files
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -51,7 +39,10 @@ class BodyRabiApiV1TasksScopeRabiPost:
         files: types.RequestFiles = []
 
         for files_item_element in self.files:
-            files.append(("files", files_item_element.to_tuple()))
+            if isinstance(files_item_element, File):
+                files.append(("files", files_item_element.to_tuple()))
+            else:
+                files.append(("files", (None, str(files_item_element).encode(), "text/plain")))
 
         for prop_name, prop in self.additional_properties.items():
             files.append((prop_name, (None, str(prop).encode(), "text/plain")))
@@ -61,12 +52,7 @@ class BodyRabiApiV1TasksScopeRabiPost:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        files = []
-        _files = d.pop("files")
-        for files_item_data in _files:
-            files_item = File(payload=BytesIO(files_item_data))
-
-            files.append(files_item)
+        files = cast(list[str], d.pop("files"))
 
         body_rabi_api_v1_tasks_scope_rabi_post = cls(
             files=files,

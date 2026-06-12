@@ -5,15 +5,15 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_rabi_api_v1_tasks_scope_rabi_post import BodyRabiApiV1TasksScopeRabiPost
+from ...models.body_t12_dfit_api_v1_tasks_scope_t12_dfit_post import BodyT12DfitApiV1TasksScopeT12DfitPost
 from ...models.http_validation_error import HTTPValidationError
 from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: str | Unset = "rabi",
+    body: BodyT12DfitApiV1TasksScopeT12DfitPost,
+    type_: str | Unset = "t12dfit",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -25,7 +25,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/tasks/scope/rabi",
+        "url": "/api/v1/tasks/scope/t12dfit",
         "params": params,
     }
 
@@ -67,23 +67,23 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: str | Unset = "rabi",
+    body: BodyT12DfitApiV1TasksScopeT12DfitPost,
+    type_: str | Unset = "t12dfit",
 ) -> Response[Any | HTTPValidationError]:
-    r"""Rabi
+    r"""T12Dfit
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     t1_2d fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"t12dfit\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (str | Unset): 任务类型 Default: 't12dfit'.
+        body (BodyT12DfitApiV1TasksScopeT12DfitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -108,23 +108,23 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: str | Unset = "rabi",
+    body: BodyT12DfitApiV1TasksScopeT12DfitPost,
+    type_: str | Unset = "t12dfit",
 ) -> Any | HTTPValidationError | None:
-    r"""Rabi
+    r"""T12Dfit
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     t1_2d fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"t12dfit\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (str | Unset): 任务类型 Default: 't12dfit'.
+        body (BodyT12DfitApiV1TasksScopeT12DfitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -144,23 +144,23 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: str | Unset = "rabi",
+    body: BodyT12DfitApiV1TasksScopeT12DfitPost,
+    type_: str | Unset = "t12dfit",
 ) -> Response[Any | HTTPValidationError]:
-    r"""Rabi
+    r"""T12Dfit
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     t1_2d fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"t12dfit\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (str | Unset): 任务类型 Default: 't12dfit'.
+        body (BodyT12DfitApiV1TasksScopeT12DfitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -183,23 +183,23 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRabiApiV1TasksScopeRabiPost,
-    type_: str | Unset = "rabi",
+    body: BodyT12DfitApiV1TasksScopeT12DfitPost,
+    type_: str | Unset = "t12dfit",
 ) -> Any | HTTPValidationError | None:
-    r"""Rabi
+    r"""T12Dfit
 
-     rabi fit,其实是ramsy，后续逐渐废弃
+     t1_2d fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"s21peak\"
+        type: 任务类型，默认为\"t12dfit\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'rabi'.
-        body (BodyRabiApiV1TasksScopeRabiPost):
+        type_ (str | Unset): 任务类型 Default: 't12dfit'.
+        body (BodyT12DfitApiV1TasksScopeT12DfitPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

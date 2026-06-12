@@ -1,14 +1,6 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2026 yaqiang.sun.
-# This source code is licensed under the license found in the LICENSE file
-# in the root directory of this source tree.
-#########################################################################
-# Author: yaqiangsun
-# Created Time: 2026/04/21 13:21:03
-########################################################################
-
 """Contains all the data models used in inputs/outputs"""
 
+from .body_delta_api_v1_tasks_scope_delta_post import BodyDeltaApiV1TasksScopeDeltaPost
 from .body_drag_api_v1_tasks_scope_drag_post import BodyDragApiV1TasksScopeDragPost
 from .body_optpipulse_api_v1_tasks_scope_optpipulse_post import BodyOptpipulseApiV1TasksScopeOptpipulsePost
 from .body_powershift_api_v1_tasks_scope_powershift_post import BodyPowershiftApiV1TasksScopePowershiftPost
@@ -24,11 +16,13 @@ from .body_spectrum_2d_api_v1_tasks_scope_spectrum_2d_post import BodySpectrum2D
 from .body_spectrum_api_v1_tasks_scope_spectrum_post import BodySpectrumApiV1TasksScopeSpectrumPost
 from .body_t1_fit_api_v1_tasks_scope_t1_fit_post import BodyT1FitApiV1TasksScopeT1FitPost
 from .body_t2_fit_api_v1_tasks_scope_t2_fit_post import BodyT2FitApiV1TasksScopeT2FitPost
-from .body_delta_api_v1_tasks_scope_delta_post import BodyDeltaApiV1TasksScopeDeltaPost
+from .body_t12_dfit_api_v1_tasks_scope_t12_dfit_post import BodyT12DfitApiV1TasksScopeT12DfitPost
 from .http_validation_error import HTTPValidationError
 from .validation_error import ValidationError
+from .validation_error_context import ValidationErrorContext
 
 __all__ = (
+    "BodyDeltaApiV1TasksScopeDeltaPost",
     "BodyDragApiV1TasksScopeDragPost",
     "BodyOptpipulseApiV1TasksScopeOptpipulsePost",
     "BodyPowershiftApiV1TasksScopePowershiftPost",
@@ -36,15 +30,16 @@ __all__ = (
     "BodyRabicosApiV1TasksScopeRabicospeakPost",
     "BodyRamsyApiV1TasksScopeRamsyPost",
     "BodyRbfitApiV1TasksScopeRbfitPost",
-    "BodyDeltaApiV1TasksScopeDeltaPost",
     "BodyS21PeakApiV1TasksScopeS21PeakPost",
     "BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost",
     "BodyS21VfluxApiV1TasksScopeS21VfluxPost",
     "BodySingleshotApiV1TasksScopeSingleshotPost",
     "BodySpectrum2DApiV1TasksScopeSpectrum2DPost",
     "BodySpectrumApiV1TasksScopeSpectrumPost",
+    "BodyT12DfitApiV1TasksScopeT12DfitPost",
     "BodyT1FitApiV1TasksScopeT1FitPost",
     "BodyT2FitApiV1TasksScopeT2FitPost",
     "HTTPValidationError",
     "ValidationError",
+    "ValidationErrorContext",
 )

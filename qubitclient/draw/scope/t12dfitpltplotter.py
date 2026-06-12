@@ -64,11 +64,10 @@ class T12DFitDataPltPlotter(QuantumDataPltPlotter):
 
             c = self.add_2dmap(ax, zpadata, delaydata, pdata.T, shading_index=0, cmap_index=0)
             fig.colorbar(c, ax=ax)
-            self.configure_axis(ax, title=f"{file_name}", xlabel="ZPA", ylabel="Delay")
 
             self.add_line(ax, zpa, t1_norm,color_index=3, alpha=0.5)
             self.add_scatter(ax, zpa, t1_norm, alpha=0.5)
-            self.configure_axis(ax, title=f"{file_name}", xlabel="ZPA", ylabel="T1")
+            self.configure_axis(ax, title=f"{file_name}", xlabel="ZPA", ylabel="Delay")
 
         fig.tight_layout()
         return fig

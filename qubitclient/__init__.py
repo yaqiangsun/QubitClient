@@ -14,6 +14,7 @@ from .scope.scope import QubitScopeClient
 from .nnscope.nnscope import QubitNNScopeClient
 from .scope.task import TaskName
 from .nnscope.task import NNTaskName
+from .ctrl.task import CtrlTaskName
 from .wrapper_handler import handle_exceptions, control_api_execution
 from .generate import QubitGenerate, GeneratedImage, ImageSize, ResponseFormat
 

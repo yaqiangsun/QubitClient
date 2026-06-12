@@ -27,7 +27,7 @@ def task_register(func):
 
 
 from enum import Enum, unique
-@unique
+# @unique
 class CtrlTaskName(Enum):
     S21 = "s21"
     S21MULTI = "s21multi"
@@ -46,7 +46,10 @@ class CtrlTaskName(Enum):
     DATA = "get_data"
     # QUERY_PARAM = "query_param"
     # UPDATE_PARAM = "update_param"
+
+
     ########################################
+    # additonal tasks
     T1_2D = "t1_2d"
     SPINECH_T2 = "spinecho_t2"
     RAMSEY_T2 = "ramsey_t2"
@@ -55,6 +58,15 @@ class CtrlTaskName(Enum):
     OPTQUBITREADFREQ = 'optqubitreadfreq'
     TIMINGXYZ = 'timingxyz'
     PULSESHAPE = 'pulseshape'
+    # reflection
+    IQRAW = "singleshot"
+    SPECTROSCOPY = "spectrum"
+    SPECTROSCOPY_2D = "spectrum_2d"
+    S21ZPA_2D = "s21vsflux"
+    S21POWER_2D = "powershift"
+    PIAMP = "rabi"
+    RAMSEYF10 = "ramsey"
+
 
 
 def run_task(task_type,*args,**kwargs):

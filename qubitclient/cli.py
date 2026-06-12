@@ -13,6 +13,9 @@ from .utils.env_load import get_config
 app = typer.Typer(help="qubitclient - Quantum computing analysis client")
 serve_app = typer.Typer(help="Server deployment commands")
 ui_app = typer.Typer(help="Pipeline result web UI")
+download_app = typer.Typer(
+    help="Download resources from GitHub."
+)
 
 
 @app.callback()
@@ -23,7 +26,9 @@ def main():
 
 @app.command("init")
 def client_init(
-    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing files"),
+    overwrite: bool = typer.Option(
+        False, "--overwrite", help="Overwrite existing files"
+    ),
 ):
     """Initialize configuration files in current directory."""
     current_dir = Path.cwd()
@@ -66,7 +71,9 @@ def client_init(
 
 @serve_app.command("init")
 def serve_init(
-    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing files"),
+    overwrite: bool = typer.Option(
+        False, "--overwrite", help="Overwrite existing files"
+    ),
 ):
     """Initialize deployment files in current directory."""
     current_dir = Path.cwd()
@@ -96,7 +103,9 @@ def serve_init(
 
 @serve_app.command("up")
 def serve_up(
-    detach: bool = typer.Option(False, "--detach", "-d", help="Run containers in detached mode"),
+    detach: bool = typer.Option(
+        False, "--detach", "-d", help="Run containers in detached mode"
+    ),
 ):
     """Start all services via docker-compose."""
     compose_file = Path.cwd() / "serve_templates" / "docker-compose.yml"
@@ -131,8 +140,15 @@ def serve_up(
 
 @serve_app.command("download")
 def serve_download(
-    model_name: str = typer.Option("yaqiangsun/qubitscope-enc", "--model", "-m", help="ModelScope model ID"),
-    target_dir: str = typer.Option("serve_templates/qubitserving/model_zoo", "--dir", "-d", help="Target directory to save model"),
+    model_name: str = typer.Option(
+        "yaqiangsun/qubitscope-enc", "--model", "-m", help="ModelScope model ID"
+    ),
+    target_dir: str = typer.Option(
+        "serve_templates/qubitserving/model_zoo",
+        "--dir",
+        "-d",
+        help="Target directory to save model",
+    ),
 ):
     """Download models from ModelScope to model_zoo folder."""
     try:
@@ -158,7 +174,9 @@ def serve_download(
 
 @serve_app.command("license")
 def serve_license(
-    base_url: str = typer.Option("https://license.deepvectories.top", "--url", help="License server base URL"),
+    base_url: str = typer.Option(
+        "https://license.deepvectories.top", "--url", help="License server base URL"
+    ),
     # days: int = typer.Option(30, "--days", help="License validity days"),
 ):
     """Collect device info and request license from license server."""
@@ -194,6 +212,7 @@ def serve_license(
 
     try:
         import requests
+
         with open(device_path, "rb") as f:
             files = {"device_fingerprint": f}
             data = {
@@ -209,14 +228,26 @@ def serve_license(
 
         if response.status_code == 200:
             # Save to qubitserving/license/
-            license_path = Path.cwd() / "serve_templates" / "qubitserving" / "license" / "license.json"
+            license_path = (
+                Path.cwd()
+                / "serve_templates"
+                / "qubitserving"
+                / "license"
+                / "license.json"
+            )
             license_path.parent.mkdir(parents=True, exist_ok=True)
             with open(license_path, "wb") as f:
                 f.write(response.content)
             typer.echo(f"License saved to: {license_path}")
 
             # Copy to qubitscope/license/
-            license_dest = Path.cwd() / "serve_templates" / "qubitscope" / "license" / "license.json"
+            license_dest = (
+                Path.cwd()
+                / "serve_templates"
+                / "qubitscope"
+                / "license"
+                / "license.json"
+            )
             license_dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(license_path, license_dest)
             typer.echo(f"License saved to: {license_dest}")
@@ -233,11 +264,14 @@ def ui_start(
     host: str = typer.Option("0.0.0.0", "--host", help="Host to bind"),
     port: int = typer.Option(8581, "--port", help="Port to bind"),
     reload: bool = typer.Option(False, "--reload", help="Enable auto-reload"),
-    storage_root: str = typer.Option("", "--storage-root", help="Storage root path (default: tmp/db/result)"),
+    storage_root: str = typer.Option(
+        "", "--storage-root", help="Storage root path (default: tmp/db/result)"
+    ),
 ):
     """Start the pipeline result web UI server."""
     if storage_root:
         from qubitclient.ui.server import set_storage_root
+
         set_storage_root(storage_root)
 
     try:
@@ -254,6 +288,42 @@ def ui_start(
 
 app.add_typer(serve_app, name="serve")
 app.add_typer(ui_app, name="ui")
+app.add_typer(download_app, name="download")
+
+
+@download_app.command("folder")
+def download_folder(
+    path: str = typer.Argument(
+        ..., help="Path to folder in repository, e.g. resources/quark, resources/qulab, resources/lqcs"
+    ),
+    repo: str = typer.Option(
+        "yaqiangsun/QubitClient", "--repo", help="Repository in owner/repo format"
+    ),
+    branch: str = typer.Option("main", "--branch", help="Branch or tag name"),
+    local_dir: str | None = typer.Option(None, "--dir", help="Local directory to save files"),
+    token: str | None = typer.Option(
+        None, "--token", help="GitHub Personal Access Token"
+    ),
+) -> None:
+    """Download a folder from a GitHub repository"""
+    from .utils.download import download_github_folder
+
+    owner, _, repo_name = repo.partition("/")
+    if not owner or not repo_name:
+        typer.echo("Error: repo must be in owner/repo format", err=True)
+        raise typer.Exit(1)
+
+    if local_dir is None:
+        local_dir = path
+
+    download_github_folder(
+        owner=owner,
+        repo=repo_name,
+        path=path,
+        branch=branch,
+        local_dir=local_dir,
+        token=token,
+    )
 
 
 def cli_main():

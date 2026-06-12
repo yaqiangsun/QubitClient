@@ -51,7 +51,7 @@ class CtrlTaskName(Enum):
     ########################################
     # additonal tasks
     T1_2D = "t1_2d"
-    SPINECH_T2 = "spinecho_t2"
+    SPINECHO_T2 = "spinecho_t2"
     RAMSEY_T2 = "ramsey_t2"
     XEB = 'xeb'
     PIPULSEF10 = 'pipulsef10'
@@ -267,7 +267,7 @@ def t1_2d(qubits:list[str]=['Q0','Q1'],
        delay_end=80000,
        delay_sample_num=17,
        *args, **kwargs):
-       result = call_mcp("t1",
+       result = call_mcp("t1_2d",
                          qubits=qubits,
                          bias_start=bias_start,
                          bias_end=bias_end,
@@ -278,6 +278,9 @@ def t1_2d(qubits:list[str]=['Q0','Q1'],
                          )
        return result
 
+
+
+@task_register
 def t1(qubits:list[str]=['Q0','Q1'],
        delay_start=0,
        delay_end=80000,

@@ -93,7 +93,7 @@ def send_s21vflux_npy_to_server(url, api_key, dir_path="data/33137"):
 def main():
     API_URL, API_KEY = None,None
 
-    base_dir = "./tmp/s21vlux"
+    base_dir = "./tmp/s21vflux"
     send_s21vflux_npy_to_server(API_URL, API_KEY, base_dir)
 
 

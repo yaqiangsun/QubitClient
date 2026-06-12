@@ -95,7 +95,7 @@ def send_delta_npy_to_server(url, api_key, dir_path="data/delta", batch_size=5):
 
 def main():
     API_URL, API_KEY = None,None
-    base_dir = "data/Delta_npy_test"          
+    base_dir = "tmp/delta"          
     send_delta_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

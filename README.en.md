@@ -292,6 +292,7 @@ print(result)
 | `TaskName.SPECTRUM` | Spectrum analysis | [Docs](docs/scope/SPECTRUM.md) | ✅ |
 | `TaskName.T1FIT` | T1 time fitting | [Docs](docs/scope/T1FIT.md) | ✅ |
 | `TaskName.T2FIT` | T2 time fitting | [Docs](docs/scope/T2FIT.md) | ✅ |
+| `TaskName.T12DFIT` | 2D T1 decay fitting | [Docs](docs/scope/T12DFIT.md) | ✅ |
 | `TaskName.POWERSHIFT` | Power shift curve analysis | [Docs](docs/scope/POWERSHIFT.md) | ✅ |
 | `TaskName.SPECTRUM2D` | 2D spectrum data curve segmentation | [Docs](docs/scope/SPECTRUM2D.md) | ✅ |
 | `TaskName.DRAG` | DRAG cross-point avoidance analysis | [Docs](docs/scope/DRAG.md) | ✅ |

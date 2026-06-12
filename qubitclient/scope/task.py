@@ -24,6 +24,7 @@ from .scope_api.api.defined_tasks import powershift_api_v1_tasks_scope_powershif
 from .scope_api.api.defined_tasks import drag_api_v1_tasks_scope_drag_post
 from .scope_api.api.defined_tasks import rbfit_api_v1_tasks_scope_rbfit_post
 from .scope_api.api.defined_tasks import delta_api_v1_tasks_scope_delta_post
+from .scope_api.api.defined_tasks import t12dfit_api_v1_tasks_scope_t12dfit_post
 
 
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
@@ -41,6 +42,7 @@ from .scope_api.models import BodyPowershiftApiV1TasksScopePowershiftPost
 from .scope_api.models import BodyDragApiV1TasksScopeDragPost
 from .scope_api.models import BodyRbfitApiV1TasksScopeRbfitPost
 from .scope_api.models import BodyDeltaApiV1TasksScopeDeltaPost
+from .scope_api.models import BodyT12DfitApiV1TasksScopeT12DfitPost
 
 
 
@@ -190,6 +192,12 @@ def xeb(client,files: File):
     response: Response[BodyRbfitApiV1TasksScopeRbfitPost] = rbfit_api_v1_tasks_scope_rbfit_post.sync_detailed(client=client,body=body)
     return response
 
+@task_register
+def t12dfit(client,files: File):
+    body: BodyT12DfitApiV1TasksScopeT12DfitPost = BodyT12DfitApiV1TasksScopeT12DfitPost(files=files)
+    response: Response[BodyT12DfitApiV1TasksScopeT12DfitPost] = t12dfit_api_v1_tasks_scope_t12dfit_post.sync_detailed(client=client,body=body)
+    return response
+
 from enum import Enum, unique
 @unique
 class TaskName(Enum):
@@ -210,6 +218,7 @@ class TaskName(Enum):
     RB = "rb"
     DELTA = "delta"
     XEB = "xeb"
+    T12DFIT = "t12dfit"
 
 
 

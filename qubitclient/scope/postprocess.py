@@ -703,6 +703,12 @@ def postprocess_result_xeb(response, threshold):
     return response_data
 
 
+def postprocess_result_t12dfit(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+    return result
+
+
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
     's21peakmulti': postprocess_result_s21peak,
@@ -721,7 +727,8 @@ TASK_MAP: Dict[str, Callable] = {
     'rb': postprocess_result_rb,
     'delta': postprocess_result_delta,
     'xeb': postprocess_result_xeb,
-    
+    't12dfit': postprocess_result_t12dfit,
+
 }
 
 def run_postprocess(response, threshold, task_type):

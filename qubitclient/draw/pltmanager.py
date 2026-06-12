@@ -15,7 +15,6 @@ from qubitclient.draw.nnscope.spectrumnnscopepltplotter import SpectrumNNscopeDa
 from qubitclient.draw.nnscope.spectrum2dnnscopepltplotter import Spectrum2DNNScopeDataPltPlotter
 from qubitclient.draw.scope.s21vfluxscopepltplotter import S21VfluxScopeDataPltPlotter
 from qubitclient.draw.nnscope.s21vfluxnnscopepltplotter import S21VfluxNNScopeDataPltPlotter
-
 from qubitclient.draw.nnscope.s21peaknnscopepltplotter import S21PeakNNScopeDataPltPlotter
 from qubitclient.draw.nnscope.s21peakmultinnscopepltplotter import S21PeakMultiNNScopeDataPltPlotter
 from qubitclient.draw.scope.singleshotpltplotter import SingleShotDataPltPlotter
@@ -23,7 +22,6 @@ from qubitclient.draw.scope.spectrum2dscopepltplotter import Spectrum2DScopeData
 from qubitclient.draw.scope.spectrumpltplotter import SpectrumDataPltPlotter
 from qubitclient.draw.scope.s21peakpltplotter import S21PeakDataPltPlotter
 from qubitclient.draw.scope.s21peakmultipltplotter import S21PeakMultiDataPltPlotter
-
 from qubitclient.draw.scope.optpipulsepltplotter import OptPiPulseDataPltPlotter
 from qubitclient.draw.scope.ramseypltplotter import RamseyDataPltPlotter
 from qubitclient.draw.scope.t1fitpltplotter import T1FitDataPltPlotter
@@ -34,6 +32,7 @@ from qubitclient.draw.scope.dragpltplotter import DragDataPltPlotter
 from qubitclient.draw.scope.rbpltplotter import RBDataPltPlotter
 from qubitclient.draw.scope.xebpltplotter import XEBDataPltPlotter
 from qubitclient.draw.scope.deltapltplotter import DeltaDataPltPlotter
+from qubitclient.draw.scope.t12dfitpltplotter import T12DFitDataPltPlotter
 
 
 class QuantumPlotPltManager:
@@ -48,7 +47,6 @@ class QuantumPlotPltManager:
         self.plotters["s21peakmultinnscope"] = S21PeakMultiNNScopeDataPltPlotter()
         self.plotters["powershiftnnscope"] = PowershiftNNScopeDataPltPlotter()
         self.plotters["spectrumnnscope"] = SpectrumNNscopeDataPltPlotter()
-        
         self.plotters["s21vfluxscope"] = S21VfluxScopeDataPltPlotter()
         self.plotters["singleshot"] = SingleShotDataPltPlotter()
         self.plotters["spectrum2dscope"] = Spectrum2DScopeDataPltPlotter()
@@ -65,6 +63,7 @@ class QuantumPlotPltManager:
         self.plotters["rb"] = RBDataPltPlotter() 
         self.plotters["xeb"] = XEBDataPltPlotter() 
         self.plotters["delta"] = DeltaDataPltPlotter()
+        self.plotters["t12dfit"] = T12DFitDataPltPlotter()
 
     def get_plotter(self, task_type: str) -> QuantumDataPltPlotter:
         if task_type not in self.plotters:

@@ -26,7 +26,7 @@ from  lqcs_mcp.tools import drag as lqcs_drag
 from  lqcs_mcp.tools import opt_pipulse as lqcs_opt_pipulse
 from  lqcs_mcp.tools import powershift as lqcs_powershift
 from  lqcs_mcp.tools import delta as lqcs_delta
-from  lqcs_mcp.tools import rb as lqcs_rb
+# from  lqcs_mcp.tools import rb as lqcs_rb
 from  lqcs_mcp.tools import spinecho_t2 as lqcs_spinecho_t2
 from  lqcs_mcp.tools import ramsey_t2 as lqcs_ramsey_t2
 from  lqcs_mcp.tools import xeb as lqcs_xeb
@@ -40,9 +40,15 @@ import os
 import numpy as np
 import h5py
 from swiftmcp import mcp
-from backend import s, info, generate_qubit, generate_coupler
-_all_qubits = generate_qubit(globals(), info=info, sample=s)
-_all_couplers = generate_coupler(globals(), info=info, sample=s)
+
+from backend import s
+from lqms.measure import (
+    generate_coupler,
+    generate_qubit,
+)
+_all_qubits = generate_qubit(globals(), info=None, sample=s)
+_all_couplers = generate_coupler(globals(), info=None, sample=s)
+
 
 def find_latest_filename(task_type):
     ROOT_FOLDER = 'D:/DataVault/LQHL.dir/test.dir/20260324.dir/'
@@ -151,6 +157,22 @@ class TaskUpdateConfig:
         return self._param_mapping[mapped_name]
 
 
+def set_nested_attr(obj: object, attr_path: str, value):
+    """
+    支持多级带点属性赋值，例如 obj.regs.ReadIn.power = val
+    """
+    attrs = attr_path.split(".")
+    # 遍历到倒数第二层
+    parent = obj
+    for attr_name in attrs[:-1]:
+        parent = getattr(parent, attr_name)
+    # 最后一级赋值
+    target_attr = attrs[-1]
+    print("parent, target_attr, value: ", parent, target_attr, value)
+    setattr(parent, target_attr, value)
+    
+
+
 @mcp.tool
 def update_param(qname, task_type, values):
     TASK_UPDATE_CONFIG = TaskUpdateConfig()
@@ -162,8 +184,7 @@ def update_param(qname, task_type, values):
     qubit = globals()[qname]
     for param, val in zip(params, values):
         if val != "Null":
-            # eval(f"{qname}.regs.{param} = {val}")
-            setattr(qubit.regs, param, val)
+            set_nested_attr(qubit.regs, param, val)
 
 
 @mcp.tool
@@ -223,7 +244,7 @@ def rabi(qubits:list[str]=['Q0','Q1'],
                       amp_start=amp_start,
                       amp_end=amp_end,
                       amp_sample_num=amp_sample_num)
-    hdf5_path = find_latest_filename(task_type='rabi')
+    hdf5_path = find_latest_filename(task_type='pipulse')
     return hdf5_path
 
 @mcp.tool
@@ -239,7 +260,7 @@ def ramsey(qubits:list[str]=['Q0','Q2'],
                       delay_end=delay_end,
                       delay_sample_num=delay_sample_num
                       )
-    hdf5_path = find_latest_filename(task_type='ramsey')
+    hdf5_path = find_latest_filename(task_type='pulse')
     return hdf5_path
 
 @mcp.tool
@@ -291,10 +312,10 @@ def spectrum(qubits:list[str]=['Q0','Q1'],
                            spec_amp=drive_amp,
                            sb_freq=sb_freq
                            )
-    hdf5_path = find_latest_filename(task_type='spectrum')
+    hdf5_path = find_latest_filename(task_type='spectroscopy') # 要填文件关键字
     return hdf5_path
-@mcp.tool
 
+@mcp.tool
 def spectrum_2d(qubits:list[str]=['Q0','Q1'],
                 freq_start=-3,
                 freq_end=3,
@@ -334,14 +355,14 @@ def s21vsflux(qubits:list[str]=['Q0','Q1'],
                       read_bias_start=read_bias_start,
                       read_bias_end=read_bias_end,
                       read_bias_sample_num=read_bias_sample_num)
-    hdf5_path = find_latest_filename(task_type='s21vsflux')
+    hdf5_path = find_latest_filename(task_type='zpa2d')
     return hdf5_path
 
 @mcp.tool
 def singleshot(qubits:list[str]=['Q0','Q1'],
                ):
     result = lqcs_singleshot(qubits=qubits)
-    hdf5_path = find_latest_filename(task_type='singleshot')
+    hdf5_path = find_latest_filename(task_type='iqraw')
     return hdf5_path
 
 @mcp.tool

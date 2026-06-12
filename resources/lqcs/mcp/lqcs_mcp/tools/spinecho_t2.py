@@ -11,17 +11,18 @@
 
 import sys
 from pathlib import Path
-
 sys.path.append(str(Path(__file__).parent))
-from backend import s, info, generate_qubit, generate_coupler
 
 import numpy as np
-
-
 from lqms.measure.tuners import sq_nodes as sq
 
-_all_qubits = generate_qubit(globals(), info=info, sample=s)
-_all_couplers = generate_coupler(globals(), info=info, sample=s)
+from backend import s
+from lqms.measure import (
+    generate_coupler,
+    generate_qubit,
+)
+_all_qubits = generate_qubit(globals(), info=None, sample=s)
+_all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 def spinecho_t2(qubits:list[str]=['Q0','Q1'],

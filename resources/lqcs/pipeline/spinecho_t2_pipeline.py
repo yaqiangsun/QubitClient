@@ -19,7 +19,7 @@ def get_t2_hdf5_res():
     qubit_ctrl_client = QubitCtrlClient()
     qubit_name_list = ["q3lu7"]
     
-    data = qubit_ctrl_client.run(CtrlTaskName.T2,
+    data = qubit_ctrl_client.run(CtrlTaskName.SPINECHO_T2,
                                    qubits=qubit_name_list,
                                    fringeFreq=0.05,
                                    delay_start=0,
@@ -38,8 +38,7 @@ def get_t2_hdf5_res():
     img_save_path = f'{SAVE_PLOT_FOLDER}/t2_{pure_name}.png'
     fig_list = plot_t2fit(data, analysis_result, save_path=img_save_path)
 
-    # 无参数更新
-    
+    # 4.接入大模型分析图片
     # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
     # print("img_small_path: ", img_small_path)
@@ -51,9 +50,7 @@ def get_t2_hdf5_res():
     #     print("size: ", new_w, new_h)
     #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
     #     img_small.save(img_small_path, dpi=(300, 300))
-
-
-    # 4.接入大模型分析图片
+    
     # test_qubit_spectroscopy_q1_describe(img_small_path)
     # test_qubit_spectroscopy_q2_classify(img_small_path)
     # test_qubit_spectroscopy_q3_reasoning(img_small_path)
@@ -61,6 +58,10 @@ def get_t2_hdf5_res():
     # test_qubit_spectroscopy_q5_extract(img_small_path)
     # test_qubit_spectroscopy_q6_status(img_small_path)
     # print("\nQubit_Spectroscopy tests passed!")
+
+    # 5.无参数更新
+    
+
 
 
 if __name__ == '__main__':

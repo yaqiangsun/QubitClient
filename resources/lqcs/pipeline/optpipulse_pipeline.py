@@ -36,7 +36,28 @@ def get_opt_pipulse_hdf5_res():
     img_save_path = f'{SAVE_PLOT_FOLDER}/optpipulse_{pure_name}.png'
     fig_list = optpipulse(data, analysis_result, save_path=img_save_path)
 
-    # 4.更新PiGate.amp和PiGate.alpha
+    # 4.接入大模型分析图片
+    # resize更小
+    # img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    # print("img_small_path: ", img_small_path)
+    
+    # with Image.open(img_save_path) as img:
+    #     w, h = img.size
+    #     new_w = w // 10
+    #     new_h = h // 10
+    #     print("size: ", new_w, new_h)
+    #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    #     img_small.save(img_small_path, dpi=(300, 300))
+    
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    # print("\nQubit_Spectroscopy tests passed!")
+
+    # 5.更新PiGate.amp和PiGate.alpha
     if type(analysis_result)==dict:
             if "results" not in analysis_result.keys():
                 analysis_result = analysis_result.get("results")
@@ -45,7 +66,6 @@ def get_opt_pipulse_hdf5_res():
     for result in analysis_result:
         params_list = result['params']
         confs_list = result['confs']
-
 
         params_list = result.get("params", [])
         confs_list  = result.get("confs", [])
@@ -61,7 +81,7 @@ def get_opt_pipulse_hdf5_res():
             task_type=CtrlTaskName.OPTPIPULSE
             qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
-    # # 4.更新PiHalf.amp和PiHalf.alpha
+    # 6.更新PiHalf.amp和PiHalf.alpha
    
     # qname=qubit_name_list[0]
     # task_type=CtrlTaskName.OPTPIPULSE

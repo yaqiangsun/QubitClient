@@ -11,20 +11,21 @@
 
 import sys
 from pathlib import Path
-
 sys.path.append(str(Path(__file__).parent))
-from backend import s, info, generate_qubit, generate_coupler
 
 import numpy as np
-
-
 from lqms.measure.tuners import sq_nodes as sq
 
-_all_qubits = generate_qubit(globals(), info=info, sample=s)
-_all_couplers = generate_coupler(globals(), info=info, sample=s)
+from backend import s
+from lqms.measure import (
+    generate_coupler,
+    generate_qubit,
+)
+_all_qubits = generate_qubit(globals(), info=None, sample=s)
+_all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
-def s21vsflux(qubits_scan:list[str],
+def s21vsflux(qubits:list[str],
               freq_center:float,
               freq_half_bandwidth:float,
               freq_sample_num:int,
@@ -38,7 +39,7 @@ def s21vsflux(qubits_scan:list[str],
     freq_array = np.linspace(freq_start, freq_end, freq_sample_num)
     read_bias_array = np.linspace(read_bias_start, read_bias_end, read_bias_sample_num)
 
-    qubit = eval(qubits_scan[0])
+    qubit = eval(qubits[0])
 
     result = sq.s21_zpa2d(qubit, freq=freq_array, zpa=read_bias_array, freq_span=None, update=False)
     

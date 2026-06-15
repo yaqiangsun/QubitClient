@@ -28,7 +28,7 @@ from qubitclient import handle_exceptions, control_api_execution
 #                     t2fit_convert,rabicos_convert,nnspectrum_convert,\
 #                     spectrum_convert, nns21_convert, powershift_convert, rb_convert,delta_convert
 
-from .format import s21_convert,s21vsflux_convert,\
+from .format import s21_convert,s21vsflux_convert, ramseyt2_convert,\
                     singleshot_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
@@ -132,6 +132,12 @@ def plot_spectrum2d(data,results,save_path):
 def plot_t1fit(data,results,save_path):
     data = t1fit_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.T1FIT)
+    return fig_list
+
+@handle_exceptions
+def plot_ramseyt2(data,results,save_path):
+    data = ramseyt2_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.RAMSEY_T2)
     return fig_list
 @handle_exceptions
 def plot_t2fit(data,results,save_path):

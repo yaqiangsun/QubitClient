@@ -22,3 +22,13 @@ from .spectrum import spectrum
 from .t1_2d import t1_2d
 from .powershift import powershift
 from .s21multi import s21multi
+
+from .ramsey_t2 import ramsey_t2
+from .ramsey import ramsey
+from .optqubitreadfreq import optqubitreadfreq
+from .pipulsef10 import pipulsef10
+from .pulseshape import pulseshape
+# from .rb_1q import rb
+from .spinecho_t2 import spinecho_t2
+from .timingxyz import timingxyz
+from .xeb import xeb

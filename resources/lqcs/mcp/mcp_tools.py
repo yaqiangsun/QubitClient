@@ -26,7 +26,6 @@ from  lqcs_mcp.tools import drag as lqcs_drag
 from  lqcs_mcp.tools import opt_pipulse as lqcs_opt_pipulse
 from  lqcs_mcp.tools import powershift as lqcs_powershift
 from  lqcs_mcp.tools import delta as lqcs_delta
-# from  lqcs_mcp.tools import rb as lqcs_rb
 from  lqcs_mcp.tools import spinecho_t2 as lqcs_spinecho_t2
 from  lqcs_mcp.tools import ramsey_t2 as lqcs_ramsey_t2
 from  lqcs_mcp.tools import xeb as lqcs_xeb
@@ -34,7 +33,7 @@ from  lqcs_mcp.tools import pipulsef10 as lqcs_pipulsef10
 from  lqcs_mcp.tools import optqubitreadfreq as lqcs_optqubitreadfreq
 from  lqcs_mcp.tools import pulseshape as lqcs_pulseshape
 from  lqcs_mcp.tools import timingxyz as lqcs_timingxyz
-
+# from  lqcs_mcp.tools import rb as lqcs_rb
 
 import os
 import numpy as np
@@ -530,5 +529,5 @@ def ramsey_t2(qubits: list[str],
                       delay_sample_num=delay_sample_num,
                       fringeFreq=fringeFreq
                       )
-    hdf5_path = find_latest_filename(task_type='ramsey_t2')
+    hdf5_path = find_latest_filename(task_type='ramsey')
     return hdf5_path

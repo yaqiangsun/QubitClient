@@ -19,14 +19,14 @@ from qubitclient import handle_exceptions, control_api_execution
 #                     spectrum_convert, nns21_convert,powershift_convert,\
 #                     rb_convert,delta_convert
 
-from .format import s21_convert,s21vsflux_convert,\
+from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert,\
                     singleshot_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
                     spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert
 
-def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
+def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
     client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
     data_ndarray = image
     response = client.request(file_list=[data_ndarray],task_type=task_type)
@@ -36,6 +36,7 @@ def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
     logging.debug(f"results:{results}")
     return results
+
 def scope_template(image,task_type=TaskName.SPECTRUM2D):
     client = QubitScopeClient(url=API_URL,api_key=API_KEY)
     data_ndarray = image
@@ -118,9 +119,23 @@ def ramsey(image):
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
+def ramseyt2(image):
+    image = ramseyt2_convert(image)
+    results = scope_template(image,task_type=TaskName.RAMSEY)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
 def t1fit(image):
     image = t1fit_convert(image)
     results = scope_template(image,task_type=TaskName.T1FIT)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def t12dfit(image):
+    image = t12dfit_convert(image)
+    results = scope_template(image,task_type=TaskName.T12DFIT)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)

@@ -310,6 +310,31 @@ def t1fit_convert(result):
     return data_formated
 
 
+# 不确定是否和ramsey一样，微改
+def ramseyt2_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+            amplitude = data_arr[:, 1]
+            data_formated["image"][qubit_name] = (delay, amplitude)
+
+        elif data.dtype.names:   
+            delay = data['f0']      
+            # p1    = data['f6']      
+            amplitude = data['f1']
+
+            data_formated["image"][qubit_name] = (delay, amplitude)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
 
 def t2fit_convert(result):
     data_formated = {"image": {}}

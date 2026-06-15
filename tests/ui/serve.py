@@ -27,7 +27,7 @@ if project_root not in sys.path:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="QubitClient Pipeline Result Web UI")
+    parser = argparse.ArgumentParser(description="QubitClient Flow Result Web UI")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind (default: 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8581, help="Port to bind (default: 8581)")
     parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
@@ -37,7 +37,7 @@ def main():
         import uvicorn
         from qubitclient.ui import app
 
-        print(f"Starting QubitClient Pipeline UI at http://{args.host}:{args.port}/")
+        print(f"Starting QubitClient Flow UI at http://{args.host}:{args.port}/")
         uvicorn.run(
             app,
             host=args.host,

@@ -1,4 +1,4 @@
-# QubitClient Pipeline UI
+# QubitClient Flow UI
 
 实时瀑布流展示 pipeline 任务结果。
 

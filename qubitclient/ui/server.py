@@ -192,6 +192,15 @@ async def stream():
     )
 
 
+@app.get("/asset/{filename}")
+async def get_asset(filename: str):
+    """Serve static asset files bundled in the package (works both in dev and installed wheel)."""
+    file_path = Path(__file__).parent / "static" / filename
+    if not file_path.is_file():
+        raise HTTPException(status_code=404, detail="Asset not found")
+    return FileResponse(file_path)
+
+
 @app.get("/api/task-names")
 async def list_task_names():
     store = PipelineResultStore()

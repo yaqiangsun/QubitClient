@@ -282,7 +282,7 @@ def ui_start(
         typer.echo("Run: pip install -e '.[ui]'", err=True)
         raise typer.Exit(1)
 
-    typer.echo(f"Starting QubitClient Pipeline UI at http://{host}:{port}/")
+    typer.echo(f"Starting QubitClient Flow UI at http://{host}:{port}/")
     uvicorn.run(fastapi_app, host=host, port=port, reload=reload)
 
 

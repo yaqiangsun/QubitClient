@@ -603,3 +603,35 @@ def xeb_convert(result):
             data_formated["image"][qubit_name] = data
 
     return data_formated
+
+
+def t12dfit_convert(result):
+    data_formated = {"image": {}}
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        if type(data) == list:
+            data_arr = np.array(data)
+            zpa = data_arr[:, 0]
+            delay = data_arr[:, 1]
+            p_arr = data_arr[:, 3]
+            # amp2 = data_arr[:, 3]
+        elif data.dtype.names:
+            zpa = data['f0']
+            delay = data['f1']
+            p_arr = data['f3']
+            # amp2 = data['f3']
+        else:
+            data_formated["image"][qubit_name] = data
+        p_arr = np.abs(p_arr)
+        unique_zpa = np.unique(zpa)  # 得到16个唯一频率值
+        unique_delay = np.unique(delay)  # 得到11个唯一电压值
+        n_zpa = len(unique_zpa)
+        n_delay = len(unique_delay)
+        first_n_zpa = zpa[:n_zpa]
+        is_row_major = len(np.unique(first_n_zpa)) == n_zpa
+        if is_row_major:
+            p_arr = p_arr.reshape(n_zpa, n_delay)
+        else:
+            p_arr = p_arr.reshape(n_zpa, n_delay).T
+        data_formated["image"][qubit_name] = (p_arr.T, unique_delay, unique_zpa,)
+    return data_formated

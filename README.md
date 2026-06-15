@@ -71,6 +71,9 @@
 - 🤖 **LLM/VLM 集成**：支持大语言模型和视觉语言模型，用于量子测量数据分析与决策。
   - 🟢 **Google Gemma 4**：支持 `google/gemma-4-E4B-it` 模型
   - 🔵 **NVIDIA Ising**：支持 `nv-community/Ising-Calibration-1-35B-A3B` 模型，专为量子校准设计
+- 🎨 **图像生成与编辑**：支持文本生成图像、图像编辑、Chat API 图像生成等多种模式。
+  - 支持 DALL-E、Qwen-Image 等主流图像生成模型
+  - 支持多图生成、单图编辑、多图变体等丰富功能
 
 ## 📦 安装
 
@@ -277,6 +280,48 @@ result = llm.run(
 print(result)
 ```
 
+#### 🎨 Generate 功能（图像生成与编辑）
+
+```python
+from qubitclient.generate import QubitGenerate, ImageSize
+
+# 初始化客户端（自动从 qubitclient.json 读取配置）
+gen = QubitGenerate()
+
+# 方式1：文本生成图像（使用 /v1/images/generations）
+images = gen.generate(
+    prompt="A beautiful sunset over mountains, digital art style",
+    size=ImageSize.SIZE_1024x1024,
+    n=1
+)
+images[0].save("output.png")
+
+# 方式2：图像编辑（使用 /v1/images/edits）
+images = gen.edit(
+    prompt="Convert to watercolor painting style",
+    image="input.png",
+    size=ImageSize.SIZE_1024x1024,
+)
+images[0].save("edited_output.png")
+
+# 方式3：Chat API 图像生成（支持多模态模型）
+images = gen.chat(
+    prompt="A quantum computing circuit diagram",
+    image=None,  # 纯文本生成
+    size=ImageSize.SIZE_1024x1024,
+    n=1
+)
+images[0].save("circuit.png")
+
+# 方式4：Chat API 单图像编辑
+images = gen.chat(
+    prompt="Enhance the colors",
+    image="input.png",  # 单图编辑
+    size=ImageSize.SIZE_1024x1024,
+)
+images[0].save("enhanced.png")
+```
+
 ## 📋 支持的任务类型
 
 ### 🧠 NNScope 任务
@@ -408,6 +453,9 @@ python tests/test_ctrl_mcp.py
 
 # 运行 LLM 测试
 python tests/test_llm.py
+
+# 运行 Generate 测试
+python tests/generate/test_generate.py
 ```
 
 ## ⚙️ LLM/VLM 配置
@@ -446,6 +494,7 @@ python tests/test_llm.py
 ## 📝 更新日志
 
 ### 近期更新
+- 🎨 **新增图像生成模块**：支持文本生成图像、图像编辑、Chat API 图像生成（Qwen-Image、DALL-E 等）
 - 🐳 **新增 Docker 服务部署**：新增 `qubitclient serve` 命令，支持一键初始化和启动 qubitscope、qubitserving、proxy 三个服务
 - 🤖 **新增 VLM 模型支持**：
   - 🔵 **NVIDIA Ising** (`Ising-Calibration-1-35B-A3B`)：专为量子校准任务优化的 VLM

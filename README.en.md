@@ -57,6 +57,9 @@
 - 🤖 **LLM/VLM Integration**: Supports large language models and vision-language models for quantum measurement data analysis and decision-making.
   - 🟢 **Google Gemma 4**: Supports `google/gemma-4-E4B-it` model
   - 🔵 **NVIDIA Ising**: Supports `nv-community/Ising-Calibration-1-35B-A3B` model, optimized for quantum calibration
+- 🎨 **Image Generation & Editing**: Supports text-to-image, image editing, and Chat API image generation.
+  - Supports mainstream image generation models like DALL-E and Qwen-Image
+  - Rich features including multi-image generation, single image editing, and image variations
 
 ## 📦 Installation
 
@@ -265,6 +268,48 @@ result = llm.run(
 print(result)
 ```
 
+#### 🎨 Generate Functions (Image Generation & Editing)
+
+```python
+from qubitclient.generate import QubitGenerate, ImageSize
+
+# Initialize client (auto-loads config from qubitclient.json)
+gen = QubitGenerate()
+
+# Method 1: Text-to-image generation (using /v1/images/generations)
+images = gen.generate(
+    prompt="A beautiful sunset over mountains, digital art style",
+    size=ImageSize.SIZE_1024x1024,
+    n=1
+)
+images[0].save("output.png")
+
+# Method 2: Image editing (using /v1/images/edits)
+images = gen.edit(
+    prompt="Convert to watercolor painting style",
+    image="input.png",
+    size=ImageSize.SIZE_1024x1024,
+)
+images[0].save("edited_output.png")
+
+# Method 3: Chat API image generation (supports multimodal models)
+images = gen.chat(
+    prompt="A quantum computing circuit diagram",
+    image=None,  # Text-only generation
+    size=ImageSize.SIZE_1024x1024,
+    n=1
+)
+images[0].save("circuit.png")
+
+# Method 4: Chat API single image editing
+images = gen.chat(
+    prompt="Enhance the colors",
+    image="input.png",  # Single image editing
+    size=ImageSize.SIZE_1024x1024,
+)
+images[0].save("enhanced.png")
+```
+
 ## 📋 Supported Task Types
 
 ### 🧠 NNScope Tasks
@@ -396,6 +441,9 @@ python tests/test_ctrl_mcp.py
 
 # Run LLM tests
 python tests/test_llm.py
+
+# Run Generate tests
+python tests/generate/test_generate.py
 ```
 
 ## ⚙️ LLM/VLM Configuration
@@ -434,6 +482,7 @@ Refer to the code in the [resources](resources) directory for different tools.
 ## 📝 Changelog
 
 ### Recent Updates
+- 🎨 **Added image generation module**: Supports text-to-image, image editing, and Chat API image generation (Qwen-Image, DALL-E, etc.)
 - 🐳 **Added Docker service deployment**: New `qubitclient serve` command for one-click initialization and startup of qubitscope, qubitserving, and proxy services
 - 🤖 **Added VLM model support**:
   - 🔵 **NVIDIA Ising** (`Ising-Calibration-1-35B-A3B`): VLM optimized for quantum calibration tasks

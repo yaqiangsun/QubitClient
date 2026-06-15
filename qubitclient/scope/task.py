@@ -199,7 +199,7 @@ def t12dfit(client,files: File):
     return response
 
 from enum import Enum, unique
-@unique
+# @unique
 class TaskName(Enum):
     S21PEAK = "s21peak"
     S21PEAKMULTI = "s21peakmulti"
@@ -219,6 +219,14 @@ class TaskName(Enum):
     DELTA = "delta"
     XEB = "xeb"
     T12DFIT = "t12dfit"
+    ############################
+    # additonal tasks
+    SPINECHO = "spinecho"
+    TIMINGXYZ = "xyz_timing"
+    # reflection
+    RAMSEY_T2 = "t2fit"
+    SPINECHO_T2 = "spinecho"
+
 
 
 

@@ -25,6 +25,7 @@ from .scope_api.api.defined_tasks import drag_api_v1_tasks_scope_drag_post
 from .scope_api.api.defined_tasks import rbfit_api_v1_tasks_scope_rbfit_post
 from .scope_api.api.defined_tasks import delta_api_v1_tasks_scope_delta_post
 from .scope_api.api.defined_tasks import t12dfit_api_v1_tasks_scope_t12dfit_post
+from .scope_api.api.defined_tasks import optreadfreq_api_v1_tasks_scope_optreadfreq_post
 
 
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
@@ -43,6 +44,7 @@ from .scope_api.models import BodyDragApiV1TasksScopeDragPost
 from .scope_api.models import BodyRbfitApiV1TasksScopeRbfitPost
 from .scope_api.models import BodyDeltaApiV1TasksScopeDeltaPost
 from .scope_api.models import BodyT12DfitApiV1TasksScopeT12DfitPost
+from .scope_api.models import BodyOptreadfreqApiV1TasksScopeOptreadfreqPost
 
 
 
@@ -198,6 +200,12 @@ def t12dfit(client,files: File):
     response: Response[BodyT12DfitApiV1TasksScopeT12DfitPost] = t12dfit_api_v1_tasks_scope_t12dfit_post.sync_detailed(client=client,body=body)
     return response
 
+@task_register
+def optreadfreq(client,files: File):
+    body: BodyOptreadfreqApiV1TasksScopeOptreadfreqPost = BodyOptreadfreqApiV1TasksScopeOptreadfreqPost(files=files)
+    response: Response[BodyOptreadfreqApiV1TasksScopeOptreadfreqPost] = optreadfreq_api_v1_tasks_scope_optreadfreq_post.sync_detailed(client=client,body=body)
+    return response
+
 from enum import Enum, unique
 # @unique
 class TaskName(Enum):
@@ -223,6 +231,7 @@ class TaskName(Enum):
     # additonal tasks
     SPINECHO = "spinecho"
     TIMINGXYZ = "xyz_timing"
+    OPTREADFREQ = "optreadfreq"
     # reflection
     RAMSEY_T2 = "t2fit"
     SPINECHO_T2 = "spinecho"

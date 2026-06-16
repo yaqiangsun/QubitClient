@@ -142,13 +142,36 @@ def get_pipulsef10_hdf5_res(args):
         # test_qubit_spectroscopy_q6_status(img_small_path)
         # print("\nQubit_Spectroscopy tests passed!")
 
-        # =========== 更新f10,f21参数 ==============
+        # 5.更新f10, f21
         new_full_params = set_params.copy()
-        # update_values = "3.193120459017055,3.193120459017055" # 这个数值会导致下次采集时报division by 0的错误
-        update_values = "2.5, 2.4"
-        task_type = CtrlTaskName.PIPULSEF10
-        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=update_values)
-        new_full_params["f10"] = update_values
+        freq_update_map = {}
+        # 根据扫描结果更新
+        if type(analysis_result)==dict:
+            if "results" not in analysis_result.keys():
+                analysis_result = analysis_result.get("results")
+            elif "result" in analysis_result.keys():
+                analysis_result = analysis_result.get("result")
+        for result in analysis_result:
+            peaks_list = result['peaks_list']
+            confidences_list = result['confidences_list']
+            for i in range(len(qubit_name_list)):
+                if i < len(peaks_list):
+                    peaks = peaks_list[i]
+                    confidences = confidences_list[i]
+                    if len(confidences) > 0:
+                        best_idx = confidences.index(max(confidences))
+                        best_peak = peaks[best_idx]
+                        target_freq =best_peak
+                        non=-0.2
+                        values=str(target_freq) + ',' + str(target_freq + non)
+                        qname=qubit_name_list[i]
+                        task_type=CtrlTaskName.SPECTRUM
+                        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                        freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
+        if freq_update_map:
+            new_full_params["qubit_freq_calib"] = freq_update_map
+
+
 
         # =========== 更新结果到存储 ======================
         store.update_run(

@@ -128,24 +128,25 @@ def get_ramsey_hdf5_res(args):
             r2_list = result['r2_list']
             fit_data_list = result['fit_data_list']
             for i in range(len(qubit_name_list)):
-                params = params_list[i]
-                w = params[4]
-                qname=qubit_name_list[i]
-                task_type=CtrlTaskName.RAMSEY
-                f10 = qubit_ctrl_client.query_param(qname=qname, key="f10_star")
-                f10 = float(f10[0]["text"])
-                deltaf = w /(2*math.pi)         # 失谐量（Hz）
-                print("fringeFreq, f10: ", fringeFreq, f10)
-                if(fringeFreq>f10):
-                    target_freq = fringeFreq - deltaf    # 如果 f_measure > f10
-                
-                else:
-                     target_freq = fringeFreq + deltaf    # 如果 f_measure < f10
-                non=-0.2
-                values=str(target_freq) + ',' + str(target_freq + non)
-                task_type=CtrlTaskName.RAMSEY
-                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
-                freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
+                if i < len(params_list):
+                    params = params_list[i]
+                    w = params[4]
+                    qname=qubit_name_list[i]
+                    task_type=CtrlTaskName.RAMSEY
+                    f10 = qubit_ctrl_client.query_param(qname=qname, key="f10_star")
+                    f10 = float(f10[0]["text"])
+                    deltaf = w /(2*math.pi)         # 失谐量（Hz）
+                    print("fringeFreq, f10: ", fringeFreq, f10)
+                    if(fringeFreq>f10):
+                        target_freq = fringeFreq - deltaf    # 如果 f_measure > f10
+                    
+                    else:
+                         target_freq = fringeFreq + deltaf    # 如果 f_measure < f10
+                    non=-0.2
+                    values=str(target_freq) + ',' + str(target_freq + non)
+                    task_type=CtrlTaskName.RAMSEY
+                    qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                    freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
         if freq_update_map:
             new_full_params["qubit_freq_calib"] = freq_update_map
 

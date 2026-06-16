@@ -37,6 +37,6 @@ def xeb(qubits:list[str],
     qubit = eval(qubits[0])
     m_array = np.linspace(m_start, m_end, m_sample_num).astype(int).tolist()
 
-    result = sq.xeb(qubit, m=m_array, k=k, gate=gate, tbuffer=tbuffer, stats=stats,update=False)
+    result = sq.xeb(qubit, m=m_array, k=k, gate=gate, tbuffer=tbuffer, stats=stats) # sq无update参数
     
     return result

@@ -34,6 +34,9 @@ def pipulsef10(qubits:list[str]=['Q0','Q1'],
     df_array = np.linspace(df_start, df_end, df_sample_num).tolist()
     qubit = eval(qubits[0])
 
-    result = sq.pipulse_f10(qubit, fc=fc, df=df_array, update=False)
+    # result = sq.pidf(qubit, fc=fc, df=df_array, update=False)
+
+    # 无fc
+    result = sq.pidf(qubit, df=df_array, update=False)
     
     return result

@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.s21peak_pipeline_ui_args -q q1lu7 -b 0.006 -n 200 -s ./output
+            python -m resources.lqcs.pipeline.s21peak_pipeline -q q1lu7 -b 0.006 -n 200 -s ./tmp
 """
 
 import sys
@@ -104,7 +104,9 @@ def get_s21_hdf5_res(args):
             frequency_half_bandwidth=set_params["frequency_half_bandwidth"],
             frequency_sample_num=set_params["frequency_sample_num"]
         )
+
         data_id = data[0]["text"]
+
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
         raw_data = json.loads(raw_data_text[0]["text"])
 

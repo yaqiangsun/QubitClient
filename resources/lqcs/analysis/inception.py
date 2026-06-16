@@ -19,7 +19,7 @@ from qubitclient import handle_exceptions, control_api_execution
 #                     spectrum_convert, nns21_convert,powershift_convert,\
 #                     rb_convert,delta_convert
 
-from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert,\
+from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert, t12dfit_convert, nnspectrum2d_convert, spectrum2d_convert,\
                     singleshot_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\

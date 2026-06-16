@@ -40,4 +40,6 @@ def spectrum_2d(qubits:list[str]=['Q0','Q1'],
     zpa_array = np.linspace(zpa_start, zpa_end, zpa_sample_num)
 
     result = sq.spectroscopy(qubit, freq=freq_array, zpa=zpa_array, spec_amp=spec_amp, sb_freq=sb_freq,update=False)
+    # result = sq.spectroscopy(qubit, zpa=zpa_array, spec_amp=spec_amp, sb_freq=sb_freq,update=False)
+    
     return  

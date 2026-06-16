@@ -278,7 +278,7 @@ def t1_2d(qubits:list[str]=['Q0','Q1'],
                          delay_start=delay_start,
                          delay_end=delay_end,
                          delay_sample_num=delay_sample_num)
-       hdf5_path = find_latest_filename(task_type='t1_2d')
+       hdf5_path = find_latest_filename(task_type='t1')
        return hdf5_path
 
 @mcp.tool
@@ -325,17 +325,21 @@ def spectrum_2d(qubits:list[str]=['Q0','Q1'],
                 drive_amp=0.0,
                 ):
     sb_freq=0
-    result = lqcs_spectrum_2d(qubits=qubits,
-                            freq_start=freq_start,
-                            freq_end=freq_end,
-                            freq_sample_num=freq_sample_num,
-                            zpa_start=bias_start,
-                            zpa_end=bias_end,
-                            zpa_sample_num=bias_sample_num,
-                            spec_amp=drive_amp,
-                            sb_freq=sb_freq
-                            )    
-    hdf5_path = find_latest_filename(task_type='spectrum_2d')
+    try:
+        result = lqcs_spectrum_2d(qubits=qubits,
+                                freq_start=freq_start,
+                                freq_end=freq_end,
+                                freq_sample_num=freq_sample_num,
+                                zpa_start=bias_start,
+                                zpa_end=bias_end,
+                                zpa_sample_num=bias_sample_num,
+                                spec_amp=drive_amp,
+                                sb_freq=sb_freq
+                                )
+    except:
+        pass
+    hdf5_path = find_latest_filename(task_type='spectroscopy') # 要填文件关键字
+
     return hdf5_path
 
 @mcp.tool
@@ -466,7 +470,7 @@ def pipulsef10(qubits:list[str],
                       df_end=df_end,
                       df_sample_num=df_sample_num,
                       )
-    hdf5_path = find_latest_filename(task_type='pipulsef10')
+    hdf5_path = find_latest_filename(task_type='pipulse df')
     return hdf5_path
 
 @mcp.tool

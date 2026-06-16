@@ -310,7 +310,6 @@ def t1fit_convert(result):
     return data_formated
 
 
-# 不确定是否和ramsey一样，微改
 def ramseyt2_convert(result):
     data_formated = {"image": {}}
 

@@ -39,15 +39,6 @@ from analysis.visualization import plot_ramseyt2
 SAVE_PLOT_FOLDER = './tmp'
 
 
-def clean_nan_for_json(obj):
-    if isinstance(obj, dict):
-        return {k: clean_nan_for_json(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [clean_nan_for_json(item) for item in obj]
-    elif isinstance(obj, float):
-        if math.isnan(obj) or math.isinf(obj):
-            return None
-    return obj
 
 
 def parse_args():
@@ -124,7 +115,6 @@ def get_ramsey_t2_hdf5_res(args):
 
         # =========== 分析 ============
         analysis_result = ramseyt2(raw_data)
-        analysis_result = clean_nan_for_json(analysis_result)
 
         # =========== 绘制波形图==========
         pure_name = qubit_name_list[0]

@@ -23,7 +23,7 @@ from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert, t12dfit_co
                     singleshot_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
-                    spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert
+                    spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert
 
 
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
@@ -218,4 +218,11 @@ def xeb(image):
 def delta(image):
     image = delta_convert(image)
     results = scope_template(image,task_type=TaskName.DELTA)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def optreadfreq(image):
+    image = optreadfreq_convert(image)
+    results = scope_template(image,task_type=TaskName.OPTREADFREQ)
     return results

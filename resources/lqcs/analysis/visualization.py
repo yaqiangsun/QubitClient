@@ -32,7 +32,7 @@ from .format import s21_convert,s21vsflux_convert, ramseyt2_convert, t12dfit_con
                     singleshot_convert, nnspectrum2d_convert, spectrum2d_convert, \
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
-                    spectrum_convert, powershift_convert, s21multi_convert, rb_convert, rabicos_convert, xeb_convert
+                    spectrum_convert, powershift_convert, s21multi_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert
 
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
@@ -197,4 +197,10 @@ def plot_xeb(data,results,save_path):
 def plot_delta(data,results,save_path):
     data = delta_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.DELTA)
+    return fig_list
+
+@handle_exceptions
+def plot_optreadfreq(data,results,save_path):
+    data = optreadfreq_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.OPTREADFREQ)
     return fig_list

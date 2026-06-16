@@ -708,6 +708,10 @@ def postprocess_result_t12dfit(response, threshold):
     result = response.parsed
     return result
 
+def postprocess_result_optreadfreq(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+    return result
 
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
@@ -728,7 +732,7 @@ TASK_MAP: Dict[str, Callable] = {
     'delta': postprocess_result_delta,
     'xeb': postprocess_result_xeb,
     't12dfit': postprocess_result_t12dfit,
-
+    'optreadfreq': postprocess_result_optreadfreq,
 }
 
 def run_postprocess(response, threshold, task_type):

@@ -659,3 +659,33 @@ def t12dfit_convert(result):
             p_arr = p_arr.reshape(n_zpa, n_delay).T
         data_formated["image"][qubit_name] = (p_arr.T, unique_delay, unique_zpa,)
     return data_formated
+
+def optreadfreq_convert(result):
+    data_formated = {"image": {}}
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+        data = result[qubit_name]
+        if type(data) == list:
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]  # 时间/索引
+            I_channel = data_arr[:, 3]
+            Q_channel = data_arr[:, 4]
+            X_channel = data_arr[:, 7]
+            Y_channel = data_arr[:, 8]
+            dis = data_arr[:, 9]
+        elif data.dtype.names:
+            freq = data['f0']  # 时间/索引
+            I_channel = data['f3']  # Is | I
+            Q_channel = data['f4']  # Qs | I
+            X_channel = data['f7']  # Is | X
+            Y_channel = data['f8']  # Qs | X
+            dis = data['f9']  # Qs | X
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+        s0 = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        s1 = X_channel + 1j * Y_channel  # 复数 s1 (X 通道)
+        dis_cal = np.abs(s0 - s1)
+        data_formated["image"][qubit_name] = (freq, s0, s1)
+    return data_formated

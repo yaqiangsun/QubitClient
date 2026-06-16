@@ -34,6 +34,7 @@ from qubitclient.draw.scope.rbplyplotter import RBDataPlyPlotter
 from qubitclient.draw.scope.xebplyplotter import XEBDataPlyPlotter
 from qubitclient.draw.scope.deltaplyplotter import DeltaDataPlyPlotter
 from qubitclient.draw.scope.t12dfitplyplotter import T12DFitDataPlyPlotter
+from qubitclient.draw.scope.optreadfreqplyplotter import OptReadFreqDataPlyPlotter
 
 class QuantumPlotPlyManager:
 
@@ -67,6 +68,7 @@ class QuantumPlotPlyManager:
         self.plotters["xeb"] = XEBDataPlyPlotter()
         self.plotters["delta"] = DeltaDataPlyPlotter()
         self.plotters["t12dfit"] = T12DFitDataPlyPlotter()
+        self.plotters["optreadfreq"] = OptReadFreqDataPlyPlotter()
 
     def get_plotter(self, task_type: str) -> QuantumDataPlyPlotter:
 

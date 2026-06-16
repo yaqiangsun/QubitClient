@@ -3,6 +3,7 @@
 from .body_delta_api_v1_tasks_scope_delta_post import BodyDeltaApiV1TasksScopeDeltaPost
 from .body_drag_api_v1_tasks_scope_drag_post import BodyDragApiV1TasksScopeDragPost
 from .body_optpipulse_api_v1_tasks_scope_optpipulse_post import BodyOptpipulseApiV1TasksScopeOptpipulsePost
+from .body_optreadfreq_api_v1_tasks_scope_optreadfreq_post import BodyOptreadfreqApiV1TasksScopeOptreadfreqPost
 from .body_powershift_api_v1_tasks_scope_powershift_post import BodyPowershiftApiV1TasksScopePowershiftPost
 from .body_rabi_api_v1_tasks_scope_rabi_post import BodyRabiApiV1TasksScopeRabiPost
 from .body_rabicos_api_v1_tasks_scope_rabicospeak_post import BodyRabicosApiV1TasksScopeRabicospeakPost
@@ -25,6 +26,7 @@ __all__ = (
     "BodyDeltaApiV1TasksScopeDeltaPost",
     "BodyDragApiV1TasksScopeDragPost",
     "BodyOptpipulseApiV1TasksScopeOptpipulsePost",
+    "BodyOptreadfreqApiV1TasksScopeOptreadfreqPost",
     "BodyPowershiftApiV1TasksScopePowershiftPost",
     "BodyRabiApiV1TasksScopeRabiPost",
     "BodyRabicosApiV1TasksScopeRabicospeakPost",

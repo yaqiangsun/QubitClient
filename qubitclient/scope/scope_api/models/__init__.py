@@ -15,9 +15,11 @@ from .body_s21_vflux_api_v1_tasks_scope_s21_vflux_post import BodyS21VfluxApiV1T
 from .body_singleshot_api_v1_tasks_scope_singleshot_post import BodySingleshotApiV1TasksScopeSingleshotPost
 from .body_spectrum_2d_api_v1_tasks_scope_spectrum_2d_post import BodySpectrum2DApiV1TasksScopeSpectrum2DPost
 from .body_spectrum_api_v1_tasks_scope_spectrum_post import BodySpectrumApiV1TasksScopeSpectrumPost
+from .body_spinecho_api_v1_tasks_scope_spinecho_post import BodySpinechoApiV1TasksScopeSpinechoPost
 from .body_t1_fit_api_v1_tasks_scope_t1_fit_post import BodyT1FitApiV1TasksScopeT1FitPost
 from .body_t2_fit_api_v1_tasks_scope_t2_fit_post import BodyT2FitApiV1TasksScopeT2FitPost
 from .body_t12_dfit_api_v1_tasks_scope_t12_dfit_post import BodyT12DfitApiV1TasksScopeT12DfitPost
+from .body_timingxyz_api_v1_tasks_scope_timingxyz_post import BodyTimingxyzApiV1TasksScopeTimingxyzPost
 from .http_validation_error import HTTPValidationError
 from .validation_error import ValidationError
 from .validation_error_context import ValidationErrorContext
@@ -38,9 +40,11 @@ __all__ = (
     "BodySingleshotApiV1TasksScopeSingleshotPost",
     "BodySpectrum2DApiV1TasksScopeSpectrum2DPost",
     "BodySpectrumApiV1TasksScopeSpectrumPost",
+    "BodySpinechoApiV1TasksScopeSpinechoPost",
     "BodyT12DfitApiV1TasksScopeT12DfitPost",
     "BodyT1FitApiV1TasksScopeT1FitPost",
     "BodyT2FitApiV1TasksScopeT2FitPost",
+    "BodyTimingxyzApiV1TasksScopeTimingxyzPost",
     "HTTPValidationError",
     "ValidationError",
     "ValidationErrorContext",

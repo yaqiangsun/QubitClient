@@ -5,15 +5,15 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_ramsy_api_v1_tasks_scope_ramsy_post import BodyRamsyApiV1TasksScopeRamsyPost
+from ...models.body_timingxyz_api_v1_tasks_scope_timingxyz_post import BodyTimingxyzApiV1TasksScopeTimingxyzPost
 from ...models.http_validation_error import HTTPValidationError
 from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    body: BodyRamsyApiV1TasksScopeRamsyPost,
-    type_: str | Unset = "ramsy",
+    body: BodyTimingxyzApiV1TasksScopeTimingxyzPost,
+    type_: str | Unset = "timingxyz",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -25,7 +25,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/tasks/scope/ramsy",
+        "url": "/api/v1/tasks/scope/timingxyz",
         "params": params,
     }
 
@@ -69,23 +69,23 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRamsyApiV1TasksScopeRamsyPost,
-    type_: str | Unset = "ramsy",
+    body: BodyTimingxyzApiV1TasksScopeTimingxyzPost,
+    type_: str | Unset = "timingxyz",
 ) -> Response[Any | HTTPValidationError]:
-    r"""Ramsy
+    r"""Timingxyz
 
-     ramsy fit
+     timing xyz fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"ramsy\"
+        type: 任务类型，默认为\"timingxyz\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'ramsy'.
-        body (BodyRamsyApiV1TasksScopeRamsyPost):
+        type_ (str | Unset): 任务类型 Default: 'timingxyz'.
+        body (BodyTimingxyzApiV1TasksScopeTimingxyzPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -110,23 +110,23 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRamsyApiV1TasksScopeRamsyPost,
-    type_: str | Unset = "ramsy",
+    body: BodyTimingxyzApiV1TasksScopeTimingxyzPost,
+    type_: str | Unset = "timingxyz",
 ) -> Any | HTTPValidationError | None:
-    r"""Ramsy
+    r"""Timingxyz
 
-     ramsy fit
+     timing xyz fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"ramsy\"
+        type: 任务类型，默认为\"timingxyz\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'ramsy'.
-        body (BodyRamsyApiV1TasksScopeRamsyPost):
+        type_ (str | Unset): 任务类型 Default: 'timingxyz'.
+        body (BodyTimingxyzApiV1TasksScopeTimingxyzPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -146,23 +146,23 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRamsyApiV1TasksScopeRamsyPost,
-    type_: str | Unset = "ramsy",
+    body: BodyTimingxyzApiV1TasksScopeTimingxyzPost,
+    type_: str | Unset = "timingxyz",
 ) -> Response[Any | HTTPValidationError]:
-    r"""Ramsy
+    r"""Timingxyz
 
-     ramsy fit
+     timing xyz fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"ramsy\"
+        type: 任务类型，默认为\"timingxyz\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'ramsy'.
-        body (BodyRamsyApiV1TasksScopeRamsyPost):
+        type_ (str | Unset): 任务类型 Default: 'timingxyz'.
+        body (BodyTimingxyzApiV1TasksScopeTimingxyzPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -185,23 +185,23 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient | Client,
-    body: BodyRamsyApiV1TasksScopeRamsyPost,
-    type_: str | Unset = "ramsy",
+    body: BodyTimingxyzApiV1TasksScopeTimingxyzPost,
+    type_: str | Unset = "timingxyz",
 ) -> Any | HTTPValidationError | None:
-    r"""Ramsy
+    r"""Timingxyz
 
-     ramsy fit
+     timing xyz fit
 
     Args:
         files: 上传的.npy文件列表
-        type: 任务类型，默认为\"ramsy\"
+        type: 任务类型，默认为\"timingxyz\"
 
     Returns:
         dict: 包含检测结果的字典
 
     Args:
-        type_ (str | Unset): 任务类型 Default: 'ramsy'.
-        body (BodyRamsyApiV1TasksScopeRamsyPost):
+        type_ (str | Unset): 任务类型 Default: 'timingxyz'.
+        body (BodyTimingxyzApiV1TasksScopeTimingxyzPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

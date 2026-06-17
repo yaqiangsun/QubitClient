@@ -475,16 +475,12 @@ def pipulsef10(qubits:list[str],
 
 @mcp.tool
 def optqubitreadfreq(qubits:list[str],
-                     freq_span_center,
-                     freq_span_half_bandwidth=0.0055,
-                     freq_span_sample_num=40,
+                     freq_span=0.0055,
                      ):
     result = lqcs_optqubitreadfreq(qubits=qubits,
-                      freq_span_center=freq_span_center,
-                      freq_span_half_bandwidth=freq_span_half_bandwidth,
-                      freq_span_sample_num=freq_span_sample_num,
+                      freq_span=freq_span,
                       )
-    hdf5_path = find_latest_filename(task_type='optqubitreadfreq')
+    hdf5_path = find_latest_filename(task_type='s21_dis')
     return hdf5_path
 
 @mcp.tool

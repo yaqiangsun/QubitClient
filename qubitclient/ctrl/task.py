@@ -384,15 +384,11 @@ def pipulsef10(qubits:list[str],
 
 @task_register
 def optqubitreadfreq(qubits:list[str],
-                     freq_span_center,
-                     freq_span_half_bandwidth=0.0055,
-                     freq_span_sample_num=40,
+                     freq_span=0.0055,
                      *args, **kwargs):
     result = call_mcp("optqubitreadfreq",
                       qubits=qubits,
-                      freq_span_center=freq_span_center,
-                      freq_span_half_bandwidth=freq_span_half_bandwidth,
-                      freq_span_sample_num=freq_span_sample_num,
+                      freq_span=freq_span,
                       )
     return result
 

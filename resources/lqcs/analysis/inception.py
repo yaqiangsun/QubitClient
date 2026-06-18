@@ -20,7 +20,7 @@ from qubitclient import handle_exceptions, control_api_execution
 #                     rb_convert,delta_convert
 
 from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert, t12dfit_convert, nnspectrum2d_convert, spectrum2d_convert,\
-                    singleshot_convert,\
+                    singleshot_convert, setpialpha_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
                     spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert
@@ -147,10 +147,9 @@ def t2fit(image):
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def optpipulse(image):
-    image = optpipulse_convert(image)
-    results = scope_template(image,task_type=TaskName.OPTPIPULSE)
-    # optpipulse_update(image,results)
+def setpialpha(image):
+    image = setpialpha_convert(image)
+    results = scope_template(image,task_type=TaskName.SETPIALPHA)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)

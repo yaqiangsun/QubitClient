@@ -68,6 +68,36 @@ def find_latest_filename(task_type):
     hdf5_path = os.path.join(ROOT_FOLDER, latest_file_name)
     return hdf5_path
 
+
+def find_top3_latest_filename(task_type):
+    ROOT_FOLDER = 'D:/DataVault/LQHL.dir/test.dir/20260324.dir/'
+    file_info_list = []
+    for filename in os.listdir(ROOT_FOLDER):
+        if not filename.endswith('.hdf5'):
+            continue
+        if task_type not in filename.lower():
+            continue
+        # 提取序号数字
+        number_id = int(filename.split(' - ')[0])
+        file_info_list.append((number_id, filename))
+    
+    if not file_info_list:
+        return []
+    
+    # 取前3
+    file_info_list.sort(key=lambda x: x[0], reverse=True)
+    top3 = file_info_list[:3]
+    
+    # 拼接完整路径
+    result_path_list = []
+    for num, fname in top3:
+        full_path = os.path.join(ROOT_FOLDER, fname)
+        result_path_list.append(full_path)
+        print(f"Found file ID:{num} -> {fname}")
+    
+    return result_path_list
+
+
 def convert_ndarray(obj):
     if isinstance(obj, np.ndarray):
         return obj.tolist()
@@ -369,17 +399,17 @@ def singleshot(qubits:list[str]=['Q0','Q1'],
     return hdf5_path
 
 @mcp.tool
-def opt_pipulse(qubits:list[str]=['Q0','Q1'],
-                N_list:list[int]=[1, 3, 5],
-                amp_list:list[float]=None,
+def setpialpha(qubits:list[str]=['Q0','Q1'],
+                ms:list[int]=[1, 3, 5],
+                gate:str='X',
                 ):
-    gate="X"
     result = lqcs_opt_pipulse(qubits=qubits,
-                      ms=N_list,
+                      ms=ms,
                       gate=gate
                       )
-    hdf5_path = find_latest_filename(task_type='opt_pipulse')
-    return hdf5_path
+    piamp_path_list = find_top3_latest_filename(task_type='piamp')
+    alpha_path_list = find_top3_latest_filename(task_type='alpha')
+    return [piamp_path_list, alpha_path_list]
 
 @mcp.tool
 def powershift(qubits:list[str]=['Q0','Q1'],

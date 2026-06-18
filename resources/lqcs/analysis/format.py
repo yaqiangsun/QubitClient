@@ -334,6 +334,32 @@ def ramseyt2_convert(result):
 
     return data_formated
 
+def setpialpha_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            wave = data[0]
+            x = data[1]
+            conf = data[2]
+            other = data[3]
+
+            data_formated["image"][qubit_name] = (wave, x, conf, other)
+        elif data.dtype.names:   
+            wave = data['f0']      
+            x    = data['f1']      
+            conf = data['f2']
+            other = data['f3']
+
+            data_formated["image"][qubit_name] = (wave, x, conf, other)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
 
 def t2fit_convert(result):
     data_formated = {"image": {}}

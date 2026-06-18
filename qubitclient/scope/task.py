@@ -235,6 +235,7 @@ class TaskName(Enum):
     # reflection
     RAMSEY_T2 = "t2fit"
     SPINECHO_T2 = "spinecho"
+    SETPIALPHA = "optpipulse"
 
 
 

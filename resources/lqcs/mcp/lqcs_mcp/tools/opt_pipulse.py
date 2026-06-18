@@ -24,8 +24,6 @@ _all_qubits = generate_qubit(globals(), info=None, sample=s)
 _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
-
-
 def opt_pipulse(qubits:list[str]=['Q0','Q1'],
                ms:list[int]=[1, 3, 5],
                gate:str='X',
@@ -33,7 +31,7 @@ def opt_pipulse(qubits:list[str]=['Q0','Q1'],
     
     qubit = eval(qubits[0])
 
-    result = sq.set_pi_alpha(qubit, ms=ms, gate=gate, update=False)
+    result = sq.set_pi(qubit, ms=ms, gate=gate) # 无update,但会更新4个参数
     
     
     return result

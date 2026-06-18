@@ -30,7 +30,7 @@ from qubitclient import handle_exceptions, control_api_execution
 
 from .format import s21_convert,s21vsflux_convert, ramseyt2_convert, t12dfit_convert, \
                     singleshot_convert, nnspectrum2d_convert, spectrum2d_convert, \
-                    nns21vsflux_convert,t1fit_convert,\
+                    nns21vsflux_convert,t1fit_convert, setpialpha_convert,\
                     t2fit_convert,nnspectrum_convert,\
                     spectrum_convert, powershift_convert, s21multi_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert
 
@@ -71,9 +71,9 @@ def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
     logging.info(f"Saving ai image to:{save_path}")
     return fig_list
 @handle_exceptions
-def plot_optpipulse(data,results,save_path):
-    data = optpipulse_convert(data)
-    fig_list = plot_template(data,results,save_path,task_type=TaskName.OPTPIPULSE)
+def plot_setpialpha(data,results,save_path):
+    data = setpialpha_convert(data)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.SETPIALPHA)
     return fig_list
 @handle_exceptions
 def plot_s21(data,results,save_path):

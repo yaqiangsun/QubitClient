@@ -58,6 +58,7 @@ class CtrlTaskName(Enum):
     OPTQUBITREADFREQ = 'optqubitreadfreq'
     TIMINGXYZ = 'timingxyz'
     PULSESHAPE = 'pulseshape'
+    SETPIALPHA = 'setpialpha'
     # reflection
     IQRAW = "singleshot"
     SPECTROSCOPY = "spectrum"
@@ -413,6 +414,19 @@ def pulseshape(qubits:list[str],
     result = call_mcp("pulseshape",
                       qubits=qubits,
                       step_height=step_height
+                      )
+    return result
+
+@task_register
+def setpialpha(qubits:list[str]=['Q0','Q1'],
+                ms:list[int]=[1, 3, 5],
+                gate:str='X',
+                *args, **kwargs):
+    
+    result = call_mcp("setpialpha",
+                      qubits=qubits,
+                      ms=ms,
+                      gate=gate
                       )
     return result
 

@@ -24,7 +24,7 @@ _all_qubits = generate_qubit(globals(), info=None, sample=s)
 _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
-def opt_pipulse(qubits:list[str]=['Q0','Q1'],
+def setpialpha(qubits:list[str]=['Q0','Q1'],
                ms:list[int]=[1, 3, 5],
                gate:str='X',
                ):

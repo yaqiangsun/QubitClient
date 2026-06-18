@@ -23,7 +23,7 @@ from  lqcs_mcp.tools import spectrum_2d as lqcs_spectrum_2d
 from  lqcs_mcp.tools import s21vsflux as lqcs_s21vsflux
 from  lqcs_mcp.tools import singleshot as lqcs_singleshot
 from  lqcs_mcp.tools import drag as lqcs_drag
-from  lqcs_mcp.tools import opt_pipulse as lqcs_opt_pipulse
+from  lqcs_mcp.tools import setpialpha as lqcs_setpialpha
 from  lqcs_mcp.tools import powershift as lqcs_powershift
 from  lqcs_mcp.tools import delta as lqcs_delta
 from  lqcs_mcp.tools import spinecho_t2 as lqcs_spinecho_t2
@@ -403,7 +403,7 @@ def setpialpha(qubits:list[str]=['Q0','Q1'],
                 ms:list[int]=[1, 3, 5],
                 gate:str='X',
                 ):
-    result = lqcs_opt_pipulse(qubits=qubits,
+    result = lqcs_setpialpha(qubits=qubits,
                       ms=ms,
                       gate=gate
                       )

@@ -713,6 +713,57 @@ def postprocess_result_optreadfreq(response, threshold):
     result = response.parsed
     return result
 
+
+def postprocess_result_spinecho(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+    results = result.get("results", [])
+    results_filtered = []
+
+    for item in results:
+        if isinstance(item, dict) and item.get("status") == "failed":
+            logging.warning("Error in request: %s", item.get("error"))
+        result_filtered = {"status": item.get("status", "success")}
+        has_valid = False
+
+        for key, val in item.items():
+            if key == "status" or not isinstance(val, dict):
+                continue
+            if val.get("r2", 0) >= threshold:
+                result_filtered[key] = val
+                has_valid = True
+
+        result_filtered["status"] = result_filtered["status"] if has_valid else "failed"
+        results_filtered.append(result_filtered)
+
+    return {"results": results_filtered}
+
+
+def postprocess_result_xyz_timing(response, threshold):
+    logging.debug("Result: %s", response.parsed)
+    result = response.parsed
+    results = result.get("results", [])
+    results_filtered = []
+
+    for item in results:
+        if isinstance(item, dict) and item.get("status") == "failed":
+            logging.warning("Error in request: %s", item.get("error"))
+        result_filtered = {"status": item.get("status", "success")}
+        has_valid = False
+
+        for key, val in item.items():
+            if key == "status" or not isinstance(val, dict):
+                continue
+            if val.get("r2", 0) >= threshold:
+                result_filtered[key] = val
+                has_valid = True
+
+        result_filtered["status"] = result_filtered["status"] if has_valid else "failed"
+        results_filtered.append(result_filtered)
+
+    return {"results": results_filtered}
+
+
 TASK_MAP: Dict[str, Callable] = {
     's21peak': postprocess_result_s21peak,
     's21peakmulti': postprocess_result_s21peak,
@@ -733,6 +784,8 @@ TASK_MAP: Dict[str, Callable] = {
     'xeb': postprocess_result_xeb,
     't12dfit': postprocess_result_t12dfit,
     'optreadfreq': postprocess_result_optreadfreq,
+    'spinecho': postprocess_result_spinecho,
+    'xyz_timing': postprocess_result_xyz_timing,
 }
 
 def run_postprocess(response, threshold, task_type):

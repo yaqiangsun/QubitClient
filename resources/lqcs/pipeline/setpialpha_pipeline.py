@@ -33,8 +33,8 @@ from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import optpipulse
-from analysis.visualization import plot_optpipulse
+from analysis.inception import setpialpha
+from analysis.visualization import plot_setpialpha
 
 SAVE_PLOT_FOLDER = './tmp'
 
@@ -141,45 +141,45 @@ def get_opt_pipulse_hdf5_res(args):
         # three piamp files' blue lines
         construct_data = get_construct_data(q_name, 'blue', data_id[0][0], data_id[0][1], data_id[0][2])
         # 2.分析数据
-        analysis_result = optpipulse(construct_data)
+        analysis_result = setpialpha(construct_data)
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/optpipulse_piamp_bluelines_{pure_name}.png'
-        fig_list = plot_optpipulse(construct_data, analysis_result, save_path=img_save_path)
+        fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
         # three piamp files' orange lines
         construct_data = get_construct_data(q_name, 'orange', data_id[0][0], data_id[0][1], data_id[0][2])
         # 2.分析数据
-        analysis_result = optpipulse(construct_data)
+        analysis_result = setpialpha(construct_data)
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/optpipulse_alpha_orangelines_{pure_name}.png'
-        fig_list = plot_optpipulse(construct_data, analysis_result, save_path=img_save_path)
+        fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
         # three alpha files' blue lines
         construct_data = get_construct_data(q_name, 'blue', data_id[1][0], data_id[1][1], data_id[1][2])
         # 2.分析数据
-        analysis_result = optpipulse(construct_data)
+        analysis_result = setpialpha(construct_data)
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/optpipulse_piamp_bluelines_{pure_name}.png'
-        fig_list = plot_optpipulse(construct_data, analysis_result, save_path=img_save_path)
+        fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
         # three alpha files' orange lines
         construct_data = get_construct_data(q_name, 'orange', data_id[1][0], data_id[1][1], data_id[1][2])
         # 2.分析数据
-        analysis_result = optpipulse(construct_data)
+        analysis_result = setpialpha(construct_data)
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/optpipulse_alpha_orangelines_{pure_name}.png'
-        fig_list = plot_optpipulse(construct_data, analysis_result, save_path=img_save_path)
+        fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
         # 4.接入大模型分析图片

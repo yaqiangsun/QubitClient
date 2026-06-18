@@ -8,8 +8,8 @@ import json
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-# from analysis.inception import timingxyz
-# from analysis.visualization import plot_timingxyz
+from analysis.inception import timingxyz
+from analysis.visualization import plot_timingxyz
 
 SAVE_PLOT_FOLDER = './tmp'
 
@@ -30,12 +30,12 @@ def get_timingxyz_hdf5_res():
     data = json.loads(data[0]["text"])
 
     # 2.分析数据
-    # analysis_result = timingxyz(data)
+    analysis_result = timingxyz(data)
 
     # 3.绘图
-    # pure_name = qubit_name_list[0]
-    # img_save_path = f'{SAVE_PLOT_FOLDER}/timingxyz_{pure_name}.png'
-    # fig_list = plot_timingxyz(data, analysis_result, save_path=img_save_path)
+    pure_name = qubit_name_list[0]
+    img_save_path = f'{SAVE_PLOT_FOLDER}/timingxyz_{pure_name}.png'
+    fig_list = plot_timingxyz(data, analysis_result, save_path=img_save_path)
 
     # 4.接入大模型分析图片
     # resize更小

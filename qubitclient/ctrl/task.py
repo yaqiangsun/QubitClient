@@ -301,13 +301,15 @@ def spinecho_t2(qubits: list[str],
        delay_end=10000,
        delay_sample_num=200,
        fringeFreq=0.05,
+       ms=None,
        *args, **kwargs):
     result = call_mcp("spinecho_t2",
                       qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,
                       delay_sample_num=delay_sample_num,
-                      fringeFreq=fringeFreq
+                      fringeFreq=fringeFreq,
+                      ms=ms
                       )
     return result
 
@@ -398,12 +400,14 @@ def timingxyz(qubits:list[str],
               delay_start=-60,
               delay_end=60,
               delay_sample_num=31,
+              zpa=0.5,
               *args, **kwargs):
     result = call_mcp("timingxyz",
                       qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,
-                      delay_sample_num=delay_sample_num
+                      delay_sample_num=delay_sample_num,
+                      zpa=zpa
                       )
     return result
 

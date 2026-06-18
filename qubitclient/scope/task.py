@@ -26,6 +26,8 @@ from .scope_api.api.defined_tasks import rbfit_api_v1_tasks_scope_rbfit_post
 from .scope_api.api.defined_tasks import delta_api_v1_tasks_scope_delta_post
 from .scope_api.api.defined_tasks import t12dfit_api_v1_tasks_scope_t12dfit_post
 from .scope_api.api.defined_tasks import optreadfreq_api_v1_tasks_scope_optreadfreq_post
+from .scope_api.api.defined_tasks import spinecho_api_v1_tasks_scope_spinecho_post
+from .scope_api.api.defined_tasks import timingxyz_api_v1_tasks_scope_timingxyz_post
 
 
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
@@ -45,6 +47,8 @@ from .scope_api.models import BodyRbfitApiV1TasksScopeRbfitPost
 from .scope_api.models import BodyDeltaApiV1TasksScopeDeltaPost
 from .scope_api.models import BodyT12DfitApiV1TasksScopeT12DfitPost
 from .scope_api.models import BodyOptreadfreqApiV1TasksScopeOptreadfreqPost
+from .scope_api.models import BodySpinechoApiV1TasksScopeSpinechoPost
+from .scope_api.models import BodyTimingxyzApiV1TasksScopeTimingxyzPost
 
 
 
@@ -204,6 +208,18 @@ def t12dfit(client,files: File):
 def optreadfreq(client,files: File):
     body: BodyOptreadfreqApiV1TasksScopeOptreadfreqPost = BodyOptreadfreqApiV1TasksScopeOptreadfreqPost(files=files)
     response: Response[BodyOptreadfreqApiV1TasksScopeOptreadfreqPost] = optreadfreq_api_v1_tasks_scope_optreadfreq_post.sync_detailed(client=client,body=body)
+    return response
+
+@task_register
+def spinecho(client,files: File):
+    body: BodySpinechoApiV1TasksScopeSpinechoPost = BodySpinechoApiV1TasksScopeSpinechoPost(files=files)
+    response: Response[BodySpinechoApiV1TasksScopeSpinechoPost] = spinecho_api_v1_tasks_scope_spinecho_post.sync_detailed(client=client,body=body)
+    return response
+
+@task_register
+def xyz_timing(client,files: File):
+    body: BodyTimingxyzApiV1TasksScopeTimingxyzPost = BodyTimingxyzApiV1TasksScopeTimingxyzPost(files=files)
+    response: Response[BodyTimingxyzApiV1TasksScopeTimingxyzPost] = timingxyz_api_v1_tasks_scope_timingxyz_post.sync_detailed(client=client,body=body)
     return response
 
 from enum import Enum, unique

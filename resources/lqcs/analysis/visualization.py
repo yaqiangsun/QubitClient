@@ -32,15 +32,18 @@ from .format import s21_convert,s21vsflux_convert, ramseyt2_convert, t12dfit_con
                     singleshot_convert, nnspectrum2d_convert, spectrum2d_convert, \
                     nns21vsflux_convert,t1fit_convert, setpialpha_convert,\
                     t2fit_convert,nnspectrum_convert,\
-                    spectrum_convert, powershift_convert, s21multi_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert
+                    spectrum_convert, powershift_convert, s21multi_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert,\
+                    spinecho_convert, timingxyz_convert
 
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
 
-    if type(results)==dict:
-        if "results" not in results.keys():
-            results = results.get("results")
-        elif "result" in results.keys():
-            results = results.get("result")
+    if isinstance(results, dict):
+        if "results" in results:
+            results = results["results"]
+        elif "result" in results:
+            results = results["result"]
+    if not isinstance(results, list):
+        results = [results]
     image = data
     dict_list = [np.array(image)]
 
@@ -203,4 +206,16 @@ def plot_delta(data,results,save_path):
 def plot_optreadfreq(data,results,save_path):
     data = optreadfreq_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.OPTREADFREQ)
+    return fig_list
+
+@handle_exceptions
+def plot_spinecho(data, results, save_path):
+    data = spinecho_convert(data)
+    fig_list = plot_template(data, results, save_path, task_type=TaskName.SPINECHO)
+    return fig_list
+
+@handle_exceptions
+def plot_timingxyz(data, results, save_path):
+    data = timingxyz_convert(data)
+    fig_list = plot_template(data, results, save_path, task_type=TaskName.TIMINGXYZ)
     return fig_list

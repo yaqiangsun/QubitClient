@@ -715,3 +715,31 @@ def optreadfreq_convert(result):
         dis_cal = np.abs(s0 - s1)
         data_formated["image"][qubit_name] = (freq, s0, s1)
     return data_formated
+
+
+def spinecho_convert(result):
+    """Convert LQCS SpinEchoCPMG hdf5 data to scope spinecho format."""
+    return t2fit_convert(result)
+
+
+def timingxyz_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+
+        if type(data) == list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0] * 1e-9
+            amp = data_arr[:, 1]
+            data_formated["image"][qubit_name] = (amp, delay)
+
+        elif data.dtype.names:
+            delay = data["f0"] * 1e-9
+            amp = data["f1"]
+            data_formated["image"][qubit_name] = (amp, delay)
+
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated

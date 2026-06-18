@@ -23,7 +23,8 @@ from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert, t12dfit_co
                     singleshot_convert, setpialpha_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
-                    spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert
+                    spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert,\
+                    spinecho_convert, timingxyz_convert
 
 
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
@@ -37,13 +38,12 @@ def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
     logging.debug(f"results:{results}")
     return results
 
-def scope_template(image,task_type=TaskName.SPECTRUM2D):
-    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
+def scope_template(image, task_type=TaskName.SPECTRUM2D, threshold=0.1):
+    client = QubitScopeClient(url=API_URL, api_key=API_KEY)
     data_ndarray = image
-    response = client.request(file_list=[data_ndarray],task_type=task_type)
+    response = client.request(file_list=[data_ndarray], task_type=task_type)
     # results = client.get_result(response=response)
-    threshold = 0.1
-    results = client.get_filtered_result(response, threshold, task_type = task_type.value)
+    results = client.get_filtered_result(response, threshold, task_type=task_type.value)
     logging.debug(f"results:{results}")
     return results
 
@@ -224,4 +224,18 @@ def delta(image):
 def optreadfreq(image):
     image = optreadfreq_convert(image)
     results = scope_template(image,task_type=TaskName.OPTREADFREQ)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def spinecho(image):
+    image = spinecho_convert(image)
+    results = scope_template(image, task_type=TaskName.SPINECHO, threshold=-1)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def timingxyz(image):
+    image = timingxyz_convert(image)
+    results = scope_template(image, task_type=TaskName.TIMINGXYZ, threshold=-1)
     return results

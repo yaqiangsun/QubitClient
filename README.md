@@ -354,7 +354,9 @@ images[0].save("enhanced.png")
 | `TaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/scope/SPECTRUM2D.md) | ✅
 | `TaskName.DRAG` | DRAG 免交叉点分析 | [文档](docs/scope/DRAG.md) | ✅
 | `TaskName.DELTA` | delta优化实验 | [文档](docs/scope/DELTA.md) | ✅
-| `TaskName.RB` | 保真度测试 | [文档](docs/scope/RB.md) | ✅
+| `TaskName.RB` | 保真度测试 | [文档](docs/scope/RB.md) | ✅ |
+| `TaskName.SPINECHO` | Spin Echo T2 拟合 | - | ⏸️ |
+| `TaskName.TIMINGXYZ` | XYZ Timing 分析 | - | ⏸️ |
 
 ### 🤖 Ctrl 任务
 

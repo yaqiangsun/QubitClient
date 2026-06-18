@@ -10,8 +10,8 @@
 
 
 from .s21 import s21
-from .drag import drag
-from .delta import delta
+# from .drag import drag
+# from .delta import delta
 from .setpialpha import setpialpha
 from .rabi import rabi
 from .ramsey import ramsey

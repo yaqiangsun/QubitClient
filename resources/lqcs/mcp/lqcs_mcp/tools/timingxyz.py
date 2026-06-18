@@ -34,6 +34,6 @@ def timingxyz(qubits:list[str]=['Q0','Q1'],
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num).tolist()
     qubit = eval(qubits[0])
 
-    result = sq.timing_xyz(qubit, delay=delay_array, zpa=zpa, update=False)
+    result = sq.test_timing_xyz(qubit, delay=delay_array, zpa=zpa, update=False)
     
     return result

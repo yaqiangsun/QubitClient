@@ -8,11 +8,11 @@
 ########################################################################
 
 
-"""Opt Pi Pulse measurement pipeline, write data to storage for web UI real-time display
+"""SETPIALPHA measurement pipeline, write data to storage for web UI real-time display
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.optpipulse_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp
+            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp
 """
 
 import sys
@@ -42,13 +42,13 @@ qubit_ctrl_client = QubitCtrlClient()
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Opt Pi Pulse Measurement Pipeline (UI storage sync enabled)")
+    parser = argparse.ArgumentParser(description="SETPIALPHA Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
     # ms序列，逗号分隔
     parser.add_argument("--ms", "-ms", type=str, default="1,4,8",
-                        help="ms list for opt pi pulse, split by comma, default '1,4,8'")
+                        help="ms list for SETPIALPHA, split by comma, default '1,4,8'")
     # gate类型
     parser.add_argument("--gate", "-g", type=str, default="X",
                         help="Gate type, default X")
@@ -91,10 +91,10 @@ def get_construct_data(q_name, lines_color, filepath_1, filepath_2, filepath_3):
     return construct_data
 
 
-def get_opt_pipulse_hdf5_res(args):
+def get_setpialpha_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "optpipulse"
-    pipeline_type = "optpipulse_pipeline"
+    task_name = "setpialpha"
+    pipeline_type = "setpialpha_pipeline"
     qubit_name_list = args.qubits
     save_folder = args.save_folder
     q_name = qubit_name_list[0]
@@ -117,10 +117,10 @@ def get_opt_pipulse_hdf5_res(args):
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[OptPiPulse] Task started run_id={run_id[:8]}")
+        print(f"[SETPIALPHA] Task started run_id={run_id[:8]}")
 
         # 1.采集数据 - X门
-        data = qubit_ctrl_client.run(CtrlTaskName.OPTPIPULSE,
+        data = qubit_ctrl_client.run(CtrlTaskName.SETPIALPHA,
                                        qubits=qubit_name_list,
                                        ms=ms_list,
                                        gate=gate_val)
@@ -145,7 +145,7 @@ def get_opt_pipulse_hdf5_res(args):
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/optpipulse_piamp_bluelines_{pure_name}.png'
+        img_save_path = f'{save_folder}/setpialpha_piamp_bluelines_{pure_name}.png'
         fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
@@ -156,7 +156,7 @@ def get_opt_pipulse_hdf5_res(args):
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/optpipulse_alpha_orangelines_{pure_name}.png'
+        img_save_path = f'{save_folder}/setpialpha_piamp_orangelines_{pure_name}.png'
         fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
@@ -167,7 +167,7 @@ def get_opt_pipulse_hdf5_res(args):
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/optpipulse_piamp_bluelines_{pure_name}.png'
+        img_save_path = f'{save_folder}/setpialpha_alpha_bluelines_{pure_name}.png'
         fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
@@ -178,7 +178,7 @@ def get_opt_pipulse_hdf5_res(args):
         last_analysis_result = analysis_result
         # 3.绘图
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/optpipulse_alpha_orangelines_{pure_name}.png'
+        img_save_path = f'{save_folder}/setpialpha_alpha_orangelines_{pure_name}.png'
         fig_list = plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
         plot_paths.append(img_save_path)
 
@@ -225,14 +225,14 @@ def get_opt_pipulse_hdf5_res(args):
                     target_alpha="Null"
                     values=str(target_amp) + ',' + target_alpha
                     qname=qubit_name_list[i]
-                    task_type=CtrlTaskName.OPTPIPULSE
+                    task_type=CtrlTaskName.SETPIALPHA
                     print("更新values-----------", values)
                     qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
         # 6.更新PiHalf.amp和PiHalf.alpha
        
         # qname=qubit_name_list[0]
-        # task_type=CtrlTaskName.OPTPIPULSE
+        # task_type=CtrlTaskName.SETPIALPHA
         # values="Null,Null,3.193120459017055,3.193120459017055"   
         # qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM,qname=qname, task_type=task_type, values=values)
 
@@ -247,10 +247,10 @@ def get_opt_pipulse_hdf5_res(args):
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"OptPiPulse测量完成，基础参数：{set_params}")
+        print(f"SETPIALPHA测量完成，基础参数：{set_params}")
 
     except Exception as e:
-        err_msg = f"OptPiPulse测量异常：{str(e)}"
+        err_msg = f"SETPIALPHA测量异常：{str(e)}"
         store.update_run(
             run_id=run_id,
             status="failed",
@@ -263,4 +263,4 @@ def get_opt_pipulse_hdf5_res(args):
 
 if __name__ == '__main__':
     cli_args = parse_args()
-    get_opt_pipulse_hdf5_res(cli_args)
+    get_setpialpha_hdf5_res(cli_args)

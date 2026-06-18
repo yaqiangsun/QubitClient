@@ -22,10 +22,10 @@ from  lqcs_mcp.tools import spectrum as lqcs_spectrum
 from  lqcs_mcp.tools import spectrum_2d as lqcs_spectrum_2d
 from  lqcs_mcp.tools import s21vsflux as lqcs_s21vsflux
 from  lqcs_mcp.tools import singleshot as lqcs_singleshot
-from  lqcs_mcp.tools import drag as lqcs_drag
+# from  lqcs_mcp.tools import drag as lqcs_drag
 from  lqcs_mcp.tools import setpialpha as lqcs_setpialpha
 from  lqcs_mcp.tools import powershift as lqcs_powershift
-from  lqcs_mcp.tools import delta as lqcs_delta
+# from  lqcs_mcp.tools import delta as lqcs_delta
 from  lqcs_mcp.tools import spinecho_t2 as lqcs_spinecho_t2
 from  lqcs_mcp.tools import ramsey_t2 as lqcs_ramsey_t2
 from  lqcs_mcp.tools import xeb as lqcs_xeb
@@ -251,17 +251,17 @@ def s21multi(qubits:list[str]=['Q0','Q1'],
     hdf5_path = find_latest_filename(task_type='s21')
     return hdf5_path
 
-@mcp.tool
-def drag(qubits:list[str]=['Q0','Q1'],
-         lamb:list[float]=[-0.5, 0.5],
-         stage:int=1,
-         N_repeat:int=1,
-         pulsePair:list[int]=[0, 1],
-         signal:str='population',
-         ):
-    result = lqcs_drag(qubits=qubits)
-    hdf5_path = find_latest_filename(task_type='drag')
-    return hdf5_path
+# @mcp.tool
+# def drag(qubits:list[str]=['Q0','Q1'],
+#          lamb:list[float]=[-0.5, 0.5],
+#          stage:int=1,
+#          N_repeat:int=1,
+#          pulsePair:list[int]=[0, 1],
+#          signal:str='population',
+#          ):
+#     result = lqcs_drag(qubits=qubits)
+#     hdf5_path = find_latest_filename(task_type='drag')
+#     return hdf5_path
 
 @mcp.tool
 def rabi(qubits:list[str]=['Q0','Q1'],
@@ -431,16 +431,16 @@ def powershift(qubits:list[str]=['Q0','Q1'],
     hdf5_path = find_latest_filename(task_type='power')
     return hdf5_path
 
-@mcp.tool
-def delta(qubits:list[str]=['Q0','Q1'],
-          N_list:list[int]=[1, 5, 13],
-          delta_list:list[float]=None,
-          stage:int=1,
-          delay:float=20e-9,
-          ):
-    result = lqcs_delta(qubits=qubits)
-    hdf5_path = find_latest_filename(task_type='delta')
-    return hdf5_path
+# @mcp.tool
+# def delta(qubits:list[str]=['Q0','Q1'],
+#           N_list:list[int]=[1, 5, 13],
+#           delta_list:list[float]=None,
+#           stage:int=1,
+#           delay:float=20e-9,
+#           ):
+#     result = lqcs_delta(qubits=qubits)
+#     hdf5_path = find_latest_filename(task_type='delta')
+#     return hdf5_path
 
 @mcp.tool
 def rb(qubits:list[str],
@@ -518,8 +518,8 @@ def timingxyz(qubits:list[str],
               delay_start=-60,
               delay_end=60,
               delay_sample_num=31,
+              zpa=0.5
               ):
-    zpa=None
     result = lqcs_timingxyz(qubits=qubits,
                       delay_start=delay_start,
                       delay_end=delay_end,
@@ -535,15 +535,17 @@ def spinecho_t2(qubits: list[str],
                 delay_end=10000,
                 delay_sample_num=200,
                 fringeFreq=0.05,
+                ms=None
                 ):
     
     result = lqcs_spinecho_t2(qubits=qubits,
                        delay_start=delay_start,
                        delay_end=delay_end,
                        delay_sample_num=delay_sample_num,
-                       fringeFreq=fringeFreq
+                       fringeFreq=fringeFreq,
+                       ms=ms
                       )
-    hdf5_path = find_latest_filename(task_type='spinecho_t2')
+    hdf5_path = find_latest_filename(task_type='spinecho')
     return hdf5_path
 
 @mcp.tool

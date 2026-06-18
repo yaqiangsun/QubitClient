@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. Example:
-        python -m resources.lqcs.pipeline.powershift_pipeline -q q3lu7 -s ./tmp
+        python -m resources.lqcs.pipeline.powershift_pipeline -q q3lu7 -s ./tmp -n 16 -ps 13 -u True -c 0.3
 """
 import sys
 import argparse
@@ -43,12 +43,17 @@ def parse_args():
                         help="Manual readout freq(GHz), auto query hardware if empty")
     parser.add_argument("--bandwidth", "-b", type=float, default=0.0015,
                         help="Freq half bandwidth(GHz), default 0.0015")
-    parser.add_argument("--samples", "-n", type=int, default=2, help="Freq sample count")
+    parser.add_argument("--samples", "-n", type=int, default=16, help="Freq sample count")
     parser.add_argument("--power-start", type=float, default=-40, help="Drive power start")
     parser.add_argument("--power-end", type=float, default=-16, help="Drive power end")
-    parser.add_argument("--power-samples", type=int, default=4, help="Power sample count")
+    parser.add_argument("--power-samples", "-ps",type=int, default=13, help="Power sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
+    # 新增更新开关与置信度阈值
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 def get_powershift_hdf5_res(args):
@@ -88,17 +93,6 @@ def get_powershift_hdf5_res(args):
         run_id = store.save_run(run_record)
         print(f"[POWERSHIFT] Task started run_id={run_id[:8]}")
 
-        # data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
-        #                              qubits=qubit_name_list,
-        #                              frequency_center=fread,
-        #                              frequency_half_bandwidth=0.0015,
-        #                              frequency_sample_num=16,
-        #                              power_start=-40,
-        #                              power_end=-16,
-        #                              power_sample_num=13
-        #                              )
-
-        # 简短化 复现问题
         data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
                                      qubits=qubit_name_list,
                                      frequency_center=fread,
@@ -113,7 +107,6 @@ def get_powershift_hdf5_res(args):
         data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
         data = json.loads(data[0]["text"])
-        # tmp = data["q2lu7"]
 
         # 2.分析数据
         analysis_result = powershift(data)
@@ -146,20 +139,32 @@ def get_powershift_hdf5_res(args):
 
         new_full_params = set_params.copy()
         update_power_map = {}
-        # 5. 更新 power
+
+        # 解析分析结果
         if type(analysis_result)==dict:
             if "results" not in analysis_result.keys():
                 analysis_result = analysis_result.get("results")
             elif "result" in analysis_result.keys():
                 analysis_result = analysis_result.get("result")
-        for result in analysis_result:
+
+        # 仅开启更新时执行后续逻辑
+        if args.update:
+            for result in analysis_result:
                 keypoints_list = result['keypoints_list']
                 class_num_list = result['class_num_list']
                 confs = result['confs']
                 for i in range(len(qubit_name_list)):
                     keypoints = keypoints_list[i]
                     class_num = class_num_list[i]
-                    conf = confs[i]
+                    conf = float(confs[i])
+                    qname = qubit_name_list[i]
+
+                    print("conf: ", conf)
+
+                    # 置信度判断
+                    if conf <= args.confidence:
+                        continue
+
                     keypoints_segments=[]
                     if class_num==1:
                         keypoints_segments.append([keypoints[1],keypoints[0]])
@@ -167,16 +172,18 @@ def get_powershift_hdf5_res(args):
                         keypoints_segments.append([keypoints[3],keypoints[2]])
                     if class_num==3:
                         keypoints_segments.append([keypoints[2],keypoints[1]])
-                    qname=qubit_name_list[i]
-                    if (keypoints_segments): # example:[[[6.539499999999999, -40.0], [6.539499999999999, -20.0]]]
+
+                    if keypoints_segments:
                         keypoints_segments = keypoints_segments[0]
                         print("[INFO] keypoints_segments: ", keypoints_segments)
                         target_power = keypoints_segments[0][1] + (keypoints_segments[1][1] - keypoints_segments[0][1]) * 0.8
-                        values=str(target_power) 
+                        values = str(target_power) 
 
-                        task_type=CtrlTaskName.POWERSHIFT
+                        task_type = CtrlTaskName.POWERSHIFT
                         qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
                         update_power_map[qname] = target_power
+                        print(f"[INFO] Update {qname} power to {target_power}, confidence: {conf}")
+
         if update_power_map:
             new_full_params["optimal_power"] = update_power_map
 

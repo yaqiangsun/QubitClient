@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.ramseyt2_pipeline -q q3lu7 -f 0.05 -ds 0 -de 10000 -n 100 -s ./tmp
+            python -m resources.lqcs.pipeline.ramseyt2_pipeline -q q3lu7 -f 0.05 -ds 0 -de 10000 -n 100 -s ./tmp -u True -c 0.6
 """
 
 import sys
@@ -61,6 +61,11 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
+    # 新增统一参数
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 

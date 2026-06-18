@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.optqubitreadfreq_pipeline -q q3lu7 -sp 0.0055 -s ./tmp
+            python -m resources.lqcs.pipeline.optqubitreadfreq_pipeline -q q3lu7 -sp 0.0055 -s ./tmp -u True -c 0.6
 """
 
 import sys
@@ -49,6 +49,11 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save plot image")
+    # 新增统一参数
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 
@@ -143,21 +148,29 @@ def get_optqubitreadfreq_hdf5_res(args):
 
         data_content = raw_data['q3lu7']
 
-        for result in analysis_data:
-            freqs_list = result['peak_list']
-            for idx in range(len(qubit_name_list)):
-                freqs = freqs_list[idx]
-                curr_q = qubit_name_list[idx]
+        if args.update:
+            for result in analysis_data:
+                # print("-----result.keys(): ", result.keys())
+                freqs_list = result['peak_list']
+                # confs_list = result['conf_list'] # 沒conf信息，只有peak，因爲是求max無需conf
+                for idx in range(len(qubit_name_list)):
+                    freqs = freqs_list[idx]
+                    curr_q = qubit_name_list[idx]
+                    # curr_conf = confs_list[idx]
 
-                updated_freq = str(data_content[freqs][0])
-                # 更新寄存器
-                qubit_ctrl_client.update_param(
-                    qname=curr_q,
-                    task_type=CtrlTaskName.OPTQUBITREADFREQ,
-                    values=updated_freq
-                )
+                    # print("----curr_conf: ", curr_conf)
+                    # if curr_conf < args.confidence:
+                    #     continue
 
-                new_full_params["fread"] = float(updated_freq)
+                    updated_freq = str(data_content[freqs][0])
+                    # 更新寄存器
+                    qubit_ctrl_client.update_param(
+                        qname=curr_q,
+                        task_type=CtrlTaskName.OPTQUBITREADFREQ,
+                        values=updated_freq
+                    )
+
+                    new_full_params["fread"] = float(updated_freq)
 
 
 

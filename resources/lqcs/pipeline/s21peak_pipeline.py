@@ -10,9 +10,9 @@
 
 """Real s21multi measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.s21peak_pipeline -q q1lu7 -b 0.006 -n 200 -s ./tmp
+            python -m resources.lqcs.pipeline.s21peak_pipeline -q q3lu7 -b 0.01 -n 150 -s ./tmp -u True -c 0.6
 """
 
 import sys
@@ -56,6 +56,16 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Folder to save spectrum plot image")
+    
+    # 是否根据分析结果更新参数
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update by analysis")
+    
+    # 置信度阈值，辅助决定是否根据分析结果更新参数
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="update by confidence threshold")
+    
+
     return parser.parse_args()
 
 
@@ -158,23 +168,29 @@ def get_s21_hdf5_res(args):
         new_full_params = set_params.copy()
         updated_freq = None
 
-        for result in analysis_data:
-            # peaks_list = result['peaks']
-            # confs_list = result['confs']
-            freqs_list = result['freqs_list']
-            for idx in range(len(qubit_name_list)):
-                freqs = freqs_list[idx]
-                curr_q = qubit_name_list[idx]
-                if len(freqs):
-                    updated_freq = str(freqs[0])
-                    # 更新寄存器
-                    qubit_ctrl_client.update_param(
-                        qname=curr_q,
-                        task_type=CtrlTaskName.S21,
-                        values=updated_freq
-                    )
-                    # 覆盖新频率到参数字典
-                    new_full_params["frequency_center"] = float(updated_freq)
+        if args.update:
+            for result in analysis_data:
+                # peaks_list = result['peaks']
+                print("----------result.keys(): ", result.keys())
+                confs_list = result['confs']
+                print("confs_list: ", confs_list)
+                freqs_list = result['freqs_list']
+                for idx in range(len(qubit_name_list)):
+                    freqs = freqs_list[idx]
+                    curr_q = qubit_name_list[idx]
+                    cur_confs = confs_list[idx]
+                    if len(freqs) and len(confs_list):
+                        updated_freq = str(freqs[0])
+                        cur_conf = float(cur_confs[0])
+                        if cur_conf > args.confidence:
+                            # 更新寄存器
+                            qubit_ctrl_client.update_param(
+                                qname=curr_q,
+                                task_type=CtrlTaskName.S21,
+                                values=updated_freq
+                            )
+                            # 覆盖新频率到参数字典
+                            new_full_params["frequency_center"] = float(updated_freq)
 
         # =========== 更新结果到存储 ======================
         store.update_run(

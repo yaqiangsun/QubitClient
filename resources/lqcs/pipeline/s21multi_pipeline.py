@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. Example:
-        python -m resources.lqcs.pipeline.s21multi_pipeline -q q3lu7 -s ./tmp
+        python -m resources.lqcs.pipeline.s21multi_pipeline -q q3lu7 -s ./tmp -u True -c 0.4 -r 0.0005 -fs 6.5 -fe 6.8
 """
 import sys
 import argparse
@@ -53,11 +53,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Multi Qubit S21 Measurement Pipeline (UI storage sync enabled)")
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit list, default: q3lu7")
-    parser.add_argument("--freq-start", type=float, default=6.5, help="Scan freq start GHz")
-    parser.add_argument("--freq-end", type=float, default=6.8, help="Scan freq end GHz")
-    parser.add_argument("--sample-rate", type=float, default=0.0002, help="Frequency sample step")
+    parser.add_argument("--freq-start", "-fs",type=float, default=6.5, help="Scan freq start GHz")
+    parser.add_argument("--freq-end", "-fe",type=float, default=6.7, help="Scan freq end GHz")
+    parser.add_argument("--sample-rate", "-r", type=float, default=0.0002, help="Frequency sample step")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
+    # 新增：是否开启参数更新
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    # 新增：置信度阈值
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 def get_s21multi_hdf5_res(args):
@@ -67,13 +73,17 @@ def get_s21multi_hdf5_res(args):
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
+    qname = qubit_name_list[0]
+    base_freq = base_freq_dict.get(qname)
+
     try:
         qubit_ctrl_client = QubitCtrlClient()
         set_params = {
             "qubits": qubit_name_list,
             "frequency_start": args.freq_start,
             "frequency_end": args.freq_end,
-            "frequency_sample_rate": args.sample_rate
+            "frequency_sample_rate": args.sample_rate,
+            "fread": base_freq
         }
 
         run_record = PipelineResultRecord(
@@ -104,40 +114,63 @@ def get_s21multi_hdf5_res(args):
         img_save_path = f'{save_folder}/s21multi_{pure_name}.png'
         fig_list = plot_s21multi(raw_data, analysis_result, save_path=img_save_path)
 
-        # LLM image analyze reserved code
+        # =========== 接入大模型分析图片 ===========
+        # resize更小
         # img_small_path = img_save_path.split('.png')[0] + '_small.png'
+        # print("img_small_path: ", img_small_path)
+
         # with Image.open(img_save_path) as img:
         #     w, h = img.size
         #     new_w = w // 10
         #     new_h = h // 10
+        #     print("size: ", new_w, new_h)
         #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
         #     img_small.save(img_small_path, dpi=(300, 300))
 
+        # test_qubit_spectroscopy_q1_describe(img_small_path)
+        # test_qubit_spectroscopy_q2_classify(img_small_path)
+        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+        # test_qubit_spectroscopy_q4_assess(img_small_path)
+        # test_qubit_spectroscopy_q5_extract(img_small_path)
+        # test_qubit_spectroscopy_q6_status(img_small_path)
+        # print("\nQubit_Spectroscopy tests passed!")
+
         new_full_params = set_params.copy()
         update_map = {}
+
+        # 解析分析结果
         if isinstance(analysis_result, dict):
-            if "results" not in analysis_result:
+            if "results" in analysis_result:
                 analysis_result = analysis_result.get("results")
             elif "result" in analysis_result:
                 analysis_result = analysis_result.get("result")
 
-        for result in analysis_result:
-            peaks_list = result['peaks']
-            confs_list = result['confs']
-            freqs_list = result['freqs_list']
-            for i in range(len(qubit_name_list)):
-                peaks = peaks_list[i]
-                confs = confs_list[i]
-                freqs = freqs_list[i]
-                qname = qubit_name_list[i]
-                base_freq = base_freq_dict.get(qname)
-                if len(freqs):
-                    closest_freq = min(freqs, key=lambda f: abs(f - base_freq))
-                    print("[INFO] update : ", closest_freq, qname)
-                    update_map[qname] = closest_freq
-                    qubit_ctrl_client.update_param(qname=qname, task_type=CtrlTaskName.S21MULTI, values=str(closest_freq))
+        # 仅开启更新时，执行参数更新逻辑
+        if args.update:
+            for result in analysis_result:
+                peaks_list = result['peaks']
+                confs_list = result['confs']
+                freqs_list = result['freqs_list']
+                for i in range(len(qubit_name_list)):
+                    # peaks = peaks_list[i]
+                    confs = confs_list[i]
+                    print("confs: ", confs)
+                    freqs = freqs_list[i]
+                    qname = qubit_name_list[i]
+                    base_freq = base_freq_dict.get(qname)
+
+                    if len(freqs) and len(confs):
+                        # 置信度大于阈值才执行更新
+                        idx = freqs.index(min(freqs, key=lambda f: abs(f - base_freq)))
+                        closest_freq = freqs[idx]
+                        cur_conf = float(confs[idx])
+                        if cur_conf > args.confidence:
+                            print("[INFO] update : ", closest_freq, qname)
+                            update_map[qname] = closest_freq
+                            qubit_ctrl_client.update_param(qname=qname, task_type=CtrlTaskName.S21MULTI, values=str(closest_freq))
+
         if update_map:
-            new_full_params["qubit_freq_calib"] = update_map
+            new_full_params["fread"] = update_map
 
         store.update_run(
             run_id=run_id,

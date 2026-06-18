@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.pipulsef10_pipeline -q q3lu7 -dfs 0 -dfe 0.03 -dfn 21 -s ./tmp
+            python -m resources.lqcs.pipeline.pipulsef10_pipeline -q q3lu7 -dfs 0 -dfe 0.03 -dfn 21 -s ./tmp -u True -c 0.6
 """
 
 import sys
@@ -56,6 +56,11 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
+    # 新增更新开关、置信度阈值
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 
@@ -151,27 +156,32 @@ def get_pipulsef10_hdf5_res(args):
                 analysis_result = analysis_result.get("results")
             elif "result" in analysis_result.keys():
                 analysis_result = analysis_result.get("result")
-        for result in analysis_result:
-            peaks_list = result['peaks_list']
-            confidences_list = result['confidences_list']
-            for i in range(len(qubit_name_list)):
-                if i < len(peaks_list):
-                    peaks = peaks_list[i]
-                    confidences = confidences_list[i]
-                    if len(confidences) > 0:
-                        best_idx = confidences.index(max(confidences))
-                        best_peak = peaks[best_idx]
-                        target_freq =best_peak
-                        non=-0.2
-                        values=str(target_freq) + ',' + str(target_freq + non)
-                        qname=qubit_name_list[i]
-                        task_type=CtrlTaskName.SPECTRUM
-                        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
-                        freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
+
+        # 增加更新开关 + 置信度阈值判断
+        if args.update:
+            for result in analysis_result:
+                peaks_list = result['peaks_list']
+                confidences_list = result['confidences_list']
+                for i in range(len(qubit_name_list)):
+                    if i < len(peaks_list):
+                        peaks = peaks_list[i]
+                        confidences = confidences_list[i]
+                        if len(confidences) > 0:
+                            print("----confidences: ", confidences)
+                            max_conf = max(confidences)
+                            if max_conf < args.confidence:
+                                continue
+                            best_idx = confidences.index(max_conf)
+                            best_peak = peaks[best_idx]
+                            target_freq =best_peak
+                            non=-0.2
+                            values=str(target_freq) + ',' + str(target_freq + non)
+                            qname=qubit_name_list[i]
+                            task_type=CtrlTaskName.SPECTRUM
+                            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                            freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
         if freq_update_map:
             new_full_params["qubit_freq_calib"] = freq_update_map
-
-
 
         # =========== 更新结果到存储 ======================
         store.update_run(

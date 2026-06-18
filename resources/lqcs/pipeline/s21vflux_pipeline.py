@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. Example:
-        python -m resources.lqcs.pipeline.s21vflux_pipeline -q q3lu7 -b 0.001 -n 11 -s ./tmp
+        python -m resources.lqcs.pipeline.s21vflux_pipeline -q q3lu7 -b 0.001 -n 11 -s ./tmp -u True -c 0.4
 """
 import sys
 import argparse
@@ -50,6 +50,11 @@ def parse_args():
     parser.add_argument("--bias-samples", type=int, default=16, help="Bias sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
+    # 新增更新开关与置信度阈值
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 def get_s21vflux_hdf5_res(args):
@@ -111,14 +116,26 @@ def get_s21vflux_hdf5_res(args):
         img_save_path = f'{save_folder}/s21vflux_{pure_name}.png'
         fig_list = plot_s21vsflux(raw_data, analysis_result, save_path=img_save_path)
 
-        # LLM image analyze reserved code
+        # =========== 接入大模型分析图片 ===========
+        # resize更小
         # img_small_path = img_save_path.split('.png')[0] + '_small.png'
+        # print("img_small_path: ", img_small_path)
+
         # with Image.open(img_save_path) as img:
         #     w, h = img.size
         #     new_w = w // 10
         #     new_h = h // 10
+        #     print("size: ", new_w, new_h)
         #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
         #     img_small.save(img_small_path, dpi=(300, 300))
+
+        # test_qubit_spectroscopy_q1_describe(img_small_path)
+        # test_qubit_spectroscopy_q2_classify(img_small_path)
+        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+        # test_qubit_spectroscopy_q4_assess(img_small_path)
+        # test_qubit_spectroscopy_q5_extract(img_small_path)
+        # test_qubit_spectroscopy_q6_status(img_small_path)
+        # print("\nQubit_Spectroscopy tests passed!")
 
         new_full_params = set_params.copy()
         updated_bias = None
@@ -128,24 +145,38 @@ def get_s21vflux_hdf5_res(args):
             elif "result" in analysis_result:
                 analysis_result = analysis_result.get("result")
 
-        for result in analysis_result:
-            coscurves_list = result['coscurves_list']
-            cosconfs_list = result['cosconfs_list']
-            for i in range(len(qubit_name_list)):
-                coscurves = coscurves_list[i]
-                cosconfs = cosconfs_list[i]
-                if not cosconfs:
-                    print(f"[WARN] No valid peak for qubit {qubit_name_list[i]}, skip bias update")
-                    continue
-                best_idx = cosconfs.index(max(cosconfs))
-                best_curve = coscurves[best_idx]
-                y_vals = [y for x, y in best_curve]
-                index_max_y = y_vals.index(max(y_vals))
-                half_index = index_max_y // 2
-                target_bias = best_curve[half_index][0]
-                updated_bias = target_bias
-                curr_q = qubit_name_list[i]
-                qubit_ctrl_client.update_param(qname=curr_q, task_type=CtrlTaskName.S21VSFLUX, values=str(target_bias))
+        # 仅开启更新时
+        if args.update:
+            for result in analysis_result:
+                coscurves_list = result['coscurves_list']
+                cosconfs_list = result['cosconfs_list']
+                for i in range(len(qubit_name_list)):
+                    coscurves = coscurves_list[i]
+                    cosconfs = cosconfs_list[i]
+                    curr_q = qubit_name_list[i]
+                    print("----cosconfs: ", cosconfs)
+
+                    if not cosconfs:
+                        print(f"[WARN] No valid peak for qubit {curr_q}, skip bias update")
+                        continue
+                    
+                    # 找到最大置信度及其下标
+                    max_conf = max(cosconfs)
+                    if max_conf <= args.confidence:
+                        print(f"[INFO] Confidence {max_conf} below threshold {args.confidence}, skip {curr_q}")
+                        continue
+
+                    best_idx = cosconfs.index(max_conf)
+                    best_curve = coscurves[best_idx]
+                    y_vals = [y for x, y in best_curve]
+                    index_max_y = y_vals.index(max(y_vals))
+                    half_index = index_max_y // 2
+                    target_bias = best_curve[half_index][0]
+                    updated_bias = target_bias
+
+                    qubit_ctrl_client.update_param(qname=curr_q, task_type=CtrlTaskName.S21VSFLUX, values=str(target_bias))
+                    print(f"[INFO] Update {curr_q} bias to {target_bias}, max confidence: {max_conf}")
+
         if updated_bias is not None:
             new_full_params["read_bias"] = updated_bias
 

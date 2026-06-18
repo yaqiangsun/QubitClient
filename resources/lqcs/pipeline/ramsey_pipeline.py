@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. Example:
-        python -m resources.lqcs.pipeline.ramsey_pipeline -q q3lu7 -s ./tmp
+        python -m resources.lqcs.pipeline.ramsey_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
 import sys
 import argparse
@@ -45,6 +45,11 @@ def parse_args():
     parser.add_argument("--delay-samples", type=int, default=100, help="Delay sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
+    # 新增更新开关与置信度阈值
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 def get_ramsey_hdf5_res(args):
@@ -123,30 +128,38 @@ def get_ramsey_hdf5_res(args):
                 analysis_result = analysis_result.get("results")
             elif "result" in analysis_result.keys():
                 analysis_result = analysis_result.get("result")
-        for result in analysis_result:
-            params_list = result['params_list']
-            r2_list = result['r2_list']
-            fit_data_list = result['fit_data_list']
-            for i in range(len(qubit_name_list)):
-                if i < len(params_list):
-                    params = params_list[i]
-                    w = params[4]
-                    qname=qubit_name_list[i]
-                    task_type=CtrlTaskName.RAMSEY
-                    f10 = qubit_ctrl_client.query_param(qname=qname, key="f10_star")
-                    f10 = float(f10[0]["text"])
-                    deltaf = w /(2*math.pi)         # 失谐量（Hz）
-                    print("fringeFreq, f10: ", fringeFreq, f10)
-                    if(fringeFreq>f10):
-                        target_freq = fringeFreq - deltaf    # 如果 f_measure > f10
-                    
-                    else:
-                         target_freq = fringeFreq + deltaf    # 如果 f_measure < f10
-                    non=-0.2
-                    values=str(target_freq) + ',' + str(target_freq + non)
-                    task_type=CtrlTaskName.RAMSEY
-                    qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
-                    freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
+
+        # 增加更新总开关
+        if args.update:
+            for result in analysis_result:
+                print("----", result.keys())
+                params_list = result['params_list']
+                r2_list = result['r2_list']
+                fit_data_list = result['fit_data_list']
+                confs_list = result['confs_list']
+                for i in range(len(qubit_name_list)):
+                    if i < len(params_list):
+                        params = params_list[i]
+                        # conf = confs_list[i] # no conf exist
+                        # if conf < args.confidence:
+                        #     continue
+                        w = params[4]
+                        qname=qubit_name_list[i]
+                        task_type=CtrlTaskName.RAMSEY
+                        f10 = qubit_ctrl_client.query_param(qname=qname, key="f10_star")
+                        f10 = float(f10[0]["text"])
+                        deltaf = w /(2*math.pi)         # 失谐量（Hz）
+                        print("fringeFreq, f10: ", fringeFreq, f10)
+                        if(fringeFreq>f10):
+                            target_freq = fringeFreq - deltaf    # 如果 f_measure > f10
+                        
+                        else:
+                             target_freq = fringeFreq + deltaf    # 如果 f_measure < f10
+                        non=-0.2
+                        values=str(target_freq) + ',' + str(target_freq + non)
+                        task_type=CtrlTaskName.RAMSEY
+                        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                        freq_update_map[qname] = {"f10": target_freq, "f21": target_freq + non}
         if freq_update_map:
             new_full_params["qubit_freq_calib"] = freq_update_map
 
@@ -169,7 +182,7 @@ def get_ramsey_hdf5_res(args):
             completed_at=datetime.now()
         )
         print(f"Task failed run_id={run_id[:8]} error: {err_msg}")
-        raise
+
 
 if __name__ == '__main__':
     cli_args = parse_args()

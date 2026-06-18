@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp
+            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp -u True -c 0.4
 """
 
 import sys
@@ -55,6 +55,11 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save plot image")
+    # 新增更新开关、置信度阈值
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 
@@ -209,25 +214,32 @@ def get_setpialpha_hdf5_res(args):
                     last_analysis_result = last_analysis_result.get("results")
                 elif "result" in last_analysis_result.keys():
                     last_analysis_result = last_analysis_result.get("result")
-        for result in last_analysis_result:
-            params_list = result['params']
-            confs_list = result['confs']
 
-            params_list = result.get("params", [])
-            confs_list  = result.get("confs", [])
-            for i in range(len(qubit_name_list)):
-                peaks = params_list[i]
-                confs = confs_list[i]
-                if len(confs) > 0:
-                    best_idx = confs.index(max(confs))
-                    best_peak = peaks[best_idx]
-                    target_amp =best_peak
-                    target_alpha="Null"
-                    values=str(target_amp) + ',' + target_alpha
-                    qname=qubit_name_list[i]
-                    task_type=CtrlTaskName.SETPIALPHA
-                    print("更新values-----------", values)
-                    qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+        # 增加更新开关 + 置信度判断
+        if args.update:
+            for result in last_analysis_result:
+                params_list = result['params']
+                confs_list = result['confs']
+
+                params_list = result.get("params", [])
+                confs_list  = result.get("confs", [])
+                for i in range(len(qubit_name_list)):
+                    peaks = params_list[i]
+                    confs = confs_list[i]
+                    print("---confs: ", confs)
+                    if len(confs) > 0:
+                        max_conf = max(confs)
+                        if max_conf < args.confidence:
+                            continue
+                        best_idx = confs.index(max_conf)
+                        best_peak = peaks[best_idx]
+                        target_amp =best_peak
+                        target_alpha="Null"
+                        values=str(target_amp) + ',' + target_alpha
+                        qname=qubit_name_list[i]
+                        task_type=CtrlTaskName.SETPIALPHA
+                        print("更新values-----------", values)
+                        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
         # 6.更新PiHalf.amp和PiHalf.alpha
        

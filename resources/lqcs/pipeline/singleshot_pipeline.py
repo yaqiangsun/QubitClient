@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. Example:
-        python -m resources.lqcs.pipeline.singleshot_pipeline -q q3lu7 -s ./tmp
+        python -m resources.lqcs.pipeline.singleshot_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
 import sys
 import argparse
@@ -40,7 +40,13 @@ def parse_args():
                         help="Target qubit list, default: q3lu7")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
+    # 新增固定参数
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
+
 
 def get_singleshot_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)

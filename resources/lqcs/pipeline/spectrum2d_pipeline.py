@@ -12,8 +12,8 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-    faster: python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 10 -bs -1 -be 1 -bn 10 -da 0.0 -s ./tmp
-    python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 50 -bs -1 -be 1 -bn 30 -da 0.0 -s ./tmp
+    faster: python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 10 -bs -1 -be 1 -bn 10 -da 0.0 -s ./tmp -u True -c 0.6
+    python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 50 -bs -1 -be 1 -bn 30 -da 0.0 -s ./tmp -u True -c 0.6
 """
 
 import sys
@@ -69,6 +69,12 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
+    # 新增：是否开启参数更新
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    # 新增：置信度阈值
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 
@@ -103,52 +109,23 @@ def get_spectrum2d_hdf5_res(args):
         )
         run_id = store.save_run(run_record)
         print(f"[Spectrum2D] Task started run_id={run_id[:8]}")
-    
-        # =========== 采集数据 ===========
-        # data = qubit_ctrl_client.run(
-        #     CtrlTaskName.SPECTRUM_2D,
-        #     qubits=qubit_name_list,
-        #     freq_start=set_params["freq_start"],
-        #     freq_end=set_params["freq_end"],
-        #     freq_sample_num=set_params["freq_sample_num"],
-        #     bias_start=set_params["bias_start"],
-        #     bias_end=set_params["bias_end"],
-        #     bias_sample_num=set_params["bias_sample_num"],
-        #     drive_amp=set_params["drive_amp"]
-        # )
 
-        try:
-            data = qubit_ctrl_client.run(
-                CtrlTaskName.SPECTRUM_2D,
-                qubits=qubit_name_list,
-                freq_start=set_params["freq_start"],
-                freq_end=set_params["freq_end"],
-                freq_sample_num=set_params["freq_sample_num"],
-                bias_start=set_params["bias_start"],
-                bias_end=set_params["bias_end"],
-                bias_sample_num=set_params["bias_sample_num"],
-                drive_amp=set_params["drive_amp"]
-            )
+        
+        data = qubit_ctrl_client.run(
+            CtrlTaskName.SPECTRUM_2D,
+            qubits=qubit_name_list,
+            freq_start=set_params["freq_start"],
+            freq_end=set_params["freq_end"],
+            freq_sample_num=set_params["freq_sample_num"],
+            bias_start=set_params["bias_start"],
+            bias_end=set_params["bias_end"],
+            bias_sample_num=set_params["bias_sample_num"],
+            drive_amp=set_params["drive_amp"]
+        )
             
-
-        except Exception as collect_err:
-            err_msg = f"MCP采集阶段数据形状不规则，底层lqcs_spectrum_2d内部滤波失败：{str(collect_err)}"
-            run_id = store.save_run(run_record)
-            # FIXME:先不抛出任务失败
-            # store.update_run(
-            #     run_id=run_id,
-            #     status="failed",
-            #     error=err_msg,
-            #     completed_at=datetime.now()
-            # )
-            print(f"错误：{err_msg}")
-            pass
-
         data_id = data[0]["text"]
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
         raw_data = json.loads(raw_data_text[0]["text"])
-
-        print("[INFO] ---------START uniform_2d_data-----------------")
 
         # =========== 写入原始数据 ===========
         store.update_run(
@@ -156,7 +133,6 @@ def get_spectrum2d_hdf5_res(args):
             raw_data_id=data_id,
             raw_data=raw_data
         )
-        print("[INFO] ---------START nnspectrum2d-----------------")
 
         # =========== 分析 ============
         analysis_result = nnspectrum2d(raw_data)
@@ -189,8 +165,19 @@ def get_spectrum2d_hdf5_res(args):
         # test_qubit_spectroscopy_q6_status(img_small_path)
         # print("\nQubit_Spectroscopy tests passed!")
 
-        # =========== 无参数更新==============
+        # =========== 参数更新逻辑 ===========
         new_full_params = set_params.copy()
+        update_map = {}
+
+        # 解析分析结果
+        if isinstance(analysis_result, dict):
+            if "results" in analysis_result:
+                analysis_result = analysis_result.get("results")
+            elif "result" in analysis_result:
+                analysis_result = analysis_result.get("result")
+
+        # 暫時沒有參數更新
+
 
         # =========== 更新结果到存储 ======================
         store.update_run(

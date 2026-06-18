@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. Example:
-        python -m resources.lqcs.pipeline.rabi_pipeline -q q3lu7 -s ./tmp
+        python -m resources.lqcs.pipeline.rabi_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
 import sys
 import argparse
@@ -41,9 +41,14 @@ def parse_args():
                         help="Target qubit list, default: q3lu7")
     parser.add_argument("--amp-start", type=float, default=0, help="Pulse amplitude start")
     parser.add_argument("--amp-end", type=float, default=2, help="Pulse amplitude end")
-    parser.add_argument("--amp-samples", type=int, default=16, help="Amplitude sample count")
+    parser.add_argument("--amp-samples", type=int, default=50, help="Amplitude sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
+    # 新增统一参数
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 def get_rabi_hdf5_res(args):
@@ -121,21 +126,29 @@ def get_rabi_hdf5_res(args):
                 analysis_result = analysis_result.get("results")
             elif "result" in analysis_result.keys():
                 analysis_result = analysis_result.get("result")
-        for result in analysis_result:
-            peaks_list = result['peaks']
-            confs_list = result['confs']
-            for i in range(len(qubit_name_list)):
-                if i < len(peaks_list):
-                    peaks = peaks_list[i]
-                    confs = confs_list[i]
-                    best_idx = confs.index(max(confs))
-                    best_peak = peaks[best_idx]
-                    target_amp =best_peak
-                    values=str(target_amp)
-                    qname=qubit_name_list[i]
-                    task_type=CtrlTaskName.RABI
-                    qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
-                    update_amp_map[qname] = target_amp
+
+        # 增加更新开关与置信度判断
+        if args.update:
+            for result in analysis_result:
+                peaks_list = result['peaks']
+                confs_list = result['confs']
+                for i in range(len(qubit_name_list)):
+                    if i < len(peaks_list):
+                        peaks = peaks_list[i]
+                        confs = confs_list[i]
+                        print("---confs: ", confs)
+                        if confs:
+                            max_conf = max(confs)
+                            if max_conf < args.confidence:
+                                continue
+                            best_idx = confs.index(max_conf)
+                            best_peak = peaks[best_idx]
+                            target_amp =best_peak
+                            values=str(target_amp)
+                            qname=qubit_name_list[i]
+                            task_type=CtrlTaskName.RABI
+                            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                            update_amp_map[qname] = target_amp
         if update_amp_map:
             new_full_params["pi_gate_amp"] = update_amp_map
 

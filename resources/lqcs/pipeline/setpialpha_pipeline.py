@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: python -m tests.ui.serve
     2. cmd params example:
-            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp -u True -c 0.4
+            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp -u True -c 0.1
 """
 
 import sys
@@ -98,6 +98,7 @@ def get_construct_data(q_name, lines_color, filepath_1, filepath_2, filepath_3):
 
 def get_setpialpha_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
+    task_type=CtrlTaskName.SETPIALPHA
     task_name = "setpialpha"
     pipeline_type = "setpialpha_pipeline"
     qubit_name_list = args.qubits
@@ -210,10 +211,10 @@ def get_setpialpha_hdf5_res(args):
 
         # 5.更新PiGate.amp和PiGate.alpha
         if type(last_analysis_result)==dict:
-                if "results" not in last_analysis_result.keys():
-                    last_analysis_result = last_analysis_result.get("results")
-                elif "result" in last_analysis_result.keys():
-                    last_analysis_result = last_analysis_result.get("result")
+            if "results" not in last_analysis_result.keys():
+                last_analysis_result = last_analysis_result.get("results")
+            elif "result" in last_analysis_result.keys():
+                last_analysis_result = last_analysis_result.get("result")
 
         # 增加更新开关 + 置信度判断
         if args.update:
@@ -237,12 +238,15 @@ def get_setpialpha_hdf5_res(args):
                         target_alpha="Null"
                         values=str(target_amp) + ',' + target_alpha
                         qname=qubit_name_list[i]
-                        task_type=CtrlTaskName.SETPIALPHA
+                        
                         print("更新values-----------", values)
                         qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
 
+        # only test---delete
+        # values="2.4, 2.4"  
+        # qubit_ctrl_client.update_param(qname=qubit_name_list[0], task_type=CtrlTaskName.SETPIALPHA, values=values)
+
         # 6.更新PiHalf.amp和PiHalf.alpha
-       
         # qname=qubit_name_list[0]
         # task_type=CtrlTaskName.SETPIALPHA
         # values="Null,Null,3.193120459017055,3.193120459017055"   

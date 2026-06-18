@@ -343,8 +343,8 @@ images[0].save("enhanced.png")
 | `TaskName.DRAG` | DRAG cross-point avoidance analysis | [Docs](docs/scope/DRAG.md) | ✅ |
 | `TaskName.DELTA` | Delta optimization experiment | [Docs](docs/scope/DELTA.md) | ✅ |
 | `TaskName.RB` | Fidelity testing | [Docs](docs/scope/RB.md) | ✅ |
-| `TaskName.SPINECHO` | Spin Echo T2 fitting | - | ⏸️ |
-| `TaskName.TIMINGXYZ` | XYZ Timing analysis | - | ⏸️ |
+| `TaskName.SPINECHO` | Spin Echo T2 fitting | [Docs](docs/scope/SPINECHO.md) | ✅ |
+| `TaskName.TIMINGXYZ` | XYZ Timing analysis | [Docs](docs/scope/XYZ_TIMING.md) | ✅ |
 
 ### 🤖 Ctrl Tasks
 

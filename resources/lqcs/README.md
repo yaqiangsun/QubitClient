@@ -1,5 +1,17 @@
 # 测量实验接口文档
 本文档以pipeline/**_pipeline.py脚本，以及比特q3lu7为例，讲解所有任务的测量实验部分接口与调用实例，分析与绘图部分参考docs/nnscope docs/nnscope
+
+## 基础服务运行步骤介绍
+每一种数据的pipeline含有以下步骤：
+
+1. 初始化mcp客户端，用于与后端 MCP 服务通信
+2. 运行pipeline，总体流程为：
+  - 远程执行测量，等待测量成功后返回测量数据标识符
+  - 利用返回的标识符，获取测量数据
+  - 对测量的数据进行分析
+  - 将上述分析结果画在原始数据上，可视化保存结果
+  - 依据结果判断是否更新参数
+
 ## 测量实验顺序
 
 s21mul s21peak powershift s21vflux s21peak(bias_z=-1.5) spectrum spectrum2d singleshot rabi PiPulseF10 

@@ -20,8 +20,12 @@ client = QubitCtrlClient()
 |--------|------|------|------|
 | task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.POWERSHIFT` |
 | qubits | list[str] | 是 | 要测量的量子比特列表，例如["Q0", "Q1"] |
-| power | list[float] | 是 | 功率扫描范围，例如[-20, -15, -10, ..., 20] (dBm) |
-| freq | list[float] | 是 | 频率扫描范围，例如[4.5e9, 4.6e9, ..., 5.5e9] (Hz) |
+| freq_center | float | 否 | 频率中心点（GHz），默认值6.539 |
+| freq_half_bandwidth | float | 否 | 频率半带宽（GHz），默认值0.0015 |
+| freq_sample_num | int | 否 | 频率采样点数，默认值16 |
+| power_start | float | 否 | 功率起始点（dBm），默认值-40 |
+| power_end | float | 否 | 功率结束点（dBm），默认值-16 |
+| power_sample_num | int | 否 | 功率采样点数，默认值13 |
 
 ### 调用示例
 
@@ -30,8 +34,12 @@ client = QubitCtrlClient()
 result = client.run(
     task_type=CtrlTaskName.POWERSHIFT,
     qubits=["Q0"],
-    power=[-20, -15, -10, -5, 0, 5, 10, 15, 20],
-    freq=[4.8e9, 4.9e9, 5.0e9, 5.1e9, 5.2e9]
+    freq_center=6.539,
+    freq_half_bandwidth=0.0015,
+    freq_sample_num=16,
+    power_start=-40,
+    power_end=-16,
+    power_sample_num=13
 )
 
 print(result)

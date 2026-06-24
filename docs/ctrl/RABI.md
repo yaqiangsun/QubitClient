@@ -20,8 +20,9 @@ client = QubitCtrlClient()
 |--------|------|------|------|
 | task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.RABI` |
 | qubits | list[str] | 是 | 要测量的量子比特列表，例如["Q0", "Q1"] |
-| drive_amp | list[float] | 是 | 驱动幅度扫描范围，例如[0.01, 0.02, ..., 0.1] |
-| width | float | 否 | 脉冲宽度，默认值30e-9秒 |
+| piamp_start | float | 否 | π脉冲幅度起始值，默认值0 |
+| piamp_end | float | 否 | π脉冲幅度结束值，默认值2 |
+| piamp_sample_num | int | 否 | π脉冲幅度采样点数，默认值16 |
 
 ### 调用示例
 
@@ -30,8 +31,9 @@ client = QubitCtrlClient()
 result = client.run(
     task_type=CtrlTaskName.RABI,
     qubits=["Q0"],
-    drive_amp=[0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1],
-    width=30e-9
+    piamp_start=0,
+    piamp_end=2,
+    piamp_sample_num=16
 )
 
 print(result)

@@ -20,12 +20,14 @@ client = QubitCtrlClient()
 |--------|------|------|------|
 | task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.SPECTRUM_2D` |
 | qubits | list[str] | 是 | 要测量的量子比特列表，例如["Q0", "Q1"] |
-| drive_amp | float | 否 | 驱动幅度，默认值0.05 |
-| duration | float | 否 | 脉冲持续时间，默认值40e-6秒 |
-| freq | list[float] | 否 | 频率扫描范围，例如[4.5e9, 4.6e9, ..., 5.5e9] (Hz) |
-| bias | list[float] | 否 | 偏置扫描范围，例如[-0.5, -0.4, ..., 0.5] |
-| from_idle | bool | 否 | 是否从空闲状态开始，默认值False |
-| absolute | bool | 否 | 是否使用绝对频率，默认值True |
+| freq_start | float | 否 | 频率起始点（GHz），默认值-3 |
+| freq_end | float | 否 | 频率结束点（GHz），默认值3 |
+| freq_sample_num | int | 否 | 频率采样点数，默认值200 |
+| zpa_start | float | 否 | Z脉冲幅度起始点，默认值-1 |
+| zpa_end | float | 否 | Z脉冲幅度结束点，默认值1 |
+| zpa_sample_num | int | 否 | Z脉冲幅度采样点数，默认值100 |
+| spec_amp | float | 否 | 谱仪幅度，默认值0.0 |
+| sb_freq | float | 否 | 边带频率（GHz），默认值-0.15 |
 
 ### 调用示例
 
@@ -34,12 +36,14 @@ client = QubitCtrlClient()
 result = client.run(
     task_type=CtrlTaskName.SPECTRUM_2D,
     qubits=["Q0"],
-    drive_amp=0.05,
-    duration=40e-6,
-    freq=[4.8e9, 4.9e9, 5.0e9, 5.1e9, 5.2e9],
-    bias=[-0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
-    from_idle=False,
-    absolute=True
+    freq_start=-3,
+    freq_end=3,
+    freq_sample_num=200,
+    zpa_start=-1,
+    zpa_end=1,
+    zpa_sample_num=100,
+    spec_amp=0.0,
+    sb_freq=-0.15
 )
 
 print(result)

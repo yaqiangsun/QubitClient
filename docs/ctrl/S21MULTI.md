@@ -1,8 +1,8 @@
-# Ctrl.S21 任务接口文档
+# Ctrl.S21MULTI 任务接口文档
 
 ## 概述
 
-Ctrl.S21 是 Ctrl 中的一个任务，用于执行S21腔频测量实验，测量指定量子比特在频率范围内的S21响应。
+Ctrl.S21MULTI 是 Ctrl 中的一个任务，用于执行多频点S21测量，在给定的频率范围内进行连续的S21响应测量。
 
 ## 接口使用方式
 
@@ -18,22 +18,22 @@ client = QubitCtrlClient()
 
 | 参数名 | 类型 | 必需 | 描述 |
 |--------|------|------|------|
-| task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.S21` |
+| task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.S21MULTI` |
 | qubits | list[str] | 是 | 要测量的量子比特列表，例如["Q0", "Q1"] |
-| frequency_center | float | 否 | 频率中心点，默认值6.5 GHz |
-| frequency_half_bandwidth | float | 否 | 频率半带宽，默认值0.0005 GHz |
-| frequency_sample_num | int | 否 | 频率采样点数，默认值101 |
+| frequency_start | float | 否 | 频率起始点（GHz），默认值6.3 |
+| frequency_end | float | 否 | 频率结束点（GHz），默认值6.9 |
+| frequency_sample_rate | float | 否 | 频率采样率（GHz），默认值0.0001 |
 
 ### 调用示例
 
 ```python
-# 执行S21腔频测量实验
+# 执行多频点S21测量
 result = client.run(
-    task_type=CtrlTaskName.S21,
+    task_type=CtrlTaskName.S21MULTI,
     qubits=["Q0", "Q1"],
-    frequency_center=6.5,
-    frequency_half_bandwidth=0.0005,
-    frequency_sample_num=101
+    frequency_start=6.3,
+    frequency_end=6.9,
+    frequency_sample_rate=0.0001
 )
 
 print(result)
@@ -41,7 +41,7 @@ print(result)
 
 ## 返回值格式
 
-返回的结果包含测量数据和相关参数：
+返回的结果包含S21测量数据：
 
 ```json
 {
@@ -58,9 +58,9 @@ print(result)
     }
   },
   "parameters": {
-    "frequency_start": -40000000.0,
-    "frequency_end": 40000000.0,
-    "frequency_sample_num": 101
+    "frequency_start": 6.3,
+    "frequency_end": 6.9,
+    "frequency_sample_rate": 0.0001
   }
 }
 ```
@@ -69,7 +69,7 @@ print(result)
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| data | dict | 包含每个量子比特的测量数据 |
+| data | dict | 包含每个量子比特的S21测量数据 |
 | frequency | List[float] | 频率扫描点 |
 | s21_real | List[float] | S21响应的实部 |
 | s21_imag | List[float] | S21响应的虚部 |
@@ -77,7 +77,7 @@ print(result)
 
 ## 应用场景
 
-S21腔频测量实验主要用于：
-- 确定量子比特的共振频率
-- 测量谐振腔的品质因子
-- 表征量子比特与谐振腔的耦合强度
+S21MULTI测量主要用于：
+- 宽带S21频谱测量
+- 快速扫描谐振腔响应
+- 表征量子比特与谐振腔的耦合特性

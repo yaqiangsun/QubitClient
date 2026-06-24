@@ -19,10 +19,13 @@ client = QubitCtrlClient()
 | 参数名 | 类型 | 必需 | 描述 |
 |--------|------|------|------|
 | task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.S21VSFLUX` |
-| qubits_scan | list[str] | 是 | 要扫描的量子比特列表，例如["Q0", "Q1"] |
-| read_bias | list[float] | 是 | 读出偏置（磁通量）扫描范围，例如[-0.5, -0.4, ..., 0.5] |
-| freq | list[float] | 是 | 频率扫描范围，例如[4.5e9, 4.6e9, ..., 5.5e9] (Hz) |
-| qubits_read | list[str] | 是 | 用于读出的量子比特列表，例如["Q0", "Q1"] |
+| qubits | list[str] | 是 | 要测量的量子比特列表，例如["Q0", "Q1"] |
+| freq_center | float | 否 | 频率中心点（GHz），默认值6.5 |
+| freq_half_bandwidth | float | 否 | 频率半带宽（GHz），默认值0.03 |
+| freq_sample_num | int | 否 | 频率采样点数，默认值11 |
+| read_bias_start | float | 否 | 读出偏置起始点，默认值-3 |
+| read_bias_end | float | 否 | 读出偏置结束点，默认值3 |
+| read_bias_sample_num | int | 否 | 读出偏置采样点数，默认值16 |
 
 ### 调用示例
 
@@ -30,10 +33,13 @@ client = QubitCtrlClient()
 # 执行S21 vs Flux测量
 result = client.run(
     task_type=CtrlTaskName.S21VSFLUX,
-    qubits_scan=["Q0"],
-    read_bias=[-0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
-    freq=[4.8e9, 4.9e9, 5.0e9, 5.1e9, 5.2e9],
-    qubits_read=["Q0"]
+    qubits=["Q0", "Q1"],
+    freq_center=6.5,
+    freq_half_bandwidth=0.03,
+    freq_sample_num=11,
+    read_bias_start=-3,
+    read_bias_end=3,
+    read_bias_sample_num=16
 )
 
 print(result)

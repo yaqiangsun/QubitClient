@@ -105,10 +105,10 @@ peak_list[i]: 第 i 个量子比特的峰值对应索引 peak
 
 ```python
 {
-  "type": "t1fit",
+  "type": "optreadfreq",
   "results": [
     {
-      "peak_list": [19，20，11]，
+      "peak_list": [19, 20, 11],
       "status": "success"
     }
   ]

@@ -148,14 +148,14 @@ for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
   save_path_html = save_path_prefix + ".html"
   plt_plot_manager.plot_quantum_data(
       data_type='npy',
-      task_type=TaskName.T1FIF.value,
+      task_type=TaskName.T1FIT.value,
       save_path=save_path_png,
       result=result,
       dict_param=dict_param
   )
   ply_plot_manager.plot_quantum_data(
       data_type='npy',
-      task_type=TaskName.T1FIF.value,
+      task_type=TaskName.T1FIT.value,
       save_path=save_path_html,
       result=result,
       dict_param=dict_param

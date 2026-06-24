@@ -111,7 +111,7 @@ r2_list[i]: 第 i 个量子比特的 拟合优度
 
 ```python
 {
-  "type": "t1fit",
+  "type": "t12dfit",
   "results": [
     {
       "t1_list": [

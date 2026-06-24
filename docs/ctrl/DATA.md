@@ -1,15 +1,15 @@
-# Ctrl.DATA 任务接口文档
+# Ctrl.get_data 方法接口文档
 
 ## 概述
 
-Ctrl.DATA 是 Ctrl 中的一个任务，用于根据运行 ID (rid) 获取已存储的测量数据。
+`get_data` 是 `QubitCtrlClient` 的实例方法，用于根据运行 ID (rid) 获取已存储的测量数据。
 
 ## 接口使用方式
 
 ### 客户端初始化
 
 ```python
-from qubitclient.ctrl import QubitCtrlClient, CtrlTaskName
+from qubitclient.ctrl import QubitCtrlClient
 
 client = QubitCtrlClient()
 ```
@@ -18,17 +18,13 @@ client = QubitCtrlClient()
 
 | 参数名 | 类型 | 必需 | 描述 |
 |--------|------|------|------|
-| task_type | CtrlTaskName | 是 | 任务类型，固定为`CtrlTaskName.DATA` |
 | rid | int | 是 | 运行 ID，用于指定要获取的测量数据 |
 
 ### 调用示例
 
 ```python
 # 获取指定 run ID 的测量数据
-result = client.run(
-    task_type=CtrlTaskName.DATA,
-    rid=80
-)
+result = client.get_data(rid=80)
 
 print(result)
 ```

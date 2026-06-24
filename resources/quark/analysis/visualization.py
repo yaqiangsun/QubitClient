@@ -87,12 +87,12 @@ def plot_nns21(data,results,save_path):
 @handle_exceptions
 def plot_s21vsflux(data,results,save_path):
     data = s21vsflux_convert(data)
-    fig_list = plot_template(data,results,save_path,task_type=TaskName.S21VFLUX)
+    fig_list = plot_template(data,results,save_path,task_type=TaskName.S21VSFLUX)
     return fig_list
 @handle_exceptions
 def plot_nns21vsflux(data,results,save_path):
     data = nns21vsflux_convert(data)
-    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21VFLUX)
+    fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21VSFLUX)
     return fig_list
 @handle_exceptions
 def plot_drag(data,results,save_path):

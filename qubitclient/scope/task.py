@@ -225,7 +225,7 @@ class TaskName(Enum):
     OPTPIPULSE = "optpipulse"
     RAMSEY = "ramsey"
     RABICOS = "rabicos"
-    S21VFLUX = "s21vsfluxscope"
+    S21VSFLUX = "s21vsfluxscope"
     SINGLESHOT = "singleshot"
     SPECTRUM = "spectrum"
     T1FIT = "t1fit"

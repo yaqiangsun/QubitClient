@@ -1,8 +1,8 @@
-# S21VFLUX 任务接口文档
+# S21VSFLUX 任务接口文档
 
 ## 概述
 
-S21VFLUX 是 Scope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+S21VSFLUX 是 Scope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
 
 ## 接口使用方式
 
@@ -21,7 +21,7 @@ client = QubitScopeClient(url=url, api_key=api_key)
 | 参数名 | 类型 | 必需 | 描述 |
 |--------|------|------|------|
 | file_list | list[np.ndarray] | 是 | 数据列表，支持.npy的numpy数组 |
-| task_type | TaskName | 是 | 任务类型，固定为`TaskName.S21VFLUX` |
+| task_type | TaskName | 是 | 任务类型，固定为`TaskName.S21VSFLUX` |
 
 ### 数据格式
 
@@ -51,7 +51,7 @@ s: 二维 np.ndarray,shape(B,A),表示二维频谱数据
 ```python
 # 使用文件路径
 
-response = client.request(file_list=["data/singlepath/file1.npy", "data/singlepath/file2.npy"], task_type=TaskName.S21VFLUX)
+response = client.request(file_list=["data/singlepath/file1.npy", "data/singlepath/file2.npy"], task_type=TaskName.S21VSFLUX)
 
 
 dict_list = []
@@ -60,7 +60,7 @@ for file_path in file_path_list:
     dict_list.append(content)
 
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-response = client.request(file_list=dict_list, task_type=TaskName.S21VFLUX)
+response = client.request(file_list=dict_list, task_type=TaskName.S21VSFLUX)
 
 ```
 
@@ -71,7 +71,7 @@ response = client.request(file_list=dict_list, task_type=TaskName.S21VFLUX)
 
 response_data = client.get_result(response)
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response,threshold,TaskName.S21VFLUX.value)
+response_data_filtered = client.get_filtered_result(response,threshold,TaskName.S21VSFLUX.value)
 
 results = response_data_filtered.get("results")
  
@@ -134,19 +134,19 @@ from qubitclient.draw.pltmanager import QuantumPlotPltManager
 ply_plot_manager = QuantumPlotPlyManager()
 plt_plot_manager = QuantumPlotPltManager()
 for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-  save_path_prefix = f"./tmp/client/result_{TaskName.S21VFLUX.value}_{savenamelist[idx]}"
+  save_path_prefix = f"./tmp/client/result_{TaskName.S21VSFLUX.value}_{savenamelist[idx]}"
   save_path_png = save_path_prefix + ".png"
   save_path_html = save_path_prefix + ".html"
   plt_plot_manager.plot_quantum_data(
       data_type='npy',
-      task_type=TaskName.S21VFLUX.value,
+      task_type=TaskName.S21VSFLUX.value,
       save_path=save_path_png,
       result=result,
       dict_param=dict_param
   )
   ply_plot_manager.plot_quantum_data(
       data_type='npy',
-      task_type=TaskName.S21VFLUX.value,
+      task_type=TaskName.S21VSFLUX.value,
       save_path=save_path_html,
       result=result,
       dict_param=dict_param

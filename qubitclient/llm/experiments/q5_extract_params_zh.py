@@ -186,7 +186,7 @@ PROMPT_RAMSEY = """从该Ramsey振荡图<image>中提取以下参数。
 以JSON格式报告：
 {"detuning_Hz": float | null, "t2_star_us": float | null, "contrast": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
 
-PROMPT_S21VFLUX = """从该S21 vs Flux 二维图<image>中提取以下参数。
+PROMPT_S21VSFLUX = """从该S21 vs Flux 二维图<image>中提取以下参数。
 
 以JSON格式报告：
 {"center_freq_GHz": float | null, "freq_vs_bias_slope": float | null, "dispersion_shift_MHz": float | null, "resonance_quality": "good" | "moderate" | "poor" | "none"}"""
@@ -246,7 +246,7 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,

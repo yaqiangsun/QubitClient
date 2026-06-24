@@ -262,7 +262,7 @@ Explain:
 
 Provide your assessment."""
 
-PROMPT_S21VFLUX = """What does this result <image> imply?
+PROMPT_S21VSFLUX = """What does this result <image> imply?
 
 Explain:
 - What the 2D cavity response (resonance shift with bias) indicates about dispersive coupling and bias dependence
@@ -324,7 +324,7 @@ SCIENTIFIC_REASONING_PROMPTS = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,

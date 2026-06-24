@@ -47,7 +47,7 @@ class ExperimentFamily(Enum):
     OPTPIPULSE = "optpipulse"
     RABICOS = "rabicos"
     RAMSEY = "ramsey"
-    S21VFLUX = "s21vflux"
+    S21VSFLUX = "s21vflux"
     POWERSHIFT = "powershift"
     SINGLESHOT = "singleshot"
     SPECTRUM = "spectrum"

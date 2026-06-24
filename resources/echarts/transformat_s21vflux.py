@@ -40,7 +40,7 @@ def transform_s21vflux_npy_and_processed_data(url, api_key, dict_list):
     savenamelist = []
     client = QubitScopeClient(url=url, api_key=api_key)
         # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    response = client.request(file_list=dict_list, task_type=TaskName.S21VFLUX)
+    response = client.request(file_list=dict_list, task_type=TaskName.S21VSFLUX)
     print(response)
 
     # === 解析结果并绘图（每个文件单独生成 HTML）===

@@ -50,22 +50,22 @@ def send_s21vflux_npy_to_server(url, api_key,file_path = "/home/sunyaqiang/work/
 
     # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
     dict_list=[data_ndarray]
-    response = client.request(file_list=dict_list,task_type=NNTaskName.S21VFLUX,curve_type=CurveType.AUTO)
+    response = client.request(file_list=dict_list,task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.AUTO)
     # 2.从文件路径直接加载
-    # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.COSINE)
+    # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.COSINE)
     results = client.get_result(response=response)
     threshold = 0.5
-    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
+    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VSFLUX.value)
     results_filtered = results_filtered.get("result")
 
     for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
-        save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VFLUX.value}_{savename}"
+        save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VSFLUX.value}_{savename}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
         plot_manager = QuantumPlotPlyManager()
         plot_manager.plot_quantum_data(
             data_type='npy',
-            task_type=NNTaskName.S21VFLUX.value,
+            task_type=NNTaskName.S21VSFLUX.value,
             save_path=save_path_html,
             result=result,
             dict_param=dict_param
@@ -74,7 +74,7 @@ def send_s21vflux_npy_to_server(url, api_key,file_path = "/home/sunyaqiang/work/
         plot_manager = QuantumPlotPltManager()
         plot_manager.plot_quantum_data(
             data_type='npy',
-            task_type=NNTaskName.S21VFLUX.value,
+            task_type=NNTaskName.S21VSFLUX.value,
             save_path=save_path_png,
             result=result,
             dict_param=dict_param

@@ -443,7 +443,7 @@ Notes: <1-3 sentences explaining your reasoning>"""
 
 
 
-PROMPT_S21VFLUX = """Evaluate the image <image> and determine the experiment status.
+PROMPT_S21VSFLUX = """Evaluate the image <image> and determine the experiment status.
 
 CRITICAL FIRST STEP - VISUAL INSPECTION:
 Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap.Do NOT claim a red curve exists unless you actually see it in the image.
@@ -588,7 +588,7 @@ EVALUATE_STATUS_PROMPTS = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,

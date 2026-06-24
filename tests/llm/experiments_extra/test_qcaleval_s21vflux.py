@@ -8,7 +8,7 @@
 ########################################################################
 
 """
-QCalEval S21VFLUX 实验测试
+QCalEval S21VSFLUX 实验测试
 
 S21 vs Flux 二维图实验，测量腔体频率随偏置磁通的变化
 """
@@ -27,11 +27,11 @@ from qubitclient.llm import QubitLLM, ExperimentFamily
 from qubitclient.llm.task import LLMTaskName
 
 
-# S21VFLUX 测试数据
+# S21VSFLUX 测试数据
 TEST_SAMPLE = {
-    "id": "S21VFLUX_failure_NO_FIT",
-    "experiment_type": "S21VFLUX_failure_NO_FIT",
-    "experiment_family": "S21VFLUX",
+    "id": "S21VSFLUX_failure_NO_FIT",
+    "experiment_type": "S21VSFLUX_failure_NO_FIT",
+    "experiment_family": "S21VSFLUX",
     "image_filename": "s21vflux_6844_Q2.png",
     "q1_answer": {"plot_type": "heatmap"},
     "q2_answer": "Expected behavior",
@@ -45,9 +45,9 @@ TEST_SAMPLE = {
 
 
 TEST_SAMPLE3 = {
-    "id": "S21VFLUX_success",
-    "experiment_type": "S21VFLUX_success",
-    "experiment_family": "S21VFLUX",
+    "id": "S21VSFLUX_success",
+    "experiment_type": "S21VSFLUX_success",
+    "experiment_family": "S21VSFLUX",
     "image_filename": "s21vflux_6844_Q1.png",
     "q1_answer": {"plot_type": "heatmap"},
     "q2_answer": "Expected behavior",
@@ -59,9 +59,9 @@ TEST_SAMPLE3 = {
 }
 
 TEST_SAMPLE2 = {
-    "id": "S21VFLUX_success",
-    "experiment_type": "S21VFLUX_success",
-    "experiment_family": "S21VFLUX",
+    "id": "S21VSFLUX_success",
+    "experiment_type": "S21VSFLUX_success",
+    "experiment_family": "S21VSFLUX",
     "image_filename": "s21vflux_6834.png",
     "q1_answer": {"plot_type": "heatmap"},
     "q2_answer": "Expected behavior",
@@ -76,13 +76,13 @@ def get_image_path(filename: str) -> str:
 
 
 def test_s21vflux_q1_describe():
-    print("\n=== S21VFLUX: Q1 Describe Plot ===")
+    print("\n=== S21VSFLUX: Q1 Describe Plot ===")
     llm = QubitLLM()
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.DESCRIBE_PLOT,
             image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-            experiment_family=ExperimentFamily.S21VFLUX
+            experiment_family=ExperimentFamily.S21VSFLUX
         )
         result = llm.chat(**prompt_data)
         print(f"  结果: {str(result)[:500]}...")
@@ -92,13 +92,13 @@ def test_s21vflux_q1_describe():
 
 
 def test_s21vflux_q2_classify():
-    print("\n=== S21VFLUX: Q2 Classify Outcome ===")
+    print("\n=== S21VSFLUX: Q2 Classify Outcome ===")
     llm = QubitLLM()
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.CLASSIFY_OUTCOME,
             image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-            experiment_family=ExperimentFamily.S21VFLUX
+            experiment_family=ExperimentFamily.S21VSFLUX
         )
         result = llm.chat(**prompt_data)
         print(f"  结果: {str(result)[:500]}...")
@@ -109,13 +109,13 @@ def test_s21vflux_q2_classify():
 
 
 def test_s21vflux_q3_reasoning():
-    print("\n=== S21VFLUX: Q3 Scientific Reasoning ===")
+    print("\n=== S21VSFLUX: Q3 Scientific Reasoning ===")
     llm = QubitLLM()
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.SCIENTIFIC_REASONING,
             image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-            experiment_family=ExperimentFamily.S21VFLUX
+            experiment_family=ExperimentFamily.S21VSFLUX
         )
         result = llm.chat(**prompt_data)
         print(f"  结果: {result[:300]}...")
@@ -126,13 +126,13 @@ def test_s21vflux_q3_reasoning():
 
 
 def test_s21vflux_q4_assess():
-    print("\n=== S21VFLUX: Q4 Assess Fit ===")
+    print("\n=== S21VSFLUX: Q4 Assess Fit ===")
     llm = QubitLLM()
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.ASSESS_FIT,
             image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-            experiment_family=ExperimentFamily.S21VFLUX
+            experiment_family=ExperimentFamily.S21VSFLUX
         )
         result = llm.chat(**prompt_data)
         print(f"  结果: {str(result)[:500]}...")
@@ -143,13 +143,13 @@ def test_s21vflux_q4_assess():
 
 
 def test_s21vflux_q5_extract():
-    print("\n=== S21VFLUX: Q5 Extract Params ===")
+    print("\n=== S21VSFLUX: Q5 Extract Params ===")
     llm = QubitLLM()
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EXTRACT_PARAMS,
             image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-            experiment_family=ExperimentFamily.S21VFLUX
+            experiment_family=ExperimentFamily.S21VSFLUX
         )
         result = llm.chat(**prompt_data)
         print(f"  结果: {str(result)[:500]}...")
@@ -160,13 +160,13 @@ def test_s21vflux_q5_extract():
 
 
 def test_s21vflux_q6_status():
-    print("\n=== S21VFLUX: Q6 Evaluate Status ===")
+    print("\n=== S21VSFLUX: Q6 Evaluate Status ===")
     llm = QubitLLM()
     try:
         prompt_data = llm.get_prompt(
             LLMTaskName.EVALUATE_STATUS,
             image_data=get_image_path(TEST_SAMPLE["image_filename"]),
-            experiment_family=ExperimentFamily.S21VFLUX
+            experiment_family=ExperimentFamily.S21VSFLUX
         )
         result = llm.chat(**prompt_data)
         print(f"  结果: {str(result)[:500]}...")
@@ -183,4 +183,4 @@ if __name__ == "__main__":
     test_s21vflux_q4_assess()
     test_s21vflux_q5_extract()
     test_s21vflux_q6_status()
-    print("\n[OK] S21VFLUX tests completed!")
+    print("\n[OK] S21VSFLUX tests completed!")

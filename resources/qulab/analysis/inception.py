@@ -98,7 +98,7 @@ def powershift(image):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def s21vsflux(image):
-    results = scope_template(image,task_type=TaskName.S21VFLUX)
+    results = scope_template(image,task_type=TaskName.S21VSFLUX)
     return results
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions

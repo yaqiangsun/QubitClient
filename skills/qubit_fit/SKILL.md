@@ -26,7 +26,7 @@ client = QubitNNScopeClient(url="http://server:port", api_key="your-key")
 - `OPTPIPULSE` - Optimal π-pulse calculation
 - `RABICOS` - Rabi oscillation cosine first peak detection
 - `RAMSEY` - Ramsey fringe decay oscillation fitting
-- `S21VFLUX` - S21 vs Flux analysis
+- `S21VSFLUX` - S21 vs Flux analysis
 - `SINGLESHOT` - Single-shot readout analysis
 - `SPECTRUM` - Frequency spectrum analysis
 - `T1FIT` - T1 relaxation time exponential fitting
@@ -39,7 +39,7 @@ client = QubitNNScopeClient(url="http://server:port", api_key="your-key")
 
 #### NNScope Tasks (NNTaskName)
 - `SPECTRUM2D` - 2D spectrum data segmentation (supports COSINE, POLY curve types)
-- `S21VFLUX` - S21 vs Flux parameter curve segmentation
+- `S21VSFLUX` - S21 vs Flux parameter curve segmentation
 - `POWERSHIFT` - Power shift curve segmentation
 - `SPECTRUM` - Spectrum analysis
 - `S21PEAK` - S21 peak detection
@@ -145,7 +145,7 @@ Input format:
 - `x_array`: 1D array of drive amplitude values
 - `amp_array`: 1D array of measured amplitude
 
-#### S21VFLUX (Scope)
+#### S21VSFLUX (Scope)
 Input format:
 ```python
 {

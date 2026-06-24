@@ -146,11 +146,11 @@ def powershift(image):
 @handle_exceptions
 def s21vsflux(image):
     image = s21vsflux_convert(image)
-    results = scope_template(image,task_type=TaskName.S21VFLUX)
+    results = scope_template(image,task_type=TaskName.S21VSFLUX)
     return results
 def nns21vsflux(image):
     image = nns21vsflux_convert(image)
-    results = nnscope_template(image,task_type=NNTaskName.S21VFLUX)
+    results = nnscope_template(image,task_type=NNTaskName.S21VSFLUX)
     return results
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions

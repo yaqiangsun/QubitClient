@@ -261,7 +261,7 @@ PROMPT_RAMSEY = """这个结果<image>说明了什么？
 
 请提供您的评估。"""
 
-PROMPT_S21VFLUX = """这个结果<image>说明了什么？
+PROMPT_S21VSFLUX = """这个结果<image>说明了什么？
 
 请解释：
 - 二维腔响应（共振随偏置的偏移）表明了色散耦合和偏置依赖性方面的信息
@@ -322,7 +322,7 @@ SCIENTIFIC_REASONING_PROMPTS_ZH = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,

@@ -220,7 +220,7 @@ Provide your answer as:
 Assessment: <your choice>
 Reason: <brief explanation>"""
 
-PROMPT_S21VFLUX = """Assess whether the fit to the data in this plot  <image> is reliable for parameter extraction.
+PROMPT_S21VSFLUX = """Assess whether the fit to the data in this plot  <image> is reliable for parameter extraction.
 
 CRITICAL FIRST STEP - VISUAL INSPECTION:
 Look at the image carefully. Determine if there is a RED colored curve/lines overlaid on the heatmap. 
@@ -316,7 +316,7 @@ ASSESS_FIT_PROMPTS = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,

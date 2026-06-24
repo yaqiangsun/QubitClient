@@ -1,8 +1,8 @@
-# S21VFLUX 任务接口文档
+# S21VSFLUX 任务接口文档
 
 ## 概述
 
-S21VFLUX 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+S21VSFLUX 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
 
 ## 接口使用方式
 
@@ -22,7 +22,7 @@ client = QubitNNScopeClient(url=url,api_key=api_key)
 | 参数名 | 类型 | 必需 | 描述                                         |
 |--------|------|------|-----------|
 | file_list | list[str\|dict[str,np.ndarray]\| np.ndarray]  | 是 | 数据文件列表，支持.npy或numpy数组 |
-| task_type | NNTaskName | 是 | 任务类型，固定为`NNTaskName.S21VFLUX`|
+| task_type | NNTaskName | 是 | 任务类型，固定为`NNTaskName.S21VSFLUX`|
 | curve_type | CurveType | 是 | 任务类型，固定为`CurveType.AUTO(返回poly和cosine的最優解)`|
 
 ### 数据格式
@@ -53,7 +53,7 @@ s: 二维 np.ndarray,shape(B,A),表示二维频谱数据
 ```python
 # 使用文件路径
 
-response = client.request(file_list=["data/singlepath/file1.npy", "data/singlepath/file2.npy"],task_type=NNTaskName.S21VFLUX,curve_type=CurveType.AUTO)
+response = client.request(file_list=["data/singlepath/file1.npy", "data/singlepath/file2.npy"],task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.AUTO)
 
 
 dict_list = []
@@ -62,7 +62,7 @@ for file_path in file_path_list:
     dict_list.append(content)
 
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-response = client.request(file_list=dict_list,task_type=NNTaskName.S21VFLUX,curve_type=CurveType.AUTO)
+response = client.request(file_list=dict_list,task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.AUTO)
 
 ```
 
@@ -73,7 +73,7 @@ response = client.request(file_list=dict_list,task_type=NNTaskName.S21VFLUX,curv
 
 results = client.get_result(response=response)
 threshold = 0.5
-results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VFLUX.value)
+results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VSFLUX.value)
 
 ```
 
@@ -143,7 +143,7 @@ if type(results)==dict:
 plot_manager = QuantumPlotPlyManager()
 plot_manager.plot_quantum_data(
     data_type='npy',
-    task_type=NNTaskName.S21VFLUX.value,
+    task_type=NNTaskName.S21VSFLUX.value,
     save_path=save_path_html,
     result=results_filtered,
     dict_param=data_ndarray
@@ -152,7 +152,7 @@ plot_manager.plot_quantum_data(
 plot_manager = QuantumPlotPltManager()
 plot_manager.plot_quantum_data(
     data_type='npy',
-    task_type=NNTaskName.S21VFLUX.value,
+    task_type=NNTaskName.S21VSFLUX.value,
     save_path=save_path_png,
     result=results_filtered,
     dict_param=data_ndarray

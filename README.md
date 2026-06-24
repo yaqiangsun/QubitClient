@@ -330,7 +330,7 @@ images[0].save("enhanced.png")
 |---------|------|---------|---------|
 | `NNTaskName.SPECTRUM2D` | 二维频谱数据曲线分割 | [文档](docs/nnscope/SPECTRUM2D.md) | ✅
 | `NNTaskName.POWERSHIFT` | 功率偏移曲线分割 | [文档](docs/nnscope/POWERSHIFT.md) | ⏸️
-| `NNTaskName.S21VFLUX` | S21 vs Flux 参数曲线分割 | [文档](docs/nnscope/S21VFLUX.md) | ⏸️
+| `NNTaskName.S21VSFLUX` | S21 vs Flux 参数曲线分割 | [文档](docs/nnscope/S21VSFLUX.md) | ⏸️
 | `NNTaskName.SPECTRUM` | 频谱分析 | [文档](docs/nnscope/SPECTRUM.md) | ✅
 | `NNTaskName.S21PEAK` | S21 峰值检测 | [文档](docs/nnscope/S21PEAK.md) | ✅
 | `NNTaskName.S21PEAKMULTI` | S21 峰值检测 | [文档](docs/nnscope/S21PEAKMULTI.md) | ✅
@@ -344,7 +344,7 @@ images[0].save("enhanced.png")
 | `TaskName.OPTPIPULSE` | 最优 π 脉冲计算 | [文档](docs/scope/OPTPIPULSE.md) | ✅
 | `TaskName.RABICOS` | Rabi 振荡余弦第一峰检测 | [文档](docs/scope/RABICOS.md) | ✅
 | `TaskName.RAMSEY` | RAMSY 衰减震荡余弦拟合 | [文档](docs/scope/RAMSEY.md) | ✅
-| `TaskName.S21VFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VFLUX.md) | ✅
+| `TaskName.S21VSFLUX` | S21 vs Flux 分析 | [文档](docs/scope/S21VSFLUX.md) | ✅
 | `TaskName.SINGLESHOT` | 单次测量分析 | [文档](docs/scope/SINGLESHOT.md) | ✅
 | `TaskName.SPECTRUM` | 频谱分析 | [文档](docs/scope/SPECTRUM.md) | ✅
 | `TaskName.T1FIT` | T1 时间拟合 | [文档](docs/scope/T1FIT.md) | ✅
@@ -424,7 +424,7 @@ images[0].save("enhanced.png")
 | `ExperimentFamily.OPTPIPULSE` | 最优π脉冲校准 | ⏸️
 | `ExperimentFamily.RABICOS` | 功率Rabi振荡 | ⏸️
 | `ExperimentFamily.RAMSEY` | Ramsey干涉 | ⏸️
-| `ExperimentFamily.S21VFLUX` | S21 vs Flux 2D | ⏸️
+| `ExperimentFamily.S21VSFLUX` | S21 vs Flux 2D | ⏸️
 | `ExperimentFamily.POWERSHIFT` | 功率偏移 | ⏸️
 | `ExperimentFamily.SINGLESHOT` | 单次读出 | ⏸️
 | `ExperimentFamily.SPECTRUM` | 频谱分析 | ⏸️

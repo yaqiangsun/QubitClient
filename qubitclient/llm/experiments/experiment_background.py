@@ -120,7 +120,7 @@ VISUAL INDICATOR: The fitted curve is plotted on top of the raw data points.
 
 The experimental goal is to extract reliable coherence parameters from a high-quality fit."""
 
-S21VFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response.
+S21VSFLUX = """This is an S21 vs Flux experiment (cavity frequency vs bias flux): we sweep both probe frequency and applied flux bias voltage to map the cavity resonance frequency response.
 
 The 2D heatmap may contain up to FOUR possible resonance-like features:
 - cos_dark: low-intensity cosine-shaped curve
@@ -182,7 +182,7 @@ EXPERIMENT_BACKGROUNDS = {
     "optpipulse": OPTPIPULSE,
     "rabicos": RABICOS,
     "ramsey": RAMSEY,
-    "s21vflux": S21VFLUX,
+    "s21vflux": S21VSFLUX,
     "powershift": POWERSHIFT,
     "singleshot": SINGLESHOT,
     "spectrum": SPECTRUM,

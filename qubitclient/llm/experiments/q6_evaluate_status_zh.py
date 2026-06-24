@@ -416,7 +416,7 @@ Status: <列出的状态之一>
 Suggested range: (<min delay>, <max delay>) [us]（如果是 SUCCESS 则为 "N/A"）
 Notes: <1-3 句解释您的推理>"""
 
-PROMPT_S21VFLUX = """评估图像<image>并确定实验状态。
+PROMPT_S21VSFLUX = """评估图像<image>并确定实验状态。
 
 决策标准
 - SUCCESS: 清晰的腔体共振迹线随偏置磁通移动，形成可见的色散曲线
@@ -531,7 +531,7 @@ EVALUATE_STATUS_PROMPTS_ZH = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,

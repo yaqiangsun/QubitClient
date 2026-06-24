@@ -318,7 +318,7 @@ images[0].save("enhanced.png")
 |-----------|-------------|---------------|--------|
 | `NNTaskName.SPECTRUM2D` | 2D spectrum data curve segmentation | [Docs](docs/nnscope/SPECTRUM2D.md) | ✅ |
 | `NNTaskName.POWERSHIFT` | Power shift curve segmentation | [Docs](docs/nnscope/POWERSHIFT.md) | ⏸️ |
-| `NNTaskName.S21VFLUX` | S21 vs Flux parameter curve segmentation | [Docs](docs/nnscope/S21VFLUX.md) | ⏸️ |
+| `NNTaskName.S21VSFLUX` | S21 vs Flux parameter curve segmentation | [Docs](docs/nnscope/S21VSFLUX.md) | ⏸️ |
 | `NNTaskName.SPECTRUM` | Spectrum analysis | [Docs](docs/nnscope/SPECTRUM.md) | ✅ |
 | `NNTaskName.S21PEAK` | S21 peak detection | [Docs](docs/nnscope/S21PEAK.md) | ⏸️ |
 | `NNTaskName.S21PEAKMULTI` | S21 peak detection | [Docs](docs/nnscope/S21PEAKMULTI.md) | ⏸️ |
@@ -332,7 +332,7 @@ images[0].save("enhanced.png")
 | `TaskName.OPTPIPULSE` | Optimal π pulse calculation | [Docs](docs/scope/OPTPIPULSE.md) | ✅ |
 | `TaskName.RABICOS` | Rabi oscillation cosine first peak detection | [Docs](docs/scope/RABICOS.md) | ✅ |
 | `TaskName.RAMSEY` | RAMSY decay oscillation cosine fitting | [Docs](docs/scope/RAMSEY.md) | ✅ |
-| `TaskName.S21VFLUX` | S21 vs Flux analysis | [Docs](docs/scope/S21VFLUX.md) | ✅ |
+| `TaskName.S21VSFLUX` | S21 vs Flux analysis | [Docs](docs/scope/S21VSFLUX.md) | ✅ |
 | `TaskName.SINGLESHOT` | Single shot analysis | [Docs](docs/scope/SINGLESHOT.md) | ✅ |
 | `TaskName.SPECTRUM` | Spectrum analysis | [Docs](docs/scope/SPECTRUM.md) | ✅ |
 | `TaskName.T1FIT` | T1 time fitting | [Docs](docs/scope/T1FIT.md) | ✅ |
@@ -412,7 +412,7 @@ Use `ExperimentFamily` enum to specify different experiment types, automatically
 | `ExperimentFamily.OPTPIPULSE` | Optimal π pulse calibration | ⏸️ |
 | `ExperimentFamily.RABICOS` | Power Rabi oscillation | ⏸️ |
 | `ExperimentFamily.RAMSEY` | Ramsey interference | ⏸️ |
-| `ExperimentFamily.S21VFLUX` | S21 vs Flux 2D | ⏸️ |
+| `ExperimentFamily.S21VSFLUX` | S21 vs Flux 2D | ⏸️ |
 | `ExperimentFamily.POWERSHIFT` | Power shift | ⏸️ |
 | `ExperimentFamily.SINGLESHOT` | Single-shot readout | ⏸️ |
 | `ExperimentFamily.SPECTRUM` | Spectrum analysis | ⏸️ |

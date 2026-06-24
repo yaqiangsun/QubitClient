@@ -155,7 +155,7 @@ def plot_powershift(report,basepath,name):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def plot_s21vsflux(report,basepath,name):
-    plot_template(report,basepath,name,TaskName.S21VFLUX)
+    plot_template(report,basepath,name,TaskName.S21VSFLUX)
 
 
 @control_api_execution(enable_api=ENABLE_API)

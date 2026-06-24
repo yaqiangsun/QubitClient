@@ -185,7 +185,7 @@ PROMPT_RAMSEY = """Extract the following parameters from this Ramsey oscillation
 Report in JSON format:
 {"detuning_Hz": float | null, "t2_star_us": float | null, "contrast": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
 
-PROMPT_S21VFLUX = """Extract the following parameters from this S21 vs Flux 2D plot <image>.
+PROMPT_S21VSFLUX = """Extract the following parameters from this S21 vs Flux 2D plot <image>.
 
 Report in JSON format:
 {"center_freq_GHz": float | null, "freq_vs_bias_slope": float | null, "dispersion_shift_MHz": float | null, "resonance_quality": "good" | "moderate" | "poor" | "none"}"""
@@ -254,7 +254,7 @@ EXTRACT_PARAMS_PROMPTS = {
     "optpipulse": PROMPT_OPTPIPULSE,
     "rabicos": PROMPT_RABICOS,
     "ramsey": PROMPT_RAMSEY,
-    "s21vflux": PROMPT_S21VFLUX,
+    "s21vflux": PROMPT_S21VSFLUX,
     "powershift": PROMPT_POWERSHIFT,
     "singleshot": PROMPT_SINGLESHOT,
     "spectrum": PROMPT_SPECTRUM,
@@ -558,7 +558,7 @@ SCHEMA_RAMSEY = {
     "required": [],
 }
 
-SCHEMA_S21VFLUX = {
+SCHEMA_S21VSFLUX = {
     "type": "object",
     "properties": {
         "center_freq_GHz": {"oneOf": [{"type": "number"}, {"type": "null"}]},

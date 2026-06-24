@@ -67,6 +67,7 @@ class CtrlTaskName(Enum):
     S21POWER_2D = "powershift"
     PIAMP = "rabi"
     RAMSEYF10 = "ramsey"
+    BASESLOPE = "baseslope"
 
 
 
@@ -164,15 +165,15 @@ def powershift(qubits:list[str]=['Q0','Q1'],
 
 @task_register
 def rabi(qubits:list[str]=['Q0','Q1'],
-         amp_start=0,
-         amp_end=2,
-         amp_sample_num=16,   
+         piamp_start=0,
+         piamp_end=2,
+         piamp_sample_num=16,   
          *args, **kwargs):
     result = call_mcp("rabi",
                       qubits=qubits,
-                      amp_start=amp_start,
-                      amp_end=amp_end,
-                      amp_sample_num=amp_sample_num)
+                      piamp_start=piamp_start,
+                      piamp_end=piamp_end,
+                      piamp_sample_num=piamp_sample_num)
     return result
 
 @task_register
@@ -221,19 +222,21 @@ def singleshot(qubits:list[str]=['Q0','Q1'],
 
 @task_register
 def spectrum(qubits:list[str]=['Q0','Q1'],
-             freq_start=-3,
-             freq_end=3,
+             freq_start=1.0,
+             freq_end=3.0,
              freq_sample_num=200,
-             bias=0,
-             drive_amp=0.0,
+             zpa=0,
+             spec_amp=0.0,
+             sb_freq=0,
              *args, **kwargs):
     result = call_mcp("spectrum",
                       qubits=qubits,
                       freq_start=freq_start,
                       freq_end=freq_end,
                       freq_sample_num=freq_sample_num,
-                      bias=bias,
-                      drive_amp=drive_amp
+                      zpa=zpa,
+                      spec_amp=spec_amp,
+                      sb_freq=sb_freq
                       )
     return result
 
@@ -242,37 +245,39 @@ def spectrum_2d(qubits:list[str]=['Q0','Q1'],
                 freq_start=-3,
                 freq_end=3,
                 freq_sample_num=200,
-                bias_start=-1,
-                bias_end=1,
-                bias_sample_num=100,
-                drive_amp=0.0,
+                zpa_start=-1,
+                zpa_end=1,
+                zpa_sample_num=100,
+                spec_amp=0.0,
+                sb_freq = -0.15,
                 *args, **kwargs):
     result = call_mcp("spectrum_2d",
                       qubits=qubits,
                       freq_start=freq_start,
                       freq_end=freq_end,
                       freq_sample_num=freq_sample_num,
-                      bias_start=bias_start,
-                      bias_end=bias_end,
-                      bias_sample_num=bias_sample_num,
-                      drive_amp=drive_amp
+                      zpa_start=zpa_start,
+                      zpa_end=zpa_end,
+                      zpa_sample_num=zpa_sample_num,
+                      spec_amp=spec_amp,
+                      sb_freq=sb_freq
                       )
     return result
 
 @task_register
 def t1_2d(qubits:list[str]=['Q0','Q1'],
-       bias_start=-1.0,
-       bias_end=0.4,
-       bias_sample_num=71,
+       zpa_start=-1.0,
+       zpa_end=0.4,
+       zpa_sample_num=71,
        delay_start=0,
        delay_end=80000,
        delay_sample_num=17,
        *args, **kwargs):
        result = call_mcp("t1_2d",
                          qubits=qubits,
-                         bias_start=bias_start,
-                         bias_end=bias_end,
-                         bias_sample_num=bias_sample_num,
+                         zpa_start=zpa_start,
+                         zpa_end=zpa_end,
+                         zpa_sample_num=zpa_sample_num,
                          delay_start=delay_start,
                          delay_end=delay_end,
                          delay_sample_num=delay_sample_num
@@ -286,12 +291,14 @@ def t1(qubits:list[str]=['Q0','Q1'],
        delay_start=0,
        delay_end=80000,
        delay_sample_num=17,
+       zpa=0.0,
        *args, **kwargs):
        result = call_mcp("t1",
                          qubits=qubits,
                          delay_start=delay_start,
                          delay_end=delay_end,
-                         delay_sample_num=delay_sample_num
+                         delay_sample_num=delay_sample_num,
+                         zpa=zpa
                          )
        return result
 
@@ -301,7 +308,7 @@ def spinecho_t2(qubits: list[str],
        delay_end=10000,
        delay_sample_num=200,
        fringeFreq=0.05,
-       ms=None,
+       pipulse_num=None,
        *args, **kwargs):
     result = call_mcp("spinecho_t2",
                       qubits=qubits,
@@ -309,7 +316,7 @@ def spinecho_t2(qubits: list[str],
                       delay_end=delay_end,
                       delay_sample_num=delay_sample_num,
                       fringeFreq=fringeFreq,
-                      ms=ms
+                      pipulse_num=pipulse_num
                       )
     return result
 
@@ -373,15 +380,13 @@ def xeb(qubits:list[str],
 
 @task_register
 def pipulsef10(qubits:list[str],
-               df_start=0,
-               df_end=0.03,
-               df_sample_num=21,
+               freq_half_bandwidth=0.015,
+               freq_sample_num=30,
                *args, **kwargs):
     result = call_mcp("pipulsef10",
                       qubits=qubits,
-                      df_start=df_start,
-                      df_end=df_end,
-                      df_sample_num=df_sample_num,
+                      freq_half_bandwidth=freq_half_bandwidth,
+                      freq_sample_num=freq_sample_num
                       )
     return result
 
@@ -413,13 +418,40 @@ def timingxyz(qubits:list[str],
 
 @task_register
 def pulseshape(qubits:list[str],
-               step_height=0.2,
+               zpa_height:float=0.2,
+               delay_start:float=0, 
+               delay_end:float=1000, 
+               delay_sample_num:float=100,
+               z_offset_half_bandwidth:float=0.01, 
+               z_offset_num:float=1.0,
                *args, **kwargs):
     result = call_mcp("pulseshape",
                       qubits=qubits,
-                      step_height=step_height
+                      zpa_height=zpa_height,
+                      delay_start=delay_start,
+                      delay_end=delay_end,
+                      delay_sample_num=delay_sample_num,
+                      z_offset_half_bandwidth=z_offset_half_bandwidth,
+                      z_offset_num=z_offset_num
                       )
     return result
+
+@task_register
+def baseslope(qubits:list[str],
+               delay_start:float=0, 
+               delay_end:float=1000, 
+               delay_sample_num:float=100,
+               step_height:float=0, 
+               *args, **kwargs):
+    result = call_mcp("baseslope",
+                      qubits=qubits,
+                      delay_start=delay_start,
+                      delay_end=delay_end,
+                      delay_sample_num=delay_sample_num,
+                      step_height=step_height,
+                      )
+    return result
+
 
 @task_register
 def setpialpha(qubits:list[str]=['Q0','Q1'],

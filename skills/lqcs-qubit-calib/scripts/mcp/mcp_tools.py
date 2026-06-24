@@ -6,6 +6,10 @@
 # Author: yaqiangsun
 # Created Time: 2026/03/26 15:50:15
 ########################################################################
+"""
+全局参数单位说明：频率: GHz
+                时间: 纳秒(ns)
+"""
 import numpy as np
 import sys
 from pathlib import Path
@@ -34,6 +38,7 @@ from  lqcs_mcp.tools import optqubitreadfreq as lqcs_optqubitreadfreq
 from  lqcs_mcp.tools import pulseshape as lqcs_pulseshape
 from  lqcs_mcp.tools import timingxyz as lqcs_timingxyz
 # from  lqcs_mcp.tools import rb as lqcs_rb
+from  lqcs_mcp.tools import baseslope as lqcs_baseslope
 
 import os
 import numpy as np
@@ -147,17 +152,17 @@ class TaskUpdateConfig:
             's21': {'params': ['fread']},
             's21multi': {'params': ['fread']},
             'powershift': {'params': ['ReadIn.power']},
-            's21vflux': {'params': ['bias_z']},
-            'spectrum': {'params': ['f10', 'f21']},
+            's21vflux': {'params': []},
+            'spectrum': {'params': ['f10', 'f21']}, # f21可能不更新，如果出现双峰，左侧为f21,non计算为(左峰-右峰)*2
             'spectrum_2d': {'params': []},
-            'singleshot': {'params': []},
-            'rabi': {'params': ['PiGate.amp']},
+            'singleshot': {'params': ['discriminator.center0', 'discriminator.center1', 'discriminator.threshold']}, # 要更新
+            'rabi': {'params': ['PiGate.amp', 'PiHalf.amp']}, # PiHalf.amp数值是除以2
             'pipulsef10': {'params': ['f10', 'f21']},
             'ramsey': {'params': ['f10', 'f21']},
             'optqubitreadfreq': {'params': ['fread']},
-            # 'opt_pipulse': {'params': ['PiGate.amp', 'PiGate.alpha']},
-            'setpialpha': {'params': ['PiGate.amp', 'PiGate.alpha']},
-            'timingxyz': {'params': ['timing.xy']},
+            'opt_pipulse': {'params': ['PiGate.amp', 'PiGate.alpha']},
+            'setpialpha': {'params': ['PiGate.amp', 'PiGate.alpha', 'PiHalf.amp', 'PiHalf.alpha']}, # 如果gate=X则更新'PiGate.amp', 'PiGate.alpha'这一组，如果X/2则'PiHalf.amp', 'PiHalf.alpha'这一组
+            'timingxyz': {'params': ['timing.xy', 'timing.z']}, # 二选一，一般是'timing.z'，很少'timing.xy'
             'pulseshape': {'params': []},
             't1': {'params': []},
             't1_2d': {'params': []},
@@ -266,46 +271,45 @@ def s21multi(qubits:list[str]=['Q0','Q1'],
 
 @mcp.tool
 def rabi(qubits:list[str]=['Q0','Q1'],
-         amp_start=0,
-         amp_end=2,
-         amp_sample_num=16,   
+         piamp_start=0,
+         piamp_end=2,
+         piamp_sample_num=16
          ):
     result = lqcs_rabi(qubits=qubits,
-                      amp_start=amp_start,
-                      amp_end=amp_end,
-                      amp_sample_num=amp_sample_num)
-    hdf5_path = find_latest_filename(task_type='pipulse')
+                      piamp_start=piamp_start,
+                      piamp_end=piamp_end,
+                      piamp_sample_num=piamp_sample_num)
+    hdf5_path = find_latest_filename(task_type='piamp')
     return hdf5_path
 
 @mcp.tool
 def ramsey(qubits:list[str]=['Q0','Q2'],
            delay_start=0,
-           delay_end=100,
+           delay_end=600,
            delay_sample_num=100,
-           fringeFreq=0.05,
-           ):
+           fringeFreq=0.005):
     result = lqcs_ramsey(qubits=qubits,
-                      fringeFreq=fringeFreq,
                       delay_start=delay_start,
                       delay_end=delay_end,
-                      delay_sample_num=delay_sample_num
+                      delay_sample_num=delay_sample_num,
+                      fringeFreq=fringeFreq
                       )
-    hdf5_path = find_latest_filename(task_type='pulse')
+    hdf5_path = find_latest_filename(task_type='ramsey df')
     return hdf5_path
 
 @mcp.tool
 def t1_2d(qubits:list[str]=['Q0','Q1'],
-       bias_start=-1.0,
-       bias_end=0.4,
-       bias_sample_num=71,
+       zpa_start=-1.0,
+       zpa_end=1.0,
+       zpa_sample_num=71,
        delay_start=0,
-       delay_end=80000,
-       delay_sample_num=17,
+       delay_end=45000,
+       delay_sample_num=40,
        ):
        result = lqcs_t1_2d(qubits=qubits,
-                         zpa_start=bias_start,
-                         zpa_end=bias_end,
-                         zpa_sample_num=bias_sample_num,
+                         zpa_start=zpa_start,
+                         zpa_end=zpa_end,
+                         zpa_sample_num=zpa_sample_num,
                          delay_start=delay_start,
                          delay_end=delay_end,
                          delay_sample_num=delay_sample_num)
@@ -317,29 +321,30 @@ def t1(qubits:list[str]=['Q0','Q1'],
        delay_start=0,
        delay_end=80000,
        delay_sample_num=17,
+       zpa=0.0
        ):
        result = lqcs_t1(qubits=qubits,
                         delay_start=delay_start,
                         delay_end=delay_end,
-                        delay_sample_num=delay_sample_num)
+                        delay_sample_num=delay_sample_num,
+                        zpa=zpa)
        hdf5_path = find_latest_filename(task_type='t1')
        return hdf5_path
 
 @mcp.tool
 def spectrum(qubits:list[str]=['Q0','Q1'],
-             freq_start=-3,
-             freq_end=3,
-             freq_sample_num=200,
-             bias=0,
-             drive_amp=0.0,
-             ):
-    sb_freq=0
+             freq_start=3.0,
+             freq_end=5.0,
+             freq_sample_num=1000,
+             zpa=0,
+             spec_amp=0.5,
+             sb_freq=-0.15):
     result = lqcs_spectrum(qubits=qubits,
                            freq_start=freq_start,
                            freq_end=freq_end,
                            freq_sample_num=freq_sample_num,
-                           zpa=bias,
-                           spec_amp=drive_amp,
+                           zpa=zpa,
+                           spec_amp=spec_amp,
                            sb_freq=sb_freq
                            )
     hdf5_path = find_latest_filename(task_type='spectroscopy') # 要填文件关键字
@@ -350,21 +355,20 @@ def spectrum_2d(qubits:list[str]=['Q0','Q1'],
                 freq_start=-3,
                 freq_end=3,
                 freq_sample_num=200,
-                bias_start=-1,
-                bias_end=1,
-                bias_sample_num=100,
-                drive_amp=0.0,
-                ):
-    sb_freq=0
+                zpa_start=-1,
+                zpa_end=1,
+                zpa_sample_num=100,
+                spec_amp=0.5,
+                sb_freq = -0.15):
     try:
         result = lqcs_spectrum_2d(qubits=qubits,
                                 freq_start=freq_start,
                                 freq_end=freq_end,
                                 freq_sample_num=freq_sample_num,
-                                zpa_start=bias_start,
-                                zpa_end=bias_end,
-                                zpa_sample_num=bias_sample_num,
-                                spec_amp=drive_amp,
+                                zpa_start=zpa_start,
+                                zpa_end=zpa_end,
+                                zpa_sample_num=zpa_sample_num,
+                                spec_amp=spec_amp,
                                 sb_freq=sb_freq
                                 )
     except:
@@ -401,11 +405,11 @@ def singleshot(qubits:list[str]=['Q0','Q1'],
 
 @mcp.tool
 def setpialpha(qubits:list[str]=['Q0','Q1'],
-                ms:list[int]=[1, 3, 5],
+                pipulse_num:list[int]=[1, 3, 5],
                 gate:str='X',
                 ):
     result = lqcs_setpialpha(qubits=qubits,
-                      ms=ms,
+                      pipulse_num=pipulse_num,
                       gate=gate
                       )
     piamp_path_list = find_top3_latest_filename(task_type='piamp')
@@ -443,38 +447,48 @@ def powershift(qubits:list[str]=['Q0','Q1'],
 #     hdf5_path = find_latest_filename(task_type='delta')
 #     return hdf5_path
 
-@mcp.tool
-def rb(qubits:list[str],
-       couplers:tuple=tuple([]),
-       stage:int=3,
-       gate:list=['ref'],
-       cycle:list=None,
-       size:int=11,
-       plot:bool=True,
-       ):
-    result = lqcs_rb(qubits=qubits)
-    hdf5_path = find_latest_filename(task_type='rb')
-    return hdf5_path
+# @mcp.tool
+# def rb(qubits:list[str],
+#        couplers:tuple=tuple([]),
+#        stage:int=3,
+#        gate:list=['ref'],
+#        cycle:list=None,
+#        size:int=11,
+#        plot:bool=True,
+#        ):
+#     result = lqcs_rb(qubits=qubits)
+#     hdf5_path = find_latest_filename(task_type='rb')
+#     return hdf5_path
 
 @mcp.tool
 def pulseshape(qubits:list[str],
-               step_height=0.2,
+               zpa_height=0.2,
+               delay_start=0, 
+               delay_end=1000, 
+               delay_sample_num=100,
+               z_offset_half_bandwidth=0.01, 
+               z_offset_num=1.0
                ):
     result = lqcs_pulseshape(qubits=qubits,
-                      step_height=step_height
+                      zpa_height=zpa_height,
+                      delay_start=delay_start,
+                      delay_end=delay_end,
+                      delay_sample_num=delay_sample_num,
+                      z_offset_half_bandwidth=z_offset_half_bandwidth,
+                      z_offset_num=z_offset_num
                       )
     hdf5_path = find_latest_filename(task_type='pulseshape')
     return hdf5_path
 
 @mcp.tool
 def xeb(qubits:list[str],
-        m_start=0,
+        m_start=0, # m:门的数量
         m_end=400,
         m_sample_num=10,
-        k=30,
+        k=30, # k:门的序列号
         gate='reference',
         tbuffer=0,
-        stats=300,
+        stats=300
         ):
     result = lqcs_xeb(qubits=qubits,
                       m_start=m_start,
@@ -490,26 +504,19 @@ def xeb(qubits:list[str],
 
 @mcp.tool
 def pipulsef10(qubits:list[str],
-               df_start=0,
-               df_end=0.03,
-               df_sample_num=21,
-               ):
-    fc=None
+               freq_half_bandwidth=0.015,
+               freq_sample_num=30):
     result = lqcs_pipulsef10(qubits=qubits,
-                      fc=fc,
-                      df_start=df_start,
-                      df_end=df_end,
-                      df_sample_num=df_sample_num,
-                      )
+                      freq_half_bandwidth=freq_half_bandwidth,
+                      freq_sample_num=freq_sample_num)
     hdf5_path = find_latest_filename(task_type='pipulse df')
     return hdf5_path
 
 @mcp.tool
 def optqubitreadfreq(qubits:list[str],
-                     freq_span=0.0055,
-                     ):
+                     freq_half_bandwidth=0.0015):
     result = lqcs_optqubitreadfreq(qubits=qubits,
-                      freq_span=freq_span,
+                      freq_span=freq_half_bandwidth # 映射关系待确定
                       )
     hdf5_path = find_latest_filename(task_type='s21_dis')
     return hdf5_path
@@ -535,8 +542,8 @@ def spinecho_t2(qubits: list[str],
                 delay_start=0,
                 delay_end=10000,
                 delay_sample_num=200,
-                fringeFreq=0.05,
-                ms=None
+                fringeFreq=0.005,
+                pipulse_num=1
                 ):
     
     result = lqcs_spinecho_t2(qubits=qubits,
@@ -544,7 +551,7 @@ def spinecho_t2(qubits: list[str],
                        delay_end=delay_end,
                        delay_sample_num=delay_sample_num,
                        fringeFreq=fringeFreq,
-                       ms=ms
+                       pipulse_num=pipulse_num
                       )
     hdf5_path = find_latest_filename(task_type='spinecho')
     return hdf5_path
@@ -554,7 +561,7 @@ def ramsey_t2(qubits: list[str],
              delay_start=0,
              delay_end=10000,
              delay_sample_num=100,
-             fringeFreq=0.05,
+             fringeFreq=0.005
              ):
     result = lqcs_ramsey_t2(qubits=qubits,
                       delay_start=delay_start,
@@ -563,4 +570,20 @@ def ramsey_t2(qubits: list[str],
                       fringeFreq=fringeFreq
                       )
     hdf5_path = find_latest_filename(task_type='ramsey')
+    return hdf5_path
+
+@mcp.tool
+def baseslope(qubits: list[str],
+             delay_start=0,
+             delay_end=10000,
+             delay_sample_num=100,
+             step_height=0
+             ):
+    result = lqcs_baseslope(qubits=qubits,
+                      delay_start=delay_start,
+                      delay_end=delay_end,
+                      delay_sample_num=delay_sample_num,
+                      step_height=step_height
+                      )
+    hdf5_path = find_latest_filename(task_type='slope')
     return hdf5_path

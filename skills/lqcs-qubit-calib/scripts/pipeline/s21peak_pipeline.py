@@ -71,17 +71,15 @@ def parse_args():
 
 def get_s21_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "s21peak"
-    pipeline_type = "s21peak_pipeline"
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
     try:
-        # =========== 查询/使用传入fread参数 ===========
+        
         qubit_ctrl_client = QubitCtrlClient()
         qname = qubit_name_list[0]
-        task_type = CtrlTaskName.S21
 
+        # =========== 查询/使用传入fread参数 ===========
         if args.fread is not None:
             fread = args.fread
         else:
@@ -98,15 +96,15 @@ def get_s21_hdf5_res(args):
 
         # 新建实验记录，写入存储
         run_record = PipelineResultRecord(
-            task_name=task_name,
-            task_type=pipeline_type,
+            task_name=CtrlTaskName.S21.value,
+            task_type=CtrlTaskName.S21.value,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
         print(f"[S21] Task started run_id={run_id[:8]}")
     
-        # =========== 采集数据 ===========
+        # =========== 启动测量任务以采集数据 ===========
         data = qubit_ctrl_client.run(
             CtrlTaskName.S21,
             qubits=qubit_name_list,
@@ -114,9 +112,8 @@ def get_s21_hdf5_res(args):
             frequency_half_bandwidth=set_params["frequency_half_bandwidth"],
             frequency_sample_num=set_params["frequency_sample_num"]
         )
-
+        # =========== 获取原始数据 ======================
         data_id = data[0]["text"]
-
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
         raw_data = json.loads(raw_data_text[0]["text"])
 

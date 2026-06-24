@@ -12,8 +12,8 @@
 from .scope_api.api.defined_tasks import s21peak_api_v1_tasks_scope_s21peak_post
 from .scope_api.api.defined_tasks import s21peakmulti_api_v1_tasks_scope_s21peakmulti_post
 from .scope_api.api.defined_tasks import optpipulse_api_v1_tasks_scope_optpipulse_post
-from .scope_api.api.defined_tasks import rabi_api_v1_tasks_scope_rabi_post
 from .scope_api.api.defined_tasks import rabicos_api_v1_tasks_scope_rabicospeak_post
+from .scope_api.api.defined_tasks import ramsy_api_v1_tasks_scope_ramsy_post
 from .scope_api.api.defined_tasks import s21vflux_api_v1_tasks_scope_s21vflux_post
 from .scope_api.api.defined_tasks import singleshot_api_v1_tasks_scope_singleshot_post
 from .scope_api.api.defined_tasks import spectrum_api_v1_tasks_scope_spectrum_post
@@ -33,8 +33,8 @@ from .scope_api.api.defined_tasks import timingxyz_api_v1_tasks_scope_timingxyz_
 from .scope_api.models import BodyS21PeakApiV1TasksScopeS21PeakPost
 from .scope_api.models import BodyS21PeakmultiApiV1TasksScopeS21PeakmultiPost
 from .scope_api.models import BodyOptpipulseApiV1TasksScopeOptpipulsePost
-from .scope_api.models import BodyRabiApiV1TasksScopeRabiPost
 from .scope_api.models import BodyRabicosApiV1TasksScopeRabicospeakPost
+from .scope_api.models import BodyRamsyApiV1TasksScopeRamsyPost
 from .scope_api.models import BodyS21VfluxApiV1TasksScopeS21VfluxPost
 from .scope_api.models import BodySingleshotApiV1TasksScopeSingleshotPost
 from .scope_api.models import BodySpectrumApiV1TasksScopeSpectrumPost
@@ -126,14 +126,9 @@ def optpipulse(client,files: File):
     response: Response[BodyOptpipulseApiV1TasksScopeOptpipulsePost] = optpipulse_api_v1_tasks_scope_optpipulse_post.sync_detailed(client=client,body=body)
     return response
 @task_register
-def rabi(client,files: File):
-    body: BodyRabiApiV1TasksScopeRabiPost = BodyRabiApiV1TasksScopeRabiPost(files=files)
-    response: Response[BodyRabiApiV1TasksScopeRabiPost] = rabi_api_v1_tasks_scope_rabi_post.sync_detailed(client=client,body=body)
-    return response
-@task_register
 def ramsey(client,files: File):
-    body: BodyRabiApiV1TasksScopeRabiPost = BodyRabiApiV1TasksScopeRabiPost(files=files)
-    response: Response[BodyRabiApiV1TasksScopeRabiPost] = rabi_api_v1_tasks_scope_rabi_post.sync_detailed(client=client,body=body)
+    body: BodyRamsyApiV1TasksScopeRamsyPost = BodyRamsyApiV1TasksScopeRamsyPost(files=files)
+    response: Response[BodyRamsyApiV1TasksScopeRamsyPost] = ramsy_api_v1_tasks_scope_ramsy_post.sync_detailed(client=client,body=body)
     return response
 @task_register
 def rabicos(client,files: File):
@@ -228,7 +223,6 @@ class TaskName(Enum):
     S21PEAK = "s21peak"
     S21PEAKMULTI = "s21peakmulti"
     OPTPIPULSE = "optpipulse"
-    # RABI = "rabi"
     RAMSEY = "ramsey"
     RABICOS = "rabicos"
     S21VFLUX = "s21vfluxscope"

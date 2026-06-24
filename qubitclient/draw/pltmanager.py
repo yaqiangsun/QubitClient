@@ -13,7 +13,7 @@ from .pltplotter import QuantumDataPltPlotter
 from qubitclient.draw.nnscope.powershiftnnscopepltplotter import PowershiftNNScopeDataPltPlotter
 from qubitclient.draw.nnscope.spectrumnnscopepltplotter import SpectrumNNscopeDataPltPlotter
 from qubitclient.draw.nnscope.spectrum2dnnscopepltplotter import Spectrum2DNNScopeDataPltPlotter
-from qubitclient.draw.scope.s21vfluxscopepltplotter import S21VfluxScopeDataPltPlotter
+from qubitclient.draw.scope.s21vfluxscopepltplotter import S21VSfluxScopeDataPltPlotter
 from qubitclient.draw.nnscope.s21vfluxnnscopepltplotter import S21VfluxNNScopeDataPltPlotter
 from qubitclient.draw.nnscope.s21peaknnscopepltplotter import S21PeakNNScopeDataPltPlotter
 from qubitclient.draw.nnscope.s21peakmultinnscopepltplotter import S21PeakMultiNNScopeDataPltPlotter
@@ -50,7 +50,7 @@ class QuantumPlotPltManager:
         self.plotters["s21peakmultinnscope"] = S21PeakMultiNNScopeDataPltPlotter()
         self.plotters["powershiftnnscope"] = PowershiftNNScopeDataPltPlotter()
         self.plotters["spectrumnnscope"] = SpectrumNNscopeDataPltPlotter()
-        self.plotters["s21vfluxscope"] = S21VfluxScopeDataPltPlotter()
+        self.plotters["s21vsfluxscope"] = S21VSfluxScopeDataPltPlotter()
         self.plotters["singleshot"] = SingleShotDataPltPlotter()
         self.plotters["spectrum2dscope"] = Spectrum2DScopeDataPltPlotter()
         self.plotters["spectrum"] = SpectrumDataPltPlotter()

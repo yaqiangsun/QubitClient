@@ -9,11 +9,11 @@
 
 from ..plyplotter import QuantumDataPlyPlotter
 
-class S21VfluxScopeDataPlyPlotter(QuantumDataPlyPlotter):
+class S21VSfluxScopeDataPlyPlotter(QuantumDataPlyPlotter):
 
 
     def __init__(self):
-        super().__init__("s21vfluxscope")
+        super().__init__("s21vsfluxscope")
 
     def plot_result_npy(self, **kwargs):
         result = kwargs.get('result')

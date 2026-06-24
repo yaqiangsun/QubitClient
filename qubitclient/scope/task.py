@@ -136,7 +136,7 @@ def rabicos(client,files: File):
     response: Response[BodyRabicosApiV1TasksScopeRabicospeakPost] = rabicos_api_v1_tasks_scope_rabicospeak_post.sync_detailed(client=client,body=body)
     return response
 @task_register
-def s21vfluxscope(client,files: File):
+def s21vsfluxscope(client,files: File):
     body: BodyS21VfluxApiV1TasksScopeS21VfluxPost = BodyS21VfluxApiV1TasksScopeS21VfluxPost(files=files)
     response: Response[BodyS21VfluxApiV1TasksScopeS21VfluxPost] = s21vflux_api_v1_tasks_scope_s21vflux_post.sync_detailed(client=client,body=body)
     return response
@@ -225,7 +225,7 @@ class TaskName(Enum):
     OPTPIPULSE = "optpipulse"
     RAMSEY = "ramsey"
     RABICOS = "rabicos"
-    S21VFLUX = "s21vfluxscope"
+    S21VFLUX = "s21vsfluxscope"
     SINGLESHOT = "singleshot"
     SPECTRUM = "spectrum"
     T1FIT = "t1fit"

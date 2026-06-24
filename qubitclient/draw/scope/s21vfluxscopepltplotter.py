@@ -10,9 +10,9 @@
 from ..pltplotter import QuantumDataPltPlotter
 
 
-class S21VfluxScopeDataPltPlotter(QuantumDataPltPlotter):
+class S21VSfluxScopeDataPltPlotter(QuantumDataPltPlotter):
     def __init__(self):
-        super().__init__("s21vfluxscope")
+        super().__init__("s21vsfluxscope")
     def plot_result_npy(self, **kwargs):
         result = kwargs.get('result')
         dict_param = kwargs.get('dict_param')

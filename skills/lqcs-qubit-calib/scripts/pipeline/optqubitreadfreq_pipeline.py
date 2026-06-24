@@ -10,9 +10,9 @@
 
 """Opt Qubit Read Freq measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.optqubitreadfreq_pipeline -q q3lu7 -sp 0.0055 -s ./tmp -u True -c 0.6
+            python -m resources.lqcs.pipeline.optqubitreadfreq_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
 
 import sys
@@ -44,8 +44,8 @@ def parse_args():
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
     # 扫频半带宽
-    parser.add_argument("--freq-span", "-sp", type=float, default=0.0055,
-                        help="Frequency span, default 0.0055")
+    parser.add_argument("--freq_half_bandwidth", "-h", type=float, default=0.0015,
+                        help="Frequency span, default 0.0015")
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save plot image")
@@ -76,7 +76,7 @@ def get_optqubitreadfreq_hdf5_res(args):
         # 组装实验参数
         set_params = {
             "qubits": qubit_name_list,
-            "freq_span": args.freq_span,
+            "freq_half_bandwidth": args.freq_half_bandwidth,
             "fread": fread_original
         }
 
@@ -94,7 +94,7 @@ def get_optqubitreadfreq_hdf5_res(args):
         data = qubit_ctrl_client.run(
             CtrlTaskName.OPTQUBITREADFREQ,
             qubits=qubit_name_list,
-            freq_span=set_params["freq_span"]
+            freq_half_bandwidth=set_params["freq_half_bandwidth"]
         )
         data_id = data[0]["text"]
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)

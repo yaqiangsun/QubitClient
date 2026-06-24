@@ -9,7 +9,7 @@
 
 """PowerShift scan pipeline with UI storage & cmd args
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. Example:
         python -m resources.lqcs.pipeline.powershift_pipeline -q q3lu7 -s ./tmp -n 16 -ps 13 -u True -c 0.3
 """

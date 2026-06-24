@@ -9,7 +9,7 @@
 
 """Rabi pulse amplitude scan pipeline with UI storage & cmd args
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. Example:
         python -m resources.lqcs.pipeline.rabi_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
@@ -39,9 +39,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Rabi Amplitude Measurement Pipeline (UI storage sync enabled)")
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit list, default: q3lu7")
-    parser.add_argument("--amp-start", type=float, default=0, help="Pulse amplitude start")
-    parser.add_argument("--amp-end", type=float, default=2, help="Pulse amplitude end")
-    parser.add_argument("--amp-samples", type=int, default=50, help="Amplitude sample count")
+    parser.add_argument("--piamp-start", type=float, default=0, help="Pulse amplitude start")
+    parser.add_argument("--piamp-end", type=float, default=2, help="Pulse amplitude end")
+    parser.add_argument("--piamp-samples", type=int, default=20, help="Amplitude sample count")
+    parser.add_argument("--pi-len", type=float, default=50, help="pi length")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
     # 新增统一参数
@@ -50,6 +51,7 @@ def parse_args():
     parser.add_argument("--confidence", "-c", type=float, default=0.5,
                         help="Confidence threshold for parameter update")
     return parser.parse_args()
+
 
 def get_rabi_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
@@ -65,7 +67,8 @@ def get_rabi_hdf5_res(args):
             "qubits": qubit_name_list,
             "amp_start": args.amp_start,
             "amp_end": args.amp_end,
-            "amp_sample_num": args.amp_samples
+            "amp_sample_num": args.amp_samples,
+            "pi_len": args.pi_len
         }
 
         run_record = PipelineResultRecord(
@@ -79,9 +82,10 @@ def get_rabi_hdf5_res(args):
 
         data = qubit_ctrl_client.run(CtrlTaskName.RABI,
                                        qubits=qubit_name_list,
-                                       amp_start=args.amp_start,
-                                       amp_end=args.amp_end,
-                                       amp_sample_num=args.amp_samples
+                                       piamp_start=args.piamp_start,
+                                       piamp_end=args.piamp_end,
+                                       piamp_sample_num=args.piamp_samples,
+                                       pi_len=args.pi_len
                                        )
         data_id = data[0]["text"]
         data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)

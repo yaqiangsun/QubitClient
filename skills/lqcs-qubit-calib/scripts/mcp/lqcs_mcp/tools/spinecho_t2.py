@@ -30,7 +30,7 @@ def spinecho_t2(qubits:list[str]=['Q0','Q1'],
         delay_end:float=10000,
         delay_sample_num:int=200,
         fringeFreq:float=0.05,
-        ms:float=None):
+        pipulse_num:float=None):
     
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num).tolist()
     qubit = eval(qubits[0])
@@ -38,7 +38,7 @@ def spinecho_t2(qubits:list[str]=['Q0','Q1'],
     result = sq.spinecho_t2(qubit, 
                     delay=delay_array,
                     fringeFreq=fringeFreq,
-                    ms=ms,
+                    ms=pipulse_num,
                     update=False)
     
     return 

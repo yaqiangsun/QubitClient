@@ -28,7 +28,8 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 def t1(qubits:list[str]=['Q0','Q1'],
           delay_start:float=0,
           delay_end:float=80000,
-          delay_sample_num:int=17):
+          delay_sample_num:int=17,
+          zpa:float=0.0):
 
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
 
@@ -36,6 +37,6 @@ def t1(qubits:list[str]=['Q0','Q1'],
 
     result = sq.t1(qubit,
                    delay=delay_array,
-                   update=False)
+                   update=False) # 查一下有无zpa
     
     return result

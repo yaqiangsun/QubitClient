@@ -27,8 +27,8 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 def spectrum(qubits:list[str]=['Q0','Q1'],
-             freq_start:float=-3,
-             freq_end:float=3,
+             freq_start:float=1.0,
+             freq_end:float=3.0,
              freq_sample_num:int=200,
              zpa:float=0,
              spec_amp:float=0.0,

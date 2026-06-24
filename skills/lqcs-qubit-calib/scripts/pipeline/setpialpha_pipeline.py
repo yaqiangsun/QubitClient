@@ -10,9 +10,9 @@
 
 """SETPIALPHA measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7 -ms 1,4,8 -g X -s ./tmp -u True -c 0.1
+            python -m resources.lqcs.pipeline.setpialpha_pipeline -q q3lu7  -g X -s ./tmp -u True -c 0.1
 """
 
 import sys
@@ -46,9 +46,9 @@ def parse_args():
     # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
-    # ms序列，逗号分隔
-    parser.add_argument("--ms", "-ms", type=str, default="1,4,8",
-                        help="ms list for SETPIALPHA, split by comma, default '1,4,8'")
+    # pipulse_num，逗号分隔
+    parser.add_argument("--pipulse_num", "-n", type=str, default="1,4,8",
+                        help="pipulse_num for SETPIALPHA, split by comma, default '1,4,8'")
     # gate类型
     parser.add_argument("--gate", "-g", type=str, default="X",
                         help="Gate type, default X")
@@ -104,14 +104,14 @@ def get_setpialpha_hdf5_res(args):
     qubit_name_list = args.qubits
     save_folder = args.save_folder
     q_name = qubit_name_list[0]
-    ms_list = [int(x.strip()) for x in args.ms.split(",")]
+    pipulse_num = [int(x.strip()) for x in args.pipulse_num.split(",")]
     gate_val = args.gate
 
     try:
         # 组装实验基础参数
         set_params = {
             "qubits": qubit_name_list,
-            "ms": ms_list,
+            "pipulse_num": pipulse_num,
             "gate": gate_val
         }
 
@@ -128,7 +128,7 @@ def get_setpialpha_hdf5_res(args):
         # 1.采集数据 - X门
         data = qubit_ctrl_client.run(CtrlTaskName.SETPIALPHA,
                                        qubits=qubit_name_list,
-                                       ms=ms_list,
+                                       pipulse_num=pipulse_num,
                                        gate=gate_val)
         data_id = data[0]["text"]
         data_id = json.loads(data_id)

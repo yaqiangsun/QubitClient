@@ -4,18 +4,19 @@
 # in the root directory of this source tree.
 #########################################################################
 # Author: yaqiangsun
-# Created Time: 2026/06/12
+# Created Time: 2026/06/16
 ########################################################################
 
-"""Single shot readout pipeline with UI storage & cmd args
+
+"""XEB measurement pipeline, write data to storage for web UI real-time display
 Usage:
     1. Start UI server first: qubitclient ui start
-    2. Example:
-        python -m resources.lqcs.pipeline.singleshot_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
+    2. cmd params example:
+            python -m resources.lqcs.pipeline.baseslope_pipeline -u True
 """
+
 import sys
 import argparse
-import uuid
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
@@ -27,41 +28,46 @@ if str(project_root) not in sys.path:
 
 from qubitclient.storage.result_store import PipelineResultRecord, PipelineResultStore
 from qubitclient.storage.storage import StorageBackend
+
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
-from analysis.inception import singleshot
-from analysis.visualization import plot_singleshot
 
-DEFAULT_SAVE_FOLDER = './tmp'
+from analysis.inception import baseslope
+from analysis.visualization import plot_baseslope
+
+SAVE_PLOT_FOLDER = './tmp'
+
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="SingleShot Readout Measurement Pipeline (UI storage sync enabled)")
+    parser = argparse.ArgumentParser(description="baseslope Measurement Pipeline")
+    # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit list, default: q3lu7")
-    parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
-                        help="Plot output directory")
-    # 新增固定参数
-    parser.add_argument("--update", "-u", type=bool, default=False,
-                        help="Whether update params based on analysis result")
-    parser.add_argument("--confidence", "-c", type=float, default=0.5,
-                        help="Confidence threshold for parameter update")
+                        help="Target qubit name list, default: q3lu7")
+    # m起始
+    parser.add_argument("--m-start", "-ms", type=int, default=0,
+                        help="M start value, default 0")
+
     return parser.parse_args()
 
 
-def get_singleshot_hdf5_res(args):
+def get_xeb_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "singleshot"
-    pipeline_type = "singleshot_pipeline"
+    task_name = "baseslope"
+    pipeline_type = "baseslope_pipeline"
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
     try:
-        # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
+
+        # 设置实验参数
         set_params = {
-            "qubits": qubit_name_list
+            "qubits": qubit_name_list,
+            "m_start": args.m_start,
+
         }
 
+        # 新建实验记录，写入存储
         run_record = PipelineResultRecord(
             task_name=task_name,
             task_type=pipeline_type,
@@ -69,28 +75,38 @@ def get_singleshot_hdf5_res(args):
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[SINGLESHOT] Task started run_id={run_id[:8]}")
-        
-        data = qubit_ctrl_client.run(CtrlTaskName.SINGLESHOT,
-                                       qubits=qubit_name_list)
+    
+        # =========== 采集数据 ===========
+        data = qubit_ctrl_client.run(
+            CtrlTaskName.BASESLOPE,
+            qubits=qubit_name_list,
+            m_start=set_params["m_start"],
+        )
         data_id = data[0]["text"]
-        data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+        raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+        raw_data = json.loads(raw_data_text[0]["text"])
 
-        data = json.loads(data[0]["text"])
+        # =========== 写入原始数据 ===========
+        store.update_run(
+            run_id=run_id,
+            raw_data_id=data_id,
+            raw_data=raw_data
+        )
 
-        # 2.分析数据
-        analysis_result = singleshot(data)
+        # =========== 分析 ============
+        analysis_result = baseslope(raw_data)
 
-        # 3.绘图
+        # =========== 绘制波形图==========
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/singleshot_{pure_name}.png'
-        fig_list = plot_singleshot(data, analysis_result, save_path=img_save_path)
+        img_save_path = f'{save_folder}/baseslope_{pure_name}.png'
+        fig_list = plot_baseslope(raw_data, analysis_result, save_path=img_save_path)
+        plot_paths = [img_save_path]
 
-        # 4.接入大模型分析图片
+        # =========== 接入大模型分析图片 ===========
         # resize更小
         # img_small_path = img_save_path.split('.png')[0] + '_small.png'
         # print("img_small_path: ", img_small_path)
-        
+
         # with Image.open(img_save_path) as img:
         #     w, h = img.size
         #     new_w = w // 10
@@ -98,7 +114,7 @@ def get_singleshot_hdf5_res(args):
         #     print("size: ", new_w, new_h)
         #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
         #     img_small.save(img_small_path, dpi=(300, 300))
-        
+
         # test_qubit_spectroscopy_q1_describe(img_small_path)
         # test_qubit_spectroscopy_q2_classify(img_small_path)
         # test_qubit_spectroscopy_q3_reasoning(img_small_path)
@@ -107,29 +123,33 @@ def get_singleshot_hdf5_res(args):
         # test_qubit_spectroscopy_q6_status(img_small_path)
         # print("\nQubit_Spectroscopy tests passed!")
 
-        # 要更新'discriminator.center0', 'discriminator.center1', 'discriminator.threshold'
+        # =========== 无参数更新 ==============
+        new_full_params = set_params.copy()
 
-
+        # =========== 更新结果到存储 ======================
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
-            completed_at=datetime.now()
+            plot_paths=plot_paths,
+            completed_at=datetime.now(),
+            new_params=new_full_params
         )
-        print("Measurement finished, no parameter update")
+        print(f"测量完成，参数： {new_full_params}")
 
     except Exception as e:
-        err_msg = f"Measure failed: {str(e)}"
+        # ========== 捕获异常，存入错误信息 ================
+        err_msg = f"baseslope测量异常：{str(e)}"
         store.update_run(
             run_id=run_id,
             status="failed",
             error=err_msg,
             completed_at=datetime.now()
         )
-        print(f"Task failed run_id={run_id[:8]} error: {err_msg}")
+        print(f"任务失败 run_id={run_id[:8]} 错误：{err_msg}")
         raise
+
 
 if __name__ == '__main__':
     cli_args = parse_args()
-    get_singleshot_hdf5_res(cli_args)
+    get_xeb_hdf5_res(cli_args)

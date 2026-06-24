@@ -32,3 +32,4 @@ from .pulseshape import pulseshape
 from .spinecho_t2 import spinecho_t2
 from .timingxyz import timingxyz
 from .xeb import xeb
+from .baseslope import baseslope

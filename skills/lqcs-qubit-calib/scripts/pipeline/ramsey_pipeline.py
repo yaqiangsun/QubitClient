@@ -9,7 +9,7 @@
 
 """Ramsey coherence scan pipeline with UI storage & cmd args
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. Example:
         python -m resources.lqcs.pipeline.ramsey_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
@@ -39,10 +39,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Ramsey Coherence Measurement Pipeline (UI storage sync enabled)")
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit list, default: q3lu7")
-    parser.add_argument("--fringe-freq", type=float, default=0.05, help="Ramsey fringe frequency")
+    
     parser.add_argument("--delay-start", type=float, default=0, help="Delay start")
-    parser.add_argument("--delay-end", type=float, default=100, help="Delay end")
+    parser.add_argument("--delay-end", type=float, default=600, help="Delay end")
     parser.add_argument("--delay-samples", type=int, default=100, help="Delay sample count")
+    parser.add_argument("--fringeFreq", type=float, default=0.005, help="Ramsey fringe frequency")
+
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
     # 新增更新开关与置信度阈值
@@ -58,7 +60,7 @@ def get_ramsey_hdf5_res(args):
     pipeline_type = "ramsey_pipeline"
     qubit_name_list = args.qubits
     save_folder = args.save_folder
-    fringeFreq = args.fringe_freq
+    fringeFreq = args.fringeFreq
 
     try:
         # 1.采集数据

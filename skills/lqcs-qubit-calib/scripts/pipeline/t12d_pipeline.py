@@ -10,10 +10,9 @@
 
 """T1 2D measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example: (-dn must be bigger than 10)
-            # python -m resources.lqcs.pipeline.t12d_pipeline -q q3lu7 -bs -1.0 -be 0.4 -bn 20 -ds 0 -de 50000 -dn 13 -s ./tmp
-            python -m resources.lqcs.pipeline.t12d_pipeline -q q3lu7 -bs -1.0 -be 0.4 -bn 71 -ds 0 -de 50000 -dn 17 -s ./tmp
+            python -m resources.lqcs.pipeline.t12d_pipeline -q q3lu7 -bs -1.0 -be 0.4 -bn 20 -ds 0 -de 50000 -dn 13 -s ./tmp
 """
 
 import sys
@@ -47,14 +46,14 @@ def parse_args():
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
     # 偏置起始
-    parser.add_argument("--bias-start", "-bs", type=float, default=-1.0,
-                        help="Bias start value, default -1.0")
+    parser.add_argument("--zpa-start", "-bs", type=float, default=-1.0,
+                        help="zpa start value, default -1.0")
     # 偏置终止
-    parser.add_argument("--bias-end", "-be", type=float, default=0.4,
-                        help="Bias end value, default 0.4")
+    parser.add_argument("--zpa-end", "-be", type=float, default=0.4,
+                        help="zpa end value, default 0.4")
     # 偏置采样点数
-    parser.add_argument("--bias-sample-num", "-bn", type=int, default=71,
-                        help="Bias sampling count, default 71")
+    parser.add_argument("--zpa-sample-num", "-bn", type=int, default=71,
+                        help="zpa sampling count, default 71")
     # 延时起始
     parser.add_argument("--delay-start", "-ds", type=int, default=0,
                         help="Delay start value, default 0")
@@ -83,9 +82,9 @@ def get_t12d_hdf5_res(args):
         # 设置实验参数
         set_params = {
             "qubits": qubit_name_list,
-            "bias_start": args.bias_start,
-            "bias_end": args.bias_end,
-            "bias_sample_num": args.bias_sample_num,
+            "zpa_start": args.zpa_start,
+            "zpa_end": args.zpa_end,
+            "zpa_sample_num": args.zpa_sample_num,
             "delay_start": args.delay_start,
             "delay_end": args.delay_end,
             "delay_sample_num": args.delay_sample_num
@@ -105,9 +104,9 @@ def get_t12d_hdf5_res(args):
         data = qubit_ctrl_client.run(
             CtrlTaskName.T1_2D,
             qubits=qubit_name_list,
-            bias_start=set_params["bias_start"],
-            bias_end=set_params["bias_end"],
-            bias_sample_num=set_params["bias_sample_num"],
+            zpa_start=set_params["zpa_start"],
+            zpa_end=set_params["zpa_end"],
+            zpa_sample_num=set_params["zpa_sample_num"],
             delay_start=set_params["delay_start"],
             delay_end=set_params["delay_end"],
             delay_sample_num=set_params["delay_sample_num"]

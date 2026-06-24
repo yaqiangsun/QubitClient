@@ -10,7 +10,7 @@
 
 """PiPulseF10 measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
             python -m resources.lqcs.pipeline.pipulsef10_pipeline -q q3lu7 -dfs 0 -dfe 0.03 -dfn 21 -s ./tmp -u True -c 0.6
 """
@@ -44,15 +44,14 @@ def parse_args():
     # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
-    # df起始
-    parser.add_argument("--df-start", "-dfs", type=float, default=0,
-                        help="Delta frequency start value, default 0")
-    # df终止
-    parser.add_argument("--df-end", "-dfe", type=float, default=0.03,
-                        help="Delta frequency end value, default 0.03")
-    # df采样点数
-    parser.add_argument("--df-sample-num", "-dfn", type=int, default=21,
-                        help="Delta frequency sampling count, default 21")
+
+    parser.add_argument("--freq_half_bandwidth", "-h", type=float, default=0.015,
+                        help="freq_half_bandwidth, default 0.015")
+    
+    parser.add_argument("--freq_sample_num", "-n", type=float, default=30,
+                        help="Delta frequency start value, default 30")
+
+
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
@@ -82,9 +81,8 @@ def get_pipulsef10_hdf5_res(args):
         # 设置实验参数，加入更新前原始f10值
         set_params = {
             "qubits": qubit_name_list,
-            "df_start": args.df_start,
-            "df_end": args.df_end,
-            "df_sample_num": args.df_sample_num,
+            "freq_half_bandwidth": args.freq_half_bandwidth,
+            "freq_sample_num": args.freq_sample_num,
             "f10": f10_original
         }
 
@@ -102,9 +100,8 @@ def get_pipulsef10_hdf5_res(args):
         data = qubit_ctrl_client.run(
             CtrlTaskName.PIPULSEF10,
             qubits=qubit_name_list,
-            df_start=set_params["df_start"],
-            df_end=set_params["df_end"],
-            df_sample_num=set_params["df_sample_num"]
+            freq_half_bandwidth=set_params["freq_half_bandwidth"],
+            freq_sample_num=set_params["freq_sample_num"]
         )
         data_id = data[0]["text"]
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)

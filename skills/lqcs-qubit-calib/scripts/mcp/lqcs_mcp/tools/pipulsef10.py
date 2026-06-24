@@ -25,18 +25,13 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 def pipulsef10(qubits:list[str]=['Q0','Q1'],
-               fc:float=None,
-               df_start:float=0,
-               df_end:float=0.03,
-               df_sample_num:int=21,
+               freq_half_bandwidth=0.015,
+               freq_sample_num=30
                ):
     
-    df_array = np.linspace(df_start, df_end, df_sample_num).tolist()
+    df_array = np.linspace(-freq_half_bandwidth, freq_half_bandwidth, freq_sample_num).tolist()
     qubit = eval(qubits[0])
 
-    # result = sq.pidf(qubit, fc=fc, df=df_array, update=False)
-
-    # 无fc
     result = sq.pidf(qubit, df=df_array, update=False)
     
     return result

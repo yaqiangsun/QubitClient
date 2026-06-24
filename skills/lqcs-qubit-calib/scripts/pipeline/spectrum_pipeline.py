@@ -9,7 +9,7 @@
 
 """Qubit Spectrum scan pipeline with UI storage & cmd args
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. Example:
         python -m resources.lqcs.pipeline.spectrum_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
 """
@@ -39,11 +39,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Qubit Spectrum Measurement Pipeline (UI storage sync enabled)")
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit list, default: q3lu7")
-    parser.add_argument("--freq-start", type=float, default=0, help="Scan freq start")
-    parser.add_argument("--freq-end", type=float, default=3.0, help="Scan freq end")
-    parser.add_argument("--freq-samples", type=int, default=300, help="Frequency sample count")
-    parser.add_argument("--bias", type=float, default=0, help="Flux bias value")
-    parser.add_argument("--drive-amp", type=float, default=0.0, help="Drive pulse amplitude")
+    parser.add_argument("--freq-start", type=float, default=3.0, help="Scan freq start")
+    parser.add_argument("--freq-end", type=float, default=5.0, help="Scan freq end")
+    parser.add_argument("--freq-samples", type=int, default=1000, help="Frequency sample count")
+    parser.add_argument("--zpa", type=float, default=0, help="Zpa value")
+    parser.add_argument("--spec-amp", type=float, default=0.5, help="spec amplitude")
+    parser.add_argument("--sb_freq", type=float, default=-0.15, help="sb_freq")
+
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
     # 新增更新开关与置信度阈值
@@ -68,8 +70,9 @@ def get_spectrum_hdf5_res(args):
             "freq_start": args.freq_start,
             "freq_end": args.freq_end,
             "freq_sample_num": args.freq_samples,
-            "bias": args.bias,
-            "drive_amp": args.drive_amp
+            "zpa": args.zpa,
+            "spec_amp": args.spec_amp,
+            "sb_freq": args.sb_freq
         }
 
         run_record = PipelineResultRecord(
@@ -86,8 +89,9 @@ def get_spectrum_hdf5_res(args):
                                        freq_start=args.freq_start,
                                        freq_end=args.freq_end,
                                        freq_sample_num=args.freq_samples,
-                                       bias=args.bias,
-                                       drive_amp=args.drive_amp)
+                                       zpa=args.zpa,
+                                       spec_amp=args.spec_amp,
+                                       sb_freq=args.sb_freq)
         data_id = data[0]["text"]
         data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 

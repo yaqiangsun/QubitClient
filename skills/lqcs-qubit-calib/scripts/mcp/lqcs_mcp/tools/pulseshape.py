@@ -25,11 +25,16 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 def pulseshape(qubits:list[str]=['Q0','Q1'],
-               step_height:float=0.2,
+               zpa_height:float=0.2,
+               delay_start:float=0, 
+               delay_end:float=1000, 
+               delay_sample_num:float=100,
+               z_offset_half_bandwidth:float=0.01, 
+               z_offset_num:float=1.0
                ):
     
     qubit = eval(qubits[0])
 
-    result = sq.pulse_shape(qubit, step_height=step_height, update=False)
+    result = sq.pulse_shape(qubit, step_height=zpa_height, update=False) # 查下是否接受这些参数
     
     return result

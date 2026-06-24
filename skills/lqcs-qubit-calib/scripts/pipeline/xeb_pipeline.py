@@ -10,7 +10,7 @@
 
 """XEB measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
             python -m resources.lqcs.pipeline.xeb_pipeline -q q3lu7 -ms 0 -me 400 -mn 20 -k 10 -g reference -tb 0 -st 100 -s ./tmp
 """

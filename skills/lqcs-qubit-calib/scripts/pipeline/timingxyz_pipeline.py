@@ -10,9 +10,9 @@
 
 """TimingXYZ measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.timingxyz_pipeline -q q3lu7 -ds -60 -de 60 -dn 31 -z 0.5 -s ./tmp
+            python -m resources.lqcs.pipeline.timingxyz_pipeline -q q3lu7 -ds -60 -de 60 -dn 31 -z 0.5 -s ./tmp -u True -c 0.3
 """
 
 import sys
@@ -58,6 +58,12 @@ def parse_args():
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save plot image")
+    # 参数更新开关
+    parser.add_argument("--update", "-u", type=bool, default=False,
+                        help="Whether update params based on analysis result")
+    # 置信度阈值
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
     return parser.parse_args()
 
 
@@ -77,10 +83,11 @@ def get_timingxyz_hdf5_res(args):
             "qubits": qubit_name_list,
             "delay_start": args.delay_start,
             "delay_end": args.delay_end,
-            "delay_sample_num": args.delay_sample_num
+            "delay_sample_num": args.delay_sample_num,
+            "zpa": args.zpa
         }
 
-        # 新建实验记录并入库
+        # 新建实验记录
         run_record = PipelineResultRecord(
             task_name=task_name,
             task_type=pipeline_type,
@@ -97,7 +104,7 @@ def get_timingxyz_hdf5_res(args):
             delay_start=args.delay_start,
             delay_end=args.delay_end,
             delay_sample_num=args.delay_sample_num,
-            zpa = args.zpa
+            zpa=args.zpa
         )
         data_id = data[0]["text"]
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
@@ -120,18 +127,13 @@ def get_timingxyz_hdf5_res(args):
         plot_paths = [img_save_path]
 
         # 4.接入大模型分析图片
-        # resize更小
         # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # print("img_small_path: ", img_small_path)
-        
         # with Image.open(img_save_path) as img:
         #     w, h = img.size
         #     new_w = w // 10
         #     new_h = h // 10
-        #     print("size: ", new_w, new_h)
         #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
         #     img_small.save(img_small_path, dpi=(300, 300))
-        
         # test_qubit_spectroscopy_q1_describe(img_small_path)
         # test_qubit_spectroscopy_q2_classify(img_small_path)
         # test_qubit_spectroscopy_q3_reasoning(img_small_path)
@@ -140,16 +142,46 @@ def get_timingxyz_hdf5_res(args):
         # test_qubit_spectroscopy_q6_status(img_small_path)
         # print("\nQubit_Spectroscopy tests passed!")
 
-        # 5.更新timing.xy 参数
-        update_values = "3.193120459017055"
-        task_type = CtrlTaskName.TIMINGXYZ
-        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=update_values)
-
-        # 汇总更新后参数
         new_full_params = set_params.copy()
-        new_full_params["timing_xy"] = update_values
+        update_map = {}
 
-        # 写入最终结果、图片、更新参数
+        # 解析分析结果
+        if isinstance(analysis_result, dict):
+            if "results" in analysis_result:
+                analysis_result = analysis_result.get("results")
+            elif "result" in analysis_result:
+                analysis_result = analysis_result.get("result")
+
+        # 开启更新才执行参数修改逻辑
+        if args.update:
+            # TODO:解析逻辑
+            # for result in analysis_result:
+                # confs_list = result.get("confs", [])
+                # timing_vals = result.get("timing_xy", [])
+                # for i in range(len(qubit_name_list)):
+                #     qname = qubit_name_list[i]
+                #     if i >= len(confs_list) or i >= len(timing_vals):
+                #         continue
+
+                #     cur_conf = float(confs_list[i])
+                #     # 置信度判断
+                #     if cur_conf <= args.confidence:
+                #         continue
+
+                #     target_val = str(timing_vals[i])
+                #     task_type = CtrlTaskName.TIMINGXYZ
+                #     qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=target_val)
+                #     update_map[qname] = target_val
+                #     print(f"[INFO] Update {qname} timing_xy to {target_val}, confidence: {cur_conf}")
+            update_values = "3.193120459017055"
+            task_type = CtrlTaskName.TIMINGXYZ
+            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=update_values)
+
+        # 记录更新后的参数
+        if update_map:
+            new_full_params["timing_xy"] = update_map
+
+        # 写入最终结果
         store.update_run(
             run_id=run_id,
             status="completed",
@@ -158,7 +190,7 @@ def get_timingxyz_hdf5_res(args):
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"TimingXYZ测量完成，更新后参数值: {update_values}")
+        print(f"TimingXYZ测量完成，更新后参数: {new_full_params}")
 
     except Exception as e:
         # 异常捕获并记录
@@ -169,7 +201,6 @@ def get_timingxyz_hdf5_res(args):
             error=err_msg,
             completed_at=datetime.now()
         )
-
 
 
 if __name__ == '__main__':

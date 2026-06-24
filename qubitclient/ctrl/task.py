@@ -167,13 +167,15 @@ def powershift(qubits:list[str]=['Q0','Q1'],
 def rabi(qubits:list[str]=['Q0','Q1'],
          piamp_start=0,
          piamp_end=2,
-         piamp_sample_num=16,   
+         piamp_sample_num=16,
+         pi_len=50,
          *args, **kwargs):
     result = call_mcp("rabi",
                       qubits=qubits,
                       piamp_start=piamp_start,
                       piamp_end=piamp_end,
-                      piamp_sample_num=piamp_sample_num)
+                      piamp_sample_num=piamp_sample_num,
+                      pi_len=pi_len)
     return result
 
 @task_register

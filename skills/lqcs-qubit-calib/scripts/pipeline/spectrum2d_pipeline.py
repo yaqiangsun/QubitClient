@@ -10,10 +10,10 @@
 
 """2D spectrum measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
     faster: python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 10 -bs -1 -be 1 -bn 10 -da 0.0 -s ./tmp -u True -c 0.6
-    python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 50 -bs -1 -be 1 -bn 30 -da 0.0 -s ./tmp -u True -c 0.6
+
 """
 
 import sys
@@ -46,26 +46,30 @@ def parse_args():
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
     # 频率起始
-    parser.add_argument("--freq-start", "-fs", type=float, default=-3,
-                        help="Frequency start value, default -3")
+    parser.add_argument("--freq-start", "-fs", type=float, default=3,
+                        help="Frequency start value, default 3")
     # 频率终止
-    parser.add_argument("--freq-end", "-fe", type=float, default=3,
-                        help="Frequency end value, default 3")
+    parser.add_argument("--freq-end", "-fe", type=float, default=5,
+                        help="Frequency end value, default 5")
     # 频率采样点数
-    parser.add_argument("--freq-sample-num", "-fn", type=int, default=200,
+    parser.add_argument("--freq-sample-num", "-fn", type=int, default=100,
                         help="Frequency sampling count, default 200")
     # 偏置起始
-    parser.add_argument("--bias-start", "-bs", type=float, default=-1,
-                        help="Bias start value, default -1")
+    parser.add_argument("--zpa-start", "-zs", type=float, default=-1,
+                        help="zpa start value, default -1")
     # 偏置终止
-    parser.add_argument("--bias-end", "-be", type=float, default=1,
-                        help="Bias end value, default 1")
+    parser.add_argument("--zpa-end", "-ze", type=float, default=1,
+                        help="zpa end value, default 1")
     # 偏置采样点数
-    parser.add_argument("--bias-sample-num", "-bn", type=int, default=200,
-                        help="Bias sampling count, default 200")
-    # 驱动幅度
-    parser.add_argument("--drive-amp", "-da", type=float, default=0.0,
-                        help="Drive amplitude, default 0.0")
+    parser.add_argument("--zpa-sample-num", "-zn", type=int, default=100,
+                        help="zpas sampling count, default 200")
+    # 幅度
+    parser.add_argument("--spec-amp", "-sa", type=float, default=0.5,
+                        help="Spec amplitude, default 0.0")
+    # 频率
+    parser.add_argument("--sb_freq", "-sa", type=float, default=-0.15,
+                        help="sb_freq, default -0.15")
+    
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
@@ -94,10 +98,11 @@ def get_spectrum2d_hdf5_res(args):
             "freq_start": args.freq_start,
             "freq_end": args.freq_end,
             "freq_sample_num": args.freq_sample_num,
-            "bias_start": args.bias_start,
-            "bias_end": args.bias_end,
-            "bias_sample_num": args.bias_sample_num,
-            "drive_amp": args.drive_amp
+            "zpa_start": args.zpa_start,
+            "zpa_end": args.zpa_end,
+            "zpa_sample_num": args.zpa_sample_num,
+            "spec_amp": args.spec_amp,
+            "sb_freq": args.sb_freq
         }
 
         # 新建实验记录，写入存储
@@ -117,10 +122,11 @@ def get_spectrum2d_hdf5_res(args):
             freq_start=set_params["freq_start"],
             freq_end=set_params["freq_end"],
             freq_sample_num=set_params["freq_sample_num"],
-            bias_start=set_params["bias_start"],
-            bias_end=set_params["bias_end"],
-            bias_sample_num=set_params["bias_sample_num"],
-            drive_amp=set_params["drive_amp"]
+            zpa_start=set_params["zpa_start"],
+            zpa_end=set_params["zpa_end"],
+            zpa_sample_num=set_params["zpa_sample_num"],
+            spec_amp=set_params["spec_amp"],
+            sb_freq=set_params["sb_freq"]
         )
             
         data_id = data[0]["text"]

@@ -9,7 +9,7 @@
 
 """Multi-qubit S21 scan pipeline with UI storage & cmd args
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. Example:
         python -m resources.lqcs.pipeline.s21multi_pipeline -q q3lu7 -s ./tmp -u True -c 0.4 -r 0.0005 -fs 6.5 -fe 6.8
 """
@@ -34,20 +34,15 @@ from analysis.visualization import plot_nns21multi, plot_s21multi
 
 DEFAULT_SAVE_FOLDER = './tmp'
 
-base_freq_dict = {
-    'q1lu7': 6.561,
-    'q2lu7': 6.759,
-    'q3lu7': 6.590,
-    'q4lu7': 6.762,
-    'q5lu7': 6.539,
-    'q6lu7': 6.763,
-    'q7lu7': 6.611,
-    'q8lu7': 6.803,
-    'q9lu7': 6.634,
-    'q10lu7': 6.855,
-    'q11lu7': 6.666,
-    'q12lu7': 6.876,
-}
+# 加载fread配置文件
+CONFIG_PATH = "qubit_base_freq.json"
+try:
+    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+        base_freq_dict = json.load(f)
+except FileNotFoundError:
+    raise FileNotFoundError(f"配置文件不存在，请检查路径: {CONFIG_PATH}")
+
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Multi Qubit S21 Measurement Pipeline (UI storage sync enabled)")

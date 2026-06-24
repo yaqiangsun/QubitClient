@@ -10,9 +10,9 @@
 
 """SpinEcho T2 measurement pipeline, write data to storage for web UI real-time display
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.spinecho_t2_pipeline -q q3lu7 -ff 0.05 -ds 0 -de 10000 -dn 200 -m 0.5 -s ./tmp
+            python -m resources.lqcs.pipeline.spinecho_t2_pipeline -q q3lu7 -ff 0.05 -ds 0 -de 10000 -dn 200 -s ./tmp
 """
 
 import sys
@@ -43,9 +43,7 @@ def parse_args():
     # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
                         help="Target qubit name list, default: q3lu7")
-    # 条纹频率
-    parser.add_argument("--fringe-freq", "-ff", type=float, default=0.05,
-                        help="Fringe frequency, default 0.05")
+    
     # 延时起始值
     parser.add_argument("--delay-start", "-ds", type=float, default=0,
                         help="Delay start value, default 0")
@@ -55,9 +53,11 @@ def parse_args():
     # 延时采样点数
     parser.add_argument("--delay-sample-num", "-dn", type=int, default=200,
                         help="Delay sampling count, default 200")
-    
-    # ms
-    parser.add_argument("--ms", "-m", type=float, default=None,
+    # 条纹频率
+    parser.add_argument("--fringe-freq", "-ff", type=float, default=0.005,
+                        help="Fringe frequency, default 0.05")
+    # pipulse_num
+    parser.add_argument("--pipulse_num", "-m", type=float, default=1,
                         help="ma, default None")
     
     # 图片保存目录
@@ -83,7 +83,7 @@ def get_t2_hdf5_res(args):
             "delay_start": args.delay_start,
             "delay_end": args.delay_end,
             "delay_sample_num": args.delay_sample_num,
-            "ms": None
+            "pipulse_num": args.pipulse_num
         }
 
         # 新建实验记录并入库
@@ -99,11 +99,12 @@ def get_t2_hdf5_res(args):
         # 1.采集数据
         data = qubit_ctrl_client.run(CtrlTaskName.SPINECHO_T2,
                                        qubits=qubit_name_list,
-                                       fringeFreq=args.fringe_freq,
                                        delay_start=args.delay_start,
                                        delay_end=args.delay_end,
                                        delay_sample_num=args.delay_sample_num,
-                                       ms=args.ms)
+                                       fringeFreq=args.fringe_freq,
+                                       pipulse_num=args.pipulse_num
+                                       )
         data_id = data[0]["text"]
         raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
         data = json.loads(raw_data_text[0]["text"])

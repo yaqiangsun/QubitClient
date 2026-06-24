@@ -33,9 +33,6 @@ def t1_2d(qubits:list[str]=['Q0','Q1'],
        delay_end:float=80000,
        delay_sample_num:int=17):
 
-
-
-
     zpa_array = np.linspace(zpa_start, zpa_end, zpa_sample_num)
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
 

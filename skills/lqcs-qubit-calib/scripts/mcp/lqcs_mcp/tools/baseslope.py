@@ -24,14 +24,18 @@ _all_qubits = generate_qubit(globals(), info=None, sample=s)
 _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
-def setpialpha(qubits:list[str]=['Q0','Q1'],
-               pipulse_num:list[int]=[1, 3, 5],
-               gate:str='X',
-               ):
+def baseslope(qubits:list[str]=['Q0','Q1'],
+         delay_start: float=1.0,
+         delay_end:float = 100.0,
+         delay_sample_num: float=50,
+         step_height:float=0):
     
-    qubit = eval(qubits[0])
+    qobj = eval(qubits[0])
+    delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
+    qobj.set_piLen(1000, 1000)
+    runner = bassex.PulseShapeFreq()
 
-    result = sq.set_pi(qubit, ms=pipulse_num, gate=gate) # 无update,但会更新4个参数
+    runner(qobj, delay=delay_array, step_height=step_height)
+    qobj.set_piLen(30,30)
     
-    
-    return result
+    return None

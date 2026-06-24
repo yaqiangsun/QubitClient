@@ -9,7 +9,7 @@
 
 """S21 vs Flux 2D scan pipeline with UI storage & cmd args
 Usage:
-    1. Start UI server first: python -m tests.ui.serve
+    1. Start UI server first: qubitclient ui start
     2. Example:
         python -m resources.lqcs.pipeline.s21vflux_pipeline -q q3lu7 -b 0.001 -n 11 -s ./tmp -u True -c 0.4
 """
@@ -41,7 +41,7 @@ def parse_args():
                         help="Target qubit list, default: q3lu7")
     parser.add_argument("--fread", "-f", type=float, default=None,
                         help="Manual readout freq(GHz), auto query hardware if empty")
-    parser.add_argument("--bandwidth", "-b", type=float, default=0.001,
+    parser.add_argument("--bandwidth", "-b", type=float, default=0.03,
                         help="Freq half bandwidth(GHz), default 0.001")
     parser.add_argument("--samples", "-n", type=int, default=11,
                         help="Freq sample count, default 11")
@@ -137,48 +137,7 @@ def get_s21vflux_hdf5_res(args):
         # test_qubit_spectroscopy_q6_status(img_small_path)
         # print("\nQubit_Spectroscopy tests passed!")
 
-        new_full_params = set_params.copy()
-        updated_bias = None
-        if isinstance(analysis_result, dict):
-            if "results" not in analysis_result:
-                analysis_result = analysis_result.get("results")
-            elif "result" in analysis_result:
-                analysis_result = analysis_result.get("result")
-
-        # 仅开启更新时
-        if args.update:
-            for result in analysis_result:
-                coscurves_list = result['coscurves_list']
-                cosconfs_list = result['cosconfs_list']
-                for i in range(len(qubit_name_list)):
-                    coscurves = coscurves_list[i]
-                    cosconfs = cosconfs_list[i]
-                    curr_q = qubit_name_list[i]
-                    print("----cosconfs: ", cosconfs)
-
-                    if not cosconfs:
-                        print(f"[WARN] No valid peak for qubit {curr_q}, skip bias update")
-                        continue
-                    
-                    # 找到最大置信度及其下标
-                    max_conf = max(cosconfs)
-                    if max_conf <= args.confidence:
-                        print(f"[INFO] Confidence {max_conf} below threshold {args.confidence}, skip {curr_q}")
-                        continue
-
-                    best_idx = cosconfs.index(max_conf)
-                    best_curve = coscurves[best_idx]
-                    y_vals = [y for x, y in best_curve]
-                    index_max_y = y_vals.index(max(y_vals))
-                    half_index = index_max_y // 2
-                    target_bias = best_curve[half_index][0]
-                    updated_bias = target_bias
-
-                    qubit_ctrl_client.update_param(qname=curr_q, task_type=CtrlTaskName.S21VSFLUX, values=str(target_bias))
-                    print(f"[INFO] Update {curr_q} bias to {target_bias}, max confidence: {max_conf}")
-
-        if updated_bias is not None:
-            new_full_params["read_bias"] = updated_bias
+        # 不更新参数
 
         store.update_run(
             run_id=run_id,
@@ -186,9 +145,8 @@ def get_s21vflux_hdf5_res(args):
             analysis_result=analysis_result,
             plot_paths=[img_save_path],
             completed_at=datetime.now(),
-            new_params=new_full_params
         )
-        print(f"Measurement finished, updated params: {new_full_params}")
+
 
     except Exception as e:
         err_msg = f"Measure failed: {str(e)}"

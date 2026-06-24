@@ -25,15 +25,16 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 def rabi(qubits:list[str]=['Q0','Q1'],
-         amp_start:float=0,
-         amp_end:float=2,
-         amp_sample_num:int=16):
+         piamp_start:float=0,
+         piamp_end:float=2,
+         piamp_sample_num:int=16,
+         pi_len: float=50.0):
     
     qubit = eval(qubits[0])
 
-    sample_rate = (amp_end - amp_start) / amp_sample_num
-    amp_array = np.linspace(amp_start, amp_end, amp_sample_num)
+    # sample_rate = (amp_end - amp_start) / amp_sample_num
+    piamp_array = np.linspace(piamp_start, piamp_end, piamp_sample_num)
 
-    result = sq.piamp(qubit, fc=None, amp=amp_array, update=False)
+    result = sq.piamp(qubit, fc=None, amp=piamp_array, update=False)
     
     return result

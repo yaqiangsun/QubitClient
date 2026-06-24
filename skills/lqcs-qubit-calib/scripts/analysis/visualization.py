@@ -19,14 +19,8 @@ from datetime import date
 from pathlib import Path
 import os
 import logging
-from .config import API_URL,API_KEY,ENABLE_API
 from qubitclient import handle_exceptions, control_api_execution
 
-# from .format import optpipulse_convert,s21_convert,s21vsflux_convert,\
-#                     drag_convert,singleshot_convert,nnspectrum2d_convert,\
-#                     nns21vsflux_convert,spectrum2d_convert,t1fit_convert,\
-#                     t2fit_convert,rabicos_convert,nnspectrum_convert,\
-#                     spectrum_convert, nns21_convert, powershift_convert, rb_convert,delta_convert
 
 from .format import s21_convert,s21vsflux_convert, ramseyt2_convert, t12dfit_convert, \
                     singleshot_convert, nnspectrum2d_convert, spectrum2d_convert, \
@@ -111,11 +105,11 @@ def plot_nns21vsflux(data,results,save_path):
     data = nns21vsflux_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21VSFLUX)
     return fig_list
-@handle_exceptions
-def plot_drag(data,results,save_path):
-    data = drag_convert(data)
-    fig_list = plot_template(data,results,save_path,task_type=TaskName.DRAG)
-    return fig_list
+# @handle_exceptions
+# def plot_drag(data,results,save_path):
+#     data = drag_convert(data)
+#     fig_list = plot_template(data,results,save_path,task_type=TaskName.DRAG)
+#     return fig_list
 @handle_exceptions
 def plot_singleshot(data,results,save_path):
     data = singleshot_convert(data)
@@ -196,11 +190,11 @@ def plot_xeb(data,results,save_path):
     fig_list = plot_template(data,results,save_path,task_type=TaskName.XEB)
     return fig_list
 
-@handle_exceptions
-def plot_delta(data,results,save_path):
-    data = delta_convert(data)
-    fig_list = plot_template(data,results,save_path,task_type=TaskName.DELTA)
-    return fig_list
+# @handle_exceptions
+# def plot_delta(data,results,save_path):
+#     data = delta_convert(data)
+#     fig_list = plot_template(data,results,save_path,task_type=TaskName.DELTA)
+#     return fig_list
 
 @handle_exceptions
 def plot_optreadfreq(data,results,save_path):

@@ -178,7 +178,14 @@ class TaskUpdateConfig:
             'f21_star': 'f21',
             'PiGate_amp_star': 'PiGate.amp',
             'PiGate_alpha_star': 'PiGate.alpha',
-            'timing_xy_star': 'timing.xy'
+            'timing_xy_star': 'timing.xy',
+            'discriminator_center0_star': 'discriminator.center0',
+            'discriminator_center1_star': 'discriminator.center1',
+            'discriminator_threshold_star': 'discriminator.threshold',
+            'PiHalf_amp_star': 'PiHalf.amp',
+            'PiHalf_alpha_star': 'PiHalf.alpha',
+            'timing_xy_star': 'timing.xy',
+            'timing_z_star': 'timing.z',
         }
 
     def get_task_params(self, task_type):

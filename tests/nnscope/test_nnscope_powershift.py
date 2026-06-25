@@ -87,7 +87,7 @@ def send_powershift_npy_to_server(url, api_key, file_path = "/home/sunyaqiang/wo
 
 def main():
     API_URL, API_KEY = None,None
-    file_path = "./tmp/powershift/tmp71f11e2f.py_673.npy"
+    file_path = "tmp/yaqiangsun/qubit_examples/powershift/tmp71f11e2f.py_673.npy"
     send_powershift_npy_to_server(API_URL, API_KEY, file_path)
 
 

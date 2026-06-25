@@ -91,7 +91,7 @@ def main():
     API_URL, API_KEY = None,None
 
 
-    file_path = "./tmp/s21vlux/tmp0dcd82ea.py_6844.npy"
+    file_path = "tmp/yaqiangsun/qubit_examples/s21vflux/tmp0dcd82ea.py_6844.npy"
     send_s21vflux_npy_to_server(API_URL, API_KEY, file_path)
 
 

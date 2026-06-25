@@ -101,7 +101,7 @@ def send_s21multi_npy_to_server(url, api_key, dir_path="data/33137"):
 def main():
     API_URL, API_KEY = None,None
 
-    base_dir = "./tmp/s21multi"
+    base_dir = "tmp/yaqiangsun/qubit_examples/s21multi"
     send_s21multi_npy_to_server(API_URL, API_KEY, base_dir)
 
 

@@ -101,7 +101,7 @@ def send_spectrum_npy_to_server(url, api_key, dir_path="data/33137"):
 def main():
     API_URL, API_KEY = None,None
 
-    base_dir = "./data_spectrum"
+    base_dir = "tmp/yaqiangsun/qubit_examples/spectrum"
     send_spectrum_npy_to_server(API_URL, API_KEY, base_dir)
 
 

@@ -36,7 +36,7 @@ from plotly.subplots import make_subplots
 import numpy as np
 
 
-def send_spectrum2dscope_npy_to_server(url, api_key, dir_path="data/33137"):
+def send_spectrum2dscope_npy_to_server(dir_path="data/33137"):
     # get all file in dir
     savenamelist = []
     file_names = os.listdir(dir_path)
@@ -50,7 +50,7 @@ def send_spectrum2dscope_npy_to_server(url, api_key, dir_path="data/33137"):
     if len(file_path_list) == 0:
         return
 
-    client = QubitScopeClient(url=url, api_key=api_key)
+    client = QubitScopeClient()
 
     dict_list = []
     for file_path in file_path_list:
@@ -89,10 +89,8 @@ def send_spectrum2dscope_npy_to_server(url, api_key, dir_path="data/33137"):
 
 
 def main():
-    API_URL, API_KEY = None,None
-
     base_dir = "tmp/yaqiangsun/qubit_examples/spectrum2d"
-    send_spectrum2dscope_npy_to_server(API_URL, API_KEY, base_dir)
+    send_spectrum2dscope_npy_to_server(base_dir)
 
 
 if __name__ == "__main__":

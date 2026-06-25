@@ -19,7 +19,7 @@ from qubitclient.draw.pltmanager import QuantumPlotPltManager
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 
 
-def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
+def send_t1fit_npy_to_server(dir_path="data/t1fit", batch_size=5):
     savenamelist = []
     file_names = os.listdir(dir_path)
     
@@ -32,7 +32,7 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
     if len(file_path_list) == 0:
         return
 
-    client = QubitScopeClient(url=url, api_key=api_key)
+    client = QubitScopeClient()
     total = len(file_path_list)
 
     ply_plot_manager = QuantumPlotPlyManager()
@@ -93,9 +93,8 @@ def send_t1fit_npy_to_server(url, api_key, dir_path="data/t1fit", batch_size=5):
 
 
 def main():
-    API_URL, API_KEY = None,None
     base_dir = "tmp/yaqiangsun/qubit_examples/t1"
-    send_t1fit_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
+    send_t1fit_npy_to_server(base_dir, batch_size=1)
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ from qubitclient.draw.plymanager import QuantumPlotPlyManager
 from qubitclient.scope.utils.data_parser import load_npy_file
 
 
-def send_xyz_timing_npy_to_server(url, api_key, dir_path="data/XYZ_Timing", batch_size=5):
+def send_xyz_timing_npy_to_server(dir_path="data/XYZ_Timing", batch_size=5):
     savenamelist = []
     file_names = os.listdir(dir_path)
 
@@ -29,7 +29,7 @@ def send_xyz_timing_npy_to_server(url, api_key, dir_path="data/XYZ_Timing", batc
     if len(file_path_list) == 0:
         return
 
-    client = QubitScopeClient(url=url, api_key=api_key)
+    client = QubitScopeClient()
     total = len(file_path_list)
 
     ply_plot_manager = QuantumPlotPlyManager()
@@ -102,9 +102,8 @@ def send_xyz_timing_npy_to_server(url, api_key, dir_path="data/XYZ_Timing", batc
 
 
 def main():
-    from config import API_URL, API_KEY
     base_dir = "tmp/yaqiangsun/qubit_examples/timingxyz"
-    send_xyz_timing_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
+    send_xyz_timing_npy_to_server(base_dir, batch_size=1)
 
 
 if __name__ == "__main__":

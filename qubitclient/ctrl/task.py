@@ -16,6 +16,7 @@ def call_mcp(func_name:str,*args,**kwargs):
     result = mcp.call(func_name,*args,**kwargs)
     try:
         result = json.loads(result)
+        result = result[0].get("text")
     except Exception as e:
         pass
     return result

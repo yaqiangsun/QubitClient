@@ -88,7 +88,7 @@ def send_t12dfit_npy_to_server(url, api_key, dir_path="data/t12dfit", batch_size
 
 
 def main():
-    base_dir = "tmp/t1_2d"
+    base_dir = "tmp/yaqiangsun/qubit_examples/t12d"
     send_t12dfit_npy_to_server(None,None,base_dir, batch_size=1)
 
 

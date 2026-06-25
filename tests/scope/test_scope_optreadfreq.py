@@ -98,7 +98,7 @@ def send_optreadfreq_npy_to_server(url, api_key, dir_path="data/optreadfreq"):
 def main():
     from config import API_URL, API_KEY
 
-    base_dir = "./tmp/data/optreadfreq"
+    base_dir = "tmp/yaqiangsun/qubit_examples/optreadfreq"
     send_optreadfreq_npy_to_server(API_URL, API_KEY, base_dir)
 
 

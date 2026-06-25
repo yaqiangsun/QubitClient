@@ -103,7 +103,7 @@ def send_xyz_timing_npy_to_server(url, api_key, dir_path="data/XYZ_Timing", batc
 
 def main():
     from config import API_URL, API_KEY
-    base_dir = "data/XYZ_Timing"
+    base_dir = "tmp/yaqiangsun/qubit_examples/timingxyz"
     send_xyz_timing_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

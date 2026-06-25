@@ -94,7 +94,7 @@ def send_rabicos_npy_to_server(url, api_key, dir_path="data/rb", batch_size=5):
 
 def main():
     API_URL, API_KEY = None,None
-    base_dir = "tmp/rb"
+    base_dir = "tmp/yaqiangsun/qubit_examples/rb"
     send_rabicos_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

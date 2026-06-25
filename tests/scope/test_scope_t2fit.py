@@ -94,7 +94,7 @@ def send_t2fit_npy_to_server(url, api_key, dir_path="data/t2fit", batch_size=5):
 
 def main():
     API_URL, API_KEY = None,None
-    base_dir = "data/ramsey_test"
+    base_dir = "tmp/yaqiangsun/qubit_examples/t2"
     send_t2fit_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

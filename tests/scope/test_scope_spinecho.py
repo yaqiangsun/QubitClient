@@ -103,7 +103,7 @@ def send_spinecho_npy_to_server(url, api_key, dir_path="data/spin_echo", batch_s
 
 def main():
     from config import API_URL, API_KEY
-    base_dir = "data/spin_echo"
+    base_dir = "tmp/yaqiangsun/qubit_examples/spinecho"
     send_spinecho_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

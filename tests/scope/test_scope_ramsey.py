@@ -94,7 +94,7 @@ def send_ramsey_npy_to_server(url, api_key, dir_path="data/ramsey", batch_size=5
 
 def main():
     API_URL, API_KEY = None,None
-    base_dir = "data/ramsey_test"
+    base_dir = "tmp/yaqiangsun/qubit_examples/ramsey"
     send_ramsey_npy_to_server(API_URL, API_KEY, base_dir, batch_size=1)
 
 

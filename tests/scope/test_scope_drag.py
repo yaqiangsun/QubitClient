@@ -82,7 +82,7 @@ def send_drag_npy_to_server(url, api_key, dir_path="data/33137"):
 def main():
     API_URL, API_KEY = None,None
 
-    base_dir = "./tmp/drag"
+    base_dir = "tmp/yaqiangsun/qubit_examples/drag"
     send_drag_npy_to_server(API_URL, API_KEY, base_dir)
 
 

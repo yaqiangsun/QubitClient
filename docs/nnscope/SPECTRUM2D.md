@@ -21,7 +21,7 @@ client = QubitNNScopeClient(url="http://your-server-address:port", api_key="your
 |--------|------|------|------|
 | file_list | list[str\|dict[str,np.ndarray]\|np.ndarray] | 是 | 数据文件列表，支持.npy、.npz文件路径或numpy数组 |
 | task_type | NNTaskName | 是 | 任务类型，固定为`NNTaskName.SPECTRUM2D` |
-| curve_type | CurveType | 否 | 曲线拟合类型，可选`CurveType.POLY`(多项式)或`CurveType.COSINE`(余弦) |
+| curve_type | CurveType | 否 | 曲线拟合类型，可选`CurveType.POLY`(多项式)或`CurveType.COSINE`(余弦)，默认`CurveType.COSINE` |
 
 ### 数据格式
 
@@ -30,14 +30,32 @@ client = QubitNNScopeClient(url="http://your-server-address:port", api_key="your
 1. **NPZ 文件格式**：
    ```python
    dict_list = [{
-       "bias": np.ndarray,        # 偏置数组，shape(A,)
-       "frequency": np.ndarray,   # 频率数组，shape(B,)
-       "iq_avg": np.ndarray       # IQ平均值，shape(B,A)
+       "bias": np.ndarray,        # 偏置数组，shape=(A,)
+       "frequency": np.ndarray,   # 频率数组，shape=(B,)
+       "iq_avg": np.ndarray       # IQ平均值，shape=(B, A)，dtype=complex64
    }]
    ```
 
 2. **NPY 文件格式**：
-   NPY文件需要包含一个字典，字典结构与NPZ格式相同。
+   NPY文件需要包含一个字典：
+
+   ```python
+   {
+       "image": {
+           "Q0": (iq_avg, bias, frequency),   # tuple, length=3
+           "Q1": (iq_avg, bias, frequency),
+           ...
+       }
+   }
+   ```
+
+   每个量子比特对应一个键（如 "Q0"），值为 tuple，长度为3：
+
+   | 元素 | 类型 | 描述 |
+   |------|------|------|
+   | iq_avg | np.ndarray, shape=(B, A) | IQ平均值，dtype=complex64 |
+   | bias | np.ndarray, shape=(A,) | 偏置数组，dtype=float64 |
+   | frequency | np.ndarray, shape=(B,) | 频率数组，dtype=float64 |
 
 #### 调用示例
 
@@ -51,8 +69,8 @@ response = client.request(
 
 # 使用numpy数组
 import numpy as np
-data_ndarray = np.load("file.npz", allow_pickle=True)
-dict_list=[data_ndarray]
+data_ndarray = np.load("file.npy", allow_pickle=True)
+dict_list = [data_ndarray]
 response = client.request(
     file_list=dict_list,
     task_type=NNTaskName.SPECTRUM2D,
@@ -61,9 +79,9 @@ response = client.request(
 
 # 使用字典列表
 dict_list = [{
+    "iq_avg": iq_avg_array,
     "bias": bias_array,
-    "frequency": frequency_array,
-    "iq_avg": iq_avg_array
+    "frequency": frequency_array
 }]
 response = client.request(
     file_list=dict_list,
@@ -78,8 +96,8 @@ response = client.request(
 results = client.get_result(response=response)
 threshold = 0.5
 results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
-
-
+results_filtered = results_filtered.get("result")
+```
 
 ## 返回值格式
 
@@ -88,22 +106,26 @@ results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SP
 ```json
 [
   {
-     "params_list": [[[float]]],     // 表示拟合参数
-     "linepoints_list": [[[[float]]]],     // 表示线点集合
-    "confidents_list": [[float]],     // 表示线置信度
-    "class_ids_list": [[float]],     // 表示线类型
-    "curve_type_list":[[str]]     // 表示拟合类型
+    "params_list": [[[float]]],       // 表示拟合参数
+    "linepoints_list": [[[[float]]]], // 表示线点集合
+    "confidences_list": [[float]],    // 表示线置信度
+    "class_ids_list": [[float]],      // 表示线类型
+    "curve_type_list": [[str]],       // 表示拟合类型
+    "status": "success" | "failed"
   },
   ...
 ]
-
-其中，当拟合类型curve_type_list为cosin时，拟合参数列表params_list为[A,freq,phi,offset], 拟合公式为：pred_y = A * np.sin(freq*pred_x + phi) + offset
-其中，当拟合类型curve_type_list为poly时，拟合参数列表params_list为[A,B,C,D], 拟合公式为：pred_y = A * pred_x**3 + B * pred_x**2+ C * pred_x**1+ D
-
 ```
 
+其中，当拟合类型 curve_type_list 为 "cosin" 时，拟合参数列表 params_list 为 [A, freq, phi, offset]，拟合公式为：
+```
+pred_y = A * np.sin(freq * pred_x + phi) + offset
+```
 
-
+其中，当拟合类型 curve_type_list 为 "poly" 时，拟合参数列表 params_list 为 [A, B, C, D]，拟合公式为：
+```
+pred_y = A * pred_x**3 + B * pred_x**2 + C * pred_x**1 + D
+```
 
 ### 字段说明
 
@@ -111,31 +133,22 @@ results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SP
 |--------|------|------|
 | params_list | [[[float]]] | 表示拟合参数 |
 | linepoints_list | [[[[float]]]] | 表示线点集合 |
-| confidents_list | [[float]] | 表示线置信度 |
+| confidences_list | [[float]] | 表示线置信度 |
 | class_ids_list | [[float]] | 表示线类型 |
-| curve_type_list | [[float]] | 表示拟合类型 |
+| curve_type_list | [[str]] | 表示拟合类型 ("cosin" 或 "poly") |
+| status | str | 处理状态 |
 
-
-
-self.A = -1
-        self.B = -1
-        self.C =-1
-        self.D = -1
-        self.coeffs = [self.A, self.B, self.C, self.D]
-        self.poly_func = None
-        self.degree = degree
-    def poly_fit(self,x, A, B, C, D):
-        return A * x**3 + B * x**2+ C * x**1+ D
 ### 示例结果
 
 ```python
 [
   {
-     "params_list": [[[-1,-1,-1,-1]],[[-1,-1,-1,-1]]],
-     "linepoints_list": [[[[-1,6.843e9],[-0.9,6.844e9],...]],[[[-0.8,6.833e9],[-1,6.847e9],...]]],
-    "confidents_list": [[0.6],[0.6]]，
-    "class_ids_list": [[1.0],[1.0]],
-    "curve_type_list": [["cosin"],["cosin"]]
+    "params_list": [[[-1, -1, -1, -1]], [[-1, -1, -1, -1]]],
+    "linepoints_list": [[[[-1, 6.843e9], [-0.9, 6.844e9], ...]], [[[-0.8, 6.833e9], [-1, 6.847e9], ...]]],
+    "confidences_list": [[0.6], [0.6]],
+    "class_ids_list": [[1.0], [1.0]],
+    "curve_type_list": [["cosin"], ["cosin"]],
+    "status": "success"
   }
 ]
 ```
@@ -146,29 +159,33 @@ self.A = -1
 
 ```python
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
-from qubitclient.draw.pltmanager import QuantumPlotPltManager if type(results)==dict:
-if "results" not in results.keys():
-   results = results.get("results")
-elif "result" in results.keys():
-   results = results.get("result")
+from qubitclient.draw.pltmanager import QuantumPlotPltManager
+
+if type(results) == dict:
+    if "results" not in results.keys():
+        results = results.get("results")
+    elif "result" in results.keys():
+        results = results.get("result")
+
 save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
 save_path_png = save_path_prefix + ".png"
 save_path_html = save_path_prefix + ".html"
+
 plot_manager = QuantumPlotPlyManager()
 plot_manager.plot_quantum_data(
-  data_type='npy',
-  task_type=NNTaskName.SPECTRUM2D.value,
-  save_path=save_path_png,
-  result=results,
-  dict_param=data_ndarray
+    data_type='npy',
+    task_type=NNTaskName.SPECTRUM2D.value,
+    save_path=save_path_html,
+    result=results,
+    dict_param=data_ndarray
 )
 
 plot_manager = QuantumPlotPltManager()
 plot_manager.plot_quantum_data(
-  data_type='npy',
-  task_type=NNTaskName.SPECTRUM2D.value,
-  save_path=save_path_html,
-  result=results,
-  dict_param=data_ndarray
+    data_type='npy',
+    task_type=NNTaskName.SPECTRUM2D.value,
+    save_path=save_path_png,
+    result=results,
+    dict_param=data_ndarray
 )
 ```

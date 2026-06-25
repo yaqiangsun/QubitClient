@@ -13,7 +13,7 @@ from qubitclient import QubitNNScopeClient
 from qubitclient import NNTaskName
 
 
-client = QubitNNScopeClient(url=url, api_key=api_key)
+client = QubitNNScopeClient()
 ```
 
 ### 请求参数
@@ -21,38 +21,43 @@ client = QubitNNScopeClient(url=url, api_key=api_key)
 | 参数名 | 类型 | 必需 | 描述 |
 |--------|------|------|------|
 | file_list | list[np.ndarray] | 是 | 数据列表，支持.npy的numpy数组 |
-| task_type | TaskName | 是 | 任务类型，固定为`TaskName.S21PEAK` |
+| task_type | NNTaskName | 是 | 任务类型，固定为`NNTaskName.S21PEAK` |
 
 ### 数据格式
 
 #### 输入格式
 
-1. **NPY 文件格式**：
-   NPY文件需要包含一个字典
+NPY文件需要包含一个字典：
 
-    ```python
-    {
-        "image": {
-            "Q0": [x, amp, phi],   
-            "Q1": [x, amp, phi],
-            ...
-        }
+```python
+{
+    "image": {
+        "Q0": (x, amp, phi),   # tuple, length=3
+        "Q1": (x, amp, phi),
+        ...
     }
-    ```
+}
+```
 
-x: 一维 np.ndarray,表示频率信息
-amp: 一维 np.ndarray,表示幅度信息
-phi: 一维 np.ndarray,表示相位信息
+每个量子比特对应一个键（如 "Q0"），值为 tuple，长度为3：
 
-每个量子比特对应一个键（如 "Q0"），值为 [x, amp，phi] 的列表
+| 元素 | 类型 | 描述 |
+|------|------|------|
+| x | np.ndarray, shape=(N,) | 频率信息，dtype=float64 |
+| amp | np.ndarray, shape=(N,) | 幅度信息，dtype=float64 |
+| phi | np.ndarray, shape=(N,) | 相位信息，dtype=float32 |
 
 #### 调用示例
 
 ```python
 # 使用文件路径
-
 response = client.request(file_list=["data/singlepath/file1.npy", "data/singlepath/file2.npy"], task_type=NNTaskName.S21PEAK)
+```
 
+或使用加载后的数据：
+
+```python
+from qubitclient.scope.utils.data_parser import load_npy_file
 
 dict_list = []
 for file_path in file_path_list:
@@ -61,7 +66,6 @@ for file_path in file_path_list:
 
 # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
 response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAK)
-
 ```
 
 ### 获取结果
@@ -71,9 +75,9 @@ response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAK)
 response_data = client.get_result(response)
 
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response,threshold,NNTaskName.S21PEAK.value)
+response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAK.value)
 
-results = response_data_filtered.get("results")
+results = response_data_filtered.get("result")
 
 ```
 
@@ -84,15 +88,14 @@ results = response_data_filtered.get("results")
 ```json
 [
   {
-    "peaks": [[int]],     // 表示峰值在x中索引
-    "confs": [[float]] // 表示峰值置信度
+    "peaks": [[int]],     // 表示峰值索引
+    "confs": [[float]]    // 表示峰值置信度
     "freqs_list": [[float]] // 表示峰值横坐标
-
+    "status": "success" | "failed"
   },
   ...
 ]
 ```
-
 
 
 
@@ -103,15 +106,17 @@ results = response_data_filtered.get("results")
 | peaks | [[int]]   | 表示峰值索引  |
 | confs | [[float]] | 表示峰值置信度 |
 | freqs_list | [[float]]   | 表示峰值横坐标 |
+| status | str | 表示处理状态 |
 
 ### 示例结果
 
 ```python
 [
   {
-    "peaks": [[10,41,20],[22,34]],
-    "confs": [[0.3,0.4,0.1],[0.6,0.5]],
-    "freqs_list": [[0.3e9,0.4e9,0.1e9],[0.6e9,0.5e9]]
+    "peaks": [[10, 41, 20], [22, 34]],
+    "confs": [[0.3, 0.4, 0.1], [0.6, 0.5]],
+    "freqs_list": [[0.3e9, 0.4e9, 0.1e9], [0.6e9, 0.5e9]],
+    "status": "success"
   }
 ]
 ```

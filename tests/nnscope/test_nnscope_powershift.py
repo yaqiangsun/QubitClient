@@ -36,14 +36,14 @@ import logging
 logging.getLogger().setLevel(logging.INFO)
 
 
-def send_powershift_npy_to_server(url, api_key, file_path = "/home/sunyaqiang/work/QubitClient/tmp/npyfile/tmp0bf97fdf.py_1536.npy"):
+def send_powershift_npy_to_server(file_path = "/home/sunyaqiang/work/QubitClient/tmp/npyfile/tmp0bf97fdf.py_1536.npy"):
 
     # dict_list, name_list = convert_spectrum_npy2npz(file_path)
     base_name = os.path.basename(file_path)
 
     # 分割文件名和扩展名，返回文件名部分
     savename = os.path.splitext(base_name)[0]
-    client = QubitNNScopeClient(url=url,api_key=api_key)
+    client = QubitNNScopeClient()
     
     # 1.使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     data_ndarray = np.load(file_path, allow_pickle=True)
@@ -86,9 +86,8 @@ def send_powershift_npy_to_server(url, api_key, file_path = "/home/sunyaqiang/wo
 
 
 def main():
-    API_URL, API_KEY = None,None
     file_path = "tmp/yaqiangsun/qubit_examples/powershift/tmp71f11e2f.py_673.npy"
-    send_powershift_npy_to_server(API_URL, API_KEY, file_path)
+    send_powershift_npy_to_server(file_path)
 
 
 if __name__ == "__main__":

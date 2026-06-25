@@ -294,7 +294,7 @@ app.add_typer(download_app, name="download")
 @download_app.command("folder")
 def download_folder(
     path: str = typer.Argument(
-        ..., help="Path to folder in repository, e.g. resources/quark, resources/qulab, resources/lqcs"
+        ..., help="Path to folder in repository, e.g. resources/quark, resources/qulab, skills/lqcs-qubit-calib"
     ),
     repo: str = typer.Option(
         "yaqiangsun/QubitClient", "--repo", help="Repository in owner/repo format"

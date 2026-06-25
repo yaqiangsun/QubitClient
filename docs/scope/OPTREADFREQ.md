@@ -38,7 +38,7 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
     }
     ```
 
-    freq_array: 二维 np.ndarray，表示频率
+    freq_array: 一维 np.ndarray，表示频率
     s0_array: 一维 np.ndarray，表示第一条s21
     s1_array: 一维 np.ndarray，表示第二条s21
 

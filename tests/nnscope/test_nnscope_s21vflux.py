@@ -35,7 +35,7 @@ from qubitclient.draw.plymanager import QuantumPlotPlyManager #using plotly draw
 
 
 
-def send_s21vflux_npy_to_server(file_path = "/home/sunyaqiang/work/QubitClient/tmp/npyfile/tmp0bf97fdf.py_1536.npy"):
+def send_s21vflux_npy_to_server(file_path = None):
 
     # dict_list, name_list = convert_spectrum_npy2npz(file_path)
     base_name = os.path.basename(file_path)

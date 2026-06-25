@@ -89,7 +89,7 @@ def send_spectrum2dnnscope_npz_to_server(dir_path = "data/33137"):
     # print(results)
 
 
-def send_spectrum2dnnscope_npy_to_server(file_path = "/home/sunyaqiang/work/QubitClient/tmp/npyfile/tmp0bf97fdf.py_1536.npy"):
+def send_spectrum2dnnscope_npy_to_server(file_path = None):
 
     # dict_list, name_list = convert_spectrum_npy2npz(file_path)
     base_name = os.path.basename(file_path)

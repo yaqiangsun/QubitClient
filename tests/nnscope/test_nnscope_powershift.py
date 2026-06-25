@@ -36,7 +36,7 @@ import logging
 logging.getLogger().setLevel(logging.INFO)
 
 
-def send_powershift_npy_to_server(file_path = "/home/sunyaqiang/work/QubitClient/tmp/npyfile/tmp0bf97fdf.py_1536.npy"):
+def send_powershift_npy_to_server(file_path = None):
 
     # dict_list, name_list = convert_spectrum_npy2npz(file_path)
     base_name = os.path.basename(file_path)

@@ -1,6 +1,6 @@
 ---
 name: qubitclient-scope
-description: "Quantum experiment NUMERICAL curve fitting and parameter extraction. Support for: (1) S21 peak detection, (2) Optimal π-pulse calibration, (3) Rabi oscillation analysis, (4) T1/T2 relaxation time fitting, (5) DRAG pulse optimization, (6) Power shift characterization, (7) Ramsey fringe analysis, (8) Single-shot readout fidelity, and (9) 2D spectrum analysis. Provides unified API for curve fitting, parameter extraction, and batch processing with matplotlib/plotly visualization support."
+description: "Quantum experiment NUMERICAL curve fitting and parameter extraction. Support for: (1) S21 peak detection (single/multi), (2) Optimal π-pulse calibration, (3) Rabi oscillation analysis, (4) T1/T2 relaxation time fitting, (5) DRAG pulse optimization, (6) Power shift characterization, (7) Ramsey fringe analysis, (8) Single-shot readout fidelity, (9) 2D spectrum analysis, (10) Spin Echo T2 fitting, (11) Randomized Benchmarking, (12) XYZ Timing calibration, (13) 2D T1 fitting, (14) Optimal readout frequency, (15) Delta experiment. Provides unified API for curve fitting, parameter extraction, and batch processing with matplotlib/plotly visualization support."
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
@@ -21,28 +21,36 @@ client = QubitNNScopeClient(url="http://server:port", api_key="your-key")
 ### Task Names
 
 #### Scope Tasks (TaskName)
-- `S21PEAK` - Single peak detection with confidence score
-- `S21PEAKMULTI` - Multi-peak detection across full frequency range
-- `OPTPIPULSE` - Optimal π-pulse calculation
-- `RABICOS` - Rabi oscillation cosine first peak detection
-- `RAMSEY` - Ramsey fringe decay oscillation fitting
-- `S21VSFLUX` - S21 vs Flux analysis
-- `SINGLESHOT` - Single-shot readout analysis
-- `SPECTRUM` - Frequency spectrum analysis
-- `T1FIT` - T1 relaxation time exponential fitting
-- `T2FIT` - T2 coherence time fitting
-- `SPECTRUM2D` - 2D spectrum curve segmentation
-- `POWERSHIFT` - Power shift curve analysis
-- `DRAG` - DRAG anti-crossing point analysis
-- `RB` - Randomized benchmarking fidelity test
-- `DELTA` - Delta optimization experiment
+| TaskName | Description |
+|----------|-------------|
+| `S21PEAK` | Single peak detection with confidence score |
+| `S21PEAKMULTI` | Multi-peak detection across full frequency range |
+| `OPTPIPULSE` | Optimal π-pulse calculation |
+| `RABICOS` | Rabi oscillation cosine first peak detection |
+| `RAMSEY` | Ramsey fringe decay oscillation fitting |
+| `S21VSFLUX` | S21 vs Flux analysis |
+| `SINGLESHOT` | Single-shot readout analysis |
+| `SPECTRUM` | Frequency spectrum analysis (AMPD algorithm) |
+| `T1FIT` | T1 relaxation time exponential fitting |
+| `T2FIT` | T2 coherence time fitting (Gaussian decay + cosine oscillation) |
+| `SPINECHO` | Spin Echo T2 relaxation time fitting |
+| `SPECTRUM2D` | 2D spectrum curve segmentation |
+| `POWERSHIFT` | Power shift curve analysis |
+| `DRAG` | DRAG anti-crossing point analysis |
+| `RB` | Randomized benchmarking fidelity test |
+| `DELTA` | Delta optimization experiment |
+| `T12DFIT` | 2D T1 relaxation time fitting |
+| `TIMINGXYZ` | XYZ Timing calibration analysis |
+| `OPTREADFREQ` | Optimal readout frequency selection |
 
 #### NNScope Tasks (NNTaskName)
-- `SPECTRUM2D` - 2D spectrum data segmentation (supports COSINE, POLY curve types)
-- `S21VSFLUX` - S21 vs Flux parameter curve segmentation
-- `POWERSHIFT` - Power shift curve segmentation
-- `SPECTRUM` - Spectrum analysis
-- `S21PEAK` - S21 peak detection
+| NNTaskName | Description |
+|------------|-------------|
+| `SPECTRUM2D` | 2D spectrum data segmentation (supports COSINE, POLY curve types) |
+| `S21VSFLUX` | S21 vs Flux parameter curve segmentation |
+| `POWERSHIFT` | Power shift curve segmentation |
+| `SPECTRUM` | Spectrum analysis |
+| `S21PEAK` | S21 peak detection |
 
 ### Data Input Formats
 
@@ -51,39 +59,41 @@ The input data should be a dictionary or list of dictionaries with the following
 ```python
 dict_list = [{
     "image": {
-        "Q0": (x_data, y_data),  # or (x_data, y_data, z_data) for 2D
-        "Q1": (x_data, y_data),
+        "Q0": [x_data, y_data],  # or [x_data, y_data, z_data] for 2D
+        "Q1": [x_data, y_data],
     }
 }]
 ```
 
 ### Task-Specific Input Formats
 
-#### S21PEAK / S21PEAKMULTI (Scope)
+#### S21PEAK / S21PEAKMULTI
 Input format for S21 peak detection:
 ```python
 {
     "image": {
-        "Q0": (x_array, amp_array, phi_array),  # (freq, amplitude, phase)
-        "Q1": (x_array, amp_array, phi_array),
-    }
+        "Q0": [x_array, amp_array, phi_array],  # (freq, amplitude, phase)
+        "Q1": [x_array, amp_array, phi_array],
+    },
+    "id": 2661  # reserved field, can be ignored
 }
 ```
-- `x_array`: 1D frequency array
-- `amp_array`: 1D amplitude array (magnitude of complex S21)
-- `phi_array`: 1D phase array (unwrapped, detrended)
+- `x_array`: 1D frequency array, shape (A,)
+- `amp_array`: 1D amplitude array (magnitude of complex S21), shape (A,)
+- `phi_array`: 1D phase array (unwrapped, detrended), shape (A,)
 
 #### OPTPIPULSE
 Input format:
 ```python
 {
     "image": {
-        "Q0": (waveforms, x_array),  # (2D waveform data, 1D amp axis)
+        "Q0": [waveforms_array, x_array],  # (2D waveform data, 1D time axis)
+        "Q1": [waveforms_array, x_array],
     }
 }
 ```
-- `waveforms`: 2D array of shape (n_rows, n_amps)
-- `x_array`: 1D array of amplitude values
+- `waveforms_array`: 2D array of shape (n_waveforms, n_points)
+- `x_array`: 1D array of time values
 
 Supported data keys: `population`, `iq_avg`, `iq`
 
@@ -92,43 +102,68 @@ Input format:
 ```python
 {
     "image": {
-        "Q0": (delay_array, population_array),  # (time delays, measured populations)
+        "Q0": [delay_array, amp_array],  # (time delays, measured populations)
+        "Q1": [delay_array, amp_array],
     }
 }
 ```
 - `delay_array`: 1D array of delay times (seconds)
-- `population_array`: 1D array of measured population values
+- `amp_array`: 1D array of measured amplitude/population values
+
+Fitting formula: $y = A \cdot e^{-x / T1} + B$
 
 Supported data keys: `population`, `iq_avg`, `iq`
 
 #### T2FIT / RAMSEY
-Same format as T1FIT:
+Input format:
 ```python
 {
     "image": {
-        "Q0": (delay_array, population_array),
+        "Q0": [delay_array, amp_array],  # (time delays, measured amplitudes)
+        "Q1": [delay_array, amp_array],
     }
 }
 ```
+- `delay_array`: 1D array of delay times (seconds)
+- `amp_array`: 1D array of measured amplitude values
+
+Fitting formula: $y = A \cdot e^{-(x/T2)^2 - x/T1/2} \cdot \cos(2\pi w x + \phi) + B$
+
+#### SPINECHO
+Input format:
+```python
+{
+    "image": {
+        "Q0": [delay_array, amp_array],  # (delay times, signal amplitudes)
+        "Q1": [delay_array, amp_array],
+    }
+}
+```
+
+Returns T2 relaxation time from Spin Echo decay signal.
 
 #### DRAG
 Input format:
 ```python
 {
     "image": {
-        "Q0": (lamb_array, y0y1_array),  # (lambda parameter, 2D population data)
+        "Q0": [lamb_array, y_array],  # (lambda parameter, 2D population data)
+        "Q1": [lamb_array, y_array],
     }
 }
 ```
 - `lamb_array`: 1D array of DRAG λ values
-- `y0y1_array`: 2D array of shape (2, n_lambda) for both states
+- `y_array`: 2D array of shape (2, n_lambda) for both states
+
+Returns fitting curves and intersection points with confidence scores.
 
 #### DELTA
-Same as DRAG format, but with inverted amplitude (for valley detection):
+Same format as DRAG, but with inverted amplitude (for valley detection):
 ```python
 {
     "image": {
-        "Q0": (amp_array, y0y1_array),
+        "Q0": [amp_array, y_array],
+        "Q1": [amp_array, y_array],
     }
 }
 ```
@@ -138,52 +173,66 @@ Input format:
 ```python
 {
     "image": {
-        "Q0": (x_array, amp_array),  # (drive amplitude, amplitude)
+        "Q0": [x_array, amp_array],  # (drive amplitude, amplitude)
+        "Q1": [x_array, amp_array],
     }
 }
 ```
 - `x_array`: 1D array of drive amplitude values
 - `amp_array`: 1D array of measured amplitude
 
+Returns first peak position and confidence for each qubit.
+
 #### S21VSFLUX (Scope)
 Input format:
 ```python
 {
     "image": {
-        "Q0": (volt_array, freq_array, s21_matrix),
-    }
+        "Q0": [freq_array, volt_array, s_matrix],  # tuple, length >= 3
+        "Q1": [freq_array, volt_array, s_matrix],
+    },
+    "id": 4095
 }
 ```
-- `volt_array`: 1D array of voltage/bias values
-- `freq_array`: 1D array of frequency values
-- `s21_matrix`: 2D array of S21 values (shape: [n_freq, n_volt])
+- `freq_array`: 1D array of frequency values, shape (A,)
+- `volt_array`: 1D array of voltage/bias values, shape (B,)
+- `s_matrix`: 2D array of S21 values, shape (B, A)
+
+Returns cosine curves, line curves and their confidence scores.
 
 #### SINGLESHOT
 Input format:
 ```python
 {
     "image": {
-        "Q0": (s0_complex, s1_complex),  # (ground state IQ, excited state IQ)
+        "Q0": [s0_array, s1_array, False],  # (ground state IQ, excited state IQ, reserved)
+        "Q1": [s0_array, s1_array, False],
     }
 }
 ```
-- `s0_complex`: 1D complex array for |0⟩ state
-- `s1_complex`: 1D complex array for |1⟩ state
+- `s0_array`: 1D complex array for |0⟩ state, shape (A,)
+- `s1_array`: 1D complex array for |1⟩ state, shape (A,)
+
+Returns separation score, threshold, projection angle, and ellipse fitting parameters.
 
 #### SPECTRUM2D (Scope)
 Input format:
 ```python
 {
     "image": {
-        "Q0": (s_matrix.T, bias_array, freq_array),
-    }
+        "Q0": [iq_avg, bias_array, freq_array],  # tuple, length = 3
+        "Q1": [iq_avg, bias_array, freq_array],
+    },
+    "id": 2660
 }
 ```
-- `s_matrix`: 2D array of shape [n_bias, n_freq]
-- `bias_array`: 1D array of bias values
-- `freq_array`: 1D array of frequency values
+- `iq_avg`: 2D complex array of shape (B, A)
+- `bias_array`: 1D array of bias values, shape (A,)
+- `freq_array`: 1D array of frequency values, shape (B,)
 
 Supported data keys: `iq_avg`, `population`, `iq`
+
+Returns cosine curves, line curves, confidence scores, and compression ratios.
 
 #### SPECTRUM (Scope/NNScope)
 Input format:
@@ -191,37 +240,99 @@ Input format:
 {
     "image": {
         "Q0": [freq_array, s_array],  # 1D spectrum
+        "Q1": [freq_array, s_array],
     }
 }
 ```
 - `freq_array`: 1D array of frequency values
 - `s_array`: 1D array of spectral amplitude
 
+Uses AMPD algorithm for peak detection.
+
+Returns peak positions, confidence scores, and mean cut widths.
+
 #### POWERSHIFT (Scope)
 Input format:
 ```python
 {
     "image": {
-        "Q0": (freq_array, power_array, s_matrix.T),
+        "Q0": [freq_array, amp_array, value_array],  # (x, y, value)
+        "Q1": [freq_array, amp_array, value_array],
     }
 }
 ```
-- `freq_array`: 1D array of frequency values
-- `power_array`: 1D array of power values
-- `s_matrix`: 2D array of shape [n_freq, n_power]
+- `freq_array`: 1D array, shape (B,) - frequency axis
+- `amp_array`: 1D array, shape (A,) - amplitude axis
+- `value_array`: 2D array, shape (A, B) - complex IQ values
+
+Returns classification (5 classes), keypoints, and confidence scores.
 
 #### RB (Randomized Benchmarking)
 Input format:
 ```python
 {
     "image": {
-        "Q0": [cycle_array, [y_main, y_ref]],
+        "Q0": [cycle_array, [amp_array, other_amp_array]],
+        "Q1": [cycle_array, [amp_array, other_amp_array]],
     }
 }
 ```
 - `cycle_array`: 1D array of Clifford cycle numbers
-- `y_main`: 1D array of survival probabilities (1 - population)
-- `y_ref`: 1D reference array (or zeros if single gate group)
+- `amp_array`: 1D array of survival probabilities
+- `other_amp_array`: reference array
+
+Fitting formula: $P(x) = A \cdot p^x + B$
+
+Returns fitted parameters [A, p, B], R² values, and fit data.
+
+#### T12DFIT (2D T1 Fitting)
+Input format:
+```python
+{
+    "image": {
+        "Q0": [p_array, delay_array, zpa_array],  # (probability, delay, zpa)
+        "Q1": [p_array, delay_array, zpa_array],
+    }
+}
+```
+- `p_array`: 2D array of shape (A, B) - probability data
+- `delay_array`: 1D array of shape (B,) - delay times
+- `zpa_array`: 1D array of shape (A,) - pulse amplitudes
+
+Fitting formula per ZPA: $y = A \cdot e^{-x / T1} + B$
+
+Returns T1 values and ZPA list for each qubit.
+
+#### TIMINGXYZ (XYZ Timing Calibration)
+Input format:
+```python
+{
+    "image": {
+        "Q0": [amp_array, delay_array],  # (signal amplitude, delay time)
+        "Q1": [amp_array, delay_array],
+    }
+}
+```
+- `amp_array`: 1D array of signal amplitudes
+- `delay_array`: 1D array of delay times (seconds)
+
+Returns fitting curves, timing offset `zd_xy`, and R² values.
+
+#### OPTREADFREQ (Optimal Readout Frequency)
+Input format:
+```python
+{
+    "image": {
+        "Q0": [freq_array, s0_array, s1_array],  # (frequency, s21_curve0, s21_curve1)
+        "Q1": [freq_array, s0_array, s1_array],
+    }
+}
+```
+- `freq_array`: 1D array of frequency values
+- `s0_array`: 1D array of first S21 curve
+- `s1_array`: 1D array of second S21 curve
+
+Returns peak index where the two S21 curves are farthest apart.
 
 ### Getting Results
 
@@ -229,7 +340,7 @@ Input format:
 # Get raw results
 results = client.get_result(response=response)
 
-# Get filtered results by confidence threshold (for S21PEAK)
+# Get filtered results by confidence threshold (for tasks with confidence scores)
 results_filtered = client.get_filtered_result(response, threshold=0.5, task_type=TaskName.S21PEAK.value)
 ```
 
@@ -281,13 +392,14 @@ phi = np.unwrap(np.angle(iq_avg))
 
 dict_list = [{
     "image": {
-        "Q0": (freq, amp, phi)
-    }
+        "Q0": [freq, amp, phi]
+    },
+    "id": 2661
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.S21PEAK)
 results = client.get_result(response)
-# Returns: [{"peaks": [[10,41,20]], "confs": [[0.3,0.4,0.1]], "freqs_list": [[0.3e9,0.4e9,0.1e9]]}]
+# Returns: [{"peaks": [[10],[22]], "confs": [[0.3],[0.6]], "freqs_list": [[0.3e9],[0.6e9]], "status": "success"}]
 ```
 
 #### T1 Fitting
@@ -304,13 +416,37 @@ population = np.array([1.0, 0.85, 0.72, 0.45, 0.20, 0.04, 0.01])
 
 dict_list = [{
     "image": {
-        "Q0": (delay, population)
+        "Q0": [delay, population]
     }
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.T1FIT)
 results = client.get_result(response)
-# Returns fitted T1 time and parameters
+# Returns: {"type": "t1fit", "results": [{"params_list": [[A, T1, B], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
+```
+
+#### T2 Fitting (Ramsey)
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient(url="http://server:port", api_key="key")
+
+# T2 decay data with oscillation
+delay = np.linspace(0, 10e-6, 101)
+# Simulated decay + oscillation signal
+t2_signal = 0.5 * np.exp(-(delay/2e-6)**2 - delay/20e-6) * np.cos(2*np.pi*1e8*delay) + 0.5
+
+dict_list = [{
+    "image": {
+        "Q0": [delay, t2_signal]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.T2FIT)
+results = client.get_result(response)
+# Returns: {"type": "t2fit", "results": [{"params_list": [[A, B, T1, T2, w, phi], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
 ```
 
 #### DRAG Analysis
@@ -323,21 +459,67 @@ client = QubitScopeClient(url="http://server:port", api_key="key")
 
 # DRAG lambda scan data
 lamb = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-# y0y1: 2D array [2, n_lambda] - population for both states
-y0y1 = np.array([
+# y: 2D array [2, n_lambda] - population for both states
+y = np.array([
     [0.95, 0.92, 0.88, 0.85, 0.82, 0.80, 0.82, 0.85, 0.88, 0.91, 0.94],  # state 0
     [0.05, 0.08, 0.12, 0.15, 0.18, 0.20, 0.18, 0.15, 0.12, 0.09, 0.06]   # state 1
 ])
 
 dict_list = [{
     "image": {
-        "Q0": (lamb, y0y1)
+        "Q0": [lamb, y]
     }
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.DRAG)
 results = client.get_result(response)
-# Returns optimal lambda value and fitted curve
+# Returns intersection points and confidence scores
+```
+
+#### Spin Echo T2 Fitting
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient(url="http://server:port", api_key="key")
+
+# Spin Echo data
+delay = np.array([0, 50, 100, 150, 200, 250, 300])  # microseconds
+signal = np.array([0.95, 0.82, 0.71, 0.63, 0.55, 0.48, 0.42])
+
+dict_list = [{
+    "image": {
+        "Q0": [delay, signal]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.SPINECHO)
+results = client.get_result(response)
+# Returns: {"type": "spinecho", "results": [{"status": "success", "Q0": {"x": [...], "amp": [...], "fit_envelope": [...], "T2": float, "r2": float}}]}
+```
+
+#### Randomized Benchmarking (RB)
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient(url="http://server:port", api_key="key")
+
+# RB data
+cycles = np.array([0, 10, 20, 40, 80, 160, 320])
+survival = np.array([1.0, 0.95, 0.90, 0.82, 0.68, 0.45, 0.20])
+
+dict_list = [{
+    "image": {
+        "Q0": [cycles, [survival, np.zeros_like(survival)]]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.RB)
+results = client.get_result(response)
+# Returns: {"type": "rb", "results": [{"params_list": [[A, p, B], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
 ```
 
 #### 2D Spectrum Analysis (NNScope)
@@ -355,7 +537,7 @@ iq_avg = np.random.randn(51, 101) + 1j * np.random.randn(51, 101)
 
 dict_list = [{
     "image": {
-        "Q0": (iq_avg.T, bias, freq)  # Note: transpose for correct shape
+        "Q0": [iq_avg, bias, freq]  # Note: iq_avg shape (51, 101), bias shape (51,), freq shape (101,)
     }
 }]
 
@@ -382,12 +564,89 @@ s1 = np.random.randn(1000) + 1j * np.random.randn(1000)  # excited state
 
 dict_list = [{
     "image": {
-        "Q0": (s0, s1)
+        "Q0": [s0, s1, False]
     }
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.SINGLESHOT)
 results = client.get_result(response)
+# Returns separation score, threshold, projection angle, and ellipse parameters
+```
+
+#### 2D T1 Fitting (T12DFIT)
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient(url="http://server:port", api_key="key")
+
+# 2D T1 data: p_array (zpa, delay), delay_array, zpa_array
+zpa = np.array([0.4, 0.6, 0.8, 1.0])
+delay = np.array([0, 1e-6, 2e-6, 5e-6, 10e-6])
+p = np.array([
+    [1.0, 0.85, 0.72, 0.45, 0.20],  # zpa=0.4
+    [1.0, 0.80, 0.65, 0.40, 0.15],  # zpa=0.6
+    [1.0, 0.75, 0.58, 0.35, 0.12],  # zpa=0.8
+    [1.0, 0.70, 0.50, 0.30, 0.10],  # zpa=1.0
+])
+
+dict_list = [{
+    "image": {
+        "Q0": [p, delay, zpa]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.T12DFIT)
+results = client.get_result(response)
+# Returns: {"type": "t12dfit", "results": [{"t1_list": [[T1_zpa0, T1_zpa1, ...]], "zpa_list": [[0.4, 0.6, 0.8, 1.0]], "status": "success"}]}
+```
+
+#### XYZ Timing Calibration
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient(url="http://server:port", api_key="key")
+
+# XYZ timing data
+delay = np.array([-6e-8, -4e-8, -2e-8, 0.0, 2e-8, 4e-8, 6e-8])
+signal = np.array([0.42, 0.55, 0.78, 0.95, 0.81, 0.60, 0.45])
+
+dict_list = [{
+    "image": {
+        "Q0": [signal, delay]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.TIMINGXYZ)
+results = client.get_result(response)
+# Returns: {"type": "xyz_timing", "results": [{"status": "success", "Q0": {"x": [...], "amp": [...], "fit_data": [...], "zd_xy": float, "r2": float}}]}
+```
+
+#### Optimal Readout Frequency
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient(url="http://server:port", api_key="key")
+
+# Readout frequency optimization data
+freq = np.linspace(4e9, 6e9, 201)
+s0 = np.abs(1 / (freq - 5e9 + 0.1e9j))  # S21 for |0> state
+s1 = np.abs(1 / (freq - 5e9 - 0.1e9j))  # S21 for |1> state
+
+dict_list = [{
+    "image": {
+        "Q0": [freq, s0, s1]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.OPTREADFREQ)
+results = client.get_result(response)
+# Returns: {"type": "optreadfreq", "results": [{"peak_list": [index], "status": "success"}]}
 ```
 
 ### Data Format Conversion (from Quark)

@@ -76,7 +76,7 @@ results = response_data_filtered.get("results")
 
 ## 返回值格式
 
-返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
+返回的结果是一个列表，每个元素对应一个输入文件的处理结果。每个量子比特（如 `Q0`）以字典键的形式返回拟合结果。
 
 ```json
 {
@@ -85,11 +85,14 @@ results = response_data_filtered.get("results")
     {
       "status": "success" | "failed",
       "Q0": {
+        "q_name": "Q0",
         "x": [float, ...],
         "amp": [float, ...],
         "fit_data": [float, ...],
+        "params": [float, ...],
         "zd_xy": float,
-        "r2": float
+        "r2": float,
+        "success": true | false
       },
       "Q1": { ... }
     },
@@ -98,18 +101,28 @@ results = response_data_filtered.get("results")
 }
 ```
 
-每个量子比特（如 `Q0`）的结果以字典键的形式返回，包含原始数据、拟合曲线及时序偏移参数。
-
 ### 字段说明
+
+**文件级字段**（`results[i]`）：
+
+| 字段名   | 类型  | 描述 |
+|----------|-------|------|
+| `status` | `str` | 该文件整体处理状态：`"success"` 或 `"failed"` |
+
+**量子比特级字段**（`results[i]["Q0"]` 等）：
 
 | 字段名           | 类型                   | 描述 |
 |------------------|------------------------|------|
-| `x`              | `List[float]`          | 延迟时间序列 |
+| `q_name`         | `str`                  | 量子比特名称 |
+| `x`              | `List[float]`          | 延迟时间序列（秒） |
 | `amp`            | `List[float]`          | 原始信号强度 |
-| `fit_data`       | `List[float]`          | 拟合曲线值 |
+| `fit_data`       | `List[float]`          | Erf 拟合曲线值 |
+| `params`         | `List[float]`          | 拟合参数数组 |
 | `zd_xy`          | `float`                | XYZ 时序偏移量（ns） |
-| `r2`             | `float`                | $R^2$ 拟合优度，范围 `[0, 1]`，越接近 1 拟合越好 |
-| `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
+| `r2`             | `float`                | $R^2$ 拟合优度 |
+| `success`        | `bool`                 | 该量子比特拟合是否成功 |
+
+> 说明：`status` 为文件级字符串状态；`success` 为量子比特级布尔值，表示单个 qubit 拟合是否成功。
 
 ### 示例结果
 
@@ -120,11 +133,14 @@ results = response_data_filtered.get("results")
     {
       "status": "success",
       "Q0": {
+        "q_name": "Q0",
         "x": [-6e-8, -4e-8, -2e-8, 0.0, 2e-8, ...],
         "amp": [0.42, 0.55, 0.78, 0.95, 0.81, ...],
         "fit_data": [0.40, 0.53, 0.76, 0.94, 0.83, ...],
+        "params": [0.95, 0.05, -2.0, 8.0],
         "zd_xy": 3.193,
-        "r2": 0.9654
+        "r2": 0.9654,
+        "success": True
       }
     }
   ]

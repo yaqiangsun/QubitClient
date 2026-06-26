@@ -31,16 +31,16 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
     ```python
     {
         "image": {
-            "Q0": [x_array, amp_array],   
-            "Q1": [x_array, amp_array],
+            "Q0": (waveforms_array, x_array),
+            "Q1": (waveforms_array, x_array),
             ...
         }
     }
     ```
 
-    x_array: 一维 np.ndarray，表示时间点或频率点
-    amp_array: 一维 np.ndarray，表示信号强度
-    每个量子比特对应一个键（如 "Q0"），值为 [x, amp] 的列表
+    waveforms_array: 二维 np.ndarray，shape `(N_waveforms, M)`，表示各条扫描波形
+    x_array: 一维 np.ndarray，shape `(M,)`，表示横轴（偏置/频率等）
+    每个量子比特对应一个键（如 "Q0"），值为 `(waveforms_array, x_array)` 的元组（list 亦可）
 
 #### 调用示例
 
@@ -77,19 +77,42 @@ results = response_data.get("results")
   "type": "delta",
   "results": [
     {
-      "status": "success" | "failed",
-      ...
+      "params": [[float, ...], [float, ...], ...],
+      "confs": [[float, ...], [float, ...], ...],
+      "status": "success" | "failed"
     },
     ...
   ]
 }
 ```
 
+params[i]: 第 i 个量子比特检测到的 Delta 峰位置列表
+confs[i]: 第 i 个量子比特各峰对应的置信度，与 `params[i]` 一一对应
+
 ### 字段说明
 
-| 字段名   | 类型     | 描述 |
-|----------|----------|------|
-| `status` | `str`    | 处理状态：`"success"` 或 `"failed"` |
+| 字段名   | 类型                  | 描述 |
+|----------|-----------------------|------|
+| `params` | `List[List[float]]`   | 每个量子比特的 Delta 峰位置列表 |
+| `confs`  | `List[List[float]]`   | 每个量子比特各峰的置信度，范围 `[0, 1]` |
+| `status` | `str`                 | 处理状态：`"success"` 或 `"failed"` |
+
+### 示例结果
+
+```python
+{
+  "type": "delta",
+  "results": [
+    {
+      "params": [[1.23e-6, 2.45e-6]],
+      "confs": [[0.92, 0.85]],
+      "status": "success"
+    }
+  ]
+}
+```
+
+无有效峰时，`params` 对应元素为空列表 `[]`，`confs` 可能为 `[[0.0]]` 等占位值。
 
 ## 可视化
 

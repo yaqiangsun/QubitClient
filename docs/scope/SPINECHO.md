@@ -76,7 +76,7 @@ results = response_data_filtered.get("results")
 
 ## 返回值格式
 
-返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
+返回的结果是一个列表，每个元素对应一个输入文件的处理结果。每个量子比特（如 `Q0`）以字典键的形式返回拟合结果。
 
 ```json
 {
@@ -85,11 +85,15 @@ results = response_data_filtered.get("results")
     {
       "status": "success" | "failed",
       "Q0": {
+        "q_name": "Q0",
         "x": [float, ...],
         "amp": [float, ...],
+        "envelope": [float, ...],
         "fit_envelope": [float, ...],
+        "params": [float, ...],
         "T2": float,
-        "r2": float
+        "r2": float,
+        "success": true | false
       },
       "Q1": { ... }
     },
@@ -98,18 +102,29 @@ results = response_data_filtered.get("results")
 }
 ```
 
-每个量子比特（如 `Q0`）的结果以字典键的形式返回，包含原始数据、拟合包络及拟合参数。
-
 ### 字段说明
+
+**文件级字段**（`results[i]`）：
+
+| 字段名   | 类型  | 描述 |
+|----------|-------|------|
+| `status` | `str` | 该文件整体处理状态：`"success"` 或 `"failed"` |
+
+**量子比特级字段**（`results[i]["Q0"]` 等）：
 
 | 字段名           | 类型                   | 描述 |
 |------------------|------------------------|------|
+| `q_name`         | `str`                  | 量子比特名称 |
 | `x`              | `List[float]`          | 延迟时间序列 |
 | `amp`            | `List[float]`          | 原始信号强度 |
-| `fit_envelope`   | `List[float]`          | 拟合包络曲线值 |
+| `envelope`       | `List[float]`          | 从原始信号提取的包络曲线 |
+| `fit_envelope`   | `List[float]`          | 对 `envelope` 拟合后的包络曲线 |
+| `params`         | `List[float]`          | 拟合参数数组 |
 | `T2`             | `float`                | 自旋回波 $T_2$ 弛豫时间（µs） |
-| `r2`             | `float`                | $R^2$ 拟合优度，范围 `[0, 1]`，越接近 1 拟合越好 |
-| `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
+| `r2`             | `float`                | $R^2$ 拟合优度 |
+| `success`        | `bool`                 | 该量子比特拟合是否成功 |
+
+> 说明：`status` 为文件级字符串状态；`success` 为量子比特级布尔值，表示单个 qubit 拟合是否成功。内置 plotter 绘图时使用 `fit_envelope` 作为拟合曲线。
 
 ### 示例结果
 
@@ -120,11 +135,15 @@ results = response_data_filtered.get("results")
     {
       "status": "success",
       "Q0": {
+        "q_name": "Q0",
         "x": [0.0, 50.0, 100.0, 150.0, ...],
         "amp": [0.95, 0.82, 0.71, 0.63, ...],
+        "envelope": [0.94, 0.83, 0.72, 0.64, ...],
         "fit_envelope": [0.96, 0.84, 0.73, 0.64, ...],
+        "params": [0.95, 0.02, 125360.0, 0.0],
         "T2": 125.36,
-        "r2": 0.9821
+        "r2": 0.9821,
+        "success": True
       }
     }
   ]

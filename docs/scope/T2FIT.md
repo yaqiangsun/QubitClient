@@ -37,8 +37,8 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
     ```python
     {
         "image": {
-            "Q0": [x_array, amp_array],   
-            "Q1": [x_array, amp_array],
+            "Q0": (x_array, amp_array),
+            "Q1": (x_array, amp_array),
             ...
         }
     }
@@ -46,7 +46,7 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
 
     x_array: 一维 np.ndarray，表示时间点
     amp_array: 一维 np.ndarray，表示信号强度
-    每个量子比特对应一个键（如 "Q0"），值为 [x, amp] 的列表
+    每个量子比特对应一个键（如 "Q0"），值为 `(x_array, amp_array)` 的元组（list 亦可）
 
 #### 调用示例
 
@@ -87,6 +87,8 @@ results = response_data_filtered.get("results")
       "params_list": [[A, B, T1, T2, w, phi], ...],
       "r2_list": [float, ...],
       "fit_data_list": [[float, ...], ...],
+      "fit_data_dense_list": [[float, ...], ...],
+      "x_dense_list": [[float, ...], ...],
       "status": "success" | "failed"
     },
     ...
@@ -95,7 +97,9 @@ results = response_data_filtered.get("results")
 ```
 
 params_list[i]: 第 i 个量子比特的拟合参数 [A, B, T1, T2, w, phi]
-fit_data_list[i]: 第 i 个量子比特在 密集时间点 上的拟合值（用于绘制平滑曲线）
+fit_data_list[i]: 第 i 个量子比特在原始时间点上的拟合值
+fit_data_dense_list[i]: 第 i 个量子比特在密集时间点上的拟合值（用于绘制平滑曲线）
+x_dense_list[i]: 与 fit_data_dense_list[i] 一一对应的密集时间轴
 r2_list[i]: 第 i 个量子比特的 R² 拟合优度
 
 ### 字段说明
@@ -104,7 +108,9 @@ r2_list[i]: 第 i 个量子比特的 R² 拟合优度
 |------------------|------------------------|------|
 | `params_list`    | `List[List[float]]`    | 每个量子比特的拟合参数 `[A, B, T1, T2, w, phi]`：<br>• `A`: 初始振幅<br>• `B`: 基线偏移<br>• `T1`: 指数衰减时间（µs）<br>• `T2`: 高斯衰减时间（µs）<br>• `w`: 振荡角频率（rad/s）<br>• `phi`: 初始相位（rad） |
 | `r2_list`        | `List[float]`          | 每个量子比特的 R² 拟合优度，范围 `[0, 1]`，越接近 1 拟合越好 |
-| `fit_data_list`  | `List[List[float]]`    | 每个量子比特的拟合曲线值 |
+| `fit_data_list`  | `List[List[float]]`    | 每个量子比特在原始时间点上的拟合曲线值 |
+| `fit_data_dense_list` | `List[List[float]]` | 每个量子比特在密集时间点上的拟合曲线值 |
+| `x_dense_list`   | `List[List[float]]`    | 与 `fit_data_dense_list` 对应的密集时间轴 |
 | `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
 
 ### 示例结果
@@ -122,13 +128,19 @@ r2_list[i]: 第 i 个量子比特的 R² 拟合优度
       "fit_data_list": [
         [0.9684309514565641, 0.8102839306126803, 0.634148824106684, ...]
       ],
+      "fit_data_dense_list": [
+        [0.9684309514565641, 0.9502839306126803, 0.934148824106684, ...]
+      ],
+      "x_dense_list": [
+        [0.0, 50.0, 100.0, 150.0, ...]
+      ],
       "status": "success"
     }
   ]
 }
 ```
 
-注意：fit_data_list 中的拟合点对应更密集的时间序列（非原始 x），绘图时需使用 np.linspace(x_min, x_max, len(fit_data)) 生成对应 x_fit。
+注意：绘制平滑拟合曲线时，请使用 `x_dense_list` 与 `fit_data_dense_list` 配对；`fit_data_list` 对应原始采样时间点。
 
 ## 可视化
 

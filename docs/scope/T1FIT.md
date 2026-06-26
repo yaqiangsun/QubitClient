@@ -34,8 +34,8 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
     ```python
     {
         "image": {
-            "Q0": [x_array, amp_array],   
-            "Q1": [x_array, amp_array],
+            "Q0": (x_array, amp_array),
+            "Q1": (x_array, amp_array),
             ...
         }
     }
@@ -43,7 +43,7 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
 
     x_array: 一维 np.ndarray，表示时间点
     amp_array: 一维 np.ndarray，表示信号强度
-    每个量子比特对应一个键（如 "Q0"），值为 [x, amp] 的列表
+    每个量子比特对应一个键（如 "Q0"），值为 `(x_array, amp_array)` 的元组（list 亦可）
 
 #### 调用示例
 
@@ -87,6 +87,8 @@ results = response_data_filtered.get("results")
       "params_list": [[A, T1, B], ...],
       "r2_list": [float, ...],
       "fit_data_list": [[float, ...], ...],
+      "fit_data_dense_list": [[float, ...], ...],
+      "x_dense_list": [[float, ...], ...],
       "status": "success" | "failed"
     },
     ...
@@ -96,7 +98,9 @@ results = response_data_filtered.get("results")
 
 params_list[i]: 第 i 个量子比特的拟合参数 [A, T1, B]
 fit_data_list[i]: 第 i 个量子比特在原始时间点上的拟合值
-r2_list[i]: 第 i 个量子比特的 拟合优度
+fit_data_dense_list[i]: 第 i 个量子比特在密集时间点上的拟合值（用于绘制平滑曲线）
+x_dense_list[i]: 与 fit_data_dense_list[i] 一一对应的密集时间轴
+r2_list[i]: 第 i 个量子比特的 R² 拟合优度
 
 ### 字段说明
 
@@ -105,6 +109,8 @@ r2_list[i]: 第 i 个量子比特的 拟合优度
 | `params_list`    | `List[List[float]]`    | 每个量子比特的拟合参数 `[A, T1, B]`，其中 `A` 为初始幅度，`T1` 为弛豫时间（µs），`B` 为基线偏移 |
 | `r2_list`        | `List[float]`          | 每个量子比特的 R² 拟合优度，范围 `[0, 1]`，越接近 1 拟合越好 |
 | `fit_data_list`  | `List[List[float]]`    | 每个量子比特在原始时间点上的拟合曲线值（与输入 `x` 长度一致） |
+| `fit_data_dense_list` | `List[List[float]]` | 每个量子比特在密集时间点上的拟合曲线值 |
+| `x_dense_list`   | `List[List[float]]`    | 与 `fit_data_dense_list` 对应的密集时间轴 |
 | `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
 
 ### 示例结果
@@ -125,11 +131,23 @@ r2_list[i]: 第 i 个量子比特的 拟合优度
         [1.0315948835931699, 1.0315840050042837, ...],
         [...]
       ],
+      "fit_data_dense_list": [
+        [0.9605647857201113, 0.9555605506147538, ...],
+        [1.0315948835931699, 1.0255840050042837, ...],
+        [...]
+      ],
+      "x_dense_list": [
+        [0.0, 50.0, 100.0, 150.0, ...],
+        [0.0, 50.0, 100.0, 150.0, ...],
+        [0.0, 50.0, 100.0, 150.0, ...]
+      ],
       "status": "success"
     }
   ]
 }
 ```
+
+注意：绘制平滑拟合曲线时，请使用 `x_dense_list` 与 `fit_data_dense_list` 配对；`fit_data_list` 对应原始采样时间点。
 
 ## 可视化
 

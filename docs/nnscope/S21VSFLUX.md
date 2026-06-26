@@ -40,14 +40,13 @@ NPY文件需要包含一个字典：
 }
 ```
 
-每个量子比特对应一个键（如 "Q0"），值为 tuple，至少包含前3个元素：
+每个量子比特对应一个键（如 "Q0"），值为 (freq, volt, s, ...)，至少包含前3个元素：
 
 | 元素 | 类型 | 描述 |
 |------|------|------|
 | freq | np.ndarray, shape=(A,) | 频率数据，dtype=float64 |
 | volt | np.ndarray, shape=(B,) | 电压信息，dtype=float64 |
 | s | np.ndarray, shape=(B, A) | 二维频谱数据，dtype=float32 |
-| ... | tuple | 可选的附加元素 |
 
 #### 调用示例
 
@@ -89,12 +88,12 @@ results_filtered = results_filtered.get("result")
 ```json
 [
   {
-    "params_list": [[[float]]],        // 表示拟合参数
-    "linepoints_list": [[[[float]]]],  // 表示线点集合
-    "confidence_list": [[float]],      // 表示线置信度
-    "class_ids": [[float]],            // 表示线类型
-    "curve_type": [[str]],             // 表示拟合类型
-    "status": "success" | "failed"
+    "params_list": List[List[List[float]]] ,        // 表示拟合参数
+    "linepoints_list": List[List[List[List[float]]]],  // 表示线点集合
+    "confidence_list": List[List[float]],      // 表示线置信度
+    "class_ids": List[List[float]],            // 表示线类型
+    "curve_type": List[List[str]],             // 表示拟合类型
+    "status": str
   },
   ...
 ]
@@ -111,16 +110,14 @@ pred_y = A * pred_x**3 + B * pred_x**2 + C * pred_x**1 + D
 ```
 
 ### 字段说明
-
-| 字段名 | 类型 | 描述 |
-|--------|------|------|
-| params_list | [[[float]]] | 表示拟合参数 |
-| linepoints_list | [[[[float]]]] | 表示线点集合 |
-| confidence_list | [[float]] | 表示线置信度 |
-| class_ids | [[float]] | 表示线类型 |
-| curve_type | [[str]] | 表示拟合类型 ("cosin" 或 "poly") |
-| status | str | 处理状态 |
-
+| 字段名 | 类型 | 描述                                           |
+|--------|------|----------------------------------------------|
+| params_list | List[List[List[float]]] | 拟合参数|
+| linepoints_list | List[List[List[List[float]]]] | 线点集合|
+| confidence_list | List[List[float]] | 线置信度|
+| class_ids | List[List[float]] | 线类型 |
+| curve_type | List[List[str]] | 拟合类型 |
+| status | str | 处理状态，'success' 表示成功 |
 
 
 ### 示例结果

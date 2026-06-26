@@ -65,10 +65,11 @@ dict_list = [{
 }]
 ```
 
-### Task-Specific Input Formats
+### Task-Specific Formats
 
 #### S21PEAK / S21PEAKMULTI
-Input format for S21 peak detection:
+
+**Input:**
 ```python
 {
     "image": {
@@ -82,12 +83,28 @@ Input format for S21 peak detection:
 - `amp_array`: 1D amplitude array (magnitude of complex S21), shape (A,)
 - `phi_array`: 1D phase array (unwrapped, detrended), shape (A,)
 
+**Output:**
+```json
+{
+  "type": "s21peak",
+  "results": [{
+    "peaks": [[int, ...], [int, ...]],              // Peak indices per qubit
+    "confs": [[float, ...], [float, ...]],          // Confidence scores per peak
+    "freqs_list": [[float, ...], [float, ...]],     // Peak frequencies per qubit
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
 #### OPTPIPULSE
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [waveforms_array, x_array],  # (2D waveform data, 1D time axis)
+        "Q0": [waveforms_array, x_array],  // (2D waveform data, 1D time axis)
         "Q1": [waveforms_array, x_array],
     }
 }
@@ -97,12 +114,55 @@ Input format:
 
 Supported data keys: `population`, `iq_avg`, `iq`
 
-#### T1FIT
-Input format:
+**Output:**
+```json
+{
+  "type": "optpipulse",
+  "results": [{
+    "params": [[float, ...], [float, ...]],   // Co-peak time positions per qubit
+    "confs": [[float, ...], [float, ...]],    // Confidence scores per peak
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### RABICOS
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [delay_array, amp_array],  # (time delays, measured populations)
+        "Q0": [x_array, amp_array],  // (drive amplitude, amplitude)
+        "Q1": [x_array, amp_array],
+    }
+}
+```
+- `x_array`: 1D array of drive amplitude values
+- `amp_array`: 1D array of measured amplitude
+
+**Output:**
+```json
+{
+  "type": "rabicos",
+  "results": [{
+    "peaks": [[float, ...], [float, ...]],    // First peak time positions per qubit
+    "confs": [[float, ...], [float, ...]],    // Confidence scores per peak
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### T1FIT
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [delay_array, amp_array],  // (time delays, measured populations)
         "Q1": [delay_array, amp_array],
     }
 }
@@ -114,12 +174,31 @@ Fitting formula: $y = A \cdot e^{-x / T1} + B$
 
 Supported data keys: `population`, `iq_avg`, `iq`
 
+**Output:**
+```json
+{
+  "type": "t1fit",
+  "results": [{
+    "params_list": [[A, T1, B], [A, T1, B], ...],  // Fitting params per qubit
+    "r2_list": [float, float, ...],                  // R² goodness of fit
+    "fit_data_list": [[float, ...], [float, ...]],  // Fitted curve values
+    "status": "success" | "failed"
+  }]
+}
+```
+- `A`: Initial amplitude
+- `T1`: Relaxation time (µs)
+- `B`: Baseline offset
+
+---
+
 #### T2FIT / RAMSEY
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [delay_array, amp_array],  # (time delays, measured amplitudes)
+        "Q0": [delay_array, amp_array],  // (time delays, measured amplitudes)
         "Q1": [delay_array, amp_array],
     }
 }
@@ -129,25 +208,66 @@ Input format:
 
 Fitting formula: $y = A \cdot e^{-(x/T2)^2 - x/T1/2} \cdot \cos(2\pi w x + \phi) + B$
 
+**Output:**
+```json
+{
+  "type": "t2fit",
+  "results": [{
+    "params_list": [[A, B, T1, T2, w, phi], ...],  // Fitting params per qubit
+    "r2_list": [float, float, ...],                  // R² goodness of fit
+    "fit_data_list": [[float, ...], [float, ...]],  // Fitted curve values (dense points)
+    "status": "success" | "failed"
+  }]
+}
+```
+- `A`: Initial amplitude
+- `B`: Baseline offset
+- `T1`: Exponential decay time (µs)
+- `T2`: Gaussian decay time (µs)
+- `w`: Oscillation angular frequency (rad/s)
+- `phi`: Initial phase (rad)
+
+---
+
 #### SPINECHO
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [delay_array, amp_array],  # (delay times, signal amplitudes)
+        "Q0": [delay_array, amp_array],  // (delay times, signal amplitudes)
         "Q1": [delay_array, amp_array],
     }
 }
 ```
 
-Returns T2 relaxation time from Spin Echo decay signal.
+**Output:**
+```json
+{
+  "type": "spinecho",
+  "results": [{
+    "status": "success" | "failed",
+    "Q0": {
+      "x": [float, ...],           // Delay time sequence
+      "amp": [float, ...],         // Raw signal amplitudes
+      "fit_envelope": [float, ...], // Fitted envelope curve
+      "T2": float,                  // Spin Echo T2 time (µs)
+      "r2": float                   // R² goodness of fit
+    },
+    "Q1": { ... }
+  }]
+}
+```
+
+---
 
 #### DRAG
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [lamb_array, y_array],  # (lambda parameter, 2D population data)
+        "Q0": [lamb_array, y_array],  // (lambda parameter, 2D population data)
         "Q1": [lamb_array, y_array],
     }
 }
@@ -155,120 +275,26 @@ Input format:
 - `lamb_array`: 1D array of DRAG λ values
 - `y_array`: 2D array of shape (2, n_lambda) for both states
 
-Returns fitting curves and intersection points with confidence scores.
-
-#### DELTA
-Same format as DRAG, but with inverted amplitude (for valley detection):
-```python
+**Output:**
+```json
 {
-    "image": {
-        "Q0": [amp_array, y_array],
-        "Q1": [amp_array, y_array],
-    }
+  "type": "drag",
+  "results": [{
+    "x_pred_list": [[float, ...], [float, ...]],           // Fitted curve x values
+    "y0_pred_list": [[float, ...], [float, ...]],          // Fitted curve 0 y values
+    "y1_pred_list": [[float, ...], [float, ...]],          // Fitted curve 1 y values
+    "intersections_list": [[[x, y], ...], [[x, y], ...]],  // Intersection points per qubit
+    "intersections_confs_list": [[float, ...], [float, ...]], // Confidence per intersection
+    "status": "success" | "failed"
+  }]
 }
 ```
 
-#### RABICOS
-Input format:
-```python
-{
-    "image": {
-        "Q0": [x_array, amp_array],  # (drive amplitude, amplitude)
-        "Q1": [x_array, amp_array],
-    }
-}
-```
-- `x_array`: 1D array of drive amplitude values
-- `amp_array`: 1D array of measured amplitude
-
-Returns first peak position and confidence for each qubit.
-
-#### S21VSFLUX (Scope)
-Input format:
-```python
-{
-    "image": {
-        "Q0": [freq_array, volt_array, s_matrix],  # tuple, length >= 3
-        "Q1": [freq_array, volt_array, s_matrix],
-    },
-    "id": 4095
-}
-```
-- `freq_array`: 1D array of frequency values, shape (A,)
-- `volt_array`: 1D array of voltage/bias values, shape (B,)
-- `s_matrix`: 2D array of S21 values, shape (B, A)
-
-Returns cosine curves, line curves and their confidence scores.
-
-#### SINGLESHOT
-Input format:
-```python
-{
-    "image": {
-        "Q0": [s0_array, s1_array, False],  # (ground state IQ, excited state IQ, reserved)
-        "Q1": [s0_array, s1_array, False],
-    }
-}
-```
-- `s0_array`: 1D complex array for |0⟩ state, shape (A,)
-- `s1_array`: 1D complex array for |1⟩ state, shape (A,)
-
-Returns separation score, threshold, projection angle, and ellipse fitting parameters.
-
-#### SPECTRUM2D (Scope)
-Input format:
-```python
-{
-    "image": {
-        "Q0": [iq_avg, bias_array, freq_array],  # tuple, length = 3
-        "Q1": [iq_avg, bias_array, freq_array],
-    },
-    "id": 2660
-}
-```
-- `iq_avg`: 2D complex array of shape (B, A)
-- `bias_array`: 1D array of bias values, shape (A,)
-- `freq_array`: 1D array of frequency values, shape (B,)
-
-Supported data keys: `iq_avg`, `population`, `iq`
-
-Returns cosine curves, line curves, confidence scores, and compression ratios.
-
-#### SPECTRUM (Scope/NNScope)
-Input format:
-```python
-{
-    "image": {
-        "Q0": [freq_array, s_array],  # 1D spectrum
-        "Q1": [freq_array, s_array],
-    }
-}
-```
-- `freq_array`: 1D array of frequency values
-- `s_array`: 1D array of spectral amplitude
-
-Uses AMPD algorithm for peak detection.
-
-Returns peak positions, confidence scores, and mean cut widths.
-
-#### POWERSHIFT (Scope)
-Input format:
-```python
-{
-    "image": {
-        "Q0": [freq_array, amp_array, value_array],  # (x, y, value)
-        "Q1": [freq_array, amp_array, value_array],
-    }
-}
-```
-- `freq_array`: 1D array, shape (B,) - frequency axis
-- `amp_array`: 1D array, shape (A,) - amplitude axis
-- `value_array`: 2D array, shape (A, B) - complex IQ values
-
-Returns classification (5 classes), keypoints, and confidence scores.
+---
 
 #### RB (Randomized Benchmarking)
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
@@ -283,14 +309,199 @@ Input format:
 
 Fitting formula: $P(x) = A \cdot p^x + B$
 
-Returns fitted parameters [A, p, B], R² values, and fit data.
+**Output:**
+```json
+{
+  "type": "rb",
+  "results": [{
+    "params_list": [[A, p, B], [A, p, B], ...],   // Fitting params per qubit
+    "r2_list": [float, float, ...],                 // R² goodness of fit
+    "fit_data_list": [[float, ...], [float, ...]], // Fitted curve values
+    "status": "success" | "failed"
+  }]
+}
+```
+- `A`: Initial amplitude
+- `p`: Decay factor (closer to 1 = higher fidelity)
+- `B`: Baseline offset
 
-#### T12DFIT (2D T1 Fitting)
-Input format:
+---
+
+#### S21VSFLUX
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [p_array, delay_array, zpa_array],  # (probability, delay, zpa)
+        "Q0": [freq_array, volt_array, s_matrix],  // tuple, length >= 3
+        "Q1": [freq_array, volt_array, s_matrix],
+    },
+    "id": 4095
+}
+```
+- `freq_array`: 1D array of frequency values, shape (A,)
+- `volt_array`: 1D array of voltage/bias values, shape (B,)
+- `s_matrix`: 2D array of S21 values, shape (B, A)
+
+**Output:**
+```json
+{
+  "type": "s21vsflux",
+  "results": [{
+    "coscurves_list": [[[[volt, freq], ...], ...], ...],  // Cosine curve points
+    "cosconfs_list": [[float, ...], [float, ...]],         // Cosine confidence scores
+    "lines_list": [[[[volt, freq], ...], ...], ...],       // Line curve points
+    "lineconfs_list": [[float, ...], [float, ...]],        // Line confidence scores
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### SPECTRUM2D
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [iq_avg, bias_array, freq_array],  // tuple, length = 3
+        "Q1": [iq_avg, bias_array, freq_array],
+    },
+    "id": 2660
+}
+```
+- `iq_avg`: 2D complex array of shape (B, A)
+- `bias_array`: 1D array of bias values, shape (A,)
+- `freq_array`: 1D array of frequency values, shape (B,)
+
+Supported data keys: `iq_avg`, `population`, `iq`
+
+**Output:**
+```json
+{
+  "type": "spectrum2d",
+  "results": [{
+    "params": [[[[volt, freq], ...], ...], ...],           // Cosine curve points
+    "confs": [[float, ...], [float, ...]],                  // Cosine confidence scores
+    "coscompress_list": [[float, ...], [float, ...]],       // Cosine compression ratios
+    "lines_list": [[[[volt, freq], ...], ...], ...],        // Line curve points
+    "lineconfs_list": [[float, ...], [float, ...]],         // Line confidence scores
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### SPECTRUM
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [freq_array, s_array],  // 1D spectrum
+        "Q1": [freq_array, s_array],
+    }
+}
+```
+- `freq_array`: 1D array of frequency values
+- `s_array`: 1D array of spectral amplitude
+
+Uses AMPD algorithm for peak detection.
+
+**Output:**
+```json
+{
+  "type": "spectrum",
+  "results": [{
+    "peaks_list": [[float, ...], [float, ...], ...],           // Peak positions per qubit
+    "confidences_list": [[float, ...], [float, ...], ...],     // Confidence per peak
+    "mean_cut_widths_list": [[float, ...], [float, ...], ...], // Peak widths per qubit
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### POWERSHIFT
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [freq_array, amp_array, value_array],  // (x, y, value)
+        "Q1": [freq_array, amp_array, value_array],
+    }
+}
+```
+- `freq_array`: 1D array, shape (B,) - frequency axis
+- `amp_array`: 1D array, shape (A,) - amplitude axis
+- `value_array`: 2D array, shape (A, B) - complex IQ values
+
+**Output:**
+```json
+{
+  "type": "powershift",
+  "results": [{
+    "q_list": [int, int, ...],                              // Qubit indices
+    "keypoints_list": [[[x, y], ...], [[x, y], ...], ...], // Keypoints per qubit
+    "confs": [float, float, ...],                            // Confidence scores
+    "class_num_list": [int, int, ...],                       // Class numbers (1-5)
+    "status": "success" | "failed"
+  }]
+}
+```
+- **Class 1**: Vertical to x-axis
+- **Class 2**: Both ends vertical, middle inclined
+- **Class 3**: Only bottom vertical, then inclined
+- **Class 4**: Entirely inclined upward
+- **Class 5**: No information
+
+---
+
+#### SINGLESHOT
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [s0_array, s1_array, False],  // (ground state IQ, excited state IQ, reserved)
+        "Q1": [s0_array, s1_array, False],
+    }
+}
+```
+- `s0_array`: 1D complex array for |0⟩ state, shape (A,)
+- `s1_array`: 1D complex array for |1⟩ state, shape (A,)
+
+**Output:**
+```json
+{
+  "type": "singleshot",
+  "results": [{
+    "sep_score_list": [float, float, ...],                              // Separation scores
+    "threshold_list": [float, float, ...],                              // Classification thresholds
+    "phi_list": [float, float, ...],                                    // Best projection angles
+    "signal_list": [[[float, ...], [float, ...]], ...],                 // Signal projections
+    "idle_list": [[[float, ...], [float, ...]], ...],                   // Idle signal projections
+    "params_list": [[[float, ...], [float, ...]], ...],                 // Ellipse fitting params
+    "std_list": [[std0, std1, var0, var1, cov01, [[cov00, cov01], [cov10, cov11]]], ...],
+    "cdf_list": [[[float, ...], [float, ...]], ...],                    // CDF data
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### T12DFIT (2D T1 Fitting)
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [p_array, delay_array, zpa_array],  // (probability, delay, zpa)
         "Q1": [p_array, delay_array, zpa_array],
     }
 }
@@ -301,14 +512,27 @@ Input format:
 
 Fitting formula per ZPA: $y = A \cdot e^{-x / T1} + B$
 
-Returns T1 values and ZPA list for each qubit.
+**Output:**
+```json
+{
+  "type": "t12dfit",
+  "results": [{
+    "t1_list": [[float, float, ...], [float, float, ...], ...],  // T1 values per ZPA per qubit
+    "zpa_list": [[float, float, ...], [float, float, ...], ...], // ZPA values per qubit
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
 
 #### TIMINGXYZ (XYZ Timing Calibration)
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [amp_array, delay_array],  # (signal amplitude, delay time)
+        "Q0": [amp_array, delay_array],  // (signal amplitude, delay time)
         "Q1": [amp_array, delay_array],
     }
 }
@@ -316,14 +540,33 @@ Input format:
 - `amp_array`: 1D array of signal amplitudes
 - `delay_array`: 1D array of delay times (seconds)
 
-Returns fitting curves, timing offset `zd_xy`, and R² values.
+**Output:**
+```json
+{
+  "type": "xyz_timing",
+  "results": [{
+    "status": "success" | "failed",
+    "Q0": {
+      "x": [float, ...],         // Delay time sequence
+      "amp": [float, ...],       // Raw signal amplitudes
+      "fit_data": [float, ...],  // Fitted curve values
+      "zd_xy": float,            // Timing offset (ns)
+      "r2": float                // R² goodness of fit
+    },
+    "Q1": { ... }
+  }]
+}
+```
+
+---
 
 #### OPTREADFREQ (Optimal Readout Frequency)
-Input format:
+
+**Input:**
 ```python
 {
     "image": {
-        "Q0": [freq_array, s0_array, s1_array],  # (frequency, s21_curve0, s21_curve1)
+        "Q0": [freq_array, s0_array, s1_array],  // (frequency, s21_curve0, s21_curve1)
         "Q1": [freq_array, s0_array, s1_array],
     }
 }
@@ -332,7 +575,40 @@ Input format:
 - `s0_array`: 1D array of first S21 curve
 - `s1_array`: 1D array of second S21 curve
 
-Returns peak index where the two S21 curves are farthest apart.
+**Output:**
+```json
+{
+  "type": "optreadfreq",
+  "results": [{
+    "peak_list": [int, int, ...],  // Peak indices per qubit
+    "status": "success" | "failed"
+  }]
+}
+```
+
+---
+
+#### DELTA
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [amp_array, y_array],
+        "Q1": [amp_array, y_array],
+    }
+}
+```
+
+**Output:**
+```json
+{
+  "type": "delta",
+  "results": [{
+    "status": "success" | "failed"
+  }]
+}
+```
 
 ### Getting Results
 

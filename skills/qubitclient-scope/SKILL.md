@@ -658,7 +658,7 @@ CurveType.POLY    # Polynomial curve fitting
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # Prepare data: frequency, amplitude, phase
 freq = np.linspace(4e9, 6e9, 201)
@@ -684,7 +684,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # T1 decay data
 delay = np.array([0, 1e-6, 2e-6, 5e-6, 10e-6, 20e-6, 50e-6])
@@ -707,7 +707,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # T2 decay data with oscillation
 delay = np.linspace(0, 10e-6, 101)
@@ -731,7 +731,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # DRAG lambda scan data
 lamb = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
@@ -758,7 +758,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # Spin Echo data
 delay = np.array([0, 50, 100, 150, 200, 250, 300])  # microseconds
@@ -781,7 +781,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # RB data
 cycles = np.array([0, 10, 20, 40, 80, 160, 320])
@@ -804,7 +804,7 @@ results = client.get_result(response)
 from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
 import numpy as np
 
-client = QubitNNScopeClient(url="http://server:port", api_key="key")
+client = QubitNNScopeClient()
 
 # 2D spectrum data
 bias = np.linspace(-0.5, 0.5, 51)
@@ -832,7 +832,7 @@ results = client.get_result(response=response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # Single-shot IQ data for |0> and |1> states
 s0 = np.random.randn(1000) + 1j * np.random.randn(1000)  # ground state
@@ -855,7 +855,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # 2D T1 data: p_array (zpa, delay), delay_array, zpa_array
 zpa = np.array([0.4, 0.6, 0.8, 1.0])
@@ -884,7 +884,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # XYZ timing data
 delay = np.array([-6e-8, -4e-8, -2e-8, 0.0, 2e-8, 4e-8, 6e-8])
@@ -907,7 +907,7 @@ results = client.get_result(response)
 from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
-client = QubitScopeClient(url="http://server:port", api_key="key")
+client = QubitScopeClient()
 
 # Readout frequency optimization data
 freq = np.linspace(4e9, 6e9, 201)

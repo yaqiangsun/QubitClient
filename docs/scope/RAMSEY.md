@@ -96,7 +96,7 @@ results = response_data_filtered.get("results")
 }
 ```
 
-params_list[i]: 第 i 个量子比特的拟合参数 [A, B, T1, w, phi]
+params_list[i]: 第 i 个量子比特的拟合参数 [A, B, T1, T2, w, phi]
 fit_data_list[i]: 第 i 个量子比特在原始时间点上的拟合值
 fit_data_dense_list[i]: 第 i 个量子比特在密集时间点上的拟合值（用于绘制平滑曲线）
 x_dense_list[i]: 与 fit_data_dense_list[i] 一一对应的密集时间轴
@@ -106,7 +106,7 @@ r2_list[i]: 第 i 个量子比特的 R² 拟合优度
 
 | 字段名           | 类型                   | 描述 |
 |------------------|------------------------|------|
-| `params_list`    | `List[List[float]]`    | 每个量子比特的拟合参数 `[A, B, T1, w, phi]`：<br>• `A`: 初始振幅<br>• `B`: 基线偏移<br>• `T1`: 指数衰减时间（µs）<br>• `w`: 振荡角频率（rad/s）<br>• `phi`: 初始相位（rad） |
+| `params_list`    | `List[List[float]]`    | 每个量子比特的拟合参数 `[A, B, T1, T2, w, phi]`：<br>• `A`: 初始振幅<br>• `B`: 基线偏移<br>• `T1`: 指数衰减时间（µs）<br>• `T2`: 高斯衰减时间（µs）<br>• `w`: 振荡角频率（rad/s）<br>• `phi`: 初始相位（rad） |
 | `r2_list`        | `List[float]`          | 每个量子比特的 R² 拟合优度，范围 `[0, 1]`，越接近 1 拟合越好 |
 | `fit_data_list`  | `List[List[float]]`    | 每个量子比特在原始时间点上的拟合曲线值 |
 | `fit_data_dense_list` | `List[List[float]]` | 每个量子比特在密集时间点上的拟合曲线值 |

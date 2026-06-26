@@ -248,11 +248,15 @@ Fitting formula: $y = A \cdot e^{-(x/T2)^2 - x/T1/2} \cdot \cos(2\pi w x + \phi)
   "results": [{
     "status": "success" | "failed",
     "Q0": {
-      "x": [float, ...],           // Delay time sequence
-      "amp": [float, ...],         // Raw signal amplitudes
-      "fit_envelope": [float, ...], // Fitted envelope curve
-      "T2": float,                  // Spin Echo T2 time (µs)
-      "r2": float                   // R² goodness of fit
+      "q_name": "Q0",                // Qubit name
+      "x": [float, ...],             // Delay time sequence
+      "amp": [float, ...],           // Raw signal amplitudes
+      "envelope": [float, ...],      // Extracted envelope curve
+      "fit_envelope": [float, ...],  // Fitted envelope curve
+      "params": [float, ...],        // Fitting parameters
+      "T2": float,                   // Spin Echo T2 time (µs)
+      "r2": float,                   // R² goodness of fit
+      "success": true | false        // Per-qubit fitting success
     },
     "Q1": { ... }
   }]
@@ -547,11 +551,14 @@ Fitting formula per ZPA: $y = A \cdot e^{-x / T1} + B$
   "results": [{
     "status": "success" | "failed",
     "Q0": {
+      "q_name": "Q0",            // Qubit name
       "x": [float, ...],         // Delay time sequence
       "amp": [float, ...],       // Raw signal amplitudes
-      "fit_data": [float, ...],  // Fitted curve values
+      "fit_data": [float, ...],  // Erf fitted curve values
+      "params": [float, ...],    // Fitting parameters
       "zd_xy": float,            // Timing offset (ns)
-      "r2": float                // R² goodness of fit
+      "r2": float,               // R² goodness of fit
+      "success": true | false    // Per-qubit fitting success
     },
     "Q1": { ... }
   }]
@@ -594,21 +601,27 @@ Fitting formula per ZPA: $y = A \cdot e^{-x / T1} + B$
 ```python
 {
     "image": {
-        "Q0": [amp_array, y_array],
-        "Q1": [amp_array, y_array],
+        "Q0": [waveforms_array, x_array],  // (2D waveform data, 1D bias/frequency axis)
+        "Q1": [waveforms_array, x_array],
     }
 }
 ```
+- `waveforms_array`: 2D array of shape (N_waveforms, M), scan waveforms
+- `x_array`: 1D array of shape (M,), bias/frequency axis
 
 **Output:**
 ```json
 {
   "type": "delta",
   "results": [{
+    "params": [[float, ...], [float, ...], ...],  // Delta peak positions per qubit
+    "confs": [[float, ...], [float, ...], ...],   // Confidence scores per peak
     "status": "success" | "failed"
   }]
 }
 ```
+- `params[i]`: Peak positions for qubit i (empty list if no peaks)
+- `confs[i]`: Confidence scores corresponding to each peak in `params[i]`
 
 ### Getting Results
 

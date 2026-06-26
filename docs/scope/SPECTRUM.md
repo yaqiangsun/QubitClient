@@ -93,9 +93,9 @@ mean_cut_widths_list[i]: 第 i 个量子比特的每个峰的宽度
 
 | 字段名           | 类型                   | 描述 |
 |------------------|------------------------|------|
-| `params_list`    | `List[List[float]]`    | 每个量子比特峰所在位置（x值），一个量子比特可能存在多个峰 |
-| `r2_list`        | `List[List[float]]`    | 每个量子比特每个峰的可信度，范围 `[0, 1]`，越接近 1 越可信 |
-| `fit_data_list`  | `List[List[float]]`    | 每个量子比特的每个峰的宽度 |
+| `peaks_list`     | `List[List[float]]`    | 每个量子比特峰所在位置（x值），一个量子比特可能存在多个峰 |
+| `confidences_list` | `List[List[float]]`  | 每个量子比特每个峰的可信度，范围 `[0, 1]`，越接近 1 越可信 |
+| `mean_cut_widths_list` | `List[List[float]]` | 每个量子比特的每个峰的宽度 |
 | `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
 
 ### 示例结果

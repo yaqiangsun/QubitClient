@@ -11,11 +11,11 @@ license: Proprietary. LICENSE.txt has complete terms
 ```python
 # Scope tasks (curve fitting & analysis)
 from qubitclient import QubitScopeClient, TaskName
-client = QubitScopeClient(url="http://server:port", api_key="your-key")
+client = QubitScopeClient()
 
 # NNScope tasks (neural network based analysis)
 from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
-client = QubitNNScopeClient(url="http://server:port", api_key="your-key")
+client = QubitNNScopeClient()
 ```
 
 ### Task Names

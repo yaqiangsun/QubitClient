@@ -17,7 +17,7 @@ data/
 tmp/
 .vscode/
 .idea/
-config.py
+# config.py
 qubitclient.json
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`

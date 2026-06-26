@@ -13,7 +13,7 @@ from qubitclient import QubitScopeClient
 from qubitclient import TaskName
 
 
-client = QubitScopeClient(url=url, api_key=api_key)
+client = QubitScopeClient()
 ```
 
 ### 请求参数
@@ -28,23 +28,28 @@ client = QubitScopeClient(url=url, api_key=api_key)
 #### 输入格式
 
 1. **NPY 文件格式**：
-   NPY文件需要包含一个字典
 
-    ```python
-    {
-        "image": {
-            "Q0": [volt,freq,s],   
-            "Q1": [volt,freq,s],
-            ...
-        }
+NPY文件需要包含一个字典：
+
+```python
+{
+    "image": {
+        "Q0": (freq, volt, s, ...),   # tuple, length>=3
+        "Q1": (freq, volt, s, ...),
+        ...
     }
-    ```
+    "id":4095
+}
+```
 
-volt: 一维 np.ndarray,shape(A,),表示电压信息
-freq: 一维 np.ndarray,shape(B,),表示频率数据
-s: 二维 np.ndarray,shape(B,A),表示二维频谱数据
+每个量子比特对应一个键（如 "Q0"），值为 (freq, volt, s, ...)，至少包含前3个元素：
 
-每个量子比特对应一个键（如 "Q0"），值为 [volt,freq,s] 的列表
+| 元素 | 类型 | 描述 |
+|------|------|------|
+| freq | np.ndarray, shape=(A,) | 频率数据，dtype=float64 |
+| volt | np.ndarray, shape=(B,) | 电压信息，dtype=float64 |
+| s | np.ndarray, shape=(B, A) | 二维频谱数据，dtype=float32 |
+| ... | tuple | 保留字段无具体含义，可以忽略 |
 
 #### 调用示例
 
@@ -86,10 +91,11 @@ results = response_data_filtered.get("results")
 ```json
 [
   {
-    "coscurves_list": [[[[float]]]],     // 表示余弦曲线点集合
-    "cosconfs_list": [[float]],     // 表示余弦曲线置信度
-    "lines_list": [[[[float]]]],     // 表示直线点集合
-    "lineconfs_list":[[float]]     // 表示直线置信度
+    "coscurves_list": List[List[List[List[float]]]],     // 余弦曲线点集合
+    "cosconfs_list": List[List[float]],          // 余弦曲线置信度
+    "lines_list": List[List[List[List[float]]]],         // 直线点集合
+    "lineconfs_list": List[List[float]],         // 直线置信度
+    "status": str                // 处理状态
   },
   ...
 ]
@@ -97,17 +103,13 @@ results = response_data_filtered.get("results")
 
 
 
-
-### 字段说明
-
-| 字段名 | 类型            | 描述 |
-|--------|---------------|------|
-| coscurves_list | [[[[float]]]] | 表示余弦曲线点集合 |
-| cosconfs_list | [[float]]     | 表示余弦曲线置信度 |
-| lines_list | [[[[float]]]] | 表示直线点集合 |
-| lineconfs_list | [[float]]     | 表示直线置信度 |
-
-
+| 字段名 | 类型 | 描述 |
+|--------|------|------|
+| coscurves_list | List[List[List[List[float]]]] | 余弦曲线点集合|
+| cosconfs_list | List[List[float]] | 余弦曲线置信度 |
+| lines_list | List[List[List[List[float]]]] | 直线点集合 |
+| lineconfs_list | List[List[float]] | 直线置信度 |
+| status | str | 处理状态，'success' 表示成功 |
 
 
 ### 示例结果
@@ -115,10 +117,11 @@ results = response_data_filtered.get("results")
 ```python
 [
   {
-    "coscurves_list": [[[[-1,6.843e9],[-0.9,6.844e9],...]],[[[-0.8,6.833e9],[-1,6.847e9],...]]],
-    "cosconfs_list": [[0.6],[0.6]]，
-    "lines_list": [[[[-1,6.943e9],[-0.9,6.94e9],...]],[[[-0.8,6.933e9],[-1,6.847e9],...]]],
-    "lineconfs_list": [[0.5],[0.6]]
+    "coscurves_list": [[[[-1,3.8e9],[-0.9,3.7e9],...]],[[[-1,3.8e9],[-0.9,3.7e9],...]]],
+    "cosconfs_list": [[0.6],[0.6]],
+    "lines_list":[[[[-1,3.8e9],[-0.9,3.7e9],...]],[[[-1,3.8e9],[-0.9,3.7e9],...]]],
+    "lineconfs_list": [[0.5],[0.6]],
+    "status":'success'
   }
 ]
 ```

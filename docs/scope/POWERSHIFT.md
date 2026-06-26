@@ -34,17 +34,17 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
     ```python
     {
         "image": {
-            "Q0": [x_array, y_array, value_array],   
-            "Q1": [x_array, y_array, value_array],
+            "Q0": (x_array, y_array, value_array),   
+            "Q1": (x_array, y_array, value_array),
             ...
         }
     }
     ```
 
-    x_array: 一维 np.ndarray，表示x轴坐标
-    y_array: 一维 np.ndarray，表示y轴坐标
-    value_array: 二维 np.ndarray，表示测量信号值，为复数
-    每个量子比特对应一个键（如 "Q0"），值为 [x, y, value] 的列表
+    x_array:  np.ndarray，np.ndarray,shape(B)，表示freq轴坐标
+    y_array:  np.ndarray，np.ndarray,shape(A)，表示amp轴坐标
+    value_array:  np.ndarray，np.ndarray,shape(A,B)，表示测量信号值iq_avg，为复数
+    每个量子比特对应一个键（如 "Q0"），值为 (x_array, y_array, value_array)
 
 #### 调用示例
 
@@ -67,7 +67,10 @@ response = client.request(
 ### 获取结果
 
 ```python
-results = client.get_result(response=response)
+response_data = client.get_result(response)
+threshold = 0.1
+response_data_filtered = client.get_filtered_result(response,threshold,TaskName.POWERSHIFT.value)
+results = response_data_filtered.get("results")
 ```
 
 ## 返回值格式
@@ -75,69 +78,39 @@ results = client.get_result(response=response)
 返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
-{
-    "type":"powershift",
-    "results":
-    [
-        {
-            "q_list":["Q0","Q1",...],
-            "confs":[float,...],
-            "class_num_list":[int,...],
-            "keypoints_list":
-            [
-                [
-                    [float,float],...
-                ],
-                ...
-            ],
-            "status":"success" | "failed"
-        },
-        ...
-    ]
-}
+[
+  {
+    "q_list":List[int],                    // Q比特列表
+    "keypoints_list": List[List[List[float]]],      // 关键点坐标集合
+    "confs": List[float],                   // 置信度列表
+    "class_num_list": List[int],            // 类别列表
+    "status": str                 // 处理状态
+  },
+  ...
+]
 ```
-
-q_list[i]: 第 i 个量子比特
-confs[i]: 第 i 个量子比特关键点的可信度
-class_num_list[i]: 第 i 个量子比特的类别
-keypoints_list[i]: 第 i 个量子比特的关键点序列
-
 ### 字段说明
-
-| 字段名           | 类型                   | 描述 |
-|------------------|------------------------|------|
-| `q_list`          | `List[char]`    | 当前npy文件包含的量子比特 |
-| `confs`        | `List[float]`    | 每个量子比特每个关键点构成的线的可信度，范围 `[0, 1]`，越接近 1 越可信 |
-| `class_num_list`  | `List[int]`    | 每个量子比特的类别，取值范围为`[1，2，3，4，5]`，其中class1：垂直于x轴，class2：两端都有垂直部分中部倾斜，class3：仅有底部垂直随后倾斜，class4：整体倾斜向上，class5：无信息 |
-|'keypoints_list'|`List[List[List[float,float]]]`|每个量子比特的关键点，存储内容为坐标点，其中class1：[[顶部端点], [底部端点]]; class2：[[顶部端点], [上部拐点], [下部拐点], [底部端点]；class3：[[顶部端点], [拐点], [底部端点]]；class4：[[顶部端点], [底部端点]]；class5：[]|
-| `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
+| 字段名           | 类型                             | 描述 |
+|------------------|--------------------------------|------|
+| `q_list`          | `List[int]`                    | 当前npy文件包含的量子比特 |
+| `confs`        | `List[float]`                  | 置信度列表 |
+| `class_num_list`  | `List[int]`                    | 每个量子比特的类别，取值范围为`[1，2，3，4，5]`，其中class1：垂直于x轴，class2：两端都有垂直部分中部倾斜，class3：仅有底部垂直随后倾斜，class4：整体倾斜向上，class5：无信息 |
+|`keypoints_list`| `List[List[List[float]]]` |每个量子比特的关键点，存储内容为坐标点，其中class1：[[顶部端点], [底部端点]]; class2：[[顶部端点], [上部拐点], [下部拐点], [底部端点]；class3：[[顶部端点], [拐点], [底部端点]]；class4：[[顶部端点], [底部端点]]；class5：[]|
+| `status`         | `str`                          | 处理状态：`"success"` 或 `"failed"` |
 
 ### 示例结果
-
 ```python
-{
-    "type":"powershift",
-    "results":
-    [
-        {"q_list":["Q0","Q1","Q2"],
-        "confs":[0.1429,0.2198,0.6857],
-        "class_num_list":[2,2,1],
-        "keypoints_list":[
-            [
-                [6907600000.0,0.25],[6907600000.0,0.137545],[6908800000.0,0.0],[6908800000.0,0.12505]
-            ],
-            [
-                [6963750000.0,0.25],[6963750000.0,0.187525],[6965750000.0,0.0],[6965750000.0,0.12505]
-            ],
-            [
-                [7026200000.0,0.0],[7026200000.0,0.25]
-            ]
-        ],
-        "status":"success"
-        },
-        ...
-    ]
-}
+[
+  {
+    "q_list": [0,1],
+    "keypoints_list":[[[6907600000.0,0.25],[6907600000.0,0.137545],[6908800000.0,0.0],[6908800000.0,0.12505]],\
+                                        [[6963750000.0,0.25],[6963750000.0,0.187525],[6965750000.0,0.0],[6965750000.0,0.12505]]],
+    "confs": [0.1429,0.2198],
+    "class_num_list": [2,2],
+    "status": 'success'
+  },  
+  ...
+]
 ```
 
 ## 可视化

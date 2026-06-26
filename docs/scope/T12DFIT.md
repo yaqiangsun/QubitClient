@@ -14,7 +14,7 @@ $$
 ```python
 from qubitclient import QubitScopeClient, TaskName
 
-client = QubitScopeClient(url="http://your-server-address:port", api_key="your-api-key")
+client = QubitScopeClient()
 ```
 
 ### 请求参数
@@ -34,18 +34,18 @@ client = QubitScopeClient(url="http://your-server-address:port", api_key="your-a
     ```python
     {
         "image": {
-            "Q0": [p_array,delay_array, zpa_array],   
-            "Q1": [p_array,delay_array, zpa_array],
+            "Q0": (p_array,delay_array, zpa_array),   
+            "Q1": (p_array,delay_array, zpa_array),
             ...
         }
     }
     ```
 
-    p_array: 二维 np.ndarray，表示概率
-    delay_array: 一维 np.ndarray，表示延时
-    zpa_array: 一维 np.ndarray，表示脉冲强度
+    p_array:  np.ndarray,shape(A,B)，表示概率
+    delay_array:  np.ndarray,shape(B,)，表示延时
+    zpa_array:  np.ndarray,shape(A,)，表示脉冲强度
 
-    每个量子比特对应一个键（如 "Q0"），值为 [p, delay,zpa] 的列表
+    每个量子比特对应一个键（如 "Q0"），值为 (p_array,delay_array, zpa_array)
 
 #### 调用示例
 
@@ -82,53 +82,44 @@ results = response_data_filtered.get("results")
 返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
-{
-  "type": "t12dfit",
-  "results": [
-    {
-      "t1_list": [[float, ...], ...],
-      "zpa_list": [[float, ...], ...],
-      "status": "success" | "failed"
-    },
-    ...
-  ]
-}
+[
+  {
+    "t1_list": List[List[float]],       // T1拟合参数列表
+    "zpa_list": List[List[float]],      // ZPA数据列表
+    "status": str         // 处理状态
+  },
+  ...
+]
 ```
-
-params_list[i]: 第 i 个量子比特的拟合参数 [A, T1, B]
-fit_data_list[i]: 第 i 个量子比特在原始时间点上的拟合值
-r2_list[i]: 第 i 个量子比特的 拟合优度
 
 ### 字段说明
 
 | 字段名           | 类型                   | 描述                            |
 |------------------|------------------------|-------------------------------|
-| `t1_list`    | `List[List[float]]`    | 每个量子比特,每个zpa下的的拟合参数           |
-| `zpa_list`        | `List[List[float]]`          | 每个量子比特,zpa列表                  |
+| `t1_list`    | `List[List[float]]`    | T1拟合参数列表，参数即为T1(每个zpa下计算一个T1) |
+| `zpa_list`        | `List[List[float]]`          | ZPA数据列表                       |
 | `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
-
 ### 示例结果
 
 ```python
-{
-  "type": "t12dfit",
-  "results": [
-    {
-      "t1_list": [
-        [0.9606002214647686, 27.10772731801952, 0.16825506437258225],
-        [1.0316859089502217, 11.33354956261001, -0.00035147308286919733],
-        [0.3708991911338009, 30.100798502307462, -0.019399226855197578]
+[
+  {
+     "t1_list": [
+        [0.9606002214647686, 27.10772731801952, 0.16825506437258225,...],
+        [1.0316859089502217, 11.33354956261001, -0.00035147308286919733,...],
+        [0.3708991911338009, 30.100798502307462, -0.019399226855197578,...]
       ],
-      "zpa_list": [
-        [0.4,0.6,0.8],
-        [0.4,0.6,0.8],
-        [0.4,0.6,0.8]
+    "zpa_list": [
+        [0.4,0.6,0.8,...],
+        [0.4,0.6,0.8,...],
+        [0.4,0.6,0.8,...]
       ],
       "status": "success"
-    }
-  ]
-}
+  },  
+  ...
+]
 ```
+
 
 ## 可视化
 

@@ -1,8 +1,8 @@
-# SPECTRUM2DSCOPE 任务接口文档
+# SPECTRUM2D 任务接口文档
 
 ## 概述
 
-SPECTRUM2DSCOPE 是 Scope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+SPECTRUM2D 是 Scope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
 
 ## 接口使用方式
 
@@ -13,7 +13,7 @@ from qubitclient import QubitScopeClient
 from qubitclient import TaskName
 
 
-client = QubitScopeClient(url=url, api_key=api_key)
+client = QubitScopeClient()
 ```
 
 ### 请求参数
@@ -28,23 +28,27 @@ client = QubitScopeClient(url=url, api_key=api_key)
 #### 输入格式
 
 1. **NPY 文件格式**：
-   NPY文件需要包含一个字典
+   NPY文件需要包含一个字典：
 
-    ```python
-    {
-        "image": {
-            "Q0": [s,volt,freq],   
-            "Q1": [s,volt,freq],
-            ...
-        }
-    }
-    ```
+   ```python
+   {
+       "image": {
+           "Q0": (iq_avg, bias, frequency),   # tuple, length=3
+           "Q1": (iq_avg, bias, frequency),
+           ...
+       }
+       "id":2660    #保留字段无具体含义，可以忽略
+   }
+   
+   
+   ```
+每个量子比特对应一个键（如 "Q0"），值为 (iq_avg, bias, frequency)，至少包含前3个元素：
+| 元素 | 类型 | 描述 |
+|------|------|------|
+| iq_avg | np.ndarray,  shape=(B, A) | IQ平均值，dtype=complex64 |
+| bias | np.ndarray, shape=(A,) | 偏置数组，dtype=float64 |
+| frequency | np.ndarray,  shape=(B,) | 频率数组，dtype=float64 |
 
-volt: 一维 np.ndarray,shape(A,),表示电压信息
-freq: 一维 np.ndarray,shape(B,),表示频率数据
-s: 二维 np.ndarray,shape(B,A),表示二维频谱数据
-
-每个量子比特对应一个键（如 "Q0"），值为 [s,volt,freq] 的列表
 
 #### 调用示例
 
@@ -76,37 +80,37 @@ results = response_data.get("results")
 # response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
 ```
 
-## 返回值格式
+
+
+### 返回值格式
 
 返回的结果是一个列表，每个字典元素对应一个输入文件的处理结果：
 
 ```json
 [
   {
-    "params": [[[float]]],     // 表示余弦曲线点集合
-    "confs": [[float]],     // 表示余弦曲线置信度
-    "coscompress_list": [[float]],     // 表示余弦曲线压缩程度
-    "lines_list": [[[[float]]]],     // 表示直线点集合
-    "lineconfs_list":[[float]]     // 表示直线置信度
+    "params": List[List[List[List[float]]]],          // 余弦曲线点集合
+    "confs": List[List[float]],               // 余弦曲线置信度
+    "coscompress_list": List[List[float]],    // 余弦曲线压缩程度
+    "lines_list": List[List[List[List[float]]]],      // 直线点集合
+    "lineconfs_list": List[List[float]],      // 直线置信度
+    "status": str               // 处理状态
   },
   ...
 ]
 ```
 
 
-
-
 ### 字段说明
 
-| 字段名 | 类型 | 描述 |
-|--------|------|------|
-| params | [[[[float]]]] | 表示余弦曲线点集合 |
-| confs | [[float]] | 表示余弦曲线置信度 |
-| coscompress_list | [[float]] | 表示余弦曲线压缩程度 |
-| lines_list | [[[[float]]]] | 表示直线点集合 |
-| lineconfs_list | [[float]] | 表示直线置信度 |
-
-
+| 字段名 | 类型 | 描述                                                |
+|--------|------|---------------------------------------------------|
+| params | List[List[List[List[float]]]] | 余弦曲线点集合 |
+| confs | List[List[float]] | 余弦曲线置信度  |
+| coscompress_list | List[List[float]] | 余弦曲线压缩程度 |
+| lines_list | List[List[List[List[float]]]] | 直线点集合  |
+| lineconfs_list | List[List[float]] | 直线置信度 |
+| status | str | 处理状态，'success' 表示成功   |
 
 
 ### 示例结果
@@ -114,11 +118,14 @@ results = response_data.get("results")
 ```python
 [
   {
-    "coscurves_list": [[[[-1,3.8e9],[-0.9,3.7e9],...]],[[[-0.95,3.73e9],[-1,3.7847e9],...]]],
-    "cosconfs_list": [[0.7],[0.9]]，
-    "lines_list": [[[[-1,3.83e9],[-0.9,3.84e9],...]],[[[-0.8,3.81e9],[-1,3.82e9],...]]],
-    "lineconfs_list": [[0.5],[0.6]]
-  }
+    "params": [[[[-1,3.8e9],[-0.9,3.7e9],...]],[[[-1,3.8e9],[-0.9,3.7e9],...]]],
+    "confs": [[0.7],[0.9]],
+    "coscompress_list": [[0.7],[0.9]],
+    "lines_list": [[[[-1,3.8e9],[-0.9,3.7e9],...]],[[[-1,3.8e9],[-0.9,3.7e9],...]]],
+    "lineconfs_list": [[0.7],[0.9]],
+    "status":'success'
+  },  
+  ...
 ]
 ```
 

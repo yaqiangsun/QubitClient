@@ -13,7 +13,7 @@ from qubitclient import QubitScopeClient
 from qubitclient import TaskName
 
 
-client = QubitScopeClient(url=url, api_key=api_key)
+client = QubitScopeClient()
 ```
 
 ### 请求参数
@@ -33,12 +33,18 @@ client = QubitScopeClient(url=url, api_key=api_key)
     ```python
     {
         "image": {
-            "Q0": [s0_array, s1_array],   
-            "Q1": [s0_array, s1_array],
+            "Q0": (x,y,z),   
+            "Q1": (x,y,z),
             ...
         }
     }
     ```
+其中：
+- x: np.ndarray, shape (A,), 表示复数信号0 s0_array
+- y: np.ndarray, shape (A,), 表示复数信号1 s1_array
+- z: bool, False 保留字段无具体含义，可以忽略
+
+每个量子比特对应一个键（如 "Q0"），值为 (x,y,z) 
 
 #### 调用示例
 
@@ -61,13 +67,9 @@ response = client.request(file_list=dict_list, task_type=TaskName.SINGLESHOT)
 ### 获取结果
 
 ```python
-if hasattr(response, 'parsed'):
-    response_data = response.parsed
-elif isinstance(response, dict):
-    response_data = response
-else:
-    response_data = {}
-results = client.get_result(response=response_data)
+
+response_data = client.get_result(response)
+results = response_data.get("results")
 ```
 
 ## 返回值格式
@@ -76,92 +78,53 @@ results = client.get_result(response=response_data)
 
 ```json
 [
-   {
-    "threshold_list": [float],     // 分类决策阈值，在投影轴上的分类阈值以最小化分类误差
-    "sep_score_list": [float], // 分离程度 separation_degree
-    "phi_list": [float],         // 最佳投影方向的角度，使两组信号在该方向上具有最大可区分性，给出投影轴
-    "signal_list": [[[float]]],         // 信号投影，复数信号投影到一维实轴（投影轴）
-    "idle_list": [[[float]]],         // 空闲信号投影，复数信号投影到一维实轴（投影轴）
-    "params_list": [[[float]]],         //  椭圆拟合参数
-    "std_list": [[float,float,float,float,[[float]],[[float]]]], // 数据的标准差，方差，协方差信息
-    "cdf_list": [[[float]]],         // 累积分布函数数据
+  {
+    "sep_score_list": List[float],        // 分离程度 separation_degree
+    "threshold_list": List[float],        // 分类决策阈值
+    "phi_list": List[float],              // 最佳投影方向角度
+    "signal_list": List[List[List[float]]], // 信号投影数据
+    "idle_list": List[List[List[float]]],   // 空闲信号投影数据
+    "params_list": List[List[List[float]]], // 椭圆拟合参数
+    "std_list": List[List[Union[float, List[List[float]]]]], // 标准差、方差、协方差信息
+    "cdf_list": List[List[List[float]]],   // 累积分布函数数据
+    "status": str                          // 处理状态
   },
   ...
 ]
 ```
-
-
-
-
-
-
 ### 字段说明
+| 字段名 | 类型 | 描述 |
+|--------|------|------|
+| sep_score_list | List[float] |分离程度 separation_degree |
+| threshold_list | List[float] | 分类决策阈值 |
+| phi_list | List[float] | 最佳投影方向的角度 |
+| signal_list | List[List[List[float]]] | 信号投影 |
+| idle_list | List[List[List[float]]] | 空闲信号投影 |
+| params_list | List[List[List[float]]] | 椭圆拟合参数 |
+| std_list | std_list: List[List[Union[float, List[List[float]]]]] | 数据的标准差、方差、协方差信息 |
+| cdf_list | List[List[List[float]]] | 累积分布函数数据 |
+| status | str | 处理状态，'success' 表示成功 |
 
-| 字段名 | 类型 | 描述                                 |
-|--------|------|------------------------------------|
-| threshold_list | [float] | 分类决策阈值，在投影轴上的分类阈值以最小化分类误差          |
-| sep_score_list | [float] | 分离程度 separation_degree             |
-| phi_list | [float] | 最佳投影方向的角度，使两组信号在该方向上具有最大可区分性，给出投影轴 |
-| signal_list | [[[float]]] | 信号投影，复数信号投影到一维实轴（投影轴）              |
-| idle_list | [[[float]]] | 空闲信号投影，复数信号投影到一维实轴（投影轴）            |
-| params_list | [[[float]]] | 椭圆拟合参数                             |
-| std_list | [[float,float,float,float,[[float]],[[float]]]] | 数据的标准差，方差，协方差信息                    |
-| cdf_list | [[[float]]] | 累积分布函数数据                           |
 
 ### 示例结果
 
 ```python
 [
   {
-    "params_list": [1.64,2.31],
-    "sep_score_list": [0.18,0.24],
-    "phi_list": [-2.1, -2.2]
-    "signal_list": [
-      [[-3.6,-3.8,...]，
-        [-3.5,-3.9,...]，]
-      [[-3.2,-3.4,...]，
-        [-3.4,-3.1,...]，]
-      [[-3.1,-3.2,...]，
-        [-3.1,-3.4,...]，]
-      [[-3.4,-3.4,...]，
-        [-3.7,-3.1,...]，]
-    ]，
-    "idle_list": [
-      [[-0.7,1.5,...]，
-        [-1.5,-2.9,...]，]
-      [[-1.2,-1.4,...]，
-        [-2.4,-0.1,...]，]
-      [[-1.1,-3.2,...]，
-        [-2.1,-2.4,...]，]
-      [[-0.4,-1.4,...]，
-        [-2.7,-1.1,...]，]
-    ]，
-    "params_list": [
-      [[0.5,5.5,...]，
-        [2.5,1.9,...]，]
-      [[1.2,2.4,...]，
-        [2.4,2.1,...]，]
-      [[1.1,3.2,...]，
-        [2.1,2.4,...]，]
-      [[0.4,1.4,...]，
-        [2.7,1.1,...]，]
-    ]，
-      "std_list": [
-      [1.5,1.5,1.2,1.3,1.4,[[1.9,-0.06],[1.1,-0.03]]]，
-      [1.1,1.3,1.5,1.1,1.2,[[1.3,-0.06],[1.5,-0.03]]]，
-    ]，
-      "cdf_list": [
-      [[-3.72,-3.73,...]，
-        [-3.72,-3.73,...]，]
-      [[-3.71,-3.74,...]，
-        [-3.78,-3.71,...]，]
-      [[-3.73,-3.732,...]，
-        [-3.72,-3.76,...]，]
-      [[-3.75,-3.73,...]，
-        [-3.71,-3.73,...]，]
-    ]，
-    
-  }
+    "sep_score_list": [1.64,2.31],
+    "threshold_list": [0.18,0.24],
+    "phi_list": [-2.1, -2.2],
+    "signal_list": [[[-3.6,-3.8,...],[-3.5,-3.9,...],...],[[-3.2,-3.4,...],[-3.4,-3.1,...],...]],
+    "idle_list": [[[-3.6,-3.8,...],[-3.5,-3.9,...],...],[[-3.2,-3.4,...],[-3.4,-3.1,...],...]],
+    "params_list": [[[-3.6,-3.8,...],[-3.5,-3.9,...],...],[[-3.2,-3.4,...],[-3.4,-3.1,...],...]],
+    "std_list": [
+      [1.5,1.5,1.2,1.3,1.4,[[1.9,-0.06],[1.1,-0.03]],[[1.9,-0.06],[1.1,-0.03]]],
+      [1.5,1.5,1.2,1.3,1.4,[[1.9,-0.06],[1.1,-0.03]],[[1.9,-0.06],[1.1,-0.03]]],
+    ],
+    "cdf_list": [[[-3.6,-3.8,...],[-3.5,-3.9,...],...],[[-3.2,-3.4,...],[-3.4,-3.1,...],...]],
+    "status":'success'
+  },  
+  ...
 ]
 ```
 

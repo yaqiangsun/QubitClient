@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   qubitserving:
-    image: yaqiangsun/qubitserving:latest
+    image: ghcr.io/yaqiangsun/qubitserving:latest
     restart: unless-stopped
     ports:
       - "9000:8000"

@@ -91,7 +91,7 @@ results_filtered = results_filtered.get("results")
 [
   {
     "q_list": [str, ...],                  // 量子的名字列表
-    "keypoints_list": [[float, float], ...], // 每条线段的端点坐标列表
+    "keypoints_list":[[[float, float], ...]], // 每条线段的端点坐标列表
     "confs": [float, ...],                 // 每条线段的置信度
     "class_num_list": [int, ...],          // 每条线段的分割标签 (1~5共五种)
   },
@@ -104,7 +104,7 @@ results_filtered = results_filtered.get("results")
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
 | q_list | List[str] | 所有量子的名称 |
-| keypoints_list | List[List[float]] | 每条线段的端点坐标列表，每个端点包含两个浮点数坐标 |
+| keypoints_list | List[List[List[float]]] | 每条线段的端点坐标列表，每个端点包含两个浮点数坐标 |
 | confs | List[float] | 每条线段的置信度，表示检测的可靠性 |
 | class_num_list | List[int] | 每条线段的分割标签，取值 1~5 共五种 |
 
@@ -116,7 +116,7 @@ results_filtered = results_filtered.get("results")
 [
   {
     "q_list": ['Q0', 'Q1'],
-    "keypoints_list": [[18.4, 0.7], [24.3, 9.3], [24.3, 21.0], [21.1, 0.1], [21.1, 10.3]],
+    "keypoints_list": [[[18.4, 0.7], [24.3, 9.3], [24.3, 21.0], [21.1, 0.1], [21.1, 10.3]]],
     "confs": [0.95, 0.87, 0.65, 0.92, 0.78],
     "class_num_list": [1, 2, 3, 1, 4]
   }

@@ -31,8 +31,8 @@ NPY文件需要包含一个字典：
 ```python
 {
     "image": {
-        "Q0": (x, y, freq, flag, width, list1, list2),   # tuple, length=7
-        "Q1": (x, y, freq, flag, width, list1, list2),
+        "Q0": (freq, amp),   # tuple, length=2
+        "Q1": (freq, amp),
         ...
     }
 }

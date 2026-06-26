@@ -89,8 +89,8 @@ results = response_data_filtered.get("result")
 [
   {
     "peaks": [[int]],     // 表示峰值索引
-    "confs": [[float]]    // 表示峰值置信度
-    "freqs_list": [[float]] // 表示峰值横坐标
+    "confs": [[float]],    // 表示峰值置信度
+    "freqs_list": [[float]], // 表示峰值横坐标
     "status": "success" | "failed"
   },
   ...

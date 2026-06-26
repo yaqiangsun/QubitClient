@@ -2,7 +2,11 @@
 
 ## 概述
 
-S21PEAKMULTI 是 NNScope 中的一个任务，用于检测多个峰值并给出峰值置信度。与 S21PEAK 不同的是，该任务支持多组数据的并行处理。
+S21PEAKMULTI 是 NNScope 中的一个任务，用于检测多个峰值并给出峰值置信度。
+与 S21PEAK 不同的是，该任务支持多组数据的并行处理。
+服务端接口返回值"peaks"字段的idx个量子的[float],
+找出与目前量子比特fread的查询值最近的peak值作为fread，
+用于比特的频率的初步定位。
 
 ## 接口使用方式
 
@@ -105,16 +109,16 @@ def send_s21multi_npy_to_server(dir_path):
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
         fig_plt = plt_plot_manager.plot_quantum_data(
-            data_type='npy',
             task_type=NNTaskName.S21PEAKMULTI.value,
             save_path=save_path_png,
+            data_type='npy',
             result=result,
             dict_param=dict_param
         )
         fig_ply = ply_plot_manager.plot_quantum_data(
-            data_type='npy',
             task_type=NNTaskName.S21PEAKMULTI.value,
             save_path=save_path_html,
+            data_type='npy',
             result=result,
             dict_param=dict_param
         )

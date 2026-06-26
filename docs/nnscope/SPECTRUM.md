@@ -3,6 +3,11 @@
 ## 概述
 
 SPECTRUM 是 NNScope 中的一个任务,用于寻找峰值区域的起点、终点、peak所在x值、峰宽度、置信度。
+选取服务端接口返回值“confidences_list”第idx个量子的[float]中数值最大的索引，
+找到“peaks_list”中对应索引的peak，所为寻找到的f10参数。
+如果是双峰，左侧峰对应的peak数值为f21参数，
+non参数的计算方式是：（左峰freq-右峰freq）* 2
+
 
 ## 接口使用方式
 
@@ -147,16 +152,16 @@ for idx, (result, item) in enumerate(zip(results, dict_list)):
 
     # 绘图
     plt_plot_manager.plot_quantum_data(
-        data_type='npy',
         task_type=NNTaskName.SPECTRUM.value,
         save_path=save_path_png,
+        data_type='npy',
         result=result,
         dict_param=item
     )
     ply_plot_manager.plot_quantum_data(
-        data_type='npy',
         task_type=NNTaskName.SPECTRUM.value,
         save_path=save_path_html,
+        data_type='npy',
         result=result,
         dict_param=item
     )

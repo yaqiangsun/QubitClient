@@ -3,6 +3,7 @@
 ## 概述
 
 NNScope.SPECTRUM2D 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+不提取量子比特参数。
 
 ## 接口使用方式
 
@@ -155,28 +156,31 @@ pred_y = A * pred_x**3 + B * pred_x**2 + C * pred_x**1 + D
 ```python
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 from qubitclient.draw.pltmanager import QuantumPlotPltManager
+
 if type(results) == dict:
     if "results" not in results.keys():
         results = results.get("results")
     elif "result" in results.keys():
         results = results.get("result")
+
 save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM2D.value}_{savename}"
 save_path_png = save_path_prefix + ".png"
 save_path_html = save_path_prefix + ".html"
 
 plot_manager = QuantumPlotPlyManager()
 plot_manager.plot_quantum_data(
-    data_type='npy',
     task_type=NNTaskName.SPECTRUM2D.value,
     save_path=save_path_html,
+    data_type='npy',
     result=results,
     dict_param=data_ndarray
 )
+
 plot_manager = QuantumPlotPltManager()
 plot_manager.plot_quantum_data(
-    data_type='npy',
     task_type=NNTaskName.SPECTRUM2D.value,
     save_path=save_path_png,
+    data_type='npy',
     result=results,
     dict_param=data_ndarray
 )

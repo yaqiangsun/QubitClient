@@ -3,6 +3,12 @@
 ## 概述
 
 POWERSHIFT 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+服务端接口返回的'keypoints_list'表示关键点的位置，'class_num_list'表示线条的种类，'confs'表示每个线条的置信度，
+
+接着按照顺序遍历所有参与测试的量子比特，依次获取单个比特对应的关键点、分类编号、置信度。
+对于置信度达标的有效结果，根据不同的分段类别编号，从对应位置提取坐标点并组合成曲线分段区间。
+确认成功提取到分段区间后，基于区间内两个坐标点的纵向数值，按照比例计算出ReadIn.power。
+
 
 ## 接口使用方式
 
@@ -133,18 +139,18 @@ from qubitclient.draw.pltmanager import QuantumPlotPltManager
 
 plot_manager = QuantumPlotPlyManager()
 plot_manager.plot_quantum_data(
-    data_type='npy',
     task_type=NNTaskName.POWERSHIFT.value,
     save_path=save_path_html,
+    data_type='npy',
     result=result_filter,
     dict_param=dict_param
 )
 
 plot_manager = QuantumPlotPltManager()
 plot_manager.plot_quantum_data(
-    data_type='npy',
     task_type=NNTaskName.POWERSHIFT.value,
     save_path=save_path_png,
+    data_type='npy',
     result=result_filter,
     dict_param=dict_param
 )

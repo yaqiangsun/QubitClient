@@ -3,6 +3,7 @@
 ## 概述
 
 S21VSFLUX 是 NNScope 中的一个任务，用于对二维频谱数据进行曲线分割。该任务支持多种曲线拟合类型，包括多项式拟合和余弦拟合。
+该任务不提取任何量子参数。
 
 ## 接口使用方式
 
@@ -40,13 +41,14 @@ NPY文件需要包含一个字典：
 }
 ```
 
-每个量子比特对应一个键（如 "Q0"），值为 (freq, volt, s, ...)，至少包含前3个元素：
+每个量子比特对应一个键（如 "Q0"），值为 tuple，至少包含前3个元素：
 
 | 元素 | 类型 | 描述 |
 |------|------|------|
 | freq | np.ndarray, shape=(A,) | 频率数据，dtype=float64 |
 | volt | np.ndarray, shape=(B,) | 电压信息，dtype=float64 |
 | s | np.ndarray, shape=(B, A) | 二维频谱数据，dtype=float32 |
+| ... | tuple | 可选的附加元素 |
 
 #### 调用示例
 
@@ -152,18 +154,18 @@ if type(results) == dict:
 
 plot_manager = QuantumPlotPlyManager()
 plot_manager.plot_quantum_data(
-    data_type='npy',
     task_type=NNTaskName.S21VSFLUX.value,
     save_path=save_path_html,
+    data_type='npy',
     result=results,
     dict_param=data_ndarray
 )
 
 plot_manager = QuantumPlotPltManager()
 plot_manager.plot_quantum_data(
-    data_type='npy',
     task_type=NNTaskName.S21VSFLUX.value,
     save_path=save_path_png,
+    data_type='npy',
     result=results,
     dict_param=data_ndarray
 )

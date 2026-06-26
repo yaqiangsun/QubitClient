@@ -3,6 +3,8 @@
 ## 概述
 
 S21PEAK 是 NNScope 中的一个任务，用于检测峰值并给出峰值置信度。
+服务端接口返回值"peaks"字段的idx个量子的[float],
+选取第[0]个元素作为“fread”参数值
 
 ## 接口使用方式
 
@@ -137,16 +139,16 @@ for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
   save_path_png = save_path_prefix + ".png"
   save_path_html = save_path_prefix + ".html"
   plt_plot_manager.plot_quantum_data(
-      data_type='npy',
       task_type=NNTaskName.S21PEAK.value,
       save_path=save_path_png,
+      data_type='npy',
       result=result,
       dict_param=dict_param
   )
   ply_plot_manager.plot_quantum_data(
-      data_type='npy',
       task_type=NNTaskName.S21PEAK.value,
       save_path=save_path_html,
+      data_type='npy',
       result=result,
       dict_param=dict_param
   )

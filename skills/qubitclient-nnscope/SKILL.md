@@ -189,6 +189,15 @@ results = response_data_filtered.get("result")
 # }]
 ```
 
+#### Return Values
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `peaks` | `[[int]]` | Peak indices per qubit |
+| `confs` | `[[float]]` | Peak confidence scores |
+| `freqs_list` | `[[float]]` | Peak frequency values |
+| `status` | `str` | Processing status (`"success"` or `"failed"`) |
+
 ### S21PEAKMULTI (Multi-Peak Detection)
 
 ```python
@@ -203,6 +212,15 @@ response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAKMULTI
 results = client.get_result(response)
 results_filtered = client.get_filtered_result(response, 0.5, NNTaskName.S21PEAKMULTI.value)
 ```
+
+#### Return Values
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `peaks` | `[[int]]` | Peak indices per qubit |
+| `confs` | `[[float]]` | Peak confidence scores |
+| `freqs_list` | `[[float]]` | Peak frequency values |
+| `status` | `str` | Processing status (`"success"` or `"failed"`) |
 
 ### Spectrum Analysis
 
@@ -223,6 +241,16 @@ results = client.get_result(response)
 #     "status": "success"
 # }]
 ```
+
+#### Return Values
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `peaks_list` | `[[float]]` | Peak x values for all waves in each file |
+| `peak_start` | `[[float]]` | Peak start x values |
+| `peak_end` | `[[float]]` | Peak end x values |
+| `confidences_list` | `[[float]]` | Confidence scores for each peak |
+| `status` | `str` | Processing status (`"success"` or `"failed"`) |
 
 ### 2D Spectrum (SPECTRUM2D)
 
@@ -262,6 +290,17 @@ results = client.get_result(response)
 # Poly fit formula: pred_y = A * pred_x³ + B * pred_x² + C * pred_x + D
 ```
 
+#### Return Values
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `params_list` | `[[[float]]]` | Fitting parameters |
+| `linepoints_list` | `[[[[float]]]]` | Curve point coordinates |
+| `confidences_list` | `[[float]]` | Confidence scores |
+| `class_ids_list` | `[[float]]` | Curve class IDs |
+| `curve_type_list` | `[[str]]` | Fitting type (`"cosin"` or `"poly"`) |
+| `status` | `str` | Processing status (`"success"` or `"failed"`) |
+
 ### S21VSFLUX
 
 ```python
@@ -289,6 +328,17 @@ results = client.get_result(response)
 # }]
 ```
 
+#### Return Values
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `params_list` | `[[[float]]]` | Fitting parameters |
+| `linepoints_list` | `[[[[float]]]]` | Curve point coordinates |
+| `confidence_list` | `[[float]]` | Confidence scores |
+| `class_ids` | `[[float]]` | Curve class IDs |
+| `curve_type` | `[[str]]` | Fitting type (`"cosin"` or `"poly"`) |
+| `status` | `str` | Processing status (`"success"` or `"failed"`) |
+
 ### POWERSHIFT
 
 ```python
@@ -309,6 +359,16 @@ results = client.get_result(response)
 #     "status": "success"
 # }]
 ```
+
+#### Return Values
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `q_list` | `[str]` | Qubit names |
+| `keypoints_list` | `[[[float, float]]]` | Line segment endpoints |
+| `confs` | `[float]` | Confidence scores |
+| `class_num_list` | `[int]` | Segmentation labels (1-5) |
+| `status` | `str` | Processing status (`"success"` or `"failed"`) |
 
 ## Visualization
 

@@ -32,7 +32,7 @@ client = QubitNNScopeClient()
 | `SINGLESHOT` | Single-shot readout analysis |
 | `SPECTRUM` | Frequency spectrum analysis (AMPD algorithm) |
 | `T1FIT` | T1 relaxation time exponential fitting |
-| `T2FIT` | T2 coherence time fitting (Gaussian decay + cosine oscillation) |
+| `T2FIT` | T2 coherence time fitting (Gaussian + exponential decay + cosine oscillation) |
 | `SPINECHO` | Spin Echo T2 relaxation time fitting |
 | `SPECTRUM2D` | 2D spectrum curve segmentation |
 | `POWERSHIFT` | Power shift curve analysis |
@@ -192,7 +192,7 @@ Supported data keys: `population`, `iq_avg`, `iq`
 
 ---
 
-#### T2FIT / RAMSEY
+#### T2FIT
 
 **Input:**
 ```python
@@ -224,6 +224,44 @@ Fitting formula: $y = A \cdot e^{-(x/T2)^2 - x/T1/2} \cdot \cos(2\pi w x + \phi)
 - `B`: Baseline offset
 - `T1`: Exponential decay time (µs)
 - `T2`: Gaussian decay time (µs)
+- `w`: Oscillation angular frequency (rad/s)
+- `phi`: Initial phase (rad)
+
+---
+
+#### RAMSEY
+
+**Input:**
+```python
+{
+    "image": {
+        "Q0": [delay_array, amp_array],  // (time delays, measured amplitudes)
+        "Q1": [delay_array, amp_array],
+    }
+}
+```
+- `delay_array`: 1D array of delay times (seconds)
+- `amp_array`: 1D array of measured amplitude values
+
+Fitting formula: $y = A \cdot e^{-x/T1} \cdot \cos(2\pi w x + \phi) + B$
+
+**Output:**
+```json
+{
+  "type": "ramsey",
+  "results": [{
+    "params_list": [[A, B, T1, w, phi], ...],  // Fitting params per qubit
+    "r2_list": [float, float, ...],                  // R² goodness of fit
+    "fit_data_list": [[float, ...], [float, ...]],  // Fitted curve values
+    "fit_data_dense_list": [[float, ...], [float, ...]],  // Fitted curve at dense points
+    "x_dense_list": [[float, ...], [float, ...]],         // Dense time axis
+    "status": "success" | "failed"
+  }]
+}
+```
+- `A`: Initial amplitude
+- `B`: Baseline offset
+- `T1`: Exponential decay time (µs)
 - `w`: Oscillation angular frequency (rad/s)
 - `phi`: Initial phase (rad)
 
@@ -714,7 +752,7 @@ results = client.get_result(response)
 # Returns: {"type": "t1fit", "results": [{"params_list": [[A, T1, B], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
 ```
 
-#### T2 Fitting (Ramsey)
+#### T2 Fitting
 
 ```python
 from qubitclient import QubitScopeClient, TaskName
@@ -736,6 +774,30 @@ dict_list = [{
 response = client.request(file_list=dict_list, task_type=TaskName.T2FIT)
 results = client.get_result(response)
 # Returns: {"type": "t2fit", "results": [{"params_list": [[A, B, T1, T2, w, phi], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
+```
+
+#### RAMSEY
+
+```python
+from qubitclient import QubitScopeClient, TaskName
+import numpy as np
+
+client = QubitScopeClient()
+
+# Ramsey decay data with oscillation
+delay = np.linspace(0, 10e-6, 101)
+# Simulated exponential decay + oscillation signal (no Gaussian term)
+ramsey_signal = 0.5 * np.exp(-delay/5e-6) * np.cos(2*np.pi*1e8*delay) + 0.5
+
+dict_list = [{
+    "image": {
+        "Q0": [delay, ramsey_signal]
+    }
+}]
+
+response = client.request(file_list=dict_list, task_type=TaskName.RAMSEY)
+results = client.get_result(response)
+# Returns: {"type": "ramsey", "results": [{"params_list": [[A, B, T1, w, phi], ...], "r2_list": [...], "fit_data_list": [...], "fit_data_dense_list": [...], "x_dense_list": [...], "status": "success"}]}
 ```
 
 #### DRAG Analysis

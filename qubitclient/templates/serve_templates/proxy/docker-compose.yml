@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   proxy:
-    image: yaqiangsun/proxy:latest
+    image: ghcr.io/yaqiangsun/qubitproxy:latest
     pull_policy: always
     restart: unless-stopped
     ports:

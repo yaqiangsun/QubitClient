@@ -81,7 +81,7 @@ def _pick_image(task_name: str) -> str | None:
 
 _TASK_NAMES = ["t1", "s21peakmulti", "ramsey", "rabi", "drag", "spinecho_t2", "xeb"]
 _QUBITS = ["q1lu7", "q2lu7", "q3lu7", "q4lu7", "q5lu7"]
-_PIPELINES = ["t1_pipeline", "s21multi_pipeline", "ramsey_pipeline",
+_PIPELINES = ["t1_pipeline", "s21peakmulti_pipeline", "ramsey_pipeline",
               "rabi_pipeline", "drag_pipeline", "spinecho_t2_pipeline", "xeb_pipeline"]
 
 
@@ -94,7 +94,7 @@ def _make_t1_params():
     }
 
 
-def _make_s21multi_params():
+def _make_s21peakmulti_params():
     return {
         "qubits": random.sample(_QUBITS, 1),
         "frequency_start": 6.3,
@@ -133,7 +133,7 @@ def _make_drag_params():
 
 _TASK_PARAM_FACTORIES = {
     "t1": _make_t1_params,
-    "s21peakmulti": _make_s21multi_params,
+    "s21peakmulti": _make_s21peakmulti_params,
     "ramsey": _make_ramsey_params,
     "rabi": _make_rabi_params,
     "drag": _make_drag_params,

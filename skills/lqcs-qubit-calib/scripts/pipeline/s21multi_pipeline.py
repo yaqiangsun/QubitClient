@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m resources.lqcs.pipeline.s21multi_pipeline -q q3lu7 -s ./tmp -u True -c 0.4 -r 0.0005 -fs 6.5 -fe 6.8
+        python -m resources.lqcs.pipeline.s21peakmulti_pipeline -q q3lu7 -s ./tmp -u True -c 0.4 -r 0.0005 -fs 6.5 -fe 6.8
 """
 import sys
 import argparse
@@ -29,8 +29,8 @@ from qubitclient.storage.result_store import PipelineResultRecord, PipelineResul
 from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
-from analysis.inception import nns21multi, s21peakmulti
-from analysis.visualization import plot_nns21multi, plot_s21multi
+from analysis.inception import nns21peakmulti, s21peakmulti
+from analysis.visualization import plot_nns21peakmulti, plot_s21peakmulti
 
 DEFAULT_SAVE_FOLDER = './tmp'
 
@@ -61,10 +61,10 @@ def parse_args():
                         help="Confidence threshold for parameter update")
     return parser.parse_args()
 
-def get_s21multi_hdf5_res(args):
+def get_s21peakmulti_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
     task_name = "s21peakmulti"
-    pipeline_type = "s21multi_pipeline"
+    pipeline_type = "s21peakmulti_pipeline"
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
@@ -106,8 +106,8 @@ def get_s21multi_hdf5_res(args):
         analysis_result = s21peakmulti(raw_data)
 
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/s21multi_{pure_name}.png'
-        fig_list = plot_s21multi(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = f'{save_folder}/s21peakmulti_{pure_name}.png'
+        fig_list = plot_s21peakmulti(raw_data, analysis_result, save_path=img_save_path)
 
         # =========== 接入大模型分析图片 ===========
         # resize更小
@@ -190,4 +190,4 @@ def get_s21multi_hdf5_res(args):
 
 if __name__ == '__main__':
     cli_args = parse_args()
-    get_s21multi_hdf5_res(cli_args)
+    get_s21peakmulti_hdf5_res(cli_args)

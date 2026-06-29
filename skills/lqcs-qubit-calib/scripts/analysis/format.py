@@ -90,7 +90,7 @@ def s21_convert(result):
     return data_formated
 
 
-def s21multi_convert(result):
+def s21peakmulti_convert(result):
     data_formated = {"image": {}}
 
     for index, qubit_name in enumerate(result.keys()):

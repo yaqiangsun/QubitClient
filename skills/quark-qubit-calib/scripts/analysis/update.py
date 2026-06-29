@@ -375,7 +375,7 @@ def singleshot_update(data_converted, result: dict, file_idx: int = 0, visibilit
 
 
 
-def s21multi_update(result: dict, file_idx: int = 0, conf_threshold: float = 0.8, top_n: int = 13,
+def s21peakmulti_update(result: dict, file_idx: int = 0, conf_threshold: float = 0.8, top_n: int = 13,
                     MIN_FREQ: float = 5 * 10**9, MAX_FREQ: float = 7 * 10**9,
                     qubits_lists: list = ['Q1','Q2','Q3','Q4','Q5','Q6','Q7','Q8','Q9','Q10','Q11','Q12','Q13']):
     """

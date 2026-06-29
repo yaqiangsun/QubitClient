@@ -75,7 +75,7 @@ def plot_s21(data,results,save_path):
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAK)
     return fig_list
 @handle_exceptions
-def plot_s21multi(data,results,save_path):
+def plot_s21peakmulti(data,results,save_path):
     data = s21_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAKMULTI)
     return fig_list

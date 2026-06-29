@@ -17,7 +17,7 @@ from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert, t12dfit_co
                     singleshot_convert, setpialpha_convert,\
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
-                    spectrum_convert, powershift_convert, s21multi_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert,\
+                    spectrum_convert, powershift_convert, s21peakmulti_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert,\
                     spinecho_convert, timingxyz_convert
 ENABLE_API=True
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
@@ -85,14 +85,14 @@ def s21(image):
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
 def s21peakmulti(image):
-    image = s21multi_convert(image)
+    image = s21peakmulti_convert(image)
     results = scope_template(image,task_type=TaskName.S21PEAKMULTI)
     return results
 
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def nns21multi(image):
-    image = s21multi_convert(image)
+def nns21peakmulti(image):
+    image = s21peakmulti_convert(image)
     results = nnscope_template(image,task_type=NNTaskName.S21PEAKMULTI)
     return results
 

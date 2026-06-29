@@ -26,7 +26,7 @@ from .format import s21_convert,s21vsflux_convert, ramseyt2_convert, t12dfit_con
                     singleshot_convert, nnspectrum2d_convert, spectrum2d_convert, \
                     nns21vsflux_convert,t1fit_convert, setpialpha_convert,\
                     t2fit_convert,nnspectrum_convert,\
-                    spectrum_convert, powershift_convert, s21multi_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert,\
+                    spectrum_convert, powershift_convert, s21peakmulti_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert,\
                     spinecho_convert, timingxyz_convert
 
 def plot_template(data,results,save_path,task_type=TaskName.S21PEAK):
@@ -85,13 +85,13 @@ def plot_nns21(data,results,save_path):
     return fig_list
 
 @handle_exceptions
-def plot_s21multi(data,results,save_path):
-    data = s21multi_convert(data)
+def plot_s21peakmulti(data,results,save_path):
+    data = s21peakmulti_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=TaskName.S21PEAKMULTI)
     return fig_list
 @handle_exceptions
-def plot_nns21multi(data,results,save_path):
-    data = s21multi_convert(data)
+def plot_nns21peakmulti(data,results,save_path):
+    data = s21peakmulti_convert(data)
     fig_list = plot_template(data,results,save_path,task_type=NNTaskName.S21PEAKMULTI)
     return fig_list
 

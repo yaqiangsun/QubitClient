@@ -8,8 +8,8 @@ import json
 import numpy as np
 
 from lib.data_read import get_latest_content
-from analysis.inception import nns21multi, s21peakmulti
-from analysis.visualization import plot_nns21multi, plot_s21multi
+from analysis.inception import nns21peakmulti, s21peakmulti
+from analysis.visualization import plot_nns21peakmulti, plot_s21peakmulti
 
 from lqms.measure.tuners import sq_nodes as sq
 from lqms.measure import (
@@ -26,7 +26,7 @@ SAVE_PLOT_FOLDER = './tmp'
 ROOT_FOLDER = 'D:/DataVault/LQHL.dir/test.dir/20260324.dir/'
 
 
-def get_s21multi_hdf5_res():
+def get_s21peakmulti_hdf5_res():
     # 1.数据采集
     result = sq.s21(q2lu7, freq=np.arange(6.5, 6.9, 0.0001), update=False)
 
@@ -39,8 +39,8 @@ def get_s21multi_hdf5_res():
 
     # 4.绘图
     pure_name = 'q2lu7'
-    img_save_path = f'{SAVE_PLOT_FOLDER}/s21multi_{pure_name}.png'
-    fig_list = plot_s21multi(data, analysis_result, save_path=img_save_path)
+    img_save_path = f'{SAVE_PLOT_FOLDER}/s21peakmulti_{pure_name}.png'
+    fig_list = plot_s21peakmulti(data, analysis_result, save_path=img_save_path)
 
     # resize更小
     # img_small_path = img_save_path.split('.png')[0] + '_small.png'
@@ -66,4 +66,4 @@ def get_s21multi_hdf5_res():
 
 
 if __name__ == '__main__':
-    get_s21multi_hdf5_res()
+    get_s21peakmulti_hdf5_res()

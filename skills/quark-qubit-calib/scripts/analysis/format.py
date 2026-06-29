@@ -289,32 +289,32 @@ def s21mulit_convert(result):
 
     if x_array.ndim != 1:
         raise ValueError(
-            f"s21multi数据格式不符合服务器要求：x_array应为1维数组，"
+            f"s21peakmulti数据格式不符合服务器要求：x_array应为1维数组，"
             f"实际为{x_array.ndim}维，形状{x_array.shape}"
         )
     if iq_avg.ndim != 1:
         raise ValueError(
-            f"s21multi数据格式不符合服务器要求：iq_avg应为1维数组，"
+            f"s21peakmulti数据格式不符合服务器要求：iq_avg应为1维数组，"
             f"实际为{iq_avg.ndim}维，形状{iq_avg.shape}"
         )
     if amp.ndim != 1:
         raise ValueError(
-            f"s21multi数据格式不符合服务器要求：amp应为1维数组，"
+            f"s21peakmulti数据格式不符合服务器要求：amp应为1维数组，"
             f"实际为{amp.ndim}维，形状{amp.shape}"
         )
     if amp.shape[0] != x_array.shape[0]:
         raise ValueError(
-            f"s21multi数据格式不符合服务器要求：amp的第0维长度({amp.shape[0]})"
+            f"s21peakmulti数据格式不符合服务器要求：amp的第0维长度({amp.shape[0]})"
             f"需与x_array的第0维长度({x_array.shape[0]})一致"
         )
     if phi.ndim != 1:
         raise ValueError(
-            f"s21multi数据格式不符合服务器要求：phi应为1维数组，"
+            f"s21peakmulti数据格式不符合服务器要求：phi应为1维数组，"
             f"实际为{phi.ndim}维，形状{phi.shape}"
         )
     if phi.shape[0] != x_array.shape[0]:
         raise ValueError(
-            f"s21multi数据格式不符合服务器要求：phi的第0维长度({phi.shape[0]})"
+            f"s21peakmulti数据格式不符合服务器要求：phi的第0维长度({phi.shape[0]})"
             f"需与x_array的第0维长度({x_array.shape[0]})一致"
         )
     data_formated["image"][qubit_name] = (x_array, amp, phi)

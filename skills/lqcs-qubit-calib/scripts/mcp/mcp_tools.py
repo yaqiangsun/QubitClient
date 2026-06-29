@@ -18,7 +18,7 @@ sys.path.append(str(Path(__file__).parent))
 from typing import Annotated
 import os
 from lqcs_mcp.tools import s21 as lqcs_s21
-from lqcs_mcp.tools import s21peakmulti as lqcs_s21multi
+from lqcs_mcp.tools import s21peakmulti as lqcs_s21peakmulti
 from lqcs_mcp.tools import rabi as lqcs_rabi
 from lqcs_mcp.tools import ramsey as lqcs_ramsey
 from lqcs_mcp.tools import t1 as lqcs_t1
@@ -291,7 +291,7 @@ def s21peakmulti(
         frequency_end: 扫描终止频率，单位GHz
         frequency_sample_rate: 频率步长，单位GHz
     '''
-    result = lqcs_s21multi(qubits=qubits,
+    result = lqcs_s21peakmulti(qubits=qubits,
                       frequency_start=frequency_start,
                       frequency_end=frequency_end,
                       frequency_sample_rate=frequency_sample_rate

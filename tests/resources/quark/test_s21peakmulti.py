@@ -17,7 +17,7 @@ if project_root not in sys.path:
 
 from resources.quark.analysis.utils import get_pkl_content
 from resources.quark.analysis.inception import s21peakmulti
-from resources.quark.analysis.visualization import plot_s21multi
+from resources.quark.analysis.visualization import plot_s21peakmulti
 import matplotlib.pyplot as plt
 
 
@@ -39,7 +39,7 @@ def test_s21peakmulti(task_key, base_dir):
             if len(data["meta"]["other"]["qubits"]) >= 1:
                 if task_key in "s21peak":
                     analysis_result = s21peakmulti(data)
-                    fig_list = plot_s21multi(data, analysis_result, save_path=f'./tmp/vis/s21multi_{pure_name}.png')
+                    fig_list = plot_s21peakmulti(data, analysis_result, save_path=f'./tmp/vis/s21peakmulti_{pure_name}.png')
                     # fig_list[0].show()
                     # plt.show(block=True)
 

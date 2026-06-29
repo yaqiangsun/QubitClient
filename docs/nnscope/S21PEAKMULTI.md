@@ -71,7 +71,7 @@ from qubitclient.draw.pltmanager import QuantumPlotPltManager
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 
 
-def send_s21multi_npy_to_server(dir_path):
+def send_s21peakmulti_npy_to_server(dir_path):
     # get all file in dir
     savenamelist = []
     file_names = os.listdir(dir_path)
@@ -125,7 +125,7 @@ def send_s21multi_npy_to_server(dir_path):
 
 
 base_dir = "tmp/yaqiangsun/qubit_examples/s21peakmulti"
-send_s21multi_npy_to_server(base_dir)
+send_s21peakmulti_npy_to_server(base_dir)
 ```
 
 ### 获取结果

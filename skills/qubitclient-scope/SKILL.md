@@ -944,25 +944,3 @@ response = client.request(file_list=dict_list, task_type=TaskName.OPTREADFREQ)
 results = client.get_result(response)
 # Returns: {"type": "optreadfreq", "results": [{"peak_list": [index], "status": "success"}]}
 ```
-
-### Data Format Conversion (from Quark)
-
-Use the conversion functions in `resources/quark/analysis/format.py` to convert Quark format data:
-
-```python
-from resources.quark.analysis.format import (
-    s21_convert,
-    optpipulse_convert,
-    t1fit_convert,
-    drag_convert,
-    spectrum2d_convert,
-    # ... etc
-)
-
-# Convert Quark format to qubitclient format
-quark_data = {"meta": {...}, "data": {...}}
-converted = s21_convert(quark_data)
-
-# Use converted data
-response = client.request(file_list=[converted], task_type=TaskName.S21PEAK)
-```

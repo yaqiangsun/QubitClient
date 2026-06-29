@@ -4,6 +4,10 @@ description: "Quantum experiment NUMERICAL curve fitting and parameter extractio
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
+## Overview
+
+Scope is a traditional numerical curve fitting module for quantum experiment analysis. It provides comprehensive parameter extraction tasks including peak detection, relaxation time fitting (T1/T2), oscillation analysis (Rabi, Ramsey), pulse optimization (DRAG), and 2D spectrum analysis. Unlike neural network-based approaches, Scope uses classical fitting algorithms for interpretable results.
+
 ## API Reference
 
 ### Client Initialization

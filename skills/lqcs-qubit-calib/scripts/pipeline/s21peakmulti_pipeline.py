@@ -35,7 +35,7 @@ from analysis.visualization import plot_nns21peakmulti, plot_s21peakmulti
 DEFAULT_SAVE_FOLDER = './tmp'
 
 # 加载fread配置文件
-CONFIG_PATH = "qubit_base_freq.json"
+CONFIG_PATH = "s21peakmulti_init_freq.json"
 try:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         base_freq_dict = json.load(f)

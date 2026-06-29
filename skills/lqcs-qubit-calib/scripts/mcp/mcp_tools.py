@@ -152,7 +152,7 @@ class TaskUpdateConfig:
             's21': {'params': ['fread']},
             's21multi': {'params': ['fread']},
             'powershift': {'params': ['ReadIn.power']},
-            's21vflux': {'params': []},
+            's21vsflux': {'params': []},
             'spectrum': {'params': ['f10', 'f21']},  # f21可能不更新，如果出现双峰，左侧为f21,non计算为(左峰-右峰)*2
             'spectrum_2d': {'params': []},
             'singleshot': {'params': ['discriminator.center0', 'discriminator.center1', 'discriminator.threshold']},  # 要更新

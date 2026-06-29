@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m resources.lqcs.pipeline.s21vflux_pipeline -q q3lu7 -b 0.001 -n 11 -s ./tmp -u True -c 0.4
+        python -m resources.lqcs.pipeline.s21vsflux_pipeline -q q3lu7 -b 0.001 -n 11 -s ./tmp -u True -c 0.4
 """
 import sys
 import argparse
@@ -57,7 +57,7 @@ def parse_args():
                         help="Confidence threshold for parameter update")
     return parser.parse_args()
 
-def get_s21vflux_hdf5_res(args):
+def get_s21vsflux_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
     task_name = "s21vsflux"
     pipeline_type = "s21vsflux_pipeline"
@@ -113,7 +113,7 @@ def get_s21vflux_hdf5_res(args):
         analysis_result = s21vsflux(raw_data)
 
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/s21vflux_{pure_name}.png'
+        img_save_path = f'{save_folder}/s21vsflux_{pure_name}.png'
         fig_list = plot_s21vsflux(raw_data, analysis_result, save_path=img_save_path)
 
         # =========== 接入大模型分析图片 ===========
@@ -161,4 +161,4 @@ def get_s21vflux_hdf5_res(args):
 
 if __name__ == '__main__':
     cli_args = parse_args()
-    get_s21vflux_hdf5_res(cli_args)
+    get_s21vsflux_hdf5_res(cli_args)

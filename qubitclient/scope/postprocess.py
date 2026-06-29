@@ -764,28 +764,28 @@ def postprocess_result_xyz_timing(response, threshold):
     return {"results": results_filtered}
 
 
+from qubitclient.scope.task_enum import TaskName
 TASK_MAP: Dict[str, Callable] = {
-    's21peak': postprocess_result_s21peak,
-    's21peakmulti': postprocess_result_s21peak,
-    's21vsfluxscope': postprocess_result_s21vsfluxscope,
-    'spectrum2dscope': postprocess_result_spectrum2dscope,
-    # 'spectrum2dnnscope': postprocess_result_spectrum2dnnscope
-    'rabicos': postprocess_result_rabicos,
-    'optpipulse': postprocess_result_optpipulse,
-    't1fit': postprocess_result_t1fit,
-    't2fit': postprocess_result_t2fit,
-    'ramsey': postprocess_result_ramsey,
-    'drag': postprocess_result_drag,
-    'singleshot': postprocess_result_singleshot,
-    'spectrum': postprocess_result_spectrum,
-    'powershift': postprocess_result_powershift,
-    'rb': postprocess_result_rb,
-    'delta': postprocess_result_delta,
-    'xeb': postprocess_result_xeb,
-    't12dfit': postprocess_result_t12dfit,
-    'optreadfreq': postprocess_result_optreadfreq,
-    'spinecho': postprocess_result_spinecho,
-    'xyz_timing': postprocess_result_xyz_timing,
+    TaskName.S21PEAK.value: postprocess_result_s21peak,
+    TaskName.S21PEAKMULTI.value: postprocess_result_s21peak,
+    TaskName.S21VSFLUX.value: postprocess_result_s21vsfluxscope,
+    TaskName.SPECTRUM2D.value: postprocess_result_spectrum2dscope,
+    TaskName.RABICOS.value: postprocess_result_rabicos,
+    TaskName.OPTPIPULSE.value: postprocess_result_optpipulse,
+    TaskName.T1FIT.value: postprocess_result_t1fit,
+    TaskName.T2FIT.value: postprocess_result_t2fit,
+    TaskName.RAMSEY.value: postprocess_result_ramsey,
+    TaskName.DRAG.value: postprocess_result_drag,
+    TaskName.SINGLESHOT.value: postprocess_result_singleshot,
+    TaskName.SPECTRUM.value: postprocess_result_spectrum,
+    TaskName.POWERSHIFT.value: postprocess_result_powershift,
+    TaskName.RB.value: postprocess_result_rb,
+    TaskName.DELTA.value: postprocess_result_delta,
+    TaskName.XEB.value: postprocess_result_xeb,
+    TaskName.T12DFIT.value: postprocess_result_t12dfit,
+    TaskName.OPTREADFREQ.value: postprocess_result_optreadfreq,
+    TaskName.SPINECHO.value: postprocess_result_spinecho,
+    TaskName.TIMINGXYZ.value: postprocess_result_xyz_timing,
 }
 
 def run_postprocess(response, threshold, task_type):

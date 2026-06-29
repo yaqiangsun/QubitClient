@@ -331,14 +331,14 @@ def postprocess_result_s21peakmultinnscope(response ,threshold):
 
     return response_data
 
-
+from qubitclient.nnscope.task_enum import NNTaskName
 TASK_MAP: Dict[str, Callable] = {
-    'spectrum2dnnscope': postprocess_result_spectrum2dnnscope,
-    's21vfluxnnscope': postprocess_result_s21vfluxnnscope,
-    'powershiftnnscope': postprocess_result_powershiftnnscope,
-    'spectrumnnscope': postprocess_result_spectrumnnscope,
-    's21peaknnscope': postprocess_result_s21peaknnscope,
-    's21peakmultinnscope': postprocess_result_s21peakmultinnscope
+    NNTaskName.SPECTRUM2D.value: postprocess_result_spectrum2dnnscope,
+    NNTaskName.S21VSFLUX.value: postprocess_result_s21vfluxnnscope,
+    NNTaskName.POWERSHIFT.value: postprocess_result_powershiftnnscope,
+    NNTaskName.SPECTRUM.value: postprocess_result_spectrumnnscope,
+    NNTaskName.S21PEAK.value: postprocess_result_s21peaknnscope,
+    NNTaskName.S21PEAKMULTI.value: postprocess_result_s21peakmultinnscope
 }
 
 def run_postprocess(response, threshold, task_type):

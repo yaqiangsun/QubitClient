@@ -53,20 +53,23 @@ class QubitScopeClient(object):
         else:
             raise ValueError("file_list must not be empty")
         return response
-    def get_result(self,response):
-        if response.status_code == 200:
-            logging.debug("Result: %s", response.parsed)
-            result = response.parsed
-            if "result" in result.keys():
-                result["results"] = result["result"] # add results keys
-            elif "results" in result.keys(): # add result keys
-                result["result"] = result["results"]
-            return result
+    def get_result(self,response, threshold:float=None, task_type: str = None):
+        if threshold is None:
+            if response.status_code == 200:
+                logging.debug("Result: %s", response.parsed)
+                result = response.parsed
+                if "result" in result.keys():
+                    result["results"] = result["result"] # add results keys
+                elif "results" in result.keys(): # add result keys
+                    result["result"] = result["results"]
+                return result
+            else:
+                logging.error("Error: %s %s", response.status_code, response.parsed)
+                return []
         else:
-            logging.error("Error: %s %s", response.status_code, response.parsed)
-            return []
+            return self.get_filtered_result(response, threshold, task_type)
 
-    def get_filtered_result(self, response, threshold, task_type: str = "s21peak"):
+    def get_filtered_result(self, response, threshold:float, task_type: str):
         result = run_postprocess(response, threshold, task_type)
         if "result" in result.keys():
             result["results"] = result["result"]

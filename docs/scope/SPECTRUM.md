@@ -142,23 +142,28 @@ mean_cut_widths_list[i]: 第 i 个量子比特的每个峰的宽度
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 from qubitclient.draw.pltmanager import QuantumPlotPltManager
 
-# 使用Plotly绘制（HTML）
-plot_manager = QuantumPlotPlyManager()
-ply_plot_manager.plot_quantum_data(
-    data_type='npy',
-    task_type=TaskName.SPECTRUM.value,
-    save_path=save_path_html,
-    result=result,
-    dict_param=item
-)
+ply_plot_manager = QuantumPlotPlyManager()
+plt_plot_manager = QuantumPlotPltManager()
+for idx, (result, item) in enumerate(zip(results, dict_list)):
+    save_path_prefix = f"./tmp/client/result_{TaskName.SPECTRUM.value}_{savenamelist[idx]}"
+    save_path_png = save_path_prefix + ".png"
+    save_path_html = save_path_prefix + ".html"
 
-# 使用Matplotlib绘制（PNG）
-plot_manager = QuantumPlotPltManager()
-plt_plot_manager.plot_quantum_data(
-    data_type='npy',
-    task_type=TaskName.SPECTRUM.value,
-    save_path=save_path_png,
-    result=result,
-    dict_param=item
-)
+    # 使用Plotly绘制（HTML）
+    ply_plot_manager.plot_quantum_data(
+        data_type='npy',
+        task_type=TaskName.SPECTRUM.value,
+        save_path=save_path_html,
+        result=result,
+        dict_param=item
+    )
+
+    # 使用Matplotlib绘制（PNG）
+    plt_plot_manager.plot_quantum_data(
+        data_type='npy',
+        task_type=TaskName.SPECTRUM.value,
+        save_path=save_path_png,
+        result=result,
+        dict_param=item
+    )
 ```

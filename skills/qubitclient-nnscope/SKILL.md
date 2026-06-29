@@ -30,15 +30,6 @@ client = QubitNNScopeClient()
 | `S21VSFLUX` | S21 vs Flux parameter curve segmentation |
 | `POWERSHIFT` | Power shift curve segmentation |
 
-### Curve Types (CurveType)
-
-```python
-from qubitclient.nnscope.nnscope_api.curve.curve_type import CurveType
-
-CurveType.COSINE  # Cosine curve fitting (default)
-CurveType.POLY    # Polynomial curve fitting (3rd degree: Ax³ + Bx² + Cx + D)
-```
-
 ### Data Input Formats
 
 The input data should be a dictionary or list of dictionaries with the following structure:
@@ -173,6 +164,9 @@ dict_list = [{
 - `bias_array`: np.ndarray, shape=(A,), dtype=float64
 - `freq_array`: np.ndarray, shape=(B,), dtype=float64
 
+**Parameters:**
+- `curve_type`: `CurveType.COSINE` (default) or `CurveType.POLY` - Curve fitting method
+
 **Output:**
 ```json
 {
@@ -187,8 +181,12 @@ dict_list = [{
   }]
 }
 ```
-- Cosine fit formula: `pred_y = A * np.sin(freq * pred_x + phi) + offset`
-- Poly fit formula: `pred_y = A * pred_x³ + B * pred_x² + C * pred_x + D`
+
+**Fitting Formulas:**
+- When `curve_type_list` is `"cosin"`: `params_list = [A, freq, phi, offset]`
+  - Formula: `pred_y = A * np.sin(freq * pred_x + phi) + offset`
+- When `curve_type_list` is `"poly"`: `params_list = [A, B, C, D]`
+  - Formula: `pred_y = A * pred_x³ + B * pred_x² + C * pred_x + D`
 
 ---
 
@@ -207,6 +205,9 @@ dict_list = [{
 - `volt_array`: np.ndarray, shape=(B,), dtype=float64 - voltage/bias data
 - `s_matrix`: np.ndarray, shape=(B, A), dtype=float32 - 2D spectrum data
 
+**Parameters:**
+- `curve_type`: `CurveType.COSINE` (default) or `CurveType.POLY` - Curve fitting method
+
 **Output:**
 ```json
 {
@@ -221,6 +222,12 @@ dict_list = [{
   }]
 }
 ```
+
+**Fitting Formulas:**
+- When `curve_type` is `"cosin"`: `params_list = [A, freq, phi, offset]`
+  - Formula: `pred_y = A * np.sin(freq * pred_x + phi) + offset`
+- When `curve_type` is `"poly"`: `params_list = [A, B, C, D]`
+  - Formula: `pred_y = A * pred_x³ + B * pred_x² + C * pred_x + D`
 
 ---
 

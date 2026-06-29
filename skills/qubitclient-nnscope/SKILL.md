@@ -40,8 +40,10 @@ dict_list = [{
         "Q0": [x_data, y_data],  # or [x_data, y_data, z_data] for 2D
         "Q1": [x_data, y_data],
     }
-}]
+}, ...]  # One or more data items
 ```
+
+**Note:** Multiple data items are supported - pass a list of dictionaries. The output `results` list has one entry per input item, in the same order.
 
 ---
 

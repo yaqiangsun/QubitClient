@@ -62,7 +62,7 @@ class QubitNNScopeClient(object):
                     result["results"] = result["result"] # add results keys
                 elif "results" in result.keys(): # add result keys
                     result["result"] = result["results"]
-                return result
+                return result["result"]
             else:
                 logging.error("Error: %s %s", response.status_code, response.text)
                 return []
@@ -74,4 +74,4 @@ class QubitNNScopeClient(object):
             result["results"] = result["result"]
         elif "results" in result.keys():
             result["result"] = result["results"]
-        return result
+        return result["result"]

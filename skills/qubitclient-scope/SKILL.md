@@ -12,10 +12,6 @@ license: Proprietary. LICENSE.txt has complete terms
 # Scope tasks (curve fitting & analysis)
 from qubitclient import QubitScopeClient, TaskName
 client = QubitScopeClient()
-
-# NNScope tasks (neural network based analysis)
-from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
-client = QubitNNScopeClient()
 ```
 
 ### Task Names
@@ -42,15 +38,6 @@ client = QubitNNScopeClient()
 | `T12DFIT` | 2D T1 relaxation time fitting |
 | `TIMINGXYZ` | XYZ Timing calibration analysis |
 | `OPTREADFREQ` | Optimal readout frequency selection |
-
-#### NNScope Tasks (NNTaskName)
-| NNTaskName | Description |
-|------------|-------------|
-| `SPECTRUM2D` | 2D spectrum data segmentation (supports COSINE, POLY curve types) |
-| `S21VSFLUX` | S21 vs Flux parameter curve segmentation |
-| `POWERSHIFT` | Power shift curve segmentation |
-| `SPECTRUM` | Spectrum analysis |
-| `S21PEAK` | S21 peak detection |
 
 ### Data Input Formats
 
@@ -688,16 +675,6 @@ for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
     )
 ```
 
-### Curve Types (for NNScope)
-
-```python
-from qubitclient import CurveType
-
-# Available curve types:
-CurveType.COSINE  # Cosine curve fitting
-CurveType.POLY    # Polynomial curve fitting
-```
-
 ### Examples
 
 #### S21 Peak Detection
@@ -867,34 +844,6 @@ dict_list = [{
 response = client.request(file_list=dict_list, task_type=TaskName.RB)
 results = client.get_result(response)
 # Returns: {"type": "rb", "results": [{"params_list": [[A, p, B], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
-```
-
-#### 2D Spectrum Analysis (NNScope)
-
-```python
-from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
-import numpy as np
-
-client = QubitNNScopeClient()
-
-# 2D spectrum data
-bias = np.linspace(-0.5, 0.5, 51)
-freq = np.linspace(4e9, 6e9, 101)
-iq_avg = np.random.randn(51, 101) + 1j * np.random.randn(51, 101)
-
-dict_list = [{
-    "image": {
-        "Q0": [iq_avg, bias, freq]  # Note: iq_avg shape (51, 101), bias shape (51,), freq shape (101,)
-    }
-}]
-
-response = client.request(
-    file_list=dict_list,
-    task_type=NNTaskName.SPECTRUM2D,
-    curve_type=CurveType.COSINE
-)
-
-results = client.get_result(response=response)
 ```
 
 #### Single-Shot Readout

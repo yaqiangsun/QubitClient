@@ -8,7 +8,7 @@
 ########################################################################
 
 
-"""Real s21multi measurement pipeline, write data to storage for web UI real-time display
+"""Real s21peakmulti measurement pipeline, write data to storage for web UI real-time display
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:

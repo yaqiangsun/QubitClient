@@ -31,7 +31,7 @@ from enum import Enum, unique
 # @unique
 class CtrlTaskName(Enum):
     S21 = "s21"
-    S21MULTI = "s21multi"
+    S21PEAKMULTI = "s21peakmulti"
     DRAG = "drag"
     DELTA = "delta"
     OPTPIPULSE = "opt_pipulse"
@@ -93,12 +93,12 @@ def s21(qubits:list[str]=['Q0','Q1'],
     return result
 
 @task_register
-def s21multi(qubits:list[str]=['Q0','Q1'],
+def s21peakmulti(qubits:list[str]=['Q0','Q1'],
         frequency_start:float=6.3,
         frequency_end:float=6.9,
         frequency_sample_rate=0.0001,
         *args,**kwargs):
-    result = call_mcp("s21multi",
+    result = call_mcp("s21peakmulti",
                       qubits=qubits,
                       frequency_start=frequency_start,
                       frequency_end=frequency_end,

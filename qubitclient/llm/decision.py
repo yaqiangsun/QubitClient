@@ -20,7 +20,7 @@ DEFAULT_DECISION_PROMPT = """基于以下评估结果和上下文信息，给出
 
 可选任务类型:
 - s21: S21 频率扫描
-- s21multi: 多 qubit S21 扫描
+- s21peakmulti: 多 qubit S21 扫描
 - rabi: Rabi 实验
 - ramsey: Ramsey 实验
 - t1: T1 弛豫时间测量

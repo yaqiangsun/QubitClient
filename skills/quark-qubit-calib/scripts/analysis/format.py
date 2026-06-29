@@ -277,10 +277,10 @@ def s21mulit_convert(result):
         raw = np.array(raw_data[:, :, 0])
         if matched_key == "iq":
             raw = np.array(raw[:, 0])
-            logging.info(f"s21multi | qubit={qubit_name} | iq 2维数据剔除最后维后形状：{raw.shape}")
+            logging.info(f"s21peakmulti | qubit={qubit_name} | iq 2维数据剔除最后维后形状：{raw.shape}")
     else:
         raw = np.array(raw_data)
-    logging.info(f"s21multi | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
+    logging.info(f"s21peakmulti | qubit={qubit_name} | key={matched_key} | shape={raw.shape}")
     iq_avg = raw.astype(np.complex64)
 
     amp = np.abs(iq_avg)

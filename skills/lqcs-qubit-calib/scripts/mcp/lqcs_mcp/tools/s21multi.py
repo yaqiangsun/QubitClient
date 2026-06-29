@@ -26,7 +26,7 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 
-def s21multi(qubits:list[str]=['Q0','Q1'],
+def s21peakmulti(qubits:list[str]=['Q0','Q1'],
         frequency_start:float=6.3,
         frequency_end:float=6.9,
         frequency_sample_rate:float=0.0001):

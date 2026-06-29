@@ -8,7 +8,7 @@ import json
 import numpy as np
 
 from lib.data_read import get_latest_content
-from analysis.inception import nns21multi, s21multi
+from analysis.inception import nns21multi, s21peakmulti
 from analysis.visualization import plot_nns21multi, plot_s21multi
 
 from lqms.measure.tuners import sq_nodes as sq
@@ -35,7 +35,7 @@ def get_s21multi_hdf5_res():
 
 
     # 3.分析数据
-    analysis_result = s21multi(data)
+    analysis_result = s21peakmulti(data)
 
     # 4.绘图
     pure_name = 'q2lu7'

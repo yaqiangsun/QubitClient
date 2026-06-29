@@ -18,7 +18,7 @@ sys.path.append(str(Path(__file__).parent))
 from typing import Annotated
 import os
 from lqcs_mcp.tools import s21 as lqcs_s21
-from lqcs_mcp.tools import s21multi as lqcs_s21multi
+from lqcs_mcp.tools import s21peakmulti as lqcs_s21multi
 from lqcs_mcp.tools import rabi as lqcs_rabi
 from lqcs_mcp.tools import ramsey as lqcs_ramsey
 from lqcs_mcp.tools import t1 as lqcs_t1
@@ -150,7 +150,7 @@ class TaskUpdateConfig:
     def __init__(self):
         self._config = {
             's21': {'params': ['fread']},
-            's21multi': {'params': ['fread']},
+            's21peakmulti': {'params': ['fread']},
             'powershift': {'params': ['ReadIn.power']},
             's21vsflux': {'params': []},
             'spectrum': {'params': ['f10', 'f21']},  # f21可能不更新，如果出现双峰，左侧为f21,non计算为(左峰-右峰)*2
@@ -278,7 +278,7 @@ def s21(
 
 
 @mcp.tool
-def s21multi(
+def s21peakmulti(
     qubits: Annotated[list[str], "量子比特名称"] = ['Q0', 'Q1'],
     frequency_start: Annotated[float, "扫描起始频率，单位GHz"] = 6.3,
     frequency_end: Annotated[float, "扫描终止频率，单位GHz"] = 6.9,

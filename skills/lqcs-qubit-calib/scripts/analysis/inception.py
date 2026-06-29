@@ -84,7 +84,7 @@ def s21(image):
     return results
 @control_api_execution(enable_api=ENABLE_API)
 @handle_exceptions
-def s21multi(image):
+def s21peakmulti(image):
     image = s21multi_convert(image)
     results = scope_template(image,task_type=TaskName.S21PEAKMULTI)
     return results

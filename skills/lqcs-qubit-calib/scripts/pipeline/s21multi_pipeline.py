@@ -29,7 +29,7 @@ from qubitclient.storage.result_store import PipelineResultRecord, PipelineResul
 from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
-from analysis.inception import nns21multi, s21multi
+from analysis.inception import nns21multi, s21peakmulti
 from analysis.visualization import plot_nns21multi, plot_s21multi
 
 DEFAULT_SAVE_FOLDER = './tmp'
@@ -63,7 +63,7 @@ def parse_args():
 
 def get_s21multi_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "s21multi"
+    task_name = "s21peakmulti"
     pipeline_type = "s21multi_pipeline"
     qubit_name_list = args.qubits
     save_folder = args.save_folder
@@ -88,10 +88,10 @@ def get_s21multi_hdf5_res(args):
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[S21MULTI] Task started run_id={run_id[:8]}")
+        print(f"[S21PEAKMULTI] Task started run_id={run_id[:8]}")
 
         data = qubit_ctrl_client.run(
-            CtrlTaskName.S21MULTI,
+            CtrlTaskName.S21PEAKMULTI,
             qubits=qubit_name_list,
             frequency_start=args.freq_start,
             frequency_end=args.freq_end,
@@ -103,7 +103,7 @@ def get_s21multi_hdf5_res(args):
 
         store.update_run(run_id=run_id, raw_data_id=data_id, raw_data=raw_data)
 
-        analysis_result = s21multi(raw_data)
+        analysis_result = s21peakmulti(raw_data)
 
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/s21multi_{pure_name}.png'
@@ -162,7 +162,7 @@ def get_s21multi_hdf5_res(args):
                         if cur_conf > args.confidence:
                             print("[INFO] update : ", closest_freq, qname)
                             update_map[qname] = closest_freq
-                            qubit_ctrl_client.update_param(qname=qname, task_type=CtrlTaskName.S21MULTI, values=str(closest_freq))
+                            qubit_ctrl_client.update_param(qname=qname, task_type=CtrlTaskName.S21PEAKMULTI, values=str(closest_freq))
 
         if update_map:
             new_full_params["fread"] = update_map

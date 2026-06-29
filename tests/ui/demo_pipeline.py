@@ -79,7 +79,7 @@ def _pick_image(task_name: str) -> str | None:
 # Demo data factories
 # ---------------------------------------------------------------------------
 
-_TASK_NAMES = ["t1", "s21multi", "ramsey", "rabi", "drag", "spinecho_t2", "xeb"]
+_TASK_NAMES = ["t1", "s21peakmulti", "ramsey", "rabi", "drag", "spinecho_t2", "xeb"]
 _QUBITS = ["q1lu7", "q2lu7", "q3lu7", "q4lu7", "q5lu7"]
 _PIPELINES = ["t1_pipeline", "s21multi_pipeline", "ramsey_pipeline",
               "rabi_pipeline", "drag_pipeline", "spinecho_t2_pipeline", "xeb_pipeline"]
@@ -133,7 +133,7 @@ def _make_drag_params():
 
 _TASK_PARAM_FACTORIES = {
     "t1": _make_t1_params,
-    "s21multi": _make_s21multi_params,
+    "s21peakmulti": _make_s21multi_params,
     "ramsey": _make_ramsey_params,
     "rabi": _make_rabi_params,
     "drag": _make_drag_params,
@@ -144,7 +144,7 @@ def _make_fake_analysis(task_name: str, params: dict) -> dict:
     """Generate a plausible-looking analysis result dict for demo purposes."""
     if task_name == "t1":
         return {"T1": round(random.uniform(1e4, 1e5), 1), "unit": "ns"}
-    if task_name == "s21multi":
+    if task_name == "s21peakmulti":
         n = len(params["qubits"])
         return {
             "results": [{

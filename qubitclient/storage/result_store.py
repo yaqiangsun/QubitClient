@@ -24,7 +24,7 @@ class PipelineResultRecord(BaseModel):
     """Schema for a single pipeline run record."""
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex)
-    task_name: str = ""  # CtrlTaskName.value e.g. "t1", "s21multi"
+    task_name: str = ""  # CtrlTaskName.value e.g. "t1", "s21peakmulti"
     task_type: str = ""  # pipeline filename e.g. "t1_pipeline"
     qubits: list[str] = Field(default_factory=list)
     params: dict[str, Any] = Field(default_factory=dict)

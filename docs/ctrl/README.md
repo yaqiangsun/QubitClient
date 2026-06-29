@@ -49,7 +49,7 @@ result = client.update_param(qname="Q0", task_type="rabi", values={"pi_amp": 0.5
 | 任务名称 | 文档 | 描述 |
 |----------|------|------|
 | S21 | [S21.md](task/S21.md) | S21腔频测量 |
-| S21MULTI | [S21MULTI.md](task/S21MULTI.md) | 多频点S21测量 |
+| S21PEAKMULTI | [S21PEAKMULTI.md](task/S21PEAKMULTI.md) | 多频点S21测量 |
 | SINGLESHOT | [SINGLESHOT.md](task/SINGLESHOT.md) | 单次测量分析 |
 | SPECTRUM | [SPECTRUM.md](task/SPECTRUM.md) | 频谱分析测量 |
 | SPECTRUM_2D | [SPECTRUM_2D.md](task/SPECTRUM_2D.md) | 二维频谱测量 |
@@ -111,7 +111,7 @@ result = client.update_param(qname="Q0", task_type="rabi", values={"pi_amp": 0.5
 ```python
 class CtrlTaskName(Enum):
     S21 = "s21"
-    S21MULTI = "s21multi"
+    S21PEAKMULTI = "s21peakmulti"
     DRAG = "drag"
     DELTA = "delta"
     OPTPIPULSE = "opt_pipulse"

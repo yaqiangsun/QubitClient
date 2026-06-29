@@ -85,7 +85,7 @@ data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 ```python
 qubit_name_list = ["q3lu7"]
 data = qubit_ctrl_client.run(
-    CtrlTaskName.S21MULTI,
+    CtrlTaskName.S21PEAKMULTI,
     qubits=qubit_name_list,
     frequency_start=6.5,
     frequency_end=6.9,
@@ -104,7 +104,7 @@ data = qubit_ctrl_client.run(
 
 ```python
 qname = qubit_name_list[0]
-task_type = CtrlTaskName.S21MULTI
+task_type = CtrlTaskName.S21PEAKMULTI
 values = "6.590"
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```

@@ -124,7 +124,7 @@ def send_s21multi_npy_to_server(dir_path):
         )
 
 
-base_dir = "tmp/yaqiangsun/qubit_examples/s21multi"
+base_dir = "tmp/yaqiangsun/qubit_examples/s21peakmulti"
 send_s21multi_npy_to_server(base_dir)
 ```
 

@@ -173,7 +173,7 @@ def s21peaknnscope(files,url,api_key,*args,**kwargs):
 
 @task_register
 def s21peakmultinnscope(files,url,api_key,*args,**kwargs):
-    s21peak_url = url + "/api/v1/tasks/nnscope/s21multi"
+    s21peak_url = url + "/api/v1/tasks/nnscope/s21peakmulti"
     response = request_task(files, s21peak_url, api_key)
     return response
 

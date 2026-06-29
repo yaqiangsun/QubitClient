@@ -37,7 +37,6 @@ client = QubitScopeClient()
             "Q1": (x, amp,phi), 
             ...
         },
-        "id": 2661  #保留字段无具体含义，可以忽略
     }
     ```
 

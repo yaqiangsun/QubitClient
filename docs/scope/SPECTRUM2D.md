@@ -37,7 +37,6 @@ client = QubitScopeClient()
            "Q1": (iq_avg, bias, frequency),
            ...
        }
-       "id":2660    #保留字段无具体含义，可以忽略
    }
    
    

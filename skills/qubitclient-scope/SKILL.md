@@ -76,7 +76,6 @@ dict_list = [{
         "Q0": [x_array, amp_array, phi_array],  # (freq, amplitude, phase)
         "Q1": [x_array, amp_array, phi_array],
     },
-    "id": 2661  # reserved field, can be ignored
 }
 ```
 - `x_array`: 1D frequency array, shape (A,)
@@ -378,7 +377,6 @@ Fitting formula: $P(x) = A \cdot p^x + B$
         "Q0": [freq_array, volt_array, s_matrix],  // tuple, length >= 3
         "Q1": [freq_array, volt_array, s_matrix],
     },
-    "id": 4095
 }
 ```
 - `freq_array`: 1D array of frequency values, shape (A,)
@@ -410,7 +408,6 @@ Fitting formula: $P(x) = A \cdot p^x + B$
         "Q0": [iq_avg, bias_array, freq_array],  // tuple, length = 3
         "Q1": [iq_avg, bias_array, freq_array],
     },
-    "id": 2660
 }
 ```
 - `iq_avg`: 2D complex array of shape (B, A)
@@ -721,7 +718,6 @@ dict_list = [{
     "image": {
         "Q0": [freq, amp, phi]
     },
-    "id": 2661
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.S21PEAK)

@@ -123,23 +123,28 @@ results = client.get_result(response, threshold=threshold, task_type=TaskName.PO
 from qubitclient.draw.plymanager import QuantumPlotPlyManager
 from qubitclient.draw.pltmanager import QuantumPlotPltManager
 
-# 使用Plotly绘制（HTML）
-plot_manager = QuantumPlotPlyManager()
-ply_plot_manager.plot_quantum_data(
-    data_type='npy',
-    task_type=TaskName.POWERSHIFT.value,
-    save_path=save_path_html,
-    result=result,
-    dict_param=item
-)
+ply_plot_manager = QuantumPlotPlyManager()
+plt_plot_manager = QuantumPlotPltManager()
+for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
+  save_path_prefix = f"./tmp/client/result_{TaskName.POWERSHIFT.value}_{savenamelist[idx]}"
+  save_path_png = save_path_prefix + ".png"
+  save_path_html = save_path_prefix + ".html"
 
-# 使用Matplotlib绘制（PNG）
-plot_manager = QuantumPlotPltManager()
-plt_plot_manager.plot_quantum_data(
-    data_type='npy',
-    task_type=TaskName.POWERSHIFT.value,
-    save_path=save_path_png,
-    result=result,
-    dict_param=item
-)
+  # 使用Plotly绘制（HTML）
+  ply_plot_manager.plot_quantum_data(
+      data_type='npy',
+      task_type=TaskName.POWERSHIFT.value,
+      save_path=save_path_html,
+      result=result,
+      dict_param=dict_param
+  )
+
+  # 使用Matplotlib绘制（PNG）
+  plt_plot_manager.plot_quantum_data(
+      data_type='npy',
+      task_type=TaskName.POWERSHIFT.value,
+      save_path=save_path_png,
+      result=result,
+      dict_param=dict_param
+  )
 ```

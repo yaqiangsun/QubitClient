@@ -141,18 +141,9 @@ Returns peak start, peak end, peak x value, peak width, and confidence.
 
 #### SPECTRUM2D
 
-2D spectrum curve segmentation supporting multiple input formats.
+2D spectrum curve segmentation.
 
-**NPZ Format:**
-```python
-dict_list = [{
-    "bias": np.ndarray,        # shape=(A,), dtype=float64
-    "frequency": np.ndarray,   # shape=(B,), dtype=float64
-    "iq_avg": np.ndarray       # shape=(B, A), dtype=complex64
-}]
-```
-
-**NPY Format:**
+**Input:**
 ```python
 {
     "image": {

@@ -66,7 +66,12 @@ response = client.request(
 ### 获取结果
 
 ```python
-results = client.get_result(response=response)
+# 不过滤的结果
+results = client.get_result(response)
+
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.SPECTRUM.value)
 ```
 
 ## 返回值格式
@@ -74,15 +79,15 @@ results = client.get_result(response=response)
 返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
-{
-    "type":"spectrum",
-    "results":[
-        {
-            "peaks_list":[[float,float,...], ...],
-            "confidences_list":[[float,float,...], ...],
-            "mean_cut_widths_list":[[float,float,...], ...],
-            "status":"success" | "failed"
-            }]}, 
+[
+  {
+    "peaks_list": [[float, float, ...], ...],
+    "confidences_list": [[float, float, ...], ...],
+    "mean_cut_widths_list": [[float, float, ...], ...],
+    "status": "success" | "failed"
+  },
+  ...
+]
 ```
 
 peaks_list[i]: 第 i 个量子比特的峰所在位置（x值）（一个量子比特可能存在多个峰）

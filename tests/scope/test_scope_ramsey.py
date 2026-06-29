@@ -53,11 +53,8 @@ def send_ramsey_npy_to_server(dir_path="data/ramsey", batch_size=5):
         response = client.request(file_list=dict_list, task_type=TaskName.RAMSEY)
         print(response)
 
-        response_data = client.get_result(response)
         threshold = 0.8
-        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.RAMSEY.value)
-
-        results = response_data.get("results")
+        results = client.get_result(response, threshold=threshold, task_type=TaskName.RAMSEY.value)
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
             global_idx = start_idx + idx_in_batch

@@ -66,13 +66,12 @@ response = client.request(file_list=dict_list, task_type=TaskName.RAMSEY)
 ### 获取结果
 
 ```python
-response_data = client.get_result(response)
-threshold = 0.8
-response_data_filtered = client.get_filtered_result(response, threshold, TaskName.RAMSEY.value)
+# 不过滤的结果
+results = client.get_result(response)
 
-results = response_data_filtered.get("results")
-# 或使用未过滤的原始结果
-# results = response_data.get("results")
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.RAMSEY.value)
 ```
 
 ## 返回值格式
@@ -80,20 +79,17 @@ results = response_data_filtered.get("results")
 返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
-{
-  "type": "ramsey",
-  "results": [
-    {
-      "params_list": [[A, B, T1, w, phi], ...],
-      "r2_list": [float, ...],
-      "fit_data_list": [[float, ...], ...],
-      "fit_data_dense_list": [[float, ...], ...],
-      "x_dense_list": [[float, ...], ...],
-      "status": "success" | "failed"
-    },
-    ...
-  ]
-}
+[
+  {
+    "params_list": [[A, B, T1, w, phi], ...],
+    "r2_list": [float, ...],
+    "fit_data_list": [[float, ...], ...],
+    "fit_data_dense_list": [[float, ...], ...],
+    "x_dense_list": [[float, ...], ...],
+    "status": "success" | "failed"
+  },
+  ...
+]
 ```
 
 params_list[i]: 第 i 个量子比特的拟合参数 [A, B, T1, w, phi]

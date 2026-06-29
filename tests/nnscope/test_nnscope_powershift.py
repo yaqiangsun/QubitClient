@@ -50,13 +50,9 @@ def send_powershift_npy_to_server(file_path = None):
     dict_list = [data_ndarray]
     response = client.request(file_list=dict_list,task_type=NNTaskName.POWERSHIFT)
 
-    results = client.get_result(response=response)
-    logging.info("results after get_result  : %s", results)
-
     threshold = 0.7
-    # logging.info("results in test_powershift.py : %s", results)
-    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.POWERSHIFT.value)
-    results_filtered = results_filtered.get("results")
+    results = client.get_result(response, threshold=threshold, task_type=NNTaskName.POWERSHIFT.value)
+    logging.info("results after get_result  : %s", results)
 
     save_path_prefix = f"./tmp/client/result_{NNTaskName.POWERSHIFT.value}_{savename}"
     save_path_png = save_path_prefix + ".png"
@@ -64,13 +60,13 @@ def send_powershift_npy_to_server(file_path = None):
 
     plot_manager = QuantumPlotPlyManager()
 
-    for idx, (result_filter, dict_param) in enumerate(zip(results_filtered, dict_list)):
+    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
         # html
         plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=NNTaskName.POWERSHIFT.value,
             save_path=save_path_html,
-            result=result_filter,
+            result=result,
             dict_param=dict_param
         )
 
@@ -80,7 +76,7 @@ def send_powershift_npy_to_server(file_path = None):
             data_type='npy',
             task_type=NNTaskName.POWERSHIFT.value,
             save_path=save_path_png,
-            result=result_filter,
+            result=result,
             dict_param=dict_param
         )
 

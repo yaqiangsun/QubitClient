@@ -53,11 +53,8 @@ def send_rabicos_npy_to_server(dir_path="data/rabicos", batch_size=5):
         response = client.request(file_list=dict_list, task_type=TaskName.RABICOS)
         print(response)
 
-        response_data = client.get_result(response)
         threshold = 0.5
-        response_data_filtered = client.get_filtered_result(response, threshold, TaskName.RABICOS.value)
-
-        results = response_data.get("results")
+        results = client.get_result(response, threshold=threshold, task_type=TaskName.RABICOS.value)
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
             global_idx = start_idx + idx_in_batch

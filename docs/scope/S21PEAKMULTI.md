@@ -67,13 +67,12 @@ response = client.request(file_list=dict_list, task_type=TaskName.S21PEAKMULTI)
 ### 获取结果
 
 ```python
+# 不过滤的结果
+results = client.get_result(response)
 
-response_data = client.get_result(response)
+# 或过滤后的结果
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response,threshold,TaskName.S21PEAKMULTI.value)
-
-results = response_data_filtered.get("results")
-
+results = client.get_result(response, threshold=threshold, task_type=TaskName.S21PEAKMULTI.value)
 ```
 
 ## 返回值格式

@@ -61,21 +61,15 @@ def send_spectrum_npy_to_server(dir_path="data/33137"):
 
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     response = client.request(file_list=dict_list, task_type=NNTaskName.SPECTRUM)
-    results = client.get_result(response=response)
-
-    # results = results.get("result")
-
     threshold = 0.5
-    print("before filter results: ", results)
-    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM.value)
-    results_filtered = results_filtered.get("results")
+    results = client.get_result(response, threshold=threshold, task_type=NNTaskName.SPECTRUM.value)
 
-    print("------after filter \n: ", results_filtered)
+    print("------after filter \n: ", results)
 
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()
 
-    for idx, (result_filtered, item) in enumerate(zip(results_filtered, dict_list)):
+    for idx, (result, item) in enumerate(zip(results, dict_list)):
         save_path_prefix = f"./tmp/client/result_{NNTaskName.SPECTRUM.value}_{savenamelist[idx]}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
@@ -85,14 +79,14 @@ def send_spectrum_npy_to_server(dir_path="data/33137"):
             data_type='npy',
             task_type=NNTaskName.SPECTRUM.value,
             save_path=save_path_png,
-            result=result_filtered,
+            result=result,
             dict_param=item
         )
         ply_plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=NNTaskName.SPECTRUM.value,
             save_path=save_path_html,
-            result=result_filtered,
+            result=result,
             dict_param=item
         )
          

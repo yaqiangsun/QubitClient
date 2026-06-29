@@ -56,11 +56,8 @@ def send_delta_npy_to_server(dir_path="data/delta", batch_size=5):
         response = client.request(file_list=dict_list, task_type=TaskName.DELTA)
         print(response)
 
-        response_data = client.get_result(response)
-        # threshold = 0.5   # 如需过滤可在此处使用
-        # response_data_filtered = client.get_filtered_result(response, threshold, TaskName.DELTA.value)
-
-        results = response_data.get("results")
+        # 不过滤的结果
+        results = client.get_result(response)
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
             global_idx = start_idx + idx_in_batch

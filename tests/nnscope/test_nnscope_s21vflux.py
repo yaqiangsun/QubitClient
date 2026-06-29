@@ -53,12 +53,10 @@ def send_s21vflux_npy_to_server(file_path = None):
     response = client.request(file_list=dict_list,task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.AUTO)
     # 2.从文件路径直接加载
     # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.COSINE)
-    results = client.get_result(response=response)
     threshold = 0.5
-    results_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21VSFLUX.value)
-    results_filtered = results_filtered.get("result")
+    results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21VSFLUX.value)
 
-    for idx, (result, dict_param) in enumerate(zip(results_filtered, dict_list)):
+    for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
         save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VSFLUX.value}_{savename}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"

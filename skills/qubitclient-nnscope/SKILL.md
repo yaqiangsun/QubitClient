@@ -173,12 +173,12 @@ dict_list = [load_npy_file(fp) for fp in file_path_list]
 response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAK)
 
 # Get results
-response_data = client.get_result(response)
+# Get raw (unfiltered) results
+results = client.get_result(response)
 
-# Filter by confidence threshold
+# Or filter by confidence threshold
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAK.value)
-results = response_data_filtered.get("result")
+results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21PEAK.value)
 
 # Results format:
 # [{
@@ -210,7 +210,8 @@ dict_list = [load_npy_file(fp) for fp in file_path_list]
 response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAKMULTI)
 
 results = client.get_result(response)
-results_filtered = client.get_filtered_result(response, 0.5, NNTaskName.S21PEAKMULTI.value)
+# Or filter by confidence threshold
+results_filtered = client.get_result(response, threshold=0.5, task_type=NNTaskName.S21PEAKMULTI.value)
 ```
 
 #### Return Values
@@ -439,8 +440,7 @@ response = client.request(
 # Get and filter results
 results = client.get_result(response)
 threshold = 0.5
-results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
-final_results = results_filtered.get("result")
+final_results = client.get_result(response, threshold=threshold, task_type=NNTaskName.SPECTRUM2D.value)
 
 # Visualize results
 ply_manager = QuantumPlotPlyManager()

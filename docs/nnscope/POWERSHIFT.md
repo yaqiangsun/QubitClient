@@ -79,14 +79,12 @@ response = client.request(file_list=dict_list, task_type=NNTaskName.POWERSHIFT)
 ### 获取结果
 
 ```python
+# 不过滤的结果
+results = client.get_result(response)
 
-
-response_data = client.get_result(response)
+# 或过滤后的结果
 threshold = 0.5
-results_filtered = client.get_filtered_result(response, threshold, NNTaskName.POWERSHIFT.value)
-results_filtered = results_filtered.get("results")
-
-# response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
+results = client.get_result(response, threshold=threshold, task_type=NNTaskName.POWERSHIFT.value)
 ```
 
 ## 返回值格式

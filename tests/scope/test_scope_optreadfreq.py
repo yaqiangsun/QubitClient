@@ -63,11 +63,8 @@ def send_optreadfreq_npy_to_server(dir_path="data/optreadfreq"):
     print(response)
     
 
-    response_data = client.get_result(response)
     threshold = 0.5
-    response_data_filtered = client.get_filtered_result(response,threshold,TaskName.OPTREADFREQ.value)
-
-    results = response_data_filtered.get("results")
+    results = client.get_result(response, threshold=threshold, task_type=TaskName.OPTREADFREQ.value)
 
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()

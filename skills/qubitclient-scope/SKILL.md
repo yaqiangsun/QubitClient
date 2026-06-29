@@ -664,11 +664,11 @@ Fitting formula per ZPA: $y = A \cdot e^{-x / T1} + B$
 ### Getting Results
 
 ```python
-# Get raw results
+# Get raw (unfiltered) results
 results = client.get_result(response=response)
 
 # Get filtered results by confidence threshold (for tasks with confidence scores)
-results_filtered = client.get_filtered_result(response, threshold=0.5, task_type=TaskName.S21PEAK.value)
+results_filtered = client.get_result(response, threshold=0.5, task_type=TaskName.S21PEAK.value)
 ```
 
 ### Visualization

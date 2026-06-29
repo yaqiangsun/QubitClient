@@ -81,15 +81,12 @@ results = client.get_result(response=response)
 ### 获取结果
 
 ```python
+# 不过滤的结果
+results = client.get_result(response)
 
-results = client.get_result(response=response)
-
-threshold = 0.3
-print("before filter results: ", results)
-results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM.value)
-results_filtered = results_filtered.get("result")
-
-# response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=NNTaskName.SPECTRUM.value)
 ```
 
 ## 返回值格式

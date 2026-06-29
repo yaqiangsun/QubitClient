@@ -58,13 +58,12 @@ response = client.request(file_list=dict_list, task_type=TaskName.RABICOS)
 ### 获取结果
 
 ```python
-response_data = client.get_result(response)
-threshold = 0.5
-response_data_filtered = client.get_filtered_result(response, threshold, TaskName.RABICOS.value)
+# 不过滤的结果
+results = client.get_result(response)
 
-results = response_data_filtered.get("results")
-# 或使用未过滤的结果
-# results = response_data.get("results")
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.RABICOS.value)
 ```
 
 ## 返回值格式
@@ -72,17 +71,14 @@ results = response_data_filtered.get("results")
 返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
-{
-  "type": "rabicos",
-  "results": [
-    {
-      "peaks": [[float], ...],
-      "confs": [[float], ...],
-      "status": "success" | "failed"
-    },
-    ...
-  ]
-}
+[
+  {
+    "peaks": [[float], ...],
+    "confs": [[float], ...],
+    "status": "success" | "failed"
+  },
+  ...
+]
 ```
 
 peaks[i] 和 confs[i] 对应第 i 个量子比特；若某比特无峰，则为空列表 []。

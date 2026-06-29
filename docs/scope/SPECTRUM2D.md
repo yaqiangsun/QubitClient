@@ -71,13 +71,12 @@ response = client.request(file_list=dict_list, task_type=TaskName.SPECTRUM2D)
 ### 获取结果
 
 ```python
-response_data = client.get_result(response)
-threshold = 0.5
-response_data_filtered = client.get_filtered_result(response,threshold,TaskName.SPECTRUM2D.value)
+# 不过滤的结果
+results = client.get_result(response)
 
-results = response_data.get("results")
-#results = client.get_result(response=response_data_filtered)
-# response_data 和 response_data_filtered 分别是阈值筛选前和筛选后的结果
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.SPECTRUM2D.value)
 ```
 
 

@@ -61,14 +61,8 @@ def send_s21peak_npy_to_server(dir_path="data/33137"):
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAK)
 
-    response_data = client.get_result(response)
-
-    # tmp = response_data.get("results")
-
     threshold = 0.5
-    response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAK.value)
-
-    results = response_data_filtered.get("result")
+    results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21PEAK.value)
     logging.info(f"Filtered results: {results}")
 
     ply_plot_manager = QuantumPlotPlyManager()

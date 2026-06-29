@@ -50,12 +50,8 @@ def send_drag_npy_to_server(dir_path="data/33137"):
     response = client.request(file_list=dict_list, task_type=TaskName.DRAG)
     print(response)
 
-    response_data = client.get_result(response)
-
     threshold = 0.5
-    response_data_filtered = client.get_filtered_result(response,threshold,TaskName.DRAG.value)
-
-    results = response_data.get("results")
+    results = client.get_result(response, threshold=threshold, task_type=TaskName.DRAG.value)
 
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()

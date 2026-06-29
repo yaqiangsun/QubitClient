@@ -50,13 +50,8 @@ def send_spinecho_npy_to_server(dir_path="data/spin_echo", batch_size=5):
         response = client.request(file_list=dict_list, task_type=TaskName.SPINECHO)
         print(response)
 
-        response_data = client.get_result(response)
         threshold = -1
-        response_data_filtered = client.get_filtered_result(
-            response, threshold, TaskName.SPINECHO.value
-        )
-
-        results = response_data_filtered.get("results")
+        results = client.get_result(response, threshold=threshold, task_type=TaskName.SPINECHO.value)
 
         for idx_in_batch, (result, dict_param) in enumerate(zip(results, dict_list)):
             global_idx = start_idx + idx_in_batch

@@ -57,12 +57,12 @@ response = client.request(file_list=dict_list, task_type=TaskName.DRAG)
 ### 获取结果
 
 ```python
-response_data = client.get_result(response)
-threshold = 0.5
-response_data_filtered = client.get_filtered_result(response,threshold,TaskName.DRAG.value)
-results = response_data.get("results")
-# results = response_data_filtered.get("results")  #得到的是阈值过滤后的结果
+# 不过滤的结果
+results = client.get_result(response)
 
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.DRAG.value)
 ```
 
 ## 返回值格式

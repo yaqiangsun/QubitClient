@@ -94,12 +94,13 @@ def send_s21peakmulti_npy_to_server(dir_path):
 
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAKMULTI)
-    response_data = client.get_result(response)
 
+    # 不过滤的结果
+    results = client.get_result(response)
+
+    # 或过滤后的结果
     threshold = 0.5
-    response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAKMULTI.value)
-
-    results = response_data_filtered.get("result")
+    results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21PEAKMULTI.value)
 
     ply_plot_manager = QuantumPlotPlyManager()
     plt_plot_manager = QuantumPlotPltManager()
@@ -131,14 +132,12 @@ send_s21peakmulti_npy_to_server(base_dir)
 ### 获取结果
 
 ```python
+# 不过滤的结果
+results = client.get_result(response)
 
-response_data = client.get_result(response)
-
+# 或过滤后的结果
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAKMULTI.value)
-
-results = response_data_filtered.get("result")
-
+results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21PEAKMULTI.value)
 ```
 
 ## 返回值格式

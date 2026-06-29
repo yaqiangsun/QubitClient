@@ -62,14 +62,8 @@ def send_s21peakmulti_npy_to_server(dir_path="data/33137"):
     response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAKMULTI)
     print("response, response.json(): ", response, "-----------> ",response.json())
 
-    response_data = client.get_result(response)
-
-    # tmp = response_data.get("results")
-
     threshold = 0.5
-    response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAKMULTI.value)
-
-    results = response_data_filtered.get("result")
+    results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21PEAKMULTI.value)
     logging.info(f"Filtered results: {results}")
 
     ply_plot_manager = QuantumPlotPlyManager()

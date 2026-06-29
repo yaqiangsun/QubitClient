@@ -73,14 +73,12 @@ response = client.request(file_list=dict_list, task_type=NNTaskName.S21PEAK)
 ### 获取结果
 
 ```python
+# 不过滤的结果
+results = client.get_result(response)
 
-response_data = client.get_result(response)
-
+# 或过滤后的结果
 threshold = 0.5
-response_data_filtered = client.get_filtered_result(response, threshold, NNTaskName.S21PEAK.value)
-
-results = response_data_filtered.get("result")
-
+results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21PEAK.value)
 ```
 
 ## 返回值格式

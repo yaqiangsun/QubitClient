@@ -65,13 +65,12 @@ response = client.request(file_list=dict_list, task_type=TaskName.SPINECHO)
 ### 获取结果
 
 ```python
-response_data = client.get_result(response)
-threshold = 0.5
-response_data_filtered = client.get_filtered_result(response, threshold, TaskName.SPINECHO.value)
+# 不过滤的结果
+results = client.get_result(response)
 
-results = response_data_filtered.get("results")
-# 或使用未过滤的原始结果
-# results = response_data.get("results")
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.SPINECHO.value)
 ```
 
 ## 返回值格式
@@ -79,27 +78,24 @@ results = response_data_filtered.get("results")
 返回的结果是一个列表，每个元素对应一个输入文件的处理结果。每个量子比特（如 `Q0`）以字典键的形式返回拟合结果。
 
 ```json
-{
-  "type": "spinecho",
-  "results": [
-    {
-      "status": "success" | "failed",
-      "Q0": {
-        "q_name": "Q0",
-        "x": [float, ...],
-        "amp": [float, ...],
-        "envelope": [float, ...],
-        "fit_envelope": [float, ...],
-        "params": [float, ...],
-        "T2": float,
-        "r2": float,
-        "success": true | false
-      },
-      "Q1": { ... }
+[
+  {
+    "status": "success" | "failed",
+    "Q0": {
+      "q_name": "Q0",
+      "x": [float, ...],
+      "amp": [float, ...],
+      "envelope": [float, ...],
+      "fit_envelope": [float, ...],
+      "params": [float, ...],
+      "T2": float,
+      "r2": float,
+      "success": true | false
     },
-    ...
-  ]
-}
+    "Q1": { ... }
+  },
+  ...
+]
 ```
 
 ### 字段说明

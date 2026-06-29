@@ -26,7 +26,7 @@ def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
     response = client.request(file_list=[data_ndarray],task_type=task_type)
     # results = client.get_result(response=response)
     threshold = 0.3
-    results = client.get_filtered_result(response, threshold, task_type = task_type.value)
+    results = client.get_result(response, threshold=threshold, task_type=task_type.value)
 
     logging.debug(f"results:{results}")
     return results
@@ -36,7 +36,7 @@ def scope_template(image, task_type=TaskName.SPECTRUM2D, threshold=0.1):
     data_ndarray = image
     response = client.request(file_list=[data_ndarray], task_type=task_type)
     # results = client.get_result(response=response)
-    results = client.get_filtered_result(response, threshold, task_type=task_type.value)
+    results = client.get_result(response, threshold=threshold, task_type=task_type.value)
     logging.debug(f"results:{results}")
     return results
 

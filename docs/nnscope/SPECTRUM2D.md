@@ -90,10 +90,12 @@ response = client.request(
 ### 获取结果
 
 ```python
-results = client.get_result(response=response)
+# 不过滤的结果
+results = client.get_result(response)
+
+# 或过滤后的结果
 threshold = 0.5
-results_filtered = client.get_filtered_result(response, threshold, NNTaskName.SPECTRUM2D.value)
-results_filtered = results_filtered.get("result")
+results = client.get_result(response, threshold=threshold, task_type=NNTaskName.SPECTRUM2D.value)
 ```
 
 ## 返回值格式

@@ -68,13 +68,12 @@ response = client.request(
 ### 获取结果
 
 ```python
-response_data = client.get_result(response)
-threshold = 0.5
-response_data_filtered = client.get_filtered_result(response, threshold, TaskName.T12DFIT.value)
+# 不过滤的结果
+results = client.get_result(response)
 
-results = response_data_filtered.get("results")
-# 或使用未过滤的原始结果
-# results = response_data.get("results")
+# 或过滤后的结果
+threshold = 0.5
+results = client.get_result(response, threshold=threshold, task_type=TaskName.T12DFIT.value)
 ```
 
 ## 返回值格式

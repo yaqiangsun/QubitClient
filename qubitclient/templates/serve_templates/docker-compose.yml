@@ -10,6 +10,8 @@ services:
     volumes:
       - ./proxy/config:/app/config
       - ./tmp:/app/tmp
+    networks:
+      - qubitnet
 
   qubitserving:
     image: ghcr.io/yaqiangsun/qubitserving:latest
@@ -24,6 +26,8 @@ services:
       - /etc:/etc:ro
     cap_add:
       - NET_ADMIN
+    networks:
+      - qubitnet
 
   qubitscope:
     image: ghcr.io/yaqiangsun/qubitscope:latest
@@ -36,3 +40,9 @@ services:
       - /etc:/etc:ro
     cap_add:
       - NET_ADMIN
+    networks:
+      - qubitnet
+
+networks:
+  qubitnet:
+    driver: bridge

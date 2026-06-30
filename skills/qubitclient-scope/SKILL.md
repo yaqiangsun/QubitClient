@@ -704,7 +704,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.S21PEAK)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: [{"peaks": [[10],[22]], "confs": [[0.3],[0.6]], "freqs_list": [[0.3e9],[0.6e9]], "status": "success"}]
 ```
 
@@ -727,7 +727,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.T1FIT)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "t1fit", "results": [{"params_list": [[A, T1, B], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
 ```
 
@@ -751,7 +751,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.T2FIT)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "t2fit", "results": [{"params_list": [[A, B, T1, T2, w, phi], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
 ```
 
@@ -775,7 +775,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.RAMSEY)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "ramsey", "results": [{"params_list": [[A, B, T1, w, phi], ...], "r2_list": [...], "fit_data_list": [...], "fit_data_dense_list": [...], "x_dense_list": [...], "status": "success"}]}
 ```
 
@@ -802,7 +802,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.DRAG)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns intersection points and confidence scores
 ```
 
@@ -825,7 +825,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.SPINECHO)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "spinecho", "results": [{"status": "success", "Q0": {"x": [...], "amp": [...], "fit_envelope": [...], "T2": float, "r2": float}}]}
 ```
 
@@ -848,7 +848,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.RB)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "rb", "results": [{"params_list": [[A, p, B], ...], "r2_list": [...], "fit_data_list": [...], "status": "success"}]}
 ```
 
@@ -871,7 +871,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.SINGLESHOT)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns separation score, threshold, projection angle, and ellipse parameters
 ```
 
@@ -900,7 +900,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.T12DFIT)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "t12dfit", "results": [{"t1_list": [[T1_zpa0, T1_zpa1, ...]], "zpa_list": [[0.4, 0.6, 0.8, 1.0]], "status": "success"}]}
 ```
 
@@ -923,7 +923,7 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.TIMINGXYZ)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "xyz_timing", "results": [{"status": "success", "Q0": {"x": [...], "amp": [...], "fit_data": [...], "zd_xy": float, "r2": float}}]}
 ```
 
@@ -947,6 +947,6 @@ dict_list = [{
 }]
 
 response = client.request(file_list=dict_list, task_type=TaskName.OPTREADFREQ)
-results = client.get_result(response)
+results = client.get_result(response=response)
 # Returns: {"type": "optreadfreq", "results": [{"peak_list": [index], "status": "success"}]}
 ```

@@ -89,9 +89,6 @@ scope_client = QubitScopeClient()
 
 # Neural network client
 nn_client = QubitNNScopeClient()
-
-# With custom config path (optional, auto-detects qubitclient.json in root)
-scope_client = QubitScopeClient(config_path="path/to/qubitclient.json")
 ```
 
 ## Sub-Skills

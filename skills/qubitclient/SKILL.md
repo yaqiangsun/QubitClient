@@ -17,6 +17,83 @@ includes:
 
 `qubitclient` is the unified Python package for quantum calibration data analysis. It combines traditional curve fitting, neural network analysis, LLM review, and real-time measurement control into a single, coherent system.
 
+## Installation
+
+```bash
+# Basic installation
+pip install qubitclient
+
+# With visualization support (matplotlib, plotly)
+pip install -e qubitclient[plot]
+
+# With MCP protocol support (real-time control)
+pip install -e qubitclient[mcp]
+
+# Full installation (all features)
+pip install -e qubitclient[full]
+```
+
+**Requirements:** Python 3.10+
+
+## Initialization
+
+### Configuration File
+
+Initialize configuration files in your project directory:
+
+```bash
+qubitclient init
+```
+
+This generates `qubitclient.json` and `.mcp.json` in the current directory.
+
+**qubitclient.json structure:**
+
+```json
+{
+  "url": "http://0.0.0.0:9801",
+  "api_key": "your-proxy-api-key",
+  "llm": {
+    "api_key": "your-vllm-api-key",
+    "base_url": "http://xx.xx.xx.xx:9091/v1",
+    "model": "nv-community/Ising-Calibration-1-35B-A3B"
+  },
+  "generate": {
+    "api_key": "your-vllm-api-key",
+    "base_url": "http://xx.xx.xx.xx:9091/v1",
+    "model": "Qwen/Qwen-Image-Edit"
+  },
+  "license": {
+    "token": "your-license-token"
+  }
+}
+```
+
+| Field | Description | Required |
+|-------|-------------|----------|
+| `url` | QubitScope/NNScope server URL | Yes |
+| `api_key` | Server authentication key | Yes |
+| `llm.api_key` | VLLM API key for VQA review tasks | Yes |
+| `llm.base_url` | VLLM server base URL | Yes |
+| `llm.model` | Model name for VQA review | Yes |
+| `generate.*` | Image generation model config | Optional |
+| `license.token` | License token for cloud deployment authorization | Optional |
+
+### Client Initialization
+
+```python
+from qubitclient import QubitScopeClient, QubitNNScopeClient
+
+# Numerical fitting client (auto-loads qubitclient.json)
+scope_client = QubitScopeClient()
+
+# Neural network client
+nn_client = QubitNNScopeClient()
+
+# With custom config path (optional, auto-detects qubitclient.json in root)
+scope_client = QubitScopeClient(config_path="path/to/qubitclient.json")
+```
+
 ## Sub-Skills
 
 ### qubitclient-scope

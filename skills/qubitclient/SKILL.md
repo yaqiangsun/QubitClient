@@ -21,16 +21,10 @@ includes:
 
 ```bash
 # Basic installation
-pip install qubitclient
-
-# With visualization support (matplotlib, plotly)
-pip install -e qubitclient[plot]
-
-# With MCP protocol support (real-time control)
-pip install -e qubitclient[mcp]
+pip install 'qubitclient'
 
 # Full installation (all features)
-pip install -e qubitclient[full]
+pip install 'qubitclient[full]'
 ```
 
 **Requirements:** Python 3.10+

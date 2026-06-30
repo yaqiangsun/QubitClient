@@ -14,7 +14,7 @@ $$
 ```python
 from qubitclient import QubitScopeClient, TaskName
 
-client = QubitScopeClient(url="http://your-server-address:port", api_key="your-api-key")
+client = QubitScopeClient()
 ```
 
 ### 请求参数

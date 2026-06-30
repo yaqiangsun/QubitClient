@@ -94,7 +94,7 @@ client = QubitNNScopeClient(api_key="your-api-key-here")
 # 假设环境变量 QUBITCLIENT_URL="http://config3.com"
 
 # 使用构造函数参数（优先级最高）
-client = QubitScopeClient(url="http://config4.com", api_key="key4")
+client = QubitScopeClient()
 # 最终使用：url="http://config4.com", api_key="key4"
 
 # 不传参数
@@ -139,7 +139,7 @@ except ValueError as e:
 
 ```python
 # 旧的用法仍然有效
-client = QubitScopeClient(url="...", api_key="...")
+client = QubitScopeClient()
 
 # 新的用法 - 自动从配置加载
 client = QubitScopeClient()

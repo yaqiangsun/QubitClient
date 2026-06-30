@@ -14,7 +14,7 @@ SPECTRUM 是 Scope 中的一个任务，用于对量子比特的进行基于 **A
 ```python
 from qubitclient import QubitScopeClient, TaskName
 
-client = QubitScopeClient(url="http://your-server-address:port", api_key="your-api-key")
+client = QubitScopeClient()
 ```
 
 ### 请求参数

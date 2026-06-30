@@ -11,7 +11,7 @@ OPTREADFREQ 是 Scope 中的一个任务，返回每个量子比特的两条s21�
 ```python
 from qubitclient import QubitScopeClient, TaskName
 
-client = QubitScopeClient(url="http://your-server-address:port", api_key="your-api-key")
+client = QubitScopeClient()
 ```
 
 ### 请求参数

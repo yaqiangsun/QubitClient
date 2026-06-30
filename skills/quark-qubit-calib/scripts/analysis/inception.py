@@ -9,7 +9,7 @@
 
 from qubitclient import QubitNNScopeClient,QubitScopeClient
 from qubitclient import NNTaskName,TaskName
-from .config import API_URL,API_KEY,ENABLE_API
+from .config import ENABLE_API
 import logging
 from qubitclient import handle_exceptions, control_api_execution
 from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum2d_convert,drag_convert,\
@@ -19,7 +19,7 @@ from .format import optpipulse_convert,s21_convert,singleshot_convert,nnspectrum
                     rb_convert,delta_convert
 def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
 
-    client = QubitNNScopeClient(url=API_URL,api_key=API_KEY)
+    client = QubitNNScopeClient()
     data_ndarray = image
     response = client.request(file_list=[data_ndarray],task_type=task_type)
     # results = client.get_result(response=response)
@@ -29,7 +29,7 @@ def nnscope_template(image,task_type=NNTaskName.SPECTRUM2D):
     logging.debug(f"results:{results}")
     return results
 def scope_template(image,task_type=TaskName.SPECTRUM2D):
-    client = QubitScopeClient(url=API_URL,api_key=API_KEY)
+    client = QubitScopeClient()
     data_ndarray = image
     response = client.request(file_list=[data_ndarray],task_type=task_type)
     # results = client.get_result(response=response)

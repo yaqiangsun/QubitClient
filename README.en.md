@@ -121,7 +121,7 @@ from qubitclient import QubitNNScopeClient, NNTaskName, CurveType
 import numpy as np
 
 # Initialize the client
-client = QubitNNScopeClient(url="http://your-server-address:port", api_key="your-api-key")
+client = QubitNNScopeClient()
 
 # Method 1: Directly using file paths
 file_path_list = ["data/file1.npz", "data/file2.npz"]
@@ -152,7 +152,7 @@ from qubitclient import QubitScopeClient, TaskName
 import numpy as np
 
 # Initialize the client
-client = QubitScopeClient(url="http://your-server-address:port", api_key="your-api-key")
+client = QubitScopeClient()
 
 # Prepare data (example)
 dict_list = [{

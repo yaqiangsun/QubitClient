@@ -36,9 +36,9 @@ from plotly.subplots import make_subplots
 import numpy as np
 
 
-def transform_spectrum_npy_and_processed_data(url, api_key, dict_list):
+def transform_spectrum_npy_and_processed_data(dict_list):
     savenamelist = []
-    client = QubitScopeClient(url=url, api_key=api_key)
+    client = QubitScopeClient()
     # 使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     response = client.request(file_list=dict_list, task_type=TaskName.SPECTRUM)
 
@@ -103,7 +103,6 @@ def transform_spectrum_npy_and_processed_data(url, api_key, dict_list):
 
 
 def main():
-    API_URL, API_KEY = None,None
     base_dir = "./tmp/spectrum"
     file_names = os.listdir(base_dir)
     file_path_list = []
@@ -119,7 +118,7 @@ def main():
         content = load_npy_file(file_path)
         dict_list.append(content)
     
-    trans_all_npy = transform_spectrum_npy_and_processed_data(API_URL, API_KEY, dict_list)# trans_all_npy的数据格式参考format_spectrum.json
+    trans_all_npy = transform_spectrum_npy_and_processed_data(dict_list)# trans_all_npy的数据格式参考format_spectrum.json
     
 
 if __name__ == "__main__":

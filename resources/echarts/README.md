@@ -23,12 +23,12 @@
         for file_path in file_path_list:
             content = load_npy_file(file_path)
             dict_list.append(content)
-        trans_all_npy = transform_s21peak_npy_and_processed_data(API_URL, API_KEY, dict_list)  # trans_all_npy的数据格式参考format_s21vflux.json
+        trans_all_npy = transform_s21peak_npy_and_processed_data(dict_list)  # trans_all_npy的数据格式参考format_s21vflux.json
     ```
    
         
 # 注意事项！！！！！
-1. trans_all_npy = transform_s21peak_npy_and_processed_data(API_URL, API_KEY, dict_list)  # trans_all_npy的数据格式参考format_s21vflux.json  
-该函数的参数只有API_URL, API_KEY, dict_list。
+1. trans_all_npy = transform_s21peak_npy_and_processed_data(dict_list)  # trans_all_npy的数据格式参考format_s21vflux.json  
+该函数的参数只有dict_list。
 2. 返回值trans_all_npy的格式参考format_s21vflux.json
 3. 先确定格式，生成format_****.json,后完成数据转换。

@@ -36,10 +36,10 @@ import numpy as np
 
 
 
-def transform_spectrum2dnnscope_npz_and_processed_data(url, api_key, dict_list):
+def transform_spectrum2dnnscope_npz_and_processed_data(dict_list):
     # get all file in dir
 
-    client = QubitNNScopeClient(url=url, api_key=api_key)
+    client = QubitNNScopeClient()
 
 
 
@@ -85,10 +85,10 @@ def transform_spectrum2dnnscope_npz_and_processed_data(url, api_key, dict_list):
     return trans_all_npz
 
 
-def transform_spectrum2dnnscope_npy_and_processed_data(url, api_key,data_ndarray):
+def transform_spectrum2dnnscope_npy_and_processed_data(data_ndarray):
 
 
-    client = QubitNNScopeClient(url=url, api_key=api_key)
+    client = QubitNNScopeClient()
 
     # 1.使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
     # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
@@ -133,9 +133,6 @@ def transform_spectrum2dnnscope_npy_and_processed_data(url, api_key,data_ndarray
     return trans_single_npy
 
 def main():
-    API_URL, API_KEY = None,None
-
-    # # 1. npz file.
     base_dir = "data/1829"
     file_names = os.listdir(base_dir)
     savename = os.path.basename(base_dir)
@@ -152,7 +149,7 @@ def main():
         content = load_npz_file(file_path)
         dict_list.append(content)
 
-    trans_all_npz = transform_spectrum2dnnscope_npz_and_processed_data(API_URL, API_KEY, dict_list)
+    trans_all_npz = transform_spectrum2dnnscope_npz_and_processed_data(dict_list)
 
 
     # 2. npy file.
@@ -161,7 +158,7 @@ def main():
     base_name = os.path.basename(file_path)
     data_ndarray = np.load(file_path, allow_pickle=True)
 
-    trans_single_npy = transform_spectrum2dnnscope_npy_and_processed_data(API_URL, API_KEY, data_ndarray)
+    trans_single_npy = transform_spectrum2dnnscope_npy_and_processed_data(data_ndarray)
 
 
 if __name__ == "__main__":

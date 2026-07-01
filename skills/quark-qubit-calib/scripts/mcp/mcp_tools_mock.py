@@ -10,7 +10,7 @@
 import os
 import numpy as np
 import json
-from qubitctrl import mcp
+from swiftmcp import mcp
 data_list = [
     # "tmp/data/s21_full_scan/14.pkl",
     # "tmp/data/s21_multi/1344.pkl"

@@ -1,7 +1,7 @@
 ---
 name: qubitclient-scope
 description: "Quantum experiment NUMERICAL curve fitting and parameter extraction. Support for: (1) S21 peak detection (single/multi), (2) Optimal π-pulse calibration, (3) Rabi oscillation analysis, (4) T1/T2 relaxation time fitting, (5) DRAG pulse optimization, (6) Power shift characterization, (7) Ramsey fringe analysis, (8) Single-shot readout fidelity, (9) 2D spectrum analysis, (10) Spin Echo T2 fitting, (11) Randomized Benchmarking, (12) XYZ Timing calibration, (13) 2D T1 fitting, (14) Optimal readout frequency, (15) Delta experiment. Provides unified API for curve fitting, parameter extraction, and batch processing with matplotlib/plotly visualization support."
-license: Proprietary. LICENSE.txt has complete terms
+license: GPL-3.0
 ---
 
 ## Overview

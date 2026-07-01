@@ -1,0 +1,11 @@
+{
+  "id": "qubitclient-scope",
+  "name": "qubitclient-scope",
+  "version": "1.0.0",
+  "description": "Quantum experiment NUMERICAL curve fitting and parameter extraction for superconducting qubits",
+  "author": "yaqiangsun",
+  "license": "GPL-3.0",
+  "agentSupport": ["claude", "cursor"],
+  "tags": ["quantum", "physics", "curve-fitting", "qubit"],
+  "repository": "https://github.com/yaqiangsun/QubitClient"
+}

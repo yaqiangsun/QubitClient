@@ -1,16 +1,8 @@
 ---
 name: qubitclient
-description: "Unified quantum calibration analysis package. Aggregates: (1) qubitclient-scope — numerical curve fitting and parameter extraction (S21 peak, T1/T2, Rabi, DRAG, RB, etc.), (2) qubitclient-nnscope — neural network based spectrum analysis (S21 peak, spectrum 2D, S21 vs Flux), (3) qubitclient-vqa-review — LLM-based analysis and review for calibration results, (4) qubitclient-control — MCP protocol-based real-time measurement control. Provides a single entry point for all quantum experiment data analysis tasks."
+description: >
+  "Unified quantum calibration analysis package. Aggregates: (1) qubitclient-scope — numerical curve fitting and parameter extraction (S21 peak, T1/T2, Rabi, DRAG, RB, etc.), (2) qubitclient-nnscope — neural network based spectrum analysis (S21 peak, spectrum 2D, S21 vs Flux), (3) qubitclient-vqa-review — LLM-based analysis and review for calibration results, (4) qubitclient-control — MCP protocol-based real-time measurement control. Provides a single entry point for all quantum experiment data analysis tasks."
 license: GPL-3.0
-includes:
-  - name: qubitclient-scope
-    description: "Traditional numerical fitting and analysis tasks for quantum calibration"
-  - name: qubitclient-nnscope
-    description: "Neural network based analysis tasks for spectrum and curve segmentation"
-  - name: qubitclient-vqa-review
-    description: "LLM-based visual question answering and analysis review"
-  - name: qubitclient-control
-    description: "Real-time measurement control via MCP protocol"
 ---
 
 ## Overview

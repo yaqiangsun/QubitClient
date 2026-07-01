@@ -75,6 +75,11 @@ class CtrlTaskName(Enum):
 def run_task(task_type,*args,**kwargs):
     if not isinstance(task_type, str):
         task_type = task_type.value
+    if task_type not in DEFINED_TASKS.keys():
+        result = call_mcp(task_type,
+                      *args,**kwargs
+                      )
+        return result
     response = DEFINED_TASKS[task_type](*args,**kwargs)
     return response
 

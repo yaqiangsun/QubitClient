@@ -15,8 +15,8 @@ def call_mcp(func_name:str,*args,**kwargs):
     mcp = MCPClient(mcpServers=None)
     result = mcp.call(func_name,*args,**kwargs)
     try:
-        result = json.loads(result)
         result = result[0].get("text")
+        result = json.loads(result)
     except Exception as e:
         pass
     return result

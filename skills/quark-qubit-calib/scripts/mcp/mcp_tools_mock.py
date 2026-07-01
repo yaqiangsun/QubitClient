@@ -293,3 +293,7 @@ def rb(qubits:list[str],
     tid = [i for i, name in enumerate(data_list) if func_name in name.lower()]
     tid = tid[0]
     return str(tid)  # 确保返回字符串类型
+
+if __name__ == "__main__":
+    print("启动 MCP 服务...")
+    mcp.run(transport="stdio")

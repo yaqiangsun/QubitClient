@@ -19,17 +19,15 @@ def get_t1_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
 
-    qubit_name_list = ["q3lu7"]
+    qubit_name_list = ["q1ld4"]
 
-    data = qubit_ctrl_client.run(CtrlTaskName.T1,
+    data_id = qubit_ctrl_client.run(CtrlTaskName.T1,
                                    qubits=qubit_name_list,
                                    delay_start=0,
                                    delay_end=80000,
                                    delay_sample_num=17)
-    data_id = data[0]["text"]
     data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
-    data = json.loads(data[0]["text"])
 
     # 2.分析数据
     analysis_result = t1fit(data)

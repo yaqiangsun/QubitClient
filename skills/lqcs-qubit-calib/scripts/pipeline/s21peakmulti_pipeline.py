@@ -7,19 +7,24 @@
 # Created Time: 2026/06/12
 ########################################################################
 
-"""Multi-qubit S21 scan pipeline with UI storage & cmd args
+
+"""Multi-qubit S21PEAKMULTI spectrum measurement pipeline, write data to storage for web UI real-time display
 Usage:
     1. Start UI server first: qubitclient ui start
-    2. Example:
-        python -m resources.lqcs.pipeline.s21peakmulti_pipeline -q q3lu7 -s ./tmp -u True -c 0.4 -r 0.0005 -fs 6.5 -fe 6.8
+    2. cmd params example:
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.s21peakmulti_pipeline -q q1ld4 -fs 6.5 -fe 6.8 -r 0.0008 -s ./tmp -u True -c 0.4
+    3. Launch the browser: http://localhost:8581/ to verify the display.
 """
+
 import sys
 import argparse
-import uuid
+import logging
 from datetime import datetime
 from pathlib import Path
-from PIL import Image
 import json
+
+# 配置日志
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
@@ -32,10 +37,12 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import nns21peakmulti, s21peakmulti
 from analysis.visualization import plot_nns21peakmulti, plot_s21peakmulti
 
-DEFAULT_SAVE_FOLDER = './tmp'
+from analysis.update import s21peakmulti_update
 
-# 加载fread配置文件
-CONFIG_PATH = "s21peakmulti_init_freq.json"
+DEFAULT_SAVE_FOLDER = './tmp'
+CONFIG_PATH = "skills/lqcs-qubit-calib/scripts/pipeline/s21peakmulti_init_freq.json"
+
+# 加载比特基准频率配置
 try:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         base_freq_dict = json.load(f)
@@ -45,34 +52,68 @@ except FileNotFoundError:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Multi Qubit S21 Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit list, default: q3lu7")
-    parser.add_argument("--freq-start", "-fs",type=float, default=6.5, help="Scan freq start GHz")
-    parser.add_argument("--freq-end", "-fe",type=float, default=6.7, help="Scan freq end GHz")
-    parser.add_argument("--sample-rate", "-r", type=float, default=0.0002, help="Frequency sample step")
+    parser = argparse.ArgumentParser(description="Multi Qubit S21MULTI Measurement Pipeline (UI storage sync enabled)")
+    # 被测比特列表
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
+                        help="Target qubit name list, default: q1ld4")
+    # 扫描起始频率
+    parser.add_argument("--freq-start", "-fs", type=float, default=6.5,
+                        help="Scan start frequency (GHz)")
+    # 扫描终止频率
+    parser.add_argument("--freq-end", "-fe", type=float, default=6.7,
+                        help="Scan end frequency (GHz)")
+    # 频率步长
+    parser.add_argument("--sample-rate", "-r", type=float, default=0.0002,
+                        help="Frequency sample step (GHz)")
+    # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
-                        help="Plot output directory")
-    # 新增：是否开启参数更新
+                        help="Folder to save spectrum plot image")
+    # 是否自动更新参数
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
-    # 新增：置信度阈值
+    # 置信度阈值
     parser.add_argument("--confidence", "-c", type=float, default=0.5,
                         help="Confidence threshold for parameter update")
+
     return parser.parse_args()
+
+
+
+# def llm_analysis(img_save_path):
+    # resize更小
+    # img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    # print("img_small_path: ", img_small_path)
+
+    # with Image.open(img_save_path) as img:
+        # w, h = img.size
+        # new_w = w // 10
+        # new_h = h // 10
+        # print("size: ", new_w, new_h)
+        # img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        # img_small.save(img_small_path, dpi=(300, 300))
+
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    # print("\nQubit_Spectroscopy tests passed!")
+
+
 
 def get_s21peakmulti_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "s21peakmulti"
-    pipeline_type = "s21peakmulti_pipeline"
+    task_name = CtrlTaskName.S21PEAKMULTI.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
-    qname = qubit_name_list[0]
-    base_freq = base_freq_dict.get(qname)
-
     try:
         qubit_ctrl_client = QubitCtrlClient()
+        qname = qubit_name_list[0]
+        base_freq = base_freq_dict.get(qname)
+
+        # 组装实验参数
         set_params = {
             "qubits": qubit_name_list,
             "frequency_start": args.freq_start,
@@ -81,92 +122,70 @@ def get_s21peakmulti_hdf5_res(args):
             "fread": base_freq
         }
 
+        # 创建实验记录并生成run_id
         run_record = PipelineResultRecord(
             task_name=task_name,
-            task_type=pipeline_type,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[S21PEAKMULTI] Task started run_id={run_id[:8]}")
+        logging.info(f"[S21MULTI] Task started run_id={run_id[:8]}")
 
-        data = qubit_ctrl_client.run(
+        # 硬件采集数据
+        data_id = qubit_ctrl_client.run(
             CtrlTaskName.S21PEAKMULTI,
             qubits=qubit_name_list,
             frequency_start=args.freq_start,
             frequency_end=args.freq_end,
             frequency_sample_rate=args.sample_rate
         )
-        data_id = data[0]["text"]
-        raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
-        raw_data = json.loads(raw_data_text[0]["text"])
+        print("141---------", data_id)
 
+        # 读取解析后原始数据
+        raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+
+        # 写入原始数据到存储
         store.update_run(run_id=run_id, raw_data_id=data_id, raw_data=raw_data)
 
+        # 数据分析
         analysis_result = s21peakmulti(raw_data)
+        print("150---", analysis_result)
 
+        # 绘制频谱图
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/s21peakmulti_{pure_name}.png'
-        fig_list = plot_s21peakmulti(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = f'{save_folder}/{CtrlTaskName.S21PEAKMULTI.value}_{pure_name}_{run_id}.png'
+        plot_s21peakmulti(raw_data, analysis_result, save_path=img_save_path)
 
         # =========== 接入大模型分析图片 ===========
-        # resize更小
-        # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # print("img_small_path: ", img_small_path)
-
-        # with Image.open(img_save_path) as img:
-        #     w, h = img.size
-        #     new_w = w // 10
-        #     new_h = h // 10
-        #     print("size: ", new_w, new_h)
-        #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        #     img_small.save(img_small_path, dpi=(300, 300))
-
-        # test_qubit_spectroscopy_q1_describe(img_small_path)
-        # test_qubit_spectroscopy_q2_classify(img_small_path)
-        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
-        # test_qubit_spectroscopy_q4_assess(img_small_path)
-        # test_qubit_spectroscopy_q5_extract(img_small_path)
-        # test_qubit_spectroscopy_q6_status(img_small_path)
-        # print("\nQubit_Spectroscopy tests passed!")
+        # llm_analysis(img_save_path)
 
         new_full_params = set_params.copy()
         update_map = {}
 
-        # 解析分析结果
-        if isinstance(analysis_result, dict):
-            if "results" in analysis_result:
-                analysis_result = analysis_result.get("results")
-            elif "result" in analysis_result:
-                analysis_result = analysis_result.get("result")
-
-        # 仅开启更新时，执行参数更新逻辑
+        # 开启自动更新则执行参数更新
         if args.update:
-            for result in analysis_result:
-                peaks_list = result['peaks']
-                confs_list = result['confs']
-                freqs_list = result['freqs_list']
-                for i in range(len(qubit_name_list)):
-                    # peaks = peaks_list[i]
-                    confs = confs_list[i]
-                    print("confs: ", confs)
-                    freqs = freqs_list[i]
-                    qname = qubit_name_list[i]
-                    base_freq = base_freq_dict.get(qname)
 
-                    if len(freqs) and len(confs):
-                        # 置信度大于阈值才执行更新
-                        idx = freqs.index(min(freqs, key=lambda f: abs(f - base_freq)))
-                        closest_freq = freqs[idx]
-                        cur_conf = float(confs[idx])
-                        if cur_conf > args.confidence:
-                            print("[INFO] update : ", closest_freq, qname)
-                            update_map[qname] = closest_freq
-                            qubit_ctrl_client.update_param(qname=qname, task_type=CtrlTaskName.S21PEAKMULTI, values=str(closest_freq))
+            update_map = s21peakmulti_update(
+                results=analysis_result,
+                conf_threshold=args.confidence,
+                qubit_name_list=qubit_name_list,
+                base_freq_dict=base_freq_dict
+            )
+            # 更新参数
+            for q, info in update_map.items():
+                new_value = info["fread_star"]
 
+                qubit_ctrl_client.update_param(
+                    qname=q,
+                    task_type=CtrlTaskName.S21PEAKMULTI,
+                    values=str(new_value)
+                )
+
+        # 更新最终参数
         if update_map:
-            new_full_params["fread"] = update_map
+            new_full_params["fread_star"] = update_map
 
+        # 完成任务，写结果到存储
         store.update_run(
             run_id=run_id,
             status="completed",
@@ -175,18 +194,19 @@ def get_s21peakmulti_hdf5_res(args):
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"Measurement finished, updated params: {new_full_params}")
+        logging.info(f"测量完成，最终参数： {new_full_params}")
 
     except Exception as e:
-        err_msg = f"Measure failed: {str(e)}"
+        err_msg = f"测量异常：{str(e)}"
         store.update_run(
             run_id=run_id,
             status="failed",
             error=err_msg,
             completed_at=datetime.now()
         )
-        print(f"Task failed run_id={run_id[:8]} error: {err_msg}")
+        logging.error(f"任务失败 run_id={run_id[:8]} 错误：{err_msg}")
         raise
+
 
 if __name__ == '__main__':
     cli_args = parse_args()

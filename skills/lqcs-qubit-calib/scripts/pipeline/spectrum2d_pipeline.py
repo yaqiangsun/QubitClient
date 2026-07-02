@@ -12,8 +12,8 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-    faster: python -m resources.lqcs.pipeline.spectrum2d_pipeline -q q3lu7 -fs -3 -fe 3 -fn 10 -bs -1 -be 1 -bn 10 -da 0.0 -s ./tmp -u True -c 0.6
-
+        faster: python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum2d_pipeline -q q1ld4 -fs -3 -fe 3 -fn 10 -zs -1 -ze 1 -zn 10 -sa 0.0 -s ./tmp -u True -c 0.6
+    3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
 import sys
@@ -23,6 +23,10 @@ from pathlib import Path
 from PIL import Image
 import json
 import numpy as np
+import logging
+
+# 统一日志配置
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
@@ -30,7 +34,6 @@ if str(project_root) not in sys.path:
 
 from qubitclient.storage.result_store import PipelineResultRecord, PipelineResultStore
 from qubitclient.storage.storage import StorageBackend
-
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
@@ -40,11 +43,33 @@ from analysis.visualization import plot_nnspectrum2d
 SAVE_PLOT_FOLDER = './tmp'
 
 
+def llm_analysis(img_save_path):
+    # resize更小
+    img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    logging.info(f"img_small_path: {img_small_path}")
+
+    with Image.open(img_save_path) as img:
+        w, h = img.size
+        new_w = w // 10
+        new_h = h // 10
+        logging.info(f"size: {new_w}, {new_h}")
+        img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        img_small.save(img_small_path, dpi=(300, 300))
+
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    logging.info("Qubit_Spectroscopy tests passed!")
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="2D Spectrum Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit name list, default: q3lu7")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
+                        help="Target qubit name list, default: q1ld4")
     # 频率起始
     parser.add_argument("--freq-start", "-fs", type=float, default=3,
                         help="Frequency start value, default 3")
@@ -66,17 +91,17 @@ def parse_args():
     # 幅度
     parser.add_argument("--spec-amp", "-sa", type=float, default=0.5,
                         help="Spec amplitude, default 0.0")
-    # 频率
-    parser.add_argument("--sb_freq", "-sa", type=float, default=-0.15,
+    # 边带频率
+    parser.add_argument("--sb-freq", "-bf", type=float, default=-0.15,
                         help="sb_freq, default -0.15")
-    
+
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
-    # 新增：是否开启参数更新
+    # 是否开启参数更新
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
-    # 新增：置信度阈值
+    # 置信度阈值
     parser.add_argument("--confidence", "-c", type=float, default=0.5,
                         help="Confidence threshold for parameter update")
     return parser.parse_args()
@@ -84,8 +109,7 @@ def parse_args():
 
 def get_spectrum2d_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "spectrum2d"
-    pipeline_type = "spectrum2d_pipeline"
+    task_name = CtrlTaskName.SPECTRUM_2D.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
@@ -105,18 +129,16 @@ def get_spectrum2d_hdf5_res(args):
             "sb_freq": args.sb_freq
         }
 
-        # 新建实验记录，写入存储
+        # 新建实验记录，移除 pipeline_type
         run_record = PipelineResultRecord(
             task_name=task_name,
-            task_type=pipeline_type,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[Spectrum2D] Task started run_id={run_id[:8]}")
+        logging.info(f"[Spectrum2D] Task started run_id={run_id[:8]}")
 
-        
-        data = qubit_ctrl_client.run(
+        data_id = qubit_ctrl_client.run(
             CtrlTaskName.SPECTRUM_2D,
             qubits=qubit_name_list,
             freq_start=set_params["freq_start"],
@@ -128,64 +150,33 @@ def get_spectrum2d_hdf5_res(args):
             spec_amp=set_params["spec_amp"],
             sb_freq=set_params["sb_freq"]
         )
-            
-        data_id = data[0]["text"]
-        raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
-        raw_data = json.loads(raw_data_text[0]["text"])
 
-        # =========== 写入原始数据 ===========
+        raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+        
+
+        # 写入原始数据
         store.update_run(
             run_id=run_id,
             raw_data_id=data_id,
             raw_data=raw_data
         )
 
-        # =========== 分析 ============
+        # 数据分析
         analysis_result = nnspectrum2d(raw_data)
-        
 
-        # =========== 绘制波形图==========
+        # 绘图
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/spectrum2d_{pure_name}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.SPECTRUM_2D.value}_{pure_name}_{run_id}.png'
         fig_list = plot_nnspectrum2d(raw_data, analysis_result, save_path=img_save_path)
         plot_paths = [img_save_path]
 
-        # =========== 接入大模型分析图片 ===========
-        # resize更小
-        # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # print("img_small_path: ", img_small_path)
+        # Large Model
+        # llm_analysis(img_save_path)
 
-        # with Image.open(img_save_path) as img:
-        #     w, h = img.size
-        #     new_w = w // 10
-        #     new_h = h // 10
-        #     print("size: ", new_w, new_h)
-        #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        #     img_small.save(img_small_path, dpi=(300, 300))
-
-        # test_qubit_spectroscopy_q1_describe(img_small_path)
-        # test_qubit_spectroscopy_q2_classify(img_small_path)
-        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
-        # test_qubit_spectroscopy_q4_assess(img_small_path)
-        # test_qubit_spectroscopy_q5_extract(img_small_path)
-        # test_qubit_spectroscopy_q6_status(img_small_path)
-        # print("\nQubit_Spectroscopy tests passed!")
-
-        # =========== 参数更新逻辑 ===========
+        # 当前无更新逻辑
         new_full_params = set_params.copy()
-        update_map = {}
 
-        # 解析分析结果
-        if isinstance(analysis_result, dict):
-            if "results" in analysis_result:
-                analysis_result = analysis_result.get("results")
-            elif "result" in analysis_result:
-                analysis_result = analysis_result.get("result")
-
-        # 暫時沒有參數更新
-
-
-        # =========== 更新结果到存储 ======================
+        # 结果入库
         store.update_run(
             run_id=run_id,
             status="completed",
@@ -194,10 +185,9 @@ def get_spectrum2d_hdf5_res(args):
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"测量完成，参数： {new_full_params}")
+        logging.info(f"测量完成，参数： {new_full_params}")
 
     except Exception as e:
-        # ========== 捕获异常，存入错误信息 ================
         err_msg = f"2D频谱测量异常：{str(e)}"
         store.update_run(
             run_id=run_id,
@@ -205,7 +195,7 @@ def get_spectrum2d_hdf5_res(args):
             error=err_msg,
             completed_at=datetime.now()
         )
-        print(f"任务失败 run_id={run_id[:8]} 错误：{err_msg}")
+        logging.error(f"任务失败 run_id={run_id[:8]} 错误：{err_msg}")
         raise
 
 

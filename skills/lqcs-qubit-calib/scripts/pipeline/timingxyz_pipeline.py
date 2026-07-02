@@ -12,7 +12,8 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.timingxyz_pipeline -q q3lu7 -ds -60 -de 60 -dn 31 -z 0.5 -s ./tmp -u True -c 0.3
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.timingxyz_pipeline -q q1ld4 -ds -60 -de 60 -dn 31 -z 0.5 -s ./tmp -u True -c 0.3
+    3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
 import sys
@@ -21,6 +22,10 @@ from datetime import datetime
 from pathlib import Path
 from PIL import Image
 import json
+import logging
+
+# 统一日志配置
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
@@ -28,21 +33,44 @@ if str(project_root) not in sys.path:
 
 from qubitclient.storage.result_store import PipelineResultRecord, PipelineResultStore
 from qubitclient.storage.storage import StorageBackend
-
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
+from qubitclient import QubitScopeClient
 
 from analysis.inception import timingxyz
 from analysis.visualization import plot_timingxyz
+from analysis.update import timingxyz_update
 
 SAVE_PLOT_FOLDER = './tmp'
+
+
+def llm_analysis(img_save_path):
+    # resize更小
+    img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    logging.info(f"img_small_path: {img_small_path}")
+
+    with Image.open(img_save_path) as img:
+        w, h = img.size
+        new_w = w // 10
+        new_h = h // 10
+        logging.info(f"size: {new_w}, {new_h}")
+        img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        img_small.save(img_small_path, dpi=(300, 300))
+
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    logging.info("Qubit_Spectroscopy tests passed!")
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="TimingXYZ Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit name list, default: q3lu7")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
+                        help="Target qubit name list, default: q1ld4")
     # 延时起始值
     parser.add_argument("--delay-start", "-ds", type=float, default=-60,
                         help="Delay start value, default -60")
@@ -69,14 +97,14 @@ def parse_args():
 
 def get_timingxyz_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "timingxyz"
-    pipeline_type = "timingxyz_pipeline"
+    task_name = CtrlTaskName.TIMINGXYZ.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
     qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
+        scope_client = QubitScopeClient()
 
         # 组装实验参数
         set_params = {
@@ -90,15 +118,14 @@ def get_timingxyz_hdf5_res(args):
         # 新建实验记录
         run_record = PipelineResultRecord(
             task_name=task_name,
-            task_type=pipeline_type,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[TimingXYZ] Task started run_id={run_id[:8]}")
+        logging.info(f"[TimingXYZ] Task started run_id={run_id[:8]}")
 
-        # 1.采集数据
-        data = qubit_ctrl_client.run(
+        # 采集数据
+        data_id = qubit_ctrl_client.run(
             CtrlTaskName.TIMINGXYZ,
             qubits=qubit_name_list,
             delay_start=args.delay_start,
@@ -106,9 +133,9 @@ def get_timingxyz_hdf5_res(args):
             delay_sample_num=args.delay_sample_num,
             zpa=args.zpa
         )
-        data_id = data[0]["text"]
-        raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
-        raw_data = json.loads(raw_data_text[0]["text"])
+
+        raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+
 
         # 写入原始数据ID与数据
         store.update_run(
@@ -117,65 +144,33 @@ def get_timingxyz_hdf5_res(args):
             raw_data=raw_data
         )
 
-        # 2.分析数据
+        # 分析数据
         analysis_result = timingxyz(raw_data)
 
-        # 3.绘图
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/timingxyz_{pure_name}.png'
+
+        # 绘图
+        img_save_path = f'{save_folder}/{CtrlTaskName.TIMINGXYZ.value}_{qubit_name_list[0]}_{run_id}.png'
         fig_list = plot_timingxyz(raw_data, analysis_result, save_path=img_save_path)
         plot_paths = [img_save_path]
 
-        # 4.接入大模型分析图片
-        # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # with Image.open(img_save_path) as img:
-        #     w, h = img.size
-        #     new_w = w // 10
-        #     new_h = h // 10
-        #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        #     img_small.save(img_small_path, dpi=(300, 300))
-        # test_qubit_spectroscopy_q1_describe(img_small_path)
-        # test_qubit_spectroscopy_q2_classify(img_small_path)
-        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
-        # test_qubit_spectroscopy_q4_assess(img_small_path)
-        # test_qubit_spectroscopy_q5_extract(img_small_path)
-        # test_qubit_spectroscopy_q6_status(img_small_path)
-        # print("\nQubit_Spectroscopy tests passed!")
+        # 按需开启图片处理
+        # llm_analysis(img_save_path)
 
         new_full_params = set_params.copy()
         update_map = {}
 
-        # 解析分析结果
-        if isinstance(analysis_result, dict):
-            if "results" in analysis_result:
-                analysis_result = analysis_result.get("results")
-            elif "result" in analysis_result:
-                analysis_result = analysis_result.get("result")
-
-        # 开启更新才执行参数修改逻辑
+        # 开启更新：调用独立更新函数，主流程执行硬件下发
         if args.update:
-            # TODO:解析逻辑
-            # for result in analysis_result:
-                # confs_list = result.get("confs", [])
-                # timing_vals = result.get("timing_xy", [])
-                # for i in range(len(qubit_name_list)):
-                #     qname = qubit_name_list[i]
-                #     if i >= len(confs_list) or i >= len(timing_vals):
-                #         continue
-
-                #     cur_conf = float(confs_list[i])
-                #     # 置信度判断
-                #     if cur_conf <= args.confidence:
-                #         continue
-
-                #     target_val = str(timing_vals[i])
-                #     task_type = CtrlTaskName.TIMINGXYZ
-                #     qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=target_val)
-                #     update_map[qname] = target_val
-                #     print(f"[INFO] Update {qname} timing_xy to {target_val}, confidence: {cur_conf}")
-            update_values = "3.193120459017055"
+            update_map = timingxyz_update(
+                results=analysis_result,
+                conf_threshold=args.confidence,
+                qubit_list=qubit_name_list
+            )
+            # 主流程统一更新硬件参数
             task_type = CtrlTaskName.TIMINGXYZ
-            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=update_values)
+            for qn, val in update_map.items():
+                qubit_ctrl_client.update_param(qname=qn, task_type=task_type, values=val)
+                logging.info(f"[INFO] Update {qn} timing_xy to {val}")
 
         # 记录更新后的参数
         if update_map:
@@ -190,7 +185,7 @@ def get_timingxyz_hdf5_res(args):
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"TimingXYZ测量完成，更新后参数: {new_full_params}")
+        logging.info(f"TimingXYZ测量完成，更新后参数: {new_full_params}")
 
     except Exception as e:
         # 异常捕获并记录
@@ -201,6 +196,7 @@ def get_timingxyz_hdf5_res(args):
             error=err_msg,
             completed_at=datetime.now()
         )
+        raise
 
 
 if __name__ == '__main__':

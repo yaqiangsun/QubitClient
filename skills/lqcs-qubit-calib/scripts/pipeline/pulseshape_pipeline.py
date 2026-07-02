@@ -17,15 +17,14 @@ SAVE_PLOT_FOLDER = './tmp'
 def get_pulseshape_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
-    qubit_name_list = ["q3lu7"]
+    qubit_name_list = ["q1ld4"]
     
-    data = qubit_ctrl_client.run(CtrlTaskName.PULSESHAPE,
+    data_id = qubit_ctrl_client.run(CtrlTaskName.PULSESHAPE,
                                    qubits=qubit_name_list,
                                    step_height=0.2)
-    data_id = data[0]["text"]
+    
     data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
-    data = json.loads(data[0]["text"])
 
     # 2.分析数据
     # analysis_result = pulseshape(data)

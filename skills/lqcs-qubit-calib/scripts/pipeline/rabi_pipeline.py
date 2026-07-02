@@ -11,7 +11,8 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m resources.lqcs.pipeline.rabi_pipeline -q q3lu7 -s ./tmp -u True -c 0.6
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.rabi_pipeline -q q1ld4 -s ./tmp -u True -c 0.6
+    3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 import sys
 import argparse
@@ -21,6 +22,10 @@ from pathlib import Path
 from PIL import Image
 import json
 import numpy as np
+import logging
+
+# 统一日志配置
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
@@ -30,15 +35,40 @@ from qubitclient.storage.result_store import PipelineResultRecord, PipelineResul
 from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
+
 from analysis.inception import rabi
 from analysis.visualization import plot_rabicos
+from analysis.update import rabi_update
 
 DEFAULT_SAVE_FOLDER = './tmp'
 
+
+def llm_analysis(img_save_path):
+    # resize更小
+    img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    logging.info(f"img_small_path: {img_small_path}")
+
+    with Image.open(img_save_path) as img:
+        w, h = img.size
+        new_w = w // 10
+        new_h = h // 10
+        logging.info(f"size: {new_w}, {new_h}")
+        img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        img_small.save(img_small_path, dpi=(300, 300))
+
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    logging.info("Qubit_Spectroscopy tests passed!")
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Rabi Amplitude Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit list, default: q3lu7")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
+                        help="Target qubit list, default: q1ld4")
     parser.add_argument("--piamp-start", type=float, default=0, help="Pulse amplitude start")
     parser.add_argument("--piamp-end", type=float, default=2, help="Pulse amplitude end")
     parser.add_argument("--piamp-samples", type=int, default=20, help="Amplitude sample count")
@@ -55,8 +85,7 @@ def parse_args():
 
 def get_rabi_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "rabi"
-    pipeline_type = "rabi_pipeline"
+    task_name = CtrlTaskName.RABI.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
@@ -65,94 +94,72 @@ def get_rabi_hdf5_res(args):
         qubit_ctrl_client = QubitCtrlClient()
         set_params = {
             "qubits": qubit_name_list,
-            "amp_start": args.amp_start,
-            "amp_end": args.amp_end,
-            "amp_sample_num": args.amp_samples,
+            "amp_start": args.piamp_start,
+            "amp_end": args.piamp_end,
+            "amp_sample_num": args.piamp_samples,
             "pi_len": args.pi_len
         }
 
+        # 新建实验记录，移除 pipeline_type
         run_record = PipelineResultRecord(
             task_name=task_name,
-            task_type=pipeline_type,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[RABI] Task started run_id={run_id[:8]}")
+        logging.info(f"[RABI] Task started run_id={run_id[:8]}")
 
-        data = qubit_ctrl_client.run(CtrlTaskName.RABI,
-                                       qubits=qubit_name_list,
-                                       piamp_start=args.piamp_start,
-                                       piamp_end=args.piamp_end,
-                                       piamp_sample_num=args.piamp_samples,
-                                       pi_len=args.pi_len
-                                       )
-        data_id = data[0]["text"]
-        data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+        data_id = qubit_ctrl_client.run(
+            CtrlTaskName.RABI,
+            qubits=qubit_name_list,
+            piamp_start=args.piamp_start,
+            piamp_end=args.piamp_end,
+            piamp_sample_num=args.piamp_samples,
+            pi_len=args.pi_len
+        )
+        # 读取原始数据
+        raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
-        data = json.loads(data[0]["text"])
+        # 写入原始数据
+        store.update_run(
+            run_id=run_id,
+            raw_data_id=data_id,
+            raw_data=raw_data
+        )
 
         # 2.分析数据
-        analysis_result = rabi(data)
+        analysis_result = rabi(raw_data)
 
-        # 3.绘图
+        # 3.绘图，统一命名规则
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/rabi_{pure_name}.png'
-        fig_list = plot_rabicos(data, analysis_result, save_path=img_save_path)
+        img_save_path = f'{save_folder}/{CtrlTaskName.RABI.value}_{pure_name}_{run_id}.png'
+        plot_rabicos(raw_data, analysis_result, save_path=img_save_path)
+        plot_paths = [img_save_path]
 
-        # 4.接入大模型分析图片
-        # resize更小
-        # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # print("img_small_path: ", img_small_path)
-        
-        # with Image.open(img_save_path) as img:
-        #     w, h = img.size
-        #     new_w = w // 10
-        #     new_h = h // 10
-        #     print("size: ", new_w, new_h)
-        #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        #     img_small.save(img_small_path, dpi=(300, 300))
-        
-        # test_qubit_spectroscopy_q1_describe(img_small_path)
-        # test_qubit_spectroscopy_q2_classify(img_small_path)
-        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
-        # test_qubit_spectroscopy_q4_assess(img_small_path)
-        # test_qubit_spectroscopy_q5_extract(img_small_path)
-        # test_qubit_spectroscopy_q6_status(img_small_path)
-        # print("\nQubit_Spectroscopy tests passed!")
+        # 调用大模型图片分析
+        # llm_analysis(img_save_path)
 
         new_full_params = set_params.copy()
         update_amp_map = {}
-        # 5.更新PiGate.amp
-        # 根据扫描结果更新
-        if type(analysis_result)==dict:
-            if "results" not in analysis_result.keys():
-                analysis_result = analysis_result.get("results")
-            elif "result" in analysis_result.keys():
-                analysis_result = analysis_result.get("result")
 
-        # 增加更新开关与置信度判断
+        # 开启更新：使用 QubitScopeClient 解析结果，移除原字典解析逻辑
         if args.update:
-            for result in analysis_result:
-                peaks_list = result['peaks']
-                confs_list = result['confs']
-                for i in range(len(qubit_name_list)):
-                    if i < len(peaks_list):
-                        peaks = peaks_list[i]
-                        confs = confs_list[i]
-                        print("---confs: ", confs)
-                        if confs:
-                            max_conf = max(confs)
-                            if max_conf < args.confidence:
-                                continue
-                            best_idx = confs.index(max_conf)
-                            best_peak = peaks[best_idx]
-                            target_amp =best_peak
-                            values=str(target_amp)
-                            qname=qubit_name_list[i]
-                            task_type=CtrlTaskName.RABI
-                            qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
-                            update_amp_map[qname] = target_amp
+
+            # 调用独立更新函数
+            update_amp_map = rabi_update(
+                results=analysis_result,
+                conf_threshold=args.confidence,
+                qubit_name_list=qubit_name_list
+            )
+
+            # 下发更新参数
+            for qname, target_amp in update_amp_map.items():
+                qubit_ctrl_client.update_param(
+                    qname=qname,
+                    task_type=CtrlTaskName.RABI,
+                    values=str(target_amp)
+                )
+
         if update_amp_map:
             new_full_params["pi_gate_amp"] = update_amp_map
 
@@ -160,11 +167,11 @@ def get_rabi_hdf5_res(args):
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"Measurement finished, updated params: {new_full_params}")
+        logging.info(f"Measurement finished, updated params: {new_full_params}")
 
     except Exception as e:
         err_msg = f"Measure failed: {str(e)}"
@@ -174,8 +181,9 @@ def get_rabi_hdf5_res(args):
             error=err_msg,
             completed_at=datetime.now()
         )
-        print(f"Task failed run_id={run_id[:8]} error: {err_msg}")
+        logging.error(f"Task failed run_id={run_id[:8]} error: {err_msg}")
         raise
+
 
 if __name__ == '__main__':
     cli_args = parse_args()

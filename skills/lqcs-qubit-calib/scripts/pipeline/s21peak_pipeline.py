@@ -8,11 +8,12 @@
 ########################################################################
 
 
-"""Real s21peakmulti measurement pipeline, write data to storage for web UI real-time display
+"""Real s21multi measurement pipeline, write data to storage for web UI real-time display
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m resources.lqcs.pipeline.s21peak_pipeline -q q3lu7 -b 0.01 -n 150 -s ./tmp -u True -c 0.6
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.s21peak_pipeline -q q1ld4 -b 0.01 -n 50 -s ./tmp -u True -c 0.6
+    3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
 import sys
@@ -29,12 +30,12 @@ if str(project_root) not in sys.path:
 
 from qubitclient.storage.result_store import PipelineResultRecord, PipelineResultStore
 from qubitclient.storage.storage import StorageBackend
-
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
 from analysis.inception import s21
 from analysis.visualization import plot_s21
+from analysis.update import s21_update
 
 DEFAULT_SAVE_FOLDER = './tmp'
 
@@ -42,11 +43,11 @@ DEFAULT_SAVE_FOLDER = './tmp'
 def parse_args():
     parser = argparse.ArgumentParser(description="S21 Multi Spectrum Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit name list, default: q3lu7")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
+                        help="Target qubit name list, default: q1ld4")
     # 不填则从硬件查询
-    parser.add_argument("--fread", "-f", type=float, default=None,
-                        help="Manual readout frequency (GHz). Auto query hardware if not set.")
+    parser.add_argument("--fread_star", "-f", type=float, default=None,
+                        help="Manual readout fread_star (GHz). Auto query hardware if not set.")
     # 半带宽
     parser.add_argument("--bandwidth", "-b", type=float, default=0.005,
                         help="Frequency half bandwidth (GHz), default 0.005")
@@ -69,125 +70,104 @@ def parse_args():
     return parser.parse_args()
 
 
+# def llm_analysis(img_save_path):
+    # resize更小
+    # img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    # print("img_small_path: ", img_small_path)
+
+    # with Image.open(img_save_path) as img:
+        # w, h = img.size
+        # new_w = w // 10
+        # new_h = h // 10
+        # print("size: ", new_w, new_h)
+        # img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        # img_small.save(img_small_path, dpi=(300, 300))
+
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    # print("\nQubit_Spectroscopy tests passed!")
+
+
+
 def get_s21_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
+    task_name = CtrlTaskName.S21.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    run_id = None
 
     try:
-        
+        # =========== 查询/使用传入fread参数 ===========
         qubit_ctrl_client = QubitCtrlClient()
         qname = qubit_name_list[0]
 
-        # =========== 查询/使用传入fread参数 ===========
-        if args.fread is not None:
-            fread = args.fread
+        if args.fread_star is not None:
+            fread_star = args.fread_star
         else:
-            fread_ret = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
-            fread = float(fread_ret[0]["text"])
+            fread_star = float(qubit_ctrl_client.query_param(qname=qname, key="fread_star"))
 
         # 设置实验参数
         set_params = {
             "qubits": qubit_name_list,
             "frequency_half_bandwidth": args.bandwidth,
             "frequency_sample_num": args.samples,
-            "frequency_center": fread
+            "fread_star": fread_star
         }
 
         # 新建实验记录，写入存储
         run_record = PipelineResultRecord(
-            task_name=CtrlTaskName.S21.value,
-            task_type=CtrlTaskName.S21.value,
+            task_name=task_name,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
         print(f"[S21] Task started run_id={run_id[:8]}")
     
-        # =========== 启动测量任务以采集数据 ===========
-        data = qubit_ctrl_client.run(
+        # =========== 采集数据 ===========
+        data_id = qubit_ctrl_client.run(
             CtrlTaskName.S21,
             qubits=qubit_name_list,
-            frequency_center=set_params["frequency_center"],
+            frequency_center=set_params["fread_star"],
             frequency_half_bandwidth=set_params["frequency_half_bandwidth"],
             frequency_sample_num=set_params["frequency_sample_num"]
         )
-        # =========== 获取原始数据 ======================
-        data_id = data[0]["text"]
-        raw_data_text = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
-        raw_data = json.loads(raw_data_text[0]["text"])
+
+        raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
         # =========== 写入原始数据 ===========
-        store.update_run(
-            run_id=run_id,
-            raw_data_id=data_id,
-            raw_data=raw_data
-        )
+        store.update_run(run_id=run_id, raw_data_id=data_id, raw_data=raw_data)
 
         # =========== 分析 ============
         analysis_result = s21(raw_data)
 
         # =========== 绘制波形图==========
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/s21peak_{pure_name}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.S21.value}_{qubit_name_list[0]}_{run_id}.png'
+        print("149: ", analysis_result)
         plot_s21(raw_data, analysis_result, save_path=img_save_path)
 
         # =========== 接入大模型分析图片 ===========
-        # resize更小
-        # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # print("img_small_path: ", img_small_path)
-
-        # with Image.open(img_save_path) as img:
-        #     w, h = img.size
-        #     new_w = w // 10
-        #     new_h = h // 10
-        #     print("size: ", new_w, new_h)
-        #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        #     img_small.save(img_small_path, dpi=(300, 300))
-
-        # test_qubit_spectroscopy_q1_describe(img_small_path)
-        # test_qubit_spectroscopy_q2_classify(img_small_path)
-        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
-        # test_qubit_spectroscopy_q4_assess(img_small_path)
-        # test_qubit_spectroscopy_q5_extract(img_small_path)
-        # test_qubit_spectroscopy_q6_status(img_small_path)
-        # print("\nQubit_Spectroscopy tests passed!")
+        # llm_analysis(img_save_path)
 
         # =========== 自动更新参数 ==============
-        analysis_data = analysis_result
-        if isinstance(analysis_data, dict):
-            if "results" in analysis_data:
-                analysis_data = analysis_data["results"]
-            elif "result" in analysis_data:
-                analysis_data = analysis_data["result"]
-
-        # 初始化更新后的新参数字典
         new_full_params = set_params.copy()
-        updated_freq = None
-
         if args.update:
-            for result in analysis_data:
-                # peaks_list = result['peaks']
-                print("----------result.keys(): ", result.keys())
-                confs_list = result['confs']
-                print("confs_list: ", confs_list)
-                freqs_list = result['freqs_list']
-                for idx in range(len(qubit_name_list)):
-                    freqs = freqs_list[idx]
-                    curr_q = qubit_name_list[idx]
-                    cur_confs = confs_list[idx]
-                    if len(freqs) and len(confs_list):
-                        updated_freq = str(freqs[0])
-                        cur_conf = float(cur_confs[0])
-                        if cur_conf > args.confidence:
-                            # 更新寄存器
-                            qubit_ctrl_client.update_param(
-                                qname=curr_q,
-                                task_type=CtrlTaskName.S21,
-                                values=updated_freq
-                            )
-                            # 覆盖新频率到参数字典
-                            new_full_params["frequency_center"] = float(updated_freq)
+
+            update_dict = s21_update(results=analysis_result, conf_threshold=args.confidence, qubit_name_list=qubit_name_list)
+            
+            for qname, info in update_dict.items():
+                new_value = info["fread_star"]
+
+                qubit_ctrl_client.update_param(
+                    qname=qname,
+                    task_type=CtrlTaskName.S21,
+                    values=new_value
+                )
+                # 覆盖新频率到参数字典
+                new_full_params["fread_star"] = float(new_value)
 
         # =========== 更新结果到存储 ======================
         store.update_run(
@@ -201,15 +181,15 @@ def get_s21_hdf5_res(args):
         print(f"测量完成，更新： {new_full_params}")
 
     except Exception as e:
-        # ========== 捕获异常，存入错误信息 ================
         err_msg = f"测量异常：{str(e)}"
-        store.update_run(
-            run_id=run_id,
-            status="failed",
-            error=err_msg,
-            completed_at=datetime.now()
-        )
-        print(f"任务失败 run_id={run_id[:8]} 错误：{err_msg}")
+        if run_id is not None:
+            store.update_run(
+                run_id=run_id,
+                status="failed",
+                error=err_msg,
+                completed_at=datetime.now()
+            )
+            print(f"任务失败 run_id={run_id[:8]} 错误：{err_msg}")
         raise
 
 

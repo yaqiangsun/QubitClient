@@ -11,8 +11,10 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m resources.lqcs.pipeline.powershift_pipeline -q q3lu7 -s ./tmp -n 16 -ps 13 -u True -c 0.3
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.powershift_pipeline -q q1ld4 -s ./tmp -n 16 -ps 13 -u True -c 0.3
+    3. Launch the browser: http://localhost:8581/ to verify the display.
 """
+
 import sys
 import argparse
 import uuid
@@ -21,6 +23,10 @@ from pathlib import Path
 from PIL import Image
 import json
 import numpy as np
+import logging
+
+# 统一日志配置
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
@@ -30,15 +36,40 @@ from qubitclient.storage.result_store import PipelineResultRecord, PipelineResul
 from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
+
 from analysis.inception import powershift
 from analysis.visualization import plot_powershift
+from analysis.update import powershift_update
 
 DEFAULT_SAVE_FOLDER = './tmp'
 
+
+def llm_analysis(img_save_path):
+    # 图片缩放与大模型分析
+    img_small_path = img_save_path.split('.png')[0] + '_small.png'
+    logging.info(f"img_small_path: {img_small_path}")
+
+    with Image.open(img_save_path) as img:
+        w, h = img.size
+        new_w = w // 10
+        new_h = h // 10
+        logging.info(f"size: {new_w}, {new_h}")
+        img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        img_small.save(img_small_path, dpi=(300, 300))
+
+    # test_qubit_spectroscopy_q1_describe(img_small_path)
+    # test_qubit_spectroscopy_q2_classify(img_small_path)
+    # test_qubit_spectroscopy_q3_reasoning(img_small_path)
+    # test_qubit_spectroscopy_q4_assess(img_small_path)
+    # test_qubit_spectroscopy_q5_extract(img_small_path)
+    # test_qubit_spectroscopy_q6_status(img_small_path)
+    logging.info("Qubit_Spectroscopy tests passed!")
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="PowerShift Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q3lu7"],
-                        help="Target qubit list, default: q3lu7")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
+                        help="Target qubit list, default: q1ld4")
     parser.add_argument("--fread", "-f", type=float, default=None,
                         help="Manual readout freq(GHz), auto query hardware if empty")
     parser.add_argument("--bandwidth", "-b", type=float, default=0.0015,
@@ -46,34 +77,35 @@ def parse_args():
     parser.add_argument("--samples", "-n", type=int, default=16, help="Freq sample count")
     parser.add_argument("--power-start", type=float, default=-40, help="Drive power start")
     parser.add_argument("--power-end", type=float, default=-16, help="Drive power end")
-    parser.add_argument("--power-samples", "-ps",type=int, default=13, help="Power sample count")
+    parser.add_argument("--power-samples", "-ps", type=int, default=13, help="Power sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
-    # 新增更新开关与置信度阈值
+    # 更新开关与置信度阈值
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
     parser.add_argument("--confidence", "-c", type=float, default=0.5,
                         help="Confidence threshold for parameter update")
     return parser.parse_args()
 
+
 def get_powershift_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = "powershift"
-    pipeline_type = "powershift_pipeline"
+    task_name = CtrlTaskName.POWERSHIFT.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
     try:
-        # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
-        qname=qubit_name_list[0]
-        task_type=CtrlTaskName.POWERSHIFT
+        qname = qubit_name_list[0]
+
+        # 获取读取频率
         if args.fread is not None:
             fread = args.fread
         else:
             fread_ret = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
-            fread = float(fread_ret[0]["text"])
+            fread = float(fread_ret)
 
+        # 组装实验参数
         set_params = {
             "qubits": qubit_name_list,
             "frequency_center": fread,
@@ -84,118 +116,84 @@ def get_powershift_hdf5_res(args):
             "power_sample_num": args.power_samples
         }
 
+        # 新建实验记录，移除 pipeline_type
         run_record = PipelineResultRecord(
             task_name=task_name,
-            task_type=pipeline_type,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[POWERSHIFT] Task started run_id={run_id[:8]}")
+        logging.info(f"[POWERSHIFT] Task started run_id={run_id[:8]}")
 
-        data = qubit_ctrl_client.run(CtrlTaskName.POWERSHIFT,
-                                     qubits=qubit_name_list,
-                                     frequency_center=fread,
-                                     frequency_half_bandwidth=args.bandwidth,
-                                     frequency_sample_num=args.samples,
-                                     power_start=args.power_start,
-                                     power_end=args.power_end,
-                                     power_sample_num=args.power_samples
-                                     )
-        
-        data_id = data[0]["text"]
-        data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
+        # 采集数据
+        data_id = qubit_ctrl_client.run(
+            CtrlTaskName.POWERSHIFT,
+            qubits=qubit_name_list,
+            frequency_center=fread,
+            frequency_half_bandwidth=args.bandwidth,
+            frequency_sample_num=args.samples,
+            power_start=args.power_start,
+            power_end=args.power_end,
+            power_sample_num=args.power_samples
+        )
 
-        data = json.loads(data[0]["text"])
+        # 读取原始数据
+        raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
-        # 2.分析数据
-        analysis_result = powershift(data)
+        # 写入原始数据
+        store.update_run(
+            run_id=run_id,
+            raw_data_id=data_id,
+            raw_data=raw_data
+        )
 
-        # 3.绘图
+        # 数据分析
+        analysis_result = powershift(raw_data)
+
+        # 绘图，统一命名规则
         pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/powershift_{pure_name}.png'
-        fig_list = plot_powershift(data, analysis_result, save_path=img_save_path)
+        img_save_path = f'{save_folder}/{CtrlTaskName.POWERSHIFT.value}_{pure_name}_{run_id}.png'
+        plot_powershift(raw_data, analysis_result, save_path=img_save_path)
+        plot_paths = [img_save_path]
 
-        # 4.接入大模型分析图片
-        # resize更小
-        # img_small_path = img_save_path.split('.png')[0] + '_small.png'
-        # print("img_small_path: ", img_small_path)
-        
-        # with Image.open(img_save_path) as img:
-        #     w, h = img.size
-        #     new_w = w // 10
-        #     new_h = h // 10
-        #     print("size: ", new_w, new_h)
-        #     img_small = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        #     img_small.save(img_small_path, dpi=(300, 300))
-        
-        # test_qubit_spectroscopy_q1_describe(img_small_path)
-        # test_qubit_spectroscopy_q2_classify(img_small_path)
-        # test_qubit_spectroscopy_q3_reasoning(img_small_path)
-        # test_qubit_spectroscopy_q4_assess(img_small_path)
-        # test_qubit_spectroscopy_q5_extract(img_small_path)
-        # test_qubit_spectroscopy_q6_status(img_small_path)
-        # print("\nQubit_Spectroscopy tests passed!")
+        # 调用大模型图片分析
+        # llm_analysis(img_save_path)
 
         new_full_params = set_params.copy()
         update_power_map = {}
 
-        # 解析分析结果
-        if type(analysis_result)==dict:
-            if "results" not in analysis_result.keys():
-                analysis_result = analysis_result.get("results")
-            elif "result" in analysis_result.keys():
-                analysis_result = analysis_result.get("result")
-
-        # 仅开启更新时执行后续逻辑
+        # 开启更新
         if args.update:
-            for result in analysis_result:
-                keypoints_list = result['keypoints_list']
-                class_num_list = result['class_num_list']
-                confs = result['confs']
-                for i in range(len(qubit_name_list)):
-                    keypoints = keypoints_list[i]
-                    class_num = class_num_list[i]
-                    conf = float(confs[i])
-                    qname = qubit_name_list[i]
 
-                    print("conf: ", conf)
+            # 调用独立更新函数
+            update_power_map = powershift_update(
+                results=analysis_result,
+                conf_threshold=args.confidence,
+                qubit_name_list=qubit_name_list
+            )
 
-                    # 置信度判断
-                    if conf <= args.confidence:
-                        continue
-
-                    keypoints_segments=[]
-                    if class_num==1:
-                        keypoints_segments.append([keypoints[1],keypoints[0]])
-                    if class_num==2:
-                        keypoints_segments.append([keypoints[3],keypoints[2]])
-                    if class_num==3:
-                        keypoints_segments.append([keypoints[2],keypoints[1]])
-
-                    if keypoints_segments:
-                        keypoints_segments = keypoints_segments[0]
-                        print("[INFO] keypoints_segments: ", keypoints_segments)
-                        target_power = keypoints_segments[0][1] + (keypoints_segments[1][1] - keypoints_segments[0][1]) * 0.8
-                        values = str(target_power) 
-
-                        task_type = CtrlTaskName.POWERSHIFT
-                        qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
-                        update_power_map[qname] = target_power
-                        print(f"[INFO] Update {qname} power to {target_power}, confidence: {conf}")
+            
+            for q, target_power in update_power_map.items():
+                qubit_ctrl_client.update_param(
+                    qname=q,
+                    task_type=CtrlTaskName.POWERSHIFT,
+                    values=str(target_power)
+                )
+                logging.info(f"[INFO] Update {q} power to {target_power}")
 
         if update_power_map:
             new_full_params["optimal_power"] = update_power_map
 
+        # 结果入库
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        print(f"Measurement finished, updated params: {new_full_params}")
+        logging.info(f"Measurement finished, updated params: {new_full_params}")
 
     except Exception as e:
         err_msg = f"Measure failed: {str(e)}"
@@ -205,8 +203,9 @@ def get_powershift_hdf5_res(args):
             error=err_msg,
             completed_at=datetime.now()
         )
-        print(f"Task failed run_id={run_id[:8]} error: {err_msg}")
+        logging.error(f"Task failed run_id={run_id[:8]} error: {err_msg}")
         raise
+
 
 if __name__ == '__main__':
     cli_args = parse_args()

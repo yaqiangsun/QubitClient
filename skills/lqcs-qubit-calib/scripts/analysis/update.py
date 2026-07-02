@@ -9,15 +9,8 @@
 
 import logging
 import numpy as np
+import math
 
-from .utils import query_param, update_param
-
-from .utils import (
-    validate_result,
-    select_best_by_conf,
-    validate_list_bounds,
-    validate_numeric_range,
-)
 
 def optpipulse_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
     """
@@ -115,180 +108,262 @@ def drag_update(data_converted, result: dict, file_idx: int = 0, conf_threshold:
             logging.warning(f"{qubit} 原始beta参数未设置")
     return update_dict
 
-def s21_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
+
+def setpialpha_update(results, conf_threshold, qubit_name_list):
+    update_map = {}
+    for result in results:
+        params_list = result.get("params", [])
+        confs_list = result.get("confs", [])
+        for i in range(len(qubit_name_list)):
+            if i >= len(params_list) or i >= len(confs_list):
+                continue
+            peaks = params_list[i]
+            confs = confs_list[i]
+            if not confs:
+                continue
+            max_conf = max(confs)
+            if max_conf < conf_threshold:
+                continue
+            best_idx = confs.index(max_conf)
+            best_peak = peaks[best_idx]
+            target_amp = best_peak
+            target_alpha = "Null"
+            values = f"{target_amp},{target_alpha}"
+            qname = qubit_name_list[i]
+            update_map[qname] = values
+    return update_map
+
+
+def s21_update(results, conf_threshold, qubit_name_list):
     """
     根据S21PEAK波谷检测结果更新量子比特读取腔的频率参数
     Args:
-        data_converted: s21_convert转换后的实验数据
-        result: 服务器返回的S21PEAK分析结果（波谷检测）
-        file_idx: 如果服务器同时处理了多个批次的实验数据，选择处理第几个的结果（默认0）
+        results: 分析结果
         conf_threshold: 置信度阈值
+        qubit_name_list:量子名称
     """
     update_dict = {}
 
-    file_result = validate_result(result, file_idx, "S21PEAK")
-    if file_result is None:
-        return update_dict
+    for result in results:
+        valleys_confs = result.get("confs", [])
+        valleys_freqs = result.get("freqs_list", [])
 
-    valleys_idx = file_result.get("peaks", [])
-    valleys_confs = file_result.get("confs", [])
-    valleys_freqs = file_result.get("freqs_list", [])
+        for idx in range(len(qubit_name_list)):
+            valley_freq, valley_conf = valleys_freqs[idx], valleys_confs[idx]
 
-    image = data_converted.get("image", [])
-    qubits = list(image.keys()) if isinstance(image, dict) else image
-    for idx, qubit in enumerate(qubits):
-        if not validate_list_bounds(idx, {"valleys_idx": valleys_idx, "valleys_confs": valleys_confs, "valleys_freqs": valleys_freqs}, qubit, "S21"):
-            continue
+            if len(valley_freq) and len(valley_conf):
 
-        best_valley_freq, best_valley_conf, best_idx = select_best_by_conf(
-            valleys_freqs[idx], valleys_confs[idx]
-        )
-        if best_valley_freq is None:
-            logging.warning(f"{qubit} 无有效S21波谷数据")
-            continue
+                if valley_conf[0] < conf_threshold:
+                    continue
 
-        if best_valley_conf < conf_threshold:
-            logging.warning(f"{qubit} 置信度{best_valley_conf:.4f} < {conf_threshold}，跳过更新")
-            continue
-
-        original_read_freq = 4.432e9  # 测试用
-        # 实际original_read_freq需要读取
-        if original_read_freq is not None:
-            update_dict[f'gate.Measure.{qubit}.params.frequency'] = original_read_freq+best_valley_freq
-            logging.info(
-                f"S21更新 | 比特：{qubit} | 原始读取腔频率：{original_read_freq*1e-9:.4f} GHz | "
-                f"新读取腔频率：{(original_read_freq+best_valley_freq)*1e-9:.4f} GHz | 置信度：{best_valley_conf:.2f}"
-            )
-        else:
-            logging.warning(f"{qubit} 原始读取腔频率参数未设置")
+                update_dict[qubit_name_list[idx]] = {"fread_star": valley_freq[0]}
+                logging.info(
+                    f"S21更新 | 比特：{qubit_name_list[idx]} | "
+                    f"新读取腔频率：{(valley_freq[0]):.4f} GHz | 置信度：{valley_conf[0]:.2f}"
+                )
+        
     return update_dict
 
 
-
-def spectrum_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7, top_n: int = 3):
+def s21peakmulti_update(results, conf_threshold, qubit_name_list, base_freq_dict):
     """
-    根据SPECTRUM峰值检测结果，更新量子比特的频率参数
+    根据S21PEAKMULTI频谱分析结果更新量子比特读取腔频率参数
     Args:
-        data_converted: spectrum_convert转换后的实验数据
-        result: 服务器返回的SPECTRUM分析结果
-        file_idx: 如果服务器同时处理了多个批次的实验数据，选择处理第几个的结果（默认0）
+        results: 分析结果列表
         conf_threshold: 置信度阈值
-        top_n: 备选的最有可能的几个峰值
+        qubit_name_list: 量子比特名称列表
+        base_freq_dict: 各比特基准频率字典
+    Returns:
+        dict: 待更新的比特-频率映射字典
     """
-    update_dict = {}
+    update_map = {}
+    for res in results:
+        peaks_list = res.get("peaks", [])
+        confs_list = res.get("confs", [])
+        freqs_list = res.get("freqs_list", [])
 
-    file_result = validate_result(result, file_idx, "SPECTRUM")
-    if file_result is None:
-        return update_dict
+        for idx, qname in enumerate(qubit_name_list):
+            # 索引越界防护
+            if idx >= len(confs_list) or idx >= len(freqs_list):
+                continue
 
-    peaks_list = file_result.get("peaks_list", [])
-    confidences_list = file_result.get("confidences_list", [])
+            confs = confs_list[idx]
+            freqs = freqs_list[idx]
+            base_freq = base_freq_dict.get(qname)
+            if not base_freq or not freqs or not confs:
+                continue
 
-    if not peaks_list or not confidences_list:
-        logging.warning("SPECTRUM结果中无峰值或置信度数据")
-        return update_dict
+            # 找到距离基准频率最近的频点
+            target_idx = freqs.index(min(freqs, key=lambda f: abs(f - base_freq)))
+            closest_freq = freqs[target_idx]
+            cur_conf = float(confs[target_idx])
 
-    image = data_converted.get("image", [])
-    qubits = list(image.keys()) if isinstance(image, dict) else image
-    for idx, qubit in enumerate(qubits):
-        if not validate_list_bounds(idx, {"peaks_list": peaks_list, "confidences_list": confidences_list}, qubit, "SPECTRUM"):
-            continue
+            if cur_conf > conf_threshold:
+                update_map[qname] = {"fread_star": closest_freq}
+                logging.info(
+                    f"S21MULTI更新 | 比特：{qname} | "
+                    f"新读取腔频率：{closest_freq:.4f} GHz | 置信度：{cur_conf:.2f}"
+                )
+    return update_map
 
-        best_peak_freq, best_conf, _ = select_best_by_conf(peaks_list[idx], confidences_list[idx])
-        if best_peak_freq is None:
-            logging.warning(f"{qubit} 无有效峰值")
-            continue
+import logging
 
-        if best_conf < conf_threshold:
-            logging.warning(f"{qubit} 置信度{best_conf:.4f} < {conf_threshold}，跳过更新")
-            continue
-
-        original_freq = 4.1e9  # 测试用
-        if original_freq is not None:
-            update_dict[f'gate.R.{qubit}.params.frequency'] = best_peak_freq
-            logging.info(
-                f"SPECTRUM更新 | 比特：{qubit} | "
-                f"原始频率：{original_freq*1e-9:.4f} GHz | "
-                f"新频率：{best_peak_freq*1e-9:.4f} GHz | "
-                f"置信度：{best_conf:.2f}"
-            )
-        else:
-            logging.warning(f"{qubit} 原始频率参数未设置")
-    return update_dict
-
-
-def ramsey_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.8, rotate_freq: float = 2e6):
+def optreadfreq_update(results, raw_data, conf_threshold, qubit_name_list):
     """
-    根据Ramsey实验的分析结果更新量子比特R门共振频率参数
+    根据Opt Qubit Read Freq分析结果更新读取频率
     Args:
-        data_converted: ramsey_convert转换后的实验数据
-        result: 服务器返回的ramsey分析结果
-        file_idx: 如果服务器同时处理了多个批次的实验数据，选择处理第几个的结果（默认0）
-        conf_threshold: 置信度阈值（默认0.8）
-        rotate_freq: Ramsey实验预设的rotate频率（Hz，默认2e6）
+        results: 解析后分析结果列表
+        raw_data: 原始实验数据
+        conf_threshold: 置信度阈值（当前逻辑未使用，保留传参）
+        qubit_name_list: 比特列表
+    Returns:
+        dict: {比特名: {"fread": 新频率值}}
     """
-    update_dict = {}
+    update_map = {}
+    
 
-    if not validate_numeric_range(rotate_freq, 0, float('inf'), "rotate_freq"):
-        return update_dict
+    for result in results:
+        freqs_list = result.get('peak_list', [])
+        for idx, curr_q in enumerate(qubit_name_list):
+            if idx >= len(freqs_list):
+                continue
+            freqs = freqs_list[idx]
+            if not freqs:
+                continue
+            data_content = raw_data.get(curr_q, {})
 
-    file_result = validate_result(result, file_idx, "Ramsey")
-    if file_result is None:
-        return update_dict
-
-    if file_result.get("status") != "success":
-        logging.error(f"第{file_idx}个文件拟合失败，status={file_result.get('status')}")
-        return update_dict
-
-    params_list = file_result.get("params_list", [])
-    r2_list = file_result.get("r2_list", [])
-
-    image = data_converted.get("image", [])
-    qubits = list(image.keys()) if isinstance(image, dict) else image
-    for idx, qubit in enumerate(qubits):
-        if not validate_list_bounds(idx, {"params_list": params_list, "r2_list": r2_list}, qubit, "Ramsey"):
-            continue
-
-        params = params_list[idx]
-        r2 = r2_list[idx]
-
-        if r2 < conf_threshold:
-            logging.warning(f"{qubit} 拟合优度R²{r2:.4f} < {conf_threshold}，跳过更新")
-            continue
-
-        try:
-            w = params[3]  # 这里要根据服务器返回情况修改
-            logging.info(f"{qubit} 拟合参数 | w={w:.2e}rad/s")
-        except (IndexError, ValueError):
-            logging.error(f"{qubit} 拟合参数格式错误，无法提取w | params={params}")
-            continue
-
-        if w <= 0:
-            logging.warning(f"{qubit} 参数物理异常 | w={w:.2e}rad/s | 跳过更新")
-            continue
-
-        f_actual = w / (2 * np.pi)
-        f_diff = np.abs(f_actual) - rotate_freq
-
-        param_key = f"gate.R.{qubit}.params.frequency"
-        try:
-            original_freq = 4.00e9  # 测试用
-        except Exception as e:
-            logging.error(f"{qubit} 查询原始频率失败：{str(e)}，跳过更新")
-            continue
-
-        if original_freq is not None:
-            final_freq = original_freq + f_diff
-            update_dict[param_key] = final_freq
+            updated_freq = str(data_content[freqs][0])
+            update_map[curr_q] = {"fread_star": float(updated_freq)}
             logging.info(
-                f"Ramsey更新 | 比特：{qubit} | "
-                f"实际进动频率：{f_actual/1e6:.6f}MHz | 频率偏差：{f_diff/1e3:.3f}kHz | "
-                f"原始频率：{original_freq/1e9:.8f}GHz | 最终频率：{final_freq/1e9:.8f}GHz | "
-                f"拟合优度：R²={r2:.4f}"
+                f"OPTQUBITREADFREQ更新 | 比特：{curr_q} | 新读取频率：{updated_freq}"
             )
-        else:
-            logging.warning(f"{qubit} 原始频率参数未设置")
-    return update_dict
+    return update_map
+
+
+def pipulsef10_update(results, conf_threshold, qubit_name_list):
+    """
+    根据 PiPulseF10 分析结果更新 f10 / f21 参数
+    Args:
+        results: 解析后分析结果列表
+        conf_threshold: 置信度阈值
+        qubit_name_list: 比特列表
+    Returns:
+        dict: {qname: {"f10": val, "f21": val}}
+    """
+    update_map = {}
+    non = -0.2
+
+    for result in results:
+        peaks_list = result.get("peaks_list", [])
+        confidences_list = result.get("confidences_list", [])
+
+        for idx, qname in enumerate(qubit_name_list):
+            if idx >= len(peaks_list) or idx >= len(confidences_list):
+                continue
+
+            peaks = peaks_list[idx]
+            confidences = confidences_list[idx]
+            if not confidences:
+                continue
+
+            max_conf = max(confidences)
+            if max_conf < conf_threshold:
+                continue
+
+            best_idx = confidences.index(max_conf)
+            best_peak = peaks[best_idx]
+            f10_val = best_peak
+            f21_val = best_peak + non
+
+            update_map[qname] = {
+                "f10": f10_val,
+                "f21": f21_val
+            }
+            logging.info(
+                f"PiPulseF10更新 | 比特：{qname} | f10: {f10_val:.4f} | f21: {f21_val:.4f} | 最大置信度: {max_conf:.2f}"
+            )
+    return update_map
+
+
+def spectrum_update(results, conf_threshold, qubit_name_list):
+    freq_update_map = {}
+    non = -0.2
+    for result in results:
+        peaks_list = result.get("peaks_list", [])
+        confidences_list = result.get("confidences_list", [])
+        for i in range(len(qubit_name_list)):
+            if i >= len(peaks_list) or i >= len(confidences_list):
+                continue
+            peaks = peaks_list[i]
+            confidences = confidences_list[i]
+            if not confidences:
+                continue
+
+            max_conf = max(confidences)
+            if max_conf <= conf_threshold:
+                continue
+
+            best_idx = confidences.index(max_conf)
+            best_peak = peaks[best_idx]
+            
+            target_freq = best_peak
+            freq_update_map[qubit_name_list[i]] = {
+                "f10": target_freq,
+                "f21": target_freq + non,
+                "conf": max_conf
+            }
+    return freq_update_map
+
+
+def timingxyz_update(results, conf_threshold, qubit_list):
+    """
+    TimingXYZ 数据解析与待更新参数计算
+    :param results: 经 QubitScopeClient 解析后的结果列表
+    :param conf_threshold: 置信度阈值
+    :param qubit_list: 比特列表
+    :return: 待更新参数字典 {qubit_name: value}
+    """
+    update_map = {}
+    # 保留原有固定值逻辑，可根据实际业务替换为结果解析
+    fixed_val = "3.193120459017055, 3.22222"
+
+    for idx, qname in enumerate(qubit_list):
+        # 此处可根据 results 内部置信度、时序值扩展解析逻辑
+        # 示例：conf = results[idx].get("confs", 0)
+        # if conf <= conf_threshold:
+        #     continue
+        update_map[qname] = fixed_val
+
+    return update_map
+
+
+def ramsey_update(results, fringe_freq, qubit_name_list, ctrl_client):
+    freq_update_map = {}
+    non = -0.2
+    for result in results:
+        params_list = result['params_list']
+        for i in range(len(qubit_name_list)):
+            if i >= len(params_list):
+                continue
+            params = params_list[i]
+            w = params[4]
+            qname = qubit_name_list[i]
+            
+            f10_raw = ctrl_client.query_param(qname=qname, key="f10_star")
+            f10 = float(f10_raw)
+            deltaf = w / (2 * math.pi)
+
+            logging.info(f"fringeFreq, f10: {fringe_freq}, {f10}")
+            if fringe_freq > f10:
+                target_freq = fringe_freq - deltaf
+            else:
+                target_freq = fringe_freq + deltaf
+
+            freq_update_map[qname] = {
+                "f10": target_freq,
+                "f21": target_freq + non
+            }
+    return freq_update_map
 
 
 def singleshot_update(data_converted, result: dict, file_idx: int = 0, visibility_threshold: float = 0.10):
@@ -373,226 +448,63 @@ def singleshot_update(data_converted, result: dict, file_idx: int = 0, visibilit
     return update_dict
 
 
-
-
-def s21peakmulti_update(result: dict, file_idx: int = 0, conf_threshold: float = 0.8, top_n: int = 13,
-                    MIN_FREQ: float = 5 * 10**9, MAX_FREQ: float = 7 * 10**9,
-                    qubits_lists: list = ['Q1','Q2','Q3','Q4','Q5','Q6','Q7','Q8','Q9','Q10','Q11','Q12','Q13']):
+def powershift_update(results, conf_threshold, qubit_name_list):
     """
-    处理S21全扫描的多峰数据，更新读取腔频率参数
-    Args:
-        result (dict): 服务器返回的S21全扫描结果，需包含results/result字段
-        file_idx (int): 处理第几个文件的结果（默认0，单文件场景）
-        conf_threshold (float): 置信度阈值，范围[0,1]（默认0.8）
-        top_n (int): 最大更新数量（默认13）
-        MIN_FREQ (float): 频率最小值（Hz）
-        MAX_FREQ (float): 频率最大值（Hz）
-        qubits_lists (list): 比特名称列表，如['Q1','Q2',...,'Q13']
-    Returns:
-        dict: 更新字典 {参数路径: 频率值(Hz)}
+    PowerShift 最优功率更新逻辑
     """
-    update_dict = {}
+    update_map = {}
+    for result in results:
+        keypoints_list = result['keypoints_list']
+        class_num_list = result['class_num_list']
+        confs = result['confs']
 
-    # 参数校验
-    if not isinstance(qubits_lists, list) or not qubits_lists:
-        logging.error("qubits_lists无效或为空，无法执行更新")
-        return update_dict
-    if not validate_numeric_range(conf_threshold, 0, 1, "conf_threshold"):
-        return update_dict
-    if not isinstance(top_n, int) or top_n <= 0:
-        logging.error(f"top_n无效：{top_n}，必须为正整数")
-        return update_dict
+        for i in range(len(qubit_name_list)):
+            keypoints = keypoints_list[i]
+            class_num = class_num_list[i]
+            conf = float(confs[i])
+            qname = qubit_name_list[i]
 
-    logging.info("开始执行S21多峰更新")
+            logging.info(f"conf: {conf}")
+            if conf <= conf_threshold:
+                continue
 
-    # 校验result结构并获取指定索引的结果
-    s21_res = validate_result(result, file_idx ,"S21multi_scan")
-    if s21_res is None:
-        return update_dict
+            keypoints_segments = []
+            if class_num == 1:
+                keypoints_segments.append([keypoints[1], keypoints[0]])
+            if class_num == 2:
+                keypoints_segments.append([keypoints[3], keypoints[2]])
+            if class_num == 3:
+                keypoints_segments.append([keypoints[2], keypoints[1]])
 
-    if s21_res.get("status") != "success":
-        logging.error(f"文件索引{file_idx}分析失败（status={s21_res.get('status')}），跳过更新")
-        return update_dict
+            if keypoints_segments:
+                keypoints_segments = keypoints_segments[0]
+                logging.info(f"[INFO] keypoints_segments: {keypoints_segments}")
+                target_power = keypoints_segments[0][1] + (keypoints_segments[1][1] - keypoints_segments[0][1]) * 0.8
+                update_map[qname] = target_power
+    return update_map
 
-    # 提取核心数据
-    peaks_list = s21_res.get("peaks", [])
-    confs_list = s21_res.get("confs", [])
-    freqs_list = s21_res.get("freqs_list", [])
+def rabi_update(results, conf_threshold, qubit_name_list):
+    update_amp_map = {}
+    for result in results:
+        peaks_list = result['peaks']
+        confs_list = result['confs']
+        for i in range(len(qubit_name_list)):
+            if i >= len(peaks_list):
+                continue
+            peaks = peaks_list[i]
+            confs = confs_list[i]
+            if not confs:
+                continue
+            max_conf = max(confs)
+            if max_conf < conf_threshold:
+                continue
+            best_idx = confs.index(max_conf)
+            best_peak = peaks[best_idx]
+            target_amp = best_peak
+            qname = qubit_name_list[i]
+            update_amp_map[qname] = target_amp
+    return update_amp_map
 
-    # 校验列表类型和数据有效性
-    if not all(isinstance(lst, list) and lst and isinstance(lst[0], list)
-               for lst in [peaks_list, confs_list, freqs_list]):
-        logging.warning("peaks/confs/freqs_list格式错误或为空，跳过更新")
-        return update_dict
-
-    bit_peaks, bit_confs, bit_freqs = peaks_list[0], confs_list[0], freqs_list[0]
-
-    peak_conf_freq = list(zip(bit_peaks, bit_confs, bit_freqs))
-    logging.info(f"有效数据数量：{len(peak_conf_freq)}")
-
-    valid_data = []
-    for idx, (p, c, f) in enumerate(peak_conf_freq):
-        # 检查置信度
-        conf_valid = isinstance(c, (int, float)) and c >= conf_threshold
-        # 检查频率
-        freq_is_number = isinstance(f, (int, float))
-        # 频率范围判断
-        freq_in_range = (MIN_FREQ <= f <= MAX_FREQ) if freq_is_number else False
-
-        # 打印异常日志
-        if freq_is_number and not freq_in_range:
-            if f < MIN_FREQ:
-                logging.error(f"第{idx}个峰值数据异常：频率＜5GHz → 峰值位置{p}，频率{f/10**9:.2f} GHz（合理范围5~7GHz）")
-            else:
-                logging.error(f"第{idx}个峰值数据异常：频率＞7GHz → 峰值位置{p}，频率{f/10**9:.2f} GHz（合理范围5~7GHz）")
-
-        # 筛选有效数据
-        if conf_valid and freq_is_number and freq_in_range:
-            valid_data.append((p, c, f))
-
-    if not valid_data:
-        logging.warning(f"无置信度≥{conf_threshold}且频率在5~7GHz范围内的有效峰值，跳过更新")
-        return update_dict
-
-    # 确保不超出 valid_data 实际长度
-    max_n = min(top_n, len(qubits_lists), len(valid_data))
-    valid_data = valid_data[:max_n]
-    for idx, (peak, conf, freq) in enumerate(valid_data):
-        qubit = qubits_lists[idx]
-        param_key = f"gate.R.{qubit}.params.freq_{idx}"
-        update_dict[param_key] = freq
-        logging.info(
-            f"更新{qubit}频率 | 序号{idx} | 峰值位置{peak:.0f} | "
-            f"置信度{conf:.6f} | 频率{freq/10**9:.2f} GHz（按频率升序赋值）"
-        )
-
-    logging.info(f"S21mulit更新完成，共更新{len(update_dict)}个频率参数")
-    return update_dict
-
-
-def powershift_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.5, base_amp: float = 0.05):
-    """
-    基于S21功率扫描（s21vsamp）结果更新腔/比特的AMP振幅参数
-    Args:
-        data_converted: s21_convert转换后的数据
-        result: 服务器返回的分析结果
-        file_idx: 处理第几个文件结果（默认0）
-        conf_threshold: 置信度阈值（默认0.5）
-        base_amp: 检测到的结果不符合要求时候的经验值（0.05）
-    Returns:
-        dict: 更新字典 {gate.R.比特名.params.amp: 目标振幅值}
-    """
-    update_dict = {}
-
-    file_result = validate_result(result, file_idx, "PowerShift")
-    if file_result is None:
-        return update_dict
-
-    q_list = file_result.get("q_list", [])
-    confs = file_result.get("confs", [])
-    keypoints_list = file_result.get("keypoints_list", [])
-
-    if not q_list:
-        logging.warning("无有效比特列表，跳过AMP更新")
-        return update_dict
-    if len(keypoints_list) != len(q_list) or len(confs) != len(q_list):
-        logging.error("比特列表/置信度/关键点数量不匹配，跳过更新")
-        return update_dict
-
-    image_dict = data_converted.get("image", {})
-    original_qubit_names = list(image_dict.keys()) if isinstance(image_dict, dict) else []
-
-    for idx, qubit in enumerate(q_list):
-        conf = confs[idx] if idx < len(confs) else 0.0
-        if conf < conf_threshold:
-            logging.warning(f"{qubit} 置信度{conf:.4f} < {conf_threshold}，跳过更新")
-            continue
-
-        keypoints = keypoints_list[idx] if idx < len(keypoints_list) else []
-        valid_keypoints = [
-            point[1] for point in keypoints
-            if isinstance(point, list) and len(point) >= 2
-            and isinstance(point[1], (int, float)) and point[1] >= 0
-        ]
-
-        valid_point_count = len(valid_keypoints)
-        if valid_point_count <= 1:
-            logging.warning(f"{qubit} 检测到{valid_point_count}个有效点，跳过更新")
-            continue
-
-        # 确保 valid_keypoints 中所有元素为数值
-        if not all(isinstance(x, (int, float)) for x in valid_keypoints):
-            logging.warning(f"{qubit} valid_keypoints包含非数值元素，跳过更新")
-            continue
-
-        if valid_point_count == 3:
-            inflection_amp = np.mean(valid_keypoints[:2])
-            logging.debug(f"{qubit} 检测到3个有效点，取前2个点平均值")
-        else:
-            inflection_amp = np.mean(valid_keypoints)
-            logging.warning(f"{qubit} 检测到{valid_point_count}个有效点，取所有点平均值")
-
-        # base_amp = 0.05
-        target_amp = inflection_amp
-
-        if target_amp > 0.9 or target_amp < 0.01:
-            logging.warning(f"{qubit} 目标AMP{target_amp:.4f} 超出合理范围，使用经验值{base_amp}")
-            target_amp = base_amp
-
-        final_qubit_name = original_qubit_names[idx] if idx < len(original_qubit_names) else qubit
-        update_key = f"gate.R.{final_qubit_name}.params.amp"
-        update_dict[update_key] = target_amp
-
-        logging.info(
-            f"PowerShift更新 | 比特：{final_qubit_name} | 置信度：{conf:.4f} | "
-            f"inflection_amp：{inflection_amp:.4f} | 目标AMP：{target_amp:.4f}"
-        )
-
-    logging.info(f"PowerShift AMP更新完成，共更新{len(update_dict)}个比特")
-    return update_dict
-
-
-def rabi_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
-    """
-    根据Rabi实验结果更新量子比特R.amp参数
-    Args:
-        data_converted: 转换后数据
-        result: 服务器返回的Rabi分析结果
-        file_idx: 文件索引（默认0）
-        conf_threshold: 置信度阈值
-    """
-    update_dict = {}
-
-    rabi_res = validate_result(result, file_idx, "Rabi")
-    if rabi_res is None:
-        return update_dict
-
-    if rabi_res.get("status") != "success":
-        logging.error("Rabi更新失败：分析状态非success")
-        return update_dict
-
-    peaks_list = rabi_res.get("peaks", [])
-    confs_list = rabi_res.get("confs", [])
-
-    image = data_converted.get("image", [])
-    qubits = list(image.keys()) if isinstance(image, dict) else image
-    for bit_idx, qubit in enumerate(qubits):
-        if not validate_list_bounds(bit_idx, {"peaks_list": peaks_list, "confs_list": confs_list}, qubit, "Rabi"):
-            continue
-
-        best_peak, best_conf, _ = select_best_by_conf(peaks_list[bit_idx], confs_list[bit_idx])
-        if best_peak is None:
-            continue
-
-        if best_conf < conf_threshold:
-            logging.warning(f"{qubit} 置信度{best_conf:.4f} < {conf_threshold}，跳过更新")
-            continue
-
-        param_key = f"gate.R.{qubit}.params.amp"
-        update_dict[param_key] = best_peak
-        logging.info(f"Rabi更新 | 比特{qubit} | 最佳峰值：{best_peak:.5f} | 置信度：{best_conf:.4f} | 最终AMP：{best_peak:.5f}")
-
-    return update_dict
 
 def delta_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
     """

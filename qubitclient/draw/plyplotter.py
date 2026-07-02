@@ -203,7 +203,7 @@ class QuantumDataPlyPlotter(ABC):
         )
 
     def add_annotation(self, fig: go.Figure, text: str,
-                       row: int, col: int, x: float = 0.95, y: float = 0.95, xref="x", yref="y", showarrow=True,
+                       row: int, col: int, x: float = 0.95, y: float = 0.95, xref="x", yref="y", showarrow=True,ax=-30,ay=-30,
                        **kwargs) -> None:
         if showarrow:
             annotation_kwargs = {
@@ -212,6 +212,8 @@ class QuantumDataPlyPlotter(ABC):
                 'y': y,
                 'xref': xref,
                 'yref': yref,
+                'ax': ax,
+                'ay': ay,
                 'text': text,
                 'row': row,
                 'col': col,
@@ -236,6 +238,8 @@ class QuantumDataPlyPlotter(ABC):
                 'y': y,
                 'xref': xref,
                 'yref': yref,
+                'ax': ax,
+                'ay': ay,
                 'text': text,
                 'row': row,
                 'col': col,

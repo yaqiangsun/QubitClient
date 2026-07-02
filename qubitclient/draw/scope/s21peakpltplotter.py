@@ -78,7 +78,7 @@ class S21PeakDataPltPlotter(QuantumDataPltPlotter):
                     self.add_scatter(ax, x[peak], y1[peak],
                                      color_index=color_idx)
                 # 散点注释
-                self.add_annotation(ax, f'{conf:.2f}\nfreq: {freqs[j]:.2e}Hz', (x[peak], y1[peak]))
+                self.add_annotation(ax, f'conf: {conf:.2f}\nfreq: {freqs[j]:.4e}', (x[peak], y1[peak]),annotation_xytext=(50,50))
                 # 竖线
 
 

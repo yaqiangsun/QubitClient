@@ -88,8 +88,8 @@ class S21PeakDataPlyPlotter(QuantumDataPlyPlotter):
                 self.add_scatter(fig,x=[peak_xs[j]],y=[peak_ys[j]],name=legend_name,row=current_row, col=current_col,color_index=j,showlegend=True)
                 self.add_annotation(fig, x=peak_xs[j],
                                     y=peak_ys[j],
-                                    text=f'{confs[j]:.2f}<br>freq: {freqs[j]:.2e}Hz', row=current_row,
-                                    col=current_col)
+                                    text=f'conf: {confs[j]:.2f}<br>freq: {freqs[j]:.4e}', row=current_row,
+                                    col=current_col,ax=100,ay=-100)
 
 
             x_coords = []

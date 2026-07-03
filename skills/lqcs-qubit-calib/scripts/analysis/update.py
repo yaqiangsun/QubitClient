@@ -165,7 +165,7 @@ def s21_update(results, conf_threshold, qubit_name_list):
     return update_dict
 
 
-def s21peakmulti_update(results, conf_threshold, qubit_name_list, base_freq_dict):
+def s21peakmulti_update(results, conf_threshold, qubit_name_list, base_freq_list):
     """
     根据S21PEAKMULTI频谱分析结果更新量子比特读取腔频率参数
     Args:
@@ -189,9 +189,10 @@ def s21peakmulti_update(results, conf_threshold, qubit_name_list, base_freq_dict
 
             confs = confs_list[idx]
             freqs = freqs_list[idx]
-            base_freq = base_freq_dict.get(qname)
-            if not base_freq or not freqs or not confs:
-                continue
+            
+            for each_dict in base_freq_list:
+                if qname in each_dict:
+                    base_freq = each_dict[qname]
 
             # 找到距离基准频率最近的频点
             target_idx = freqs.index(min(freqs, key=lambda f: abs(f - base_freq)))
@@ -309,8 +310,7 @@ def spectrum_update(results, conf_threshold, qubit_name_list):
             target_freq = best_peak
             freq_update_map[qubit_name_list[i]] = {
                 "f10": target_freq,
-                "f21": target_freq + non,
-                "conf": max_conf
+                "f21": target_freq + non
             }
     return freq_update_map
 
@@ -459,6 +459,8 @@ def powershift_update(results, conf_threshold, qubit_name_list):
         confs = result['confs']
 
         for i in range(len(qubit_name_list)):
+            if i > len(keypoints_list):
+                continue
             keypoints = keypoints_list[i]
             class_num = class_num_list[i]
             conf = float(confs[i])

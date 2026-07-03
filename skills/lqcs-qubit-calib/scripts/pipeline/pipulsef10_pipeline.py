@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.pipulsef10_pipeline -q q1ld4 -b 0.001 -n 20 -s ./tmp -u True -c 0.6
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.pipulsef10_pipeline -q q1ld5 -b 0.001 -n 20 -u True -c 0.6
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -69,8 +69,8 @@ def llm_analysis(img_save_path):
 def parse_args():
     parser = argparse.ArgumentParser(description="PiPulseF10 Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
     # 频率半带宽
     parser.add_argument("--freq-half-bandwidth", "-b", type=float, default=0.015,
                         help="freq half bandwidth, default 0.015")

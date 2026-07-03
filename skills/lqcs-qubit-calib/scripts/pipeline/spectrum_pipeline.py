@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum_pipeline -q q1ld4 -s ./tmp -u True -c 0.6 -fs 100
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum_pipeline -q q1ld5  -u True -c 0.6 -fs 3 -fe 5 -fn 1000
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -21,7 +21,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 import logging
 
@@ -37,11 +37,11 @@ from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import nnspectrum
-from analysis.visualization import plot_nnspectrum
+from analysis.inception import spectrum
+from analysis.visualization import plot_spectrum
 from analysis.update import spectrum_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -68,11 +68,11 @@ def llm_analysis(img_save_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Qubit Spectrum Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit list, default: q1ld4")
-    parser.add_argument("--freq-start", type=float, default=3.0, help="Scan freq start")
-    parser.add_argument("--freq-end", type=float, default=5.0, help="Scan freq end")
-    parser.add_argument("--freq-samples", "-fs", type=int, default=1000, help="Frequency sample count")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit list, default: q1ld5")
+    parser.add_argument("--freq-start", "-fs", type=float, default=3.0, help="Scan freq start")
+    parser.add_argument("--freq-end", "-fe", type=float, default=5.0, help="Scan freq end")
+    parser.add_argument("--freq-samples", "-fn", type=int, default=1000, help="Frequency sample count")
     parser.add_argument("--zpa", type=float, default=0, help="Zpa value")
     parser.add_argument("--spec-amp", type=float, default=0.5, help="spec amplitude")
     parser.add_argument("--sb_freq", type=float, default=-0.15, help="sb_freq")
@@ -96,6 +96,9 @@ def get_spectrum_hdf5_res(args):
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
+        f10_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f10_star"))
+        f21_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f21_star"))
+
         set_params = {
             "qubits": qubit_name_list,
             "freq_start": args.freq_start,
@@ -103,8 +106,11 @@ def get_spectrum_hdf5_res(args):
             "freq_sample_num": args.freq_samples,
             "zpa": args.zpa,
             "spec_amp": args.spec_amp,
-            "sb_freq": args.sb_freq
+            "sb_freq": args.sb_freq,
+            "f10": f10_original,
+            "f21": f21_original
         }
+        
 
         run_record = PipelineResultRecord(
             task_name=task_name,
@@ -127,12 +133,13 @@ def get_spectrum_hdf5_res(args):
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
         # 2.分析数据
-        analysis_result = nnspectrum(raw_data)
+        analysis_result = spectrum(raw_data)
 
         # 3.绘图
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.SPECTRUM.value}_{pure_name}_{run_id}.png'
-        plot_nnspectrum(raw_data, analysis_result, save_path=img_save_path)
+        plot_spectrum(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用大模型图片分析
@@ -158,7 +165,8 @@ def get_spectrum_hdf5_res(args):
                 logging.info(f"[INFO] Update {qname} freq, confidence: {item.get('conf', 0)}")
 
         if freq_update_map:
-            new_full_params["qubit_freq_calib"] = freq_update_map
+            new_full_params["f10"] = freq_update_map[pure_name]['f10']
+            new_full_params["f21"] = freq_update_map[pure_name]['f21']
 
         store.update_run(
             run_id=run_id,

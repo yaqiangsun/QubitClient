@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.ramsey_pipeline -q q1ld4 -s ./tmp -u True -c 0.6
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.ramsey_pipeline -q q1ld5 -u True -c 0.6
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 import sys
@@ -67,8 +67,8 @@ def llm_analysis(img_save_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Ramsey Coherence Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit list, default: q1ld5")
 
     parser.add_argument("--delay-start", type=float, default=0, help="Delay start")
     parser.add_argument("--delay-end", type=float, default=600, help="Delay end")

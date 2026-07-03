@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.rabi_pipeline -q q1ld4 -s ./tmp -u True -c 0.6
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.rabi_pipeline -q q1ld5 -u True -c 0.6 -ps 0 -pe 30 -pn 60 -pl 10
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 import sys
@@ -20,7 +20,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 import logging
 
@@ -40,7 +40,7 @@ from analysis.inception import rabi
 from analysis.visualization import plot_rabicos
 from analysis.update import rabi_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -67,12 +67,12 @@ def llm_analysis(img_save_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Rabi Amplitude Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit list, default: q1ld4")
-    parser.add_argument("--piamp-start", type=float, default=0, help="Pulse amplitude start")
-    parser.add_argument("--piamp-end", type=float, default=2, help="Pulse amplitude end")
-    parser.add_argument("--piamp-samples", type=int, default=20, help="Amplitude sample count")
-    parser.add_argument("--pi-len", type=float, default=50, help="pi length")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit list, default: q1ld5")
+    parser.add_argument("--piamp-start", "-ps", type=float, default=0, help="Pulse amplitude start")
+    parser.add_argument("--piamp-end", "-pe", type=float, default=2, help="Pulse amplitude end")
+    parser.add_argument("--piamp-samples", "-pn", type=int, default=20, help="Amplitude sample count")
+    parser.add_argument("--pi-len", "-pl", type=float, default=50, help="pi length")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
     # 新增统一参数
@@ -89,15 +89,18 @@ def get_rabi_hdf5_res(args):
     qubit_name_list = args.qubits
     save_folder = args.save_folder
 
+    qubit_ctrl_client = QubitCtrlClient()
+    pigate_amp_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="PiGate_amp_star")
+
     try:
         # 1.采集数据
-        qubit_ctrl_client = QubitCtrlClient()
         set_params = {
             "qubits": qubit_name_list,
             "amp_start": args.piamp_start,
             "amp_end": args.piamp_end,
             "amp_sample_num": args.piamp_samples,
-            "pi_len": args.pi_len
+            "pi_len": args.pi_len,
+            "PiGate_amp_star": pigate_amp_original
         }
 
         # 新建实验记录，移除 pipeline_type
@@ -130,10 +133,11 @@ def get_rabi_hdf5_res(args):
         # 2.分析数据
         analysis_result = rabi(raw_data)
 
-        # 3.绘图，统一命名规则
+        # 3.绘图
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.RABI.value}_{pure_name}_{run_id}.png'
         plot_rabicos(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用大模型图片分析
@@ -161,7 +165,7 @@ def get_rabi_hdf5_res(args):
                 )
 
         if update_amp_map:
-            new_full_params["pi_gate_amp"] = update_amp_map
+            new_full_params["PiGate_amp_star"] = update_amp_map[pure_name]
 
         store.update_run(
             run_id=run_id,

@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.setpialpha_pipeline -q q1ld4  -g X -s ./tmp -u True -c 0.1
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.setpialpha_pipeline -q q1ld5  -g X -u True -c 0.1
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -41,7 +41,7 @@ from analysis.inception import setpialpha
 from analysis.visualization import plot_setpialpha
 from analysis.update import setpialpha_update
 
-SAVE_PLOT_FOLDER = './tmp'
+SAVE_PLOT_FOLDER ='./tmp/db/result/image'
 
 qubit_ctrl_client = QubitCtrlClient()
 
@@ -71,8 +71,8 @@ def llm_analysis(img_save_path):
 def parse_args():
     parser = argparse.ArgumentParser(description="SETPIALPHA Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
     # pipulse_num，逗号分隔
     parser.add_argument("--pipulse_num", "-n", type=str, default="1,4,8",
                         help="pipulse_num for SETPIALPHA, split by comma, default '1,4,8'")

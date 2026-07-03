@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.s21peakmulti_pipeline -q q1ld4 -fs 6.5 -fe 6.8 -r 0.0008 -s ./tmp -u True -c 0.4
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.s21peakmulti_pipeline -q q1ld5 -fs 6.5 -fe 6.8 -r 0.0008  -u True -c 0.4
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -21,7 +21,7 @@ import argparse
 import logging
 from datetime import datetime
 from pathlib import Path
-import json
+import json, os
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -39,13 +39,13 @@ from analysis.visualization import plot_nns21peakmulti, plot_s21peakmulti
 
 from analysis.update import s21peakmulti_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 CONFIG_PATH = "skills/lqcs-qubit-calib/scripts/pipeline/s21peakmulti_init_freq.json"
 
 # 加载比特基准频率配置
 try:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-        base_freq_dict = json.load(f)
+        base_freq_list = json.load(f)
 except FileNotFoundError:
     raise FileNotFoundError(f"配置文件不存在，请检查路径: {CONFIG_PATH}")
 
@@ -54,8 +54,8 @@ except FileNotFoundError:
 def parse_args():
     parser = argparse.ArgumentParser(description="Multi Qubit S21MULTI Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
     # 扫描起始频率
     parser.add_argument("--freq-start", "-fs", type=float, default=6.5,
                         help="Scan start frequency (GHz)")
@@ -100,6 +100,11 @@ def parse_args():
     # test_qubit_spectroscopy_q6_status(img_small_path)
     # print("\nQubit_Spectroscopy tests passed!")
 
+def get_value_by_qname(qname, base_freq_list):
+    for each_dict in base_freq_list:
+        if qname in each_dict:
+            return each_dict[qname]
+    return None
 
 
 def get_s21peakmulti_hdf5_res(args):
@@ -111,7 +116,7 @@ def get_s21peakmulti_hdf5_res(args):
     try:
         qubit_ctrl_client = QubitCtrlClient()
         qname = qubit_name_list[0]
-        base_freq = base_freq_dict.get(qname)
+        base_freq = get_value_by_qname(qname, base_freq_list)
 
         # 组装实验参数
         set_params = {
@@ -169,7 +174,7 @@ def get_s21peakmulti_hdf5_res(args):
                 results=analysis_result,
                 conf_threshold=args.confidence,
                 qubit_name_list=qubit_name_list,
-                base_freq_dict=base_freq_dict
+                base_freq_list=base_freq_list
             )
             # 更新参数
             for q, info in update_map.items():
@@ -186,6 +191,7 @@ def get_s21peakmulti_hdf5_res(args):
             new_full_params["fread_star"] = update_map
 
         # 完成任务，写结果到存储
+        img_save_path = os.path.abspath(img_save_path)
         store.update_run(
             run_id=run_id,
             status="completed",

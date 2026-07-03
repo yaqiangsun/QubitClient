@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.singleshot_pipeline -q q1ld4 -s ./tmp -u True -c 0.6
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.singleshot_pipeline -q q1ld5 -u True -c 0.6
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -21,7 +21,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import logging
 
 # 统一日志配置
@@ -40,7 +40,7 @@ from analysis.inception import singleshot
 from analysis.visualization import plot_singleshot
 from analysis.update import singleshot_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -67,8 +67,8 @@ def llm_analysis(img_save_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="SingleShot Readout Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit list, default: q1ld5")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
     # 新增固定参数
@@ -114,7 +114,11 @@ def get_singleshot_hdf5_res(args):
         # llm_analysis(img_save_path)
 
         # 要更新'discriminator.center0', 'discriminator.center1', 'discriminator.threshold'
+        # print("117---------", analysis_result)
+        first = analysis_result[0]
 
+
+        img_save_path = os.path.abspath(img_save_path)
         store.update_run(
             run_id=run_id,
             status="completed",

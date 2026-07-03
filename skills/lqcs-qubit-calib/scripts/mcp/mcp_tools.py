@@ -332,7 +332,7 @@ def rabi(
                       piamp_end=piamp_end,
                       piamp_sample_num=piamp_sample_num,
                       pi_len=pi_len)
-    hdf5_path = find_latest_filename(task_type='piamp')
+    hdf5_path = find_latest_filename(task_type='pipulse')
     return hdf5_path
 
 

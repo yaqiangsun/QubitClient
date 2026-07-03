@@ -11,7 +11,7 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import drag
 from analysis.visualization import plot_drag
 
-SAVE_PLOT_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def get_drag_hdf5_res():

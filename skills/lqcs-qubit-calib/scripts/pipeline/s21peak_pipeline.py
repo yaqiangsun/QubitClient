@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.s21peak_pipeline -q q1ld4 -b 0.01 -n 50 -s ./tmp -u True -c 0.6
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.s21peak_pipeline -q q1ld5 -b 0.0015 -n 200  -u True -c 0.6
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -23,6 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from PIL import Image
 import json
+import os
 
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
@@ -37,19 +38,19 @@ from analysis.inception import s21
 from analysis.visualization import plot_s21
 from analysis.update import s21_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="S21 Multi Spectrum Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
     # 不填则从硬件查询
     parser.add_argument("--fread_star", "-f", type=float, default=None,
                         help="Manual readout fread_star (GHz). Auto query hardware if not set.")
     # 半带宽
-    parser.add_argument("--bandwidth", "-b", type=float, default=0.005,
+    parser.add_argument("--bandwidth", "-b", type=float, default=0.001,
                         help="Frequency half bandwidth (GHz), default 0.005")
     # 采样点数
     parser.add_argument("--samples", "-n", type=int, default=200,
@@ -164,12 +165,13 @@ def get_s21_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=qname,
                     task_type=CtrlTaskName.S21,
-                    values=new_value
+                    values=str(new_value)
                 )
                 # 覆盖新频率到参数字典
                 new_full_params["fread_star"] = float(new_value)
 
         # =========== 更新结果到存储 ======================
+        img_save_path = os.path.abspath(img_save_path)
         store.update_run(
             run_id=run_id,
             status="completed",

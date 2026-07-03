@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-        faster: python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum2d_pipeline -q q1ld4 -fs -3 -fe 3 -fn 10 -zs -1 -ze 1 -zn 10 -sa 0.0 -s ./tmp -u True -c 0.6
+        faster: python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum2d_pipeline -q q1ld5 -fs -3 -fe 3 -fn 10 -zs -1 -ze 1 -zn 10 -sa 0.0 -u True -c 0.6
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -40,8 +40,7 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import nnspectrum2d
 from analysis.visualization import plot_nnspectrum2d
 
-SAVE_PLOT_FOLDER = './tmp'
-
+SAVE_PLOT_FOLDER ='./tmp/db/result/image'
 
 def llm_analysis(img_save_path):
     # resize更小
@@ -68,8 +67,8 @@ def llm_analysis(img_save_path):
 def parse_args():
     parser = argparse.ArgumentParser(description="2D Spectrum Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
     # 频率起始
     parser.add_argument("--freq-start", "-fs", type=float, default=3,
                         help="Frequency start value, default 3")

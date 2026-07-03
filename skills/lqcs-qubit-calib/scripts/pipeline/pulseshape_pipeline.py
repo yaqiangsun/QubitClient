@@ -11,13 +11,13 @@ from qubitclient.ctrl import CtrlTaskName
 # from analysis.inception import pulseshape
 # from analysis.visualization import plot_pulseshape
 
-SAVE_PLOT_FOLDER = './tmp'
+SAVE_PLOT_FOLDER ='./tmp/db/result/image'
 
 
 def get_pulseshape_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
-    qubit_name_list = ["q1ld4"]
+    qubit_name_list = ["q1ld5"]
     
     data_id = qubit_ctrl_client.run(CtrlTaskName.PULSESHAPE,
                                    qubits=qubit_name_list,

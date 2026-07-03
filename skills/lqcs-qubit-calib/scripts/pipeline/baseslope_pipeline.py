@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.baseslope_pipeline -q Q0 Q1 -ds 1.0 -de 100.0 -dn 50 -sh 0 -s ./tmp
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.baseslope_pipeline -q Q0 Q1 -ds 1.0 -de 100.0 -dn 50 -sh 0
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 
 # 统一日志配置
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -39,7 +39,7 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import baseslope
 from analysis.visualization import plot_baseslope
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -142,6 +142,7 @@ def get_baseslope_hdf5_res(args):
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.BASESLOPE.value}_{pure_name}_{run_id}.png'
         plot_baseslope(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用图片分析函数

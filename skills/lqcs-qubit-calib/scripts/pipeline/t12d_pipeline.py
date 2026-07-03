@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example: (-dn must be bigger than 10)
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.t12d_pipeline -q q1ld4 -bs -1.0 -be 0.4 -bn 20 -ds 0 -de 50000 -dn 13 -s ./tmp
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.t12d_pipeline -q q1ld5 -bs -1.0 -be 0.4 -bn 10 -ds 0 -de 50000 -dn 13
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -41,7 +41,7 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import t12dfit
 from analysis.visualization import plot_t12dfit
 
-SAVE_PLOT_FOLDER = './tmp'
+SAVE_PLOT_FOLDER ='./tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -69,8 +69,8 @@ def llm_analysis(img_save_path):
 def parse_args():
     parser = argparse.ArgumentParser(description="T1 2D Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
     # 偏置起始
     parser.add_argument("--zpa-start", "-bs", type=float, default=-1.0,
                         help="zpa start value, default -1.0")

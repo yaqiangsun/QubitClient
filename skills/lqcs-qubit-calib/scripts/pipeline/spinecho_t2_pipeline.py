@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.spinecho_t2_pipeline -q q1ld4 -ff 0.05 -ds 0 -de 10000 -dn 50 -s ./tmp
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.spinecho_t2_pipeline -q q1ld5 -ff 0.05 -ds 0 -de 10000 -dn 50
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -39,7 +39,7 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import spinecho
 from analysis.visualization import plot_spinecho
 
-SAVE_PLOT_FOLDER = './tmp'
+SAVE_PLOT_FOLDER ='./tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -67,8 +67,8 @@ def llm_analysis(img_save_path):
 def parse_args():
     parser = argparse.ArgumentParser(description="SpinEcho T2 Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit name list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit name list, default: q1ld5")
 
     # 延时起始值
     parser.add_argument("--delay-start", "-ds", type=float, default=0,

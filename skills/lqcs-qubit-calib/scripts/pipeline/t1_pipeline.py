@@ -12,14 +12,14 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import t1fit
 from analysis.visualization import plot_t1fit
 
-SAVE_PLOT_FOLDER = './tmp'
+SAVE_PLOT_FOLDER ='./tmp/db/result/image'
 
 
 def get_t1_hdf5_res():
     # 1.采集数据
     qubit_ctrl_client = QubitCtrlClient()
 
-    qubit_name_list = ["q1ld4"]
+    qubit_name_list = ["q1ld5"]
 
     data_id = qubit_ctrl_client.run(CtrlTaskName.T1,
                                    qubits=qubit_name_list,

@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.powershift_pipeline -q q1ld4 -s ./tmp -n 16 -ps 13 -u True -c 0.3
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.powershift_pipeline -q q1ld5 -b 0.002 -n 15 -pn 20 -pe 0 -u True -c 0.3
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -21,7 +21,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 import logging
 
@@ -41,7 +41,7 @@ from analysis.inception import powershift
 from analysis.visualization import plot_powershift
 from analysis.update import powershift_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -68,16 +68,16 @@ def llm_analysis(img_save_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="PowerShift Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld4"],
-                        help="Target qubit list, default: q1ld4")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
+                        help="Target qubit list, default: q1ld5")
     parser.add_argument("--fread", "-f", type=float, default=None,
                         help="Manual readout freq(GHz), auto query hardware if empty")
     parser.add_argument("--bandwidth", "-b", type=float, default=0.0015,
                         help="Freq half bandwidth(GHz), default 0.0015")
     parser.add_argument("--samples", "-n", type=int, default=16, help="Freq sample count")
-    parser.add_argument("--power-start", type=float, default=-40, help="Drive power start")
-    parser.add_argument("--power-end", type=float, default=-16, help="Drive power end")
-    parser.add_argument("--power-samples", "-ps", type=int, default=13, help="Power sample count")
+    parser.add_argument("--power-start", "-ps", type=float, default=-40, help="Drive power start")
+    parser.add_argument("--power-end", "-pe", type=float, default=-16, help="Drive power end")
+    parser.add_argument("--power-samples", "-pn", type=int, default=13, help="Power sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
     # 更新开关与置信度阈值
@@ -104,6 +104,9 @@ def get_powershift_hdf5_res(args):
         else:
             fread_ret = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
             fread = float(fread_ret)
+        print("---find fread: ", fread)
+
+        readin_power_original = qubit_ctrl_client.query_param(qname=qname, key="ReadIn_power_star")
 
         # 组装实验参数
         set_params = {
@@ -113,7 +116,8 @@ def get_powershift_hdf5_res(args):
             "frequency_sample_num": args.samples,
             "power_start": args.power_start,
             "power_end": args.power_end,
-            "power_sample_num": args.power_samples
+            "power_sample_num": args.power_samples,
+            "ReadIn_power_star": readin_power_original
         }
 
         # 新建实验记录，移除 pipeline_type
@@ -129,9 +133,9 @@ def get_powershift_hdf5_res(args):
         data_id = qubit_ctrl_client.run(
             CtrlTaskName.POWERSHIFT,
             qubits=qubit_name_list,
-            frequency_center=fread,
-            frequency_half_bandwidth=args.bandwidth,
-            frequency_sample_num=args.samples,
+            freq_center=fread,
+            freq_half_bandwidth=args.bandwidth,
+            freq_sample_num=args.samples,
             power_start=args.power_start,
             power_end=args.power_end,
             power_sample_num=args.power_samples
@@ -154,6 +158,7 @@ def get_powershift_hdf5_res(args):
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.POWERSHIFT.value}_{pure_name}_{run_id}.png'
         plot_powershift(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用大模型图片分析
@@ -182,7 +187,7 @@ def get_powershift_hdf5_res(args):
                 logging.info(f"[INFO] Update {q} power to {target_power}")
 
         if update_power_map:
-            new_full_params["optimal_power"] = update_power_map
+            new_full_params["ReadIn_power_star"] = float(update_power_map[pure_name])
 
         # 结果入库
         store.update_run(

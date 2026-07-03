@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import os
+import json
 import numpy as np
 
 # 配置日志

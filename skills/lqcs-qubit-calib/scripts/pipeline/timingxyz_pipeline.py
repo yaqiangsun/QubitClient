@@ -176,7 +176,7 @@ def get_timingxyz_hdf5_res(args):
             # 主流程统一更新硬件参数
             task_type = CtrlTaskName.TIMINGXYZ
             for qn, val in update_map.items():
-                qubit_ctrl_client.update_param(qname=qn, task_type=task_type, values=val)
+                qubit_ctrl_client.update_param(qname=qn, task_type=task_type, values=[val])
 
         # 记录更新后的参数
         if update_map:

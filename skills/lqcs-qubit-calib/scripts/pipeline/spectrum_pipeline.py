@@ -160,7 +160,7 @@ def get_spectrum_hdf5_res(args):
             # 执行硬件参数更新
             task_type = CtrlTaskName.SPECTRUM
             for qname, item in freq_update_map.items():
-                values = f"{item['f10']},{item['f21']}"
+                values = [item['f10'],item['f21']]
                 qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
                 logging.info(f"[INFO] Update {qname} freq, confidence: {item.get('conf', 0)}")
 

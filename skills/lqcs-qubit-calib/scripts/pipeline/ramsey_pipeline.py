@@ -167,7 +167,7 @@ def get_ramsey_hdf5_res(args):
             for qname, info in freq_update_map.items():
                 target_freq = info["f10"]
                 f21_val = info["f21"]
-                values = f"{target_freq},{f21_val}"
+                values = [target_freq,f21_val]
                 qubit_ctrl_client.update_param(
                     qname=qname,
                     task_type=CtrlTaskName.RAMSEY,

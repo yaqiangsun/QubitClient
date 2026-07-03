@@ -163,7 +163,7 @@ def get_optqubitreadfreq_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=qname,
                     task_type=CtrlTaskName.OPTQUBITREADFREQ,
-                    values=str(new_val)
+                    values=[str(new_val)]
                 )
                 new_full_params["fread_star"] = new_val
 

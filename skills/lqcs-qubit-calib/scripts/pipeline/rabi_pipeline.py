@@ -157,7 +157,7 @@ def get_rabi_hdf5_res(args):
             if pure_name in update_amp_map:
                 target_pigate_amp = float(update_amp_map[pure_name])
                 target_pihalf_amp = target_pigate_amp / 2
-                target_value = f"{target_pigate_amp},{target_pihalf_amp}"
+                target_value = [target_pigate_amp, target_pihalf_amp]
 
                 qubit_ctrl_client.update_param(
                     qname=pure_name,

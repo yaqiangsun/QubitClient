@@ -147,7 +147,7 @@ def get_s21_hdf5_res(args):
 
         # =========== 绘制波形图==========
         img_save_path = f'{save_folder}/{CtrlTaskName.S21.value}_{qubit_name_list[0]}_{run_id}.png'
-
+ 
         plot_s21(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)
@@ -168,7 +168,7 @@ def get_s21_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=qname,
                     task_type=CtrlTaskName.S21,
-                    values=str(new_value)
+                    values=[str(new_value)]
                 )
                 # 覆盖新频率到参数字典
                 new_full_params["fread_star"] = float(new_value)

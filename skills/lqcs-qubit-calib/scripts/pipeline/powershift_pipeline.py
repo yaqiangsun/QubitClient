@@ -181,7 +181,7 @@ def get_powershift_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=q,
                     task_type=CtrlTaskName.POWERSHIFT,
-                    values=str(target_power)
+                    values=[str(target_power)]
                 )
                 logging.info(f"[INFO] Update {q} power to {target_power}")
 

@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.pipulsef10_pipeline -q q1ld5 -b 0.02 -n 20 -c 0.4 -u True
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.pipulsef10_pipeline -q q1ld5 -b 0.02 -n 20 -c 0.4 -u True
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -169,7 +169,7 @@ def get_pipulsef10_hdf5_res(args):
             for q, info in freq_update_map.items():
                 f10_val = info + f10_original
                 f21_val = info + f21_original
-                values = f"{f10_val},{f21_val}"
+                values = [f10_val, f21_val]
                 qubit_ctrl_client.update_param(
                     qname=q,
                     task_type=CtrlTaskName.SPECTRUM,

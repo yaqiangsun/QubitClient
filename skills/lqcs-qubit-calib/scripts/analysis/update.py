@@ -127,8 +127,8 @@ def setpialpha_update(results, conf_threshold, qubit_name_list):
             best_idx = confs.index(max_conf)
             best_peak = peaks[best_idx]
             target_amp = best_peak
-            target_alpha = "Null"
-            values = f"{target_amp},{target_alpha}"
+            target_alpha = "None"
+            values = [target_amp,None, None, None]
             qname = qubit_name_list[i]
             update_map[qname] = values
     return update_map

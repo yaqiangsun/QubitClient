@@ -159,6 +159,9 @@ def get_s21peakmulti_hdf5_res(args):
         img_save_path = f'{save_folder}/{CtrlTaskName.S21PEAKMULTI.value}_{pure_name}_{run_id}.png'
         plot_s21peakmulti(raw_data, analysis_result, save_path=img_save_path)
 
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
+
         # =========== 接入大模型分析图片 ===========
         # llm_analysis(img_save_path)
 
@@ -181,7 +184,7 @@ def get_s21peakmulti_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=q,
                     task_type=CtrlTaskName.S21PEAKMULTI,
-                    values=str(new_value)
+                    values=[str(new_value)]
                 )
 
         # 更新最终参数
@@ -189,12 +192,11 @@ def get_s21peakmulti_hdf5_res(args):
             new_full_params["fread_star"] = update_map
 
         # 完成任务，写结果到存储
-        img_save_path = os.path.abspath(img_save_path)
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )

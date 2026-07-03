@@ -388,12 +388,12 @@ data = qubit_ctrl_client.run(
 
 #### 参数更新
 
-根据扫描结果，更新 `PiGate.amp`：
+根据扫描结果，更新 `PiGate.amp`和`PiHalf.amp`：
 
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.RABI
-values = "1.0670387859748918"
+values = "1.2,0.6"
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 

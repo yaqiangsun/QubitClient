@@ -110,6 +110,9 @@ def get_singleshot_hdf5_res(args):
         img_save_path = f'{save_folder}/{CtrlTaskName.SINGLESHOT.value}_{qubit_name_list[0]}_{run_id}.png'
         plot_singleshot(raw_data, analysis_result, save_path=img_save_path)
 
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
+
         # 调用大模型图片分析
         # llm_analysis(img_save_path)
 
@@ -118,12 +121,12 @@ def get_singleshot_hdf5_res(args):
         first = analysis_result[0]
 
 
-        img_save_path = os.path.abspath(img_save_path)
+        
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now()
         )
         logging.info("Measurement finished")

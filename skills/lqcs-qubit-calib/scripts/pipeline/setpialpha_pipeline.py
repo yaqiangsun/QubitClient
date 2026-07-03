@@ -21,7 +21,7 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 import logging
 
@@ -170,6 +170,7 @@ def get_setpialpha_hdf5_res(args):
         last_analysis_result = analysis_result
         img_save_path = f'{save_folder}/{CtrlTaskName.SETPIALPHA}_piamp_bluelines_{q_name}_{run_id}.png'
         plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths.append(img_save_path)
 
         # three piamp files' orange lines
@@ -178,6 +179,7 @@ def get_setpialpha_hdf5_res(args):
         last_analysis_result = analysis_result
         img_save_path = f'{save_folder}/{CtrlTaskName.SETPIALPHA}_piamp_orangelines_{q_name}_{run_id}.png'
         plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths.append(img_save_path)
 
         # three alpha files' blue lines
@@ -186,6 +188,7 @@ def get_setpialpha_hdf5_res(args):
         last_analysis_result = analysis_result
         img_save_path = f'{save_folder}/{CtrlTaskName.SETPIALPHA}_alpha_bluelines_{q_name}_{run_id}.png'
         plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths.append(img_save_path)
 
         # three alpha files' orange lines
@@ -194,11 +197,11 @@ def get_setpialpha_hdf5_res(args):
         last_analysis_result = analysis_result
         img_save_path = f'{save_folder}/{CtrlTaskName.SETPIALPHA}_alpha_orangelines_{q_name}_{run_id}.png'
         plot_setpialpha(construct_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths.append(img_save_path)
 
         # 开启参数更新
         if args.update:
-
             update_map = setpialpha_update(
                 results=last_analysis_result,
                 conf_threshold=args.confidence,

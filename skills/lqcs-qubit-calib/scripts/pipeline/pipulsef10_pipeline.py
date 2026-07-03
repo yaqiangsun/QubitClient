@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.pipulsef10_pipeline -q q1ld5 -b 0.001 -n 20 -u True -c 0.6
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.pipulsef10_pipeline -q q1ld5 -b 0.02 -n 20 -c 0.4 -u True
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 
 # 统一日志配置
@@ -41,7 +41,7 @@ from analysis.inception import spectrum
 from analysis.visualization import plot_spectrum
 from analysis.update import pipulsef10_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -99,17 +99,17 @@ def get_pipulsef10_hdf5_res(args):
     try:
         qubit_ctrl_client = QubitCtrlClient()
 
-        # 查询原始 f10 初始值
-        f10_raw = qubit_ctrl_client.query_param(qname=qname, key="f10_star")
-        f10_original = float(f10_raw)
-        logging.info(f"[PiPulseF10] original f10 = {f10_original}")
+        # 查询原始 初始值
+        f10_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f10_star"))
+        f21_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f21_star"))
 
         # 组装实验参数
         set_params = {
             "qubits": qubit_name_list,
             "freq_half_bandwidth": args.freq_half_bandwidth,
             "freq_sample_num": args.freq_sample_num,
-            "f10": f10_original
+            "f10": f10_original,
+            "f21": f21_original
         }
 
         # 新建实验记录，移除 pipeline_type
@@ -146,6 +146,7 @@ def get_pipulsef10_hdf5_res(args):
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.PIPULSEF10.value}_{pure_name}_{run_id}.png'
         plot_spectrum(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用大模型图片分析
@@ -166,8 +167,8 @@ def get_pipulsef10_hdf5_res(args):
 
             # 下发更新参数
             for q, info in freq_update_map.items():
-                f10_val = info["f10"]
-                f21_val = info["f21"]
+                f10_val = info + f10_original
+                f21_val = info + f21_original
                 values = f"{f10_val},{f21_val}"
                 qubit_ctrl_client.update_param(
                     qname=q,
@@ -175,9 +176,9 @@ def get_pipulsef10_hdf5_res(args):
                     values=values
                 )
 
-        # 回填更新参数
         if freq_update_map:
-            new_full_params["qubit_freq_calib"] = freq_update_map
+            new_full_params["f10"] = freq_update_map[pure_name]+ f10_original
+            new_full_params["f21"] = freq_update_map[pure_name] + f21_original
 
         # 任务完成，更新存储
         store.update_run(

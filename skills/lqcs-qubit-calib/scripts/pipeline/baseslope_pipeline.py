@@ -142,6 +142,7 @@ def get_baseslope_hdf5_res(args):
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.BASESLOPE.value}_{pure_name}_{run_id}.png'
         plot_baseslope(raw_data, analysis_result, save_path=img_save_path)
+
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 

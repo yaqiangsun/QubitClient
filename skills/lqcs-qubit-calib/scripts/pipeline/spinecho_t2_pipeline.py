@@ -21,7 +21,7 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import logging
 
 # 统一日志配置
@@ -146,6 +146,9 @@ def get_t2_hdf5_res(args):
         img_save_path = f'{save_folder}/{CtrlTaskName.SPINECHO_T2.value}_{qubit_name_list[0]}_{run_id}.png'
         fig_list = plot_spinecho(raw_data, analysis_result, save_path=img_save_path)
 
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
+
         # 按需开启图片处理
         # llm_analysis(img_save_path)
 
@@ -156,7 +159,7 @@ def get_t2_hdf5_res(args):
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=set_params
         )

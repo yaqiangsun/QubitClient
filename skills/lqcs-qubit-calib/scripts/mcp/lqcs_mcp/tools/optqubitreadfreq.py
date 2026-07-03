@@ -25,9 +25,9 @@ _all_couplers = generate_coupler(globals(), info=None, sample=s)
 
 
 def optqubitreadfreq(qubits:list[str]=['Q0','Q1'],
-                     freq_span:float=0.0055,
+                     freq_half_bandwidth:float=0.0055
                      ):
     qubit = eval(qubits[0])
-    result = sq.s21_dis(qubit, freq_span=freq_span, update=False)
+    result = sq.s21_dis(qubit, freq_span=freq_half_bandwidth, update=False)
     
     return result

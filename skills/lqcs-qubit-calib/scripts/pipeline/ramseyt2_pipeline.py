@@ -21,7 +21,7 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import math
 import logging
 
@@ -147,6 +147,7 @@ def get_ramsey_t2_hdf5_res(args):
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY_T2.value}_{pure_name}_{run_id}.png'
         fig_list = plot_ramseyt2(raw_data, analysis_result, save_path=img_save_path)
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用大模型图片分析

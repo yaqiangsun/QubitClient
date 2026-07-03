@@ -21,7 +21,7 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import logging
 
 # 统一日志配置
@@ -35,7 +35,6 @@ from qubitclient.storage.result_store import PipelineResultRecord, PipelineResul
 from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
-from qubitclient import QubitScopeClient
 
 from analysis.inception import timingxyz
 from analysis.visualization import plot_timingxyz
@@ -104,7 +103,10 @@ def get_timingxyz_hdf5_res(args):
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
-        scope_client = QubitScopeClient()
+
+        timing_xy_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="timing_xy_star"))
+        timing_z_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="timing_z_star"))
+        
 
         # 组装实验参数
         set_params = {
@@ -112,7 +114,9 @@ def get_timingxyz_hdf5_res(args):
             "delay_start": args.delay_start,
             "delay_end": args.delay_end,
             "delay_sample_num": args.delay_sample_num,
-            "zpa": args.zpa
+            "zpa": args.zpa,
+            "timing_xy_star": timing_xy_original,
+            "timing_z_star": timing_z_original
         }
 
         # 新建实验记录
@@ -146,11 +150,14 @@ def get_timingxyz_hdf5_res(args):
 
         # 分析数据
         analysis_result = timingxyz(raw_data)
+        print("analysis_result: ", analysis_result)
 
 
         # 绘图
         img_save_path = f'{save_folder}/{CtrlTaskName.TIMINGXYZ.value}_{qubit_name_list[0]}_{run_id}.png'
         fig_list = plot_timingxyz(raw_data, analysis_result, save_path=img_save_path)
+        
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 按需开启图片处理
@@ -159,7 +166,7 @@ def get_timingxyz_hdf5_res(args):
         new_full_params = set_params.copy()
         update_map = {}
 
-        # 开启更新：调用独立更新函数，主流程执行硬件下发
+        # 开启更新
         if args.update:
             update_map = timingxyz_update(
                 results=analysis_result,
@@ -170,11 +177,11 @@ def get_timingxyz_hdf5_res(args):
             task_type = CtrlTaskName.TIMINGXYZ
             for qn, val in update_map.items():
                 qubit_ctrl_client.update_param(qname=qn, task_type=task_type, values=val)
-                logging.info(f"[INFO] Update {qn} timing_xy to {val}")
 
         # 记录更新后的参数
         if update_map:
-            new_full_params["timing_xy"] = update_map
+            new_full_params["timing_xy_star"] = update_map[qubit_name_list[0]]["timing_xy_star"]
+            new_full_params["timing_z_star"] = update_map[qubit_name_list[0]]["timing_z_star"]
 
         # 写入最终结果
         store.update_run(

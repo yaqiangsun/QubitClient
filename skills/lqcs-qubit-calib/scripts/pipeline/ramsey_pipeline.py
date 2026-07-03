@@ -21,7 +21,7 @@ import math
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import logging
 
 # 统一日志配置
@@ -95,12 +95,17 @@ def get_ramsey_hdf5_res(args):
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
+        f10_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f10_star"))
+        f21_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f21_star"))
+
         set_params = {
             "qubits": qubit_name_list,
             "delay_start": args.delay_start,
             "delay_end": args.delay_end,
             "delay_sample_num": args.delay_samples,
-            "fringeFreq": fringeFreq
+            "fringeFreq": fringeFreq,
+            "f10": f10_original,
+            "f21": f21_original
         }
 
         # 新建实验记录，移除 pipeline_type
@@ -138,6 +143,9 @@ def get_ramsey_hdf5_res(args):
         img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY.value}_{pure_name}_{run_id}.png'
         plot_ramsey(raw_data, analysis_result, save_path=img_save_path)
 
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
+
         # 调用大模型图片分析
         # llm_analysis(img_save_path)
 
@@ -167,13 +175,14 @@ def get_ramsey_hdf5_res(args):
                 )
 
         if freq_update_map:
-            new_full_params["qubit_freq_calib"] = freq_update_map
+            new_full_params["f10"] = freq_update_map[pure_name]['f10']
+            new_full_params["f21"] = freq_update_map[pure_name]['f21']
 
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )

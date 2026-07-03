@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 
 # 配置日志
@@ -40,7 +40,7 @@ from qubitclient.ctrl import CtrlTaskName
 from analysis.inception import s21vsflux
 from analysis.visualization import plot_s21vsflux
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def parse_args():
@@ -163,6 +163,9 @@ def get_s21vsflux_hdf5_res(args):
         img_save_path = f'{save_folder}/{CtrlTaskName.S21VSFLUX.value}_{pure_name}_{run_id}.png'
         plot_s21vsflux(raw_data, analysis_result, save_path=img_save_path)
 
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
+
         # =========== 接入大模型分析图片 ===========
         # llm_analysis(img_save_path)
 
@@ -180,7 +183,7 @@ def get_s21vsflux_hdf5_res(args):
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )

@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 
 # 统一日志配置
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -39,7 +39,7 @@ from analysis.inception import optreadfreq
 from analysis.visualization import plot_optreadfreq
 from analysis.update import optreadfreq_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -70,7 +70,7 @@ def parse_args():
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
                         help="Target qubit name list, default: q1ld5")
     # 扫频半带宽
-    parser.add_argument("--freq-half-bandwidth", "-h", type=float, default=0.0015,
+    parser.add_argument("--freq-half-bandwidth", "-b", type=float, default=0.0015,
                         help="Frequency span, default 0.0015")
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
@@ -139,6 +139,8 @@ def get_optqubitreadfreq_hdf5_res(args):
         pure_name = qubit_name_list[0]
         img_save_path = f'{save_folder}/{CtrlTaskName.OPTQUBITREADFREQ.value}_{pure_name}_{run_id}.png'
         plot_optreadfreq(raw_data, analysis_result, save_path=img_save_path)
+
+        img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
 
         # 调用大模型分析函数

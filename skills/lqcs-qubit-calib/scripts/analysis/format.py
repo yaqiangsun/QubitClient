@@ -506,9 +506,9 @@ def rabicos_convert(result):
         if type(data)==list:
             data_arr = np.array(data)
             delay = data_arr[:, 0]
-            p1 = data_arr[:, 1]
-            p2 = data_arr[:, 2]
+
             p6 = data_arr[:, 6]
+            
             data_formated["image"][qubit_name] = (delay, p6)
 
         elif data.dtype.names:   

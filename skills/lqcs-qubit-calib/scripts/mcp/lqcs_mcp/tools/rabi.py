@@ -36,5 +36,5 @@ def rabi(qubits:list[str]=['Q0','Q1'],
     piamp_array = np.linspace(piamp_start, piamp_end, piamp_sample_num)
 
     result = sq.piamp(qubit, fc=None, amp=piamp_array, update=False)
-    
+
     return result

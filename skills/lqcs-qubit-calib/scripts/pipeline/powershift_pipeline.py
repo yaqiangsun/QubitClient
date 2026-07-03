@@ -104,7 +104,6 @@ def get_powershift_hdf5_res(args):
         else:
             fread_ret = qubit_ctrl_client.query_param(qname=qname, key="fread_star")
             fread = float(fread_ret)
-        print("---find fread: ", fread)
 
         readin_power_original = qubit_ctrl_client.query_param(qname=qname, key="ReadIn_power_star")
 

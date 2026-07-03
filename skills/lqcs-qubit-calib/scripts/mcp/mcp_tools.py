@@ -708,7 +708,7 @@ def optqubitreadfreq(
         freq_half_bandwidth: 频率半带宽，单位GHz
     '''
     result = lqcs_optqubitreadfreq(qubits=qubits,
-                      freq_span=freq_half_bandwidth  # 映射关系待确定
+                      freq_half_bandwidth=freq_half_bandwidth  # 映射关系待确定
                       )
     hdf5_path = find_latest_filename(task_type='s21_dis')
     return hdf5_path

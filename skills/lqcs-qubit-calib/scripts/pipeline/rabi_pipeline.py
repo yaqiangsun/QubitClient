@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.rabi_pipeline -q q1ld5 -u True -c 0.6 -ps 0 -pe 30 -pn 60 -pl 10
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.rabi_pipeline -q q1ld5 -u True -c 0.6 -ps 0 -pe 5 -pn 100 
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 import sys
@@ -70,12 +70,11 @@ def parse_args():
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
                         help="Target qubit list, default: q1ld5")
     parser.add_argument("--piamp-start", "-ps", type=float, default=0, help="Pulse amplitude start")
-    parser.add_argument("--piamp-end", "-pe", type=float, default=2, help="Pulse amplitude end")
-    parser.add_argument("--piamp-samples", "-pn", type=int, default=20, help="Amplitude sample count")
-    parser.add_argument("--pi-len", "-pl", type=float, default=50, help="pi length")
+    parser.add_argument("--piamp-end", "-pe", type=float, default=5, help="Pulse amplitude end")
+    parser.add_argument("--piamp-samples", "-pn", type=int, default=100, help="Amplitude sample count")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
-    # 新增统一参数
+
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
     parser.add_argument("--confidence", "-c", type=float, default=0.5,
@@ -99,7 +98,6 @@ def get_rabi_hdf5_res(args):
             "amp_start": args.piamp_start,
             "amp_end": args.piamp_end,
             "amp_sample_num": args.piamp_samples,
-            "pi_len": args.pi_len,
             "PiGate_amp_star": pigate_amp_original
         }
 
@@ -117,8 +115,7 @@ def get_rabi_hdf5_res(args):
             qubits=qubit_name_list,
             piamp_start=args.piamp_start,
             piamp_end=args.piamp_end,
-            piamp_sample_num=args.piamp_samples,
-            pi_len=args.pi_len
+            piamp_sample_num=args.piamp_samples
         )
         # 读取原始数据
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
@@ -132,6 +129,7 @@ def get_rabi_hdf5_res(args):
 
         # 2.分析数据
         analysis_result = rabi(raw_data)
+
 
         # 3.绘图
         pure_name = qubit_name_list[0]
@@ -148,7 +146,6 @@ def get_rabi_hdf5_res(args):
 
         # 开启更新：使用 QubitScopeClient 解析结果，移除原字典解析逻辑
         if args.update:
-
             # 调用独立更新函数
             update_amp_map = rabi_update(
                 results=analysis_result,
@@ -157,11 +154,15 @@ def get_rabi_hdf5_res(args):
             )
 
             # 下发更新参数
-            for qname, target_amp in update_amp_map.items():
+            if pure_name in update_amp_map:
+                target_pigate_amp = float(update_amp_map[pure_name])
+                target_pihalf_amp = target_pigate_amp / 2
+                target_value = f"{target_pigate_amp},{target_pihalf_amp}"
+
                 qubit_ctrl_client.update_param(
-                    qname=qname,
+                    qname=pure_name,
                     task_type=CtrlTaskName.RABI,
-                    values=str(target_amp)
+                    values=str(target_value)
                 )
 
         if update_amp_map:

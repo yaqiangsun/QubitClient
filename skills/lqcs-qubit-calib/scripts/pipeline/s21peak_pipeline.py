@@ -147,8 +147,11 @@ def get_s21_hdf5_res(args):
 
         # =========== 绘制波形图==========
         img_save_path = f'{save_folder}/{CtrlTaskName.S21.value}_{qubit_name_list[0]}_{run_id}.png'
-        print("149: ", analysis_result)
+
         plot_s21(raw_data, analysis_result, save_path=img_save_path)
+
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
 
         # =========== 接入大模型分析图片 ===========
         # llm_analysis(img_save_path)
@@ -171,12 +174,12 @@ def get_s21_hdf5_res(args):
                 new_full_params["fread_star"] = float(new_value)
 
         # =========== 更新结果到存储 ======================
-        img_save_path = os.path.abspath(img_save_path)
+
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )

@@ -144,7 +144,6 @@ def get_s21peakmulti_hdf5_res(args):
             frequency_end=args.freq_end,
             frequency_sample_rate=args.sample_rate
         )
-        print("141---------", data_id)
 
         # 读取解析后原始数据
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
@@ -154,7 +153,6 @@ def get_s21peakmulti_hdf5_res(args):
 
         # 数据分析
         analysis_result = s21peakmulti(raw_data)
-        print("150---", analysis_result)
 
         # 绘制频谱图
         pure_name = qubit_name_list[0]

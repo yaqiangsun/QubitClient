@@ -252,7 +252,6 @@ def pipulsef10_update(results, conf_threshold, qubit_name_list):
         dict: {qname: {"f10": val, "f21": val}}
     """
     update_map = {}
-    non = -0.2
 
     for result in results:
         peaks_list = result.get("peaks_list", [])
@@ -274,15 +273,9 @@ def pipulsef10_update(results, conf_threshold, qubit_name_list):
             best_idx = confidences.index(max_conf)
             best_peak = peaks[best_idx]
             f10_val = best_peak
-            f21_val = best_peak + non
 
-            update_map[qname] = {
-                "f10": f10_val,
-                "f21": f21_val
-            }
-            logging.info(
-                f"PiPulseF10更新 | 比特：{qname} | f10: {f10_val:.4f} | f21: {f21_val:.4f} | 最大置信度: {max_conf:.2f}"
-            )
+            update_map[qname] = f10_val
+            
     return update_map
 
 
@@ -324,15 +317,15 @@ def timingxyz_update(results, conf_threshold, qubit_list):
     :return: 待更新参数字典 {qubit_name: value}
     """
     update_map = {}
-    # 保留原有固定值逻辑，可根据实际业务替换为结果解析
-    fixed_val = "3.193120459017055, 3.22222"
+
 
     for idx, qname in enumerate(qubit_list):
         # 此处可根据 results 内部置信度、时序值扩展解析逻辑
         # 示例：conf = results[idx].get("confs", 0)
         # if conf <= conf_threshold:
         #     continue
-        update_map[qname] = fixed_val
+        update_map[qname] = {"timing_xy_star": "3.1",
+                             "timing_z_star": "3.2"}
 
     return update_map
 

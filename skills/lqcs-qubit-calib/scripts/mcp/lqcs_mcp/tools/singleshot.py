@@ -29,6 +29,8 @@ def singleshot(qubits:list[str]=['Q0','Q1']):
 
     qubit = eval(qubits[0])
 
-    result = sq.iqraw(qubit)
+    # TODO:
+    # result = sq.iqraw(qubit, update=False)
+    result = sq.iqraw(qubit, update=True)
     
     return result

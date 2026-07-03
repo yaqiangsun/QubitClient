@@ -21,7 +21,7 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import logging
 
 # 统一日志配置
@@ -155,6 +155,9 @@ def get_xeb_hdf5_res(args):
         img_save_path = f'{save_folder}/{CtrlTaskName.XEB.value}_{qubit_name_list[0]}_{run_id}.png'
         fig_list = plot_xeb(raw_data, analysis_result, save_path=img_save_path)
 
+        img_save_path = os.path.abspath(img_save_path)
+        plot_paths = [img_save_path]
+
         # 大模型分析
         # llm_analysis(img_save_path)
 
@@ -166,7 +169,7 @@ def get_xeb_hdf5_res(args):
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
-            plot_paths=[img_save_path],
+            plot_paths=plot_paths,
             completed_at=datetime.now(),
             new_params=new_full_params
         )

@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum_pipeline -q q1ld5  -u True -c 0.6 -fs 3 -fe 5 -fn 1000
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.spectrum_pipeline -q q1ld5 -u True  -c 0.6 -fs 3 -fe 5 -fn 500 -sa 0.7
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -74,7 +74,7 @@ def parse_args():
     parser.add_argument("--freq-end", "-fe", type=float, default=5.0, help="Scan freq end")
     parser.add_argument("--freq-samples", "-fn", type=int, default=1000, help="Frequency sample count")
     parser.add_argument("--zpa", type=float, default=0, help="Zpa value")
-    parser.add_argument("--spec-amp", type=float, default=0.5, help="spec amplitude")
+    parser.add_argument("--spec-amp", "-sa", type=float, default=1, help="spec amplitude")
     parser.add_argument("--sb_freq", type=float, default=-0.15, help="sb_freq")
 
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,

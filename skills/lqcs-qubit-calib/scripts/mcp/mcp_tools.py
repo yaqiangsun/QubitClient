@@ -218,7 +218,7 @@ def set_nested_attr(obj: object, attr_path: str, value):
 def update_param(
     qname: Annotated[str, "量子比特名称"],
     task_type: Annotated[str, "任务类型"],
-    values: Annotated[str, "待更新参数值，多值以逗号分隔"]
+    values: Annotated[list, "待更新参数值列表，与TaskUpdateConfig中定义的任务参数列表一致"]
 ):
     '''
     Args:
@@ -228,13 +228,12 @@ def update_param(
     '''
     TASK_UPDATE_CONFIG = TaskUpdateConfig()
     params = TASK_UPDATE_CONFIG.get_task_params(task_type)
-    values = [float(v.strip()) for v in values.split(',')]
     if len(values) != len(params):
         raise ValueError(f"{task_type} update {len(params)} params, but got {len(values)} : {values}")
 
     qubit = globals()[qname]
     for param, val in zip(params, values):
-        if val != "Null" and val != "None":
+        if val != None:
             set_nested_attr(qubit.regs, param, val)
 
 

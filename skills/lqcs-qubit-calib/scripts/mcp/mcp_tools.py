@@ -162,7 +162,7 @@ class TaskUpdateConfig:
             'optqubitreadfreq': {'params': ['fread']},
             'opt_pipulse': {'params': ['PiGate.amp', 'PiGate.alpha']},
             'setpialpha': {'params': ['PiGate.amp', 'PiGate.alpha', 'PiHalf.amp', 'PiHalf.alpha']},  # 如果gate=X则更新'PiGate.amp', 'PiGate.alpha'这一组，如果X/2则'PiHalf.amp', 'PiHalf.alpha'这一组
-            'timingxyz': {'params': ['timing.xy', 'timing.z']},  # 二选一，一般是'timing.z'，很少'timing.xy'
+            'timingxyz': {'params': ['timing.xy']},  # 'timing.xy'和'timing.z'二选一，此处选择'timing.xy'
             'pulseshape': {'params': []},
             't1': {'params': []},
             't1_2d': {'params': []},
@@ -234,7 +234,7 @@ def update_param(
 
     qubit = globals()[qname]
     for param, val in zip(params, values):
-        if val != "Null":
+        if val != "Null" and val != "None":
             set_nested_attr(qubit.regs, param, val)
 
 

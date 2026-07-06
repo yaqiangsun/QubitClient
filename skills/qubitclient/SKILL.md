@@ -2,7 +2,7 @@
 name: qubitclient
 description: |
   Unified quantum calibration analysis package. Aggregates curve fitting  and parameter extraction (qubitclient-scope), neural network spectrum analysis (qubitclient-nnscope), LLM-based calibration review (qubitclient-vqa-review), and MCP-based real-time measurement control (qubitclient-control).
-license: GPL-3.0
+license: MIT
 ---
 
 ## Overview

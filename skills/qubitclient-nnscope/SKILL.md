@@ -1,7 +1,7 @@
 ---
 name: qubitclient-nnscope
 description: "NNScope neural network based quantum spectrum analysis tasks: (1) S21PEAK - S21 peak detection with confidence scoring, (2) S21PEAKMULTI - Multi-peak detection across full frequency range, (3) SPECTRUM - Spectrum peak region analysis (start/end/width/confidence), (4) SPECTRUM2D - 2D spectrum curve segmentation with polynomial/cosine fitting, (5) S21VSFLUX - S21 vs Flux curve segmentation, (6) POWERSHIFT - Power shift curve segmentation. Provides unified API for neural network based curve fitting, peak detection, and batch processing with matplotlib/plotly visualization support."
-license: GPL-3.0
+license: MIT
 ---
 
 ## Overview

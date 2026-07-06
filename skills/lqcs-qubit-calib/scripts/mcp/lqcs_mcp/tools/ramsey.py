@@ -33,9 +33,11 @@ def ramsey(qubits:list[str]=['Q0','Q2'],
            ):
     qubit = eval(qubits[0])
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
+    # result = sq.ramsey_df(qubit, 
+    #                       delay=delay_array,
+    #                       fringeFreq=fringeFreq,
+    #                       update=False)
     result = sq.ramsey_df(qubit, 
-                          delay=delay_array,
-                          fringeFreq=fringeFreq,
                           update=False)
     
     return result

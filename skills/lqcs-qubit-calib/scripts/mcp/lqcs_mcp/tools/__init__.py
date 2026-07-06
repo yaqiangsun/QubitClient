@@ -20,6 +20,7 @@ from .singleshot import singleshot
 from .spectrum_2d import spectrum_2d
 from .spectrum import spectrum
 from .t1_2d import t1_2d
+from .t1 import t1
 from .powershift import powershift
 from .s21peakmulti import s21peakmulti
 

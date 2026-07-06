@@ -347,10 +347,17 @@ def ramsey_update(results, fringe_freq, qubit_name_list, ctrl_client):
             deltaf = w / (2 * math.pi)
 
             logging.info(f"fringeFreq, f10: {fringe_freq}, {f10}")
+
+            # if fringe_freq > f10:
+            #     target_freq = fringe_freq - deltaf
+            # else:
+            #     target_freq = fringe_freq + deltaf
+
+            # FIXME:改成对f10的偏置
             if fringe_freq > f10:
-                target_freq = fringe_freq - deltaf
+                target_freq = f10 - deltaf
             else:
-                target_freq = fringe_freq + deltaf
+                target_freq = f10 + deltaf
 
             freq_update_map[qname] = {
                 "f10": target_freq,

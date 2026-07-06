@@ -37,6 +37,7 @@ def t1(qubits:list[str]=['Q0','Q1'],
 
     result = sq.t1(qubit,
                    delay=delay_array,
-                   update=False) # 查一下有无zpa
+                   zpa=zpa,
+                   update=False)
     
     return result

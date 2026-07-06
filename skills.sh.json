@@ -1,0 +1,23 @@
+{
+    "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+    "notGrouped": "bottom",
+    "groupings": [
+      {
+        "title": "Qubitclient Base",
+        "skills": [
+          "qubitclient",
+          "qubitclient-scope",
+          "qubitclient-nnscope",
+          "qubitclient-control",
+          "qubitclient-vqa-review"
+        ]
+      },
+      {
+        "title": "Qubitclient Ecology",
+        "skills": [
+          "lqcs-qubit-calib",
+          "quark-qubit-calib"
+        ]
+      }
+    ]
+  }

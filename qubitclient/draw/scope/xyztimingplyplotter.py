@@ -106,7 +106,7 @@ class XyzTimingDataPlyPlotter(QuantumDataPlyPlotter):
                     showarrow=False,
                 )
 
-            fig.update_xaxes(title_text="t", row=row, col=col)
+            fig.update_xaxes(title_text="Time(s)", row=row, col=col)
             fig.update_yaxes(title_text="amp", row=row, col=col)
 
         self.update_layout(fig, rows=rows, cols=cols, showlegend=True)

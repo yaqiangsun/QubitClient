@@ -40,6 +40,9 @@ class XyzTimingDataPltPlotter(QuantumDataPltPlotter):
             ax = axs[q_idx]
             item = result.get(q_name)
 
+            ax.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
+            ax.xaxis.major.formatter._useMathText = True
+
             x = np.asarray(item.get("x", []), dtype=float)
             amp = np.asarray(item.get("amp", []), dtype=float)
             fit_data = item.get("fit_data")
@@ -91,7 +94,7 @@ class XyzTimingDataPltPlotter(QuantumDataPltPlotter):
             self.configure_axis(
                 ax,
                 title=f"Timing_xyz {q_name}",
-                xlabel="t",
+                xlabel="Time(s)",
                 ylabel="amp",
             )
 

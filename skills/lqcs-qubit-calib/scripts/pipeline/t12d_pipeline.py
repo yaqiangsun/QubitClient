@@ -160,7 +160,7 @@ def get_t12d_hdf5_res(args):
         # 按需开启图片处理
         # llm_analysis(img_save_path)
 
-        # 无参数更新，沿用原参数
+        # 无参数更新
         new_full_params = set_params.copy()
 
         # 结果入库

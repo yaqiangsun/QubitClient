@@ -20,6 +20,8 @@ def optpipulse_update(data_converted, result: dict, file_idx: int = 0, conf_thre
         result: 服务器返回的OptPi分析结果
         file_idx: 如果服务器同时处理了多个批次的实验数据，选择处理第几个的结果（默认0）
         conf_threshold: 置信度阈值
+    Returns:
+        dict: 待更新参数字典
     """
     update_dict = {}
 
@@ -57,6 +59,7 @@ def optpipulse_update(data_converted, result: dict, file_idx: int = 0, conf_thre
             logging.warning(f"{qubit} 原始AMP参数未设置")
     return update_dict
 
+
 def drag_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
     """
     根据Drag脉冲分析结果更新量子比特beta参数
@@ -65,6 +68,8 @@ def drag_update(data_converted, result: dict, file_idx: int = 0, conf_threshold:
         result: 服务器返回的Drag分析结果
         file_idx: 如果服务器同时处理了多个批次的实验数据，选择处理第几个的结果（默认0）
         conf_threshold: 置信度阈值
+    Returns:
+        dict: 待更新参数字典
     """
     update_dict = {}
 
@@ -110,6 +115,15 @@ def drag_update(data_converted, result: dict, file_idx: int = 0, conf_threshold:
 
 
 def setpialpha_update(results, conf_threshold, qubit_name_list):
+    """
+    根据SetPiAlpha分析结果更新量子比特相关幅值参数
+    Args:
+        results: 分析结果列表
+        conf_threshold: 置信度阈值
+        qubit_name_list: 量子比特名称列表
+    Returns:
+        dict: 比特名与待更新参数值的映射字典
+    """
     update_map = {}
     for result in results:
         params_list = result.get("params", [])
@@ -127,8 +141,7 @@ def setpialpha_update(results, conf_threshold, qubit_name_list):
             best_idx = confs.index(max_conf)
             best_peak = peaks[best_idx]
             target_amp = best_peak
-            target_alpha = "None"
-            values = [target_amp,None, None, None]
+            values = [target_amp, None, None, None]
             qname = qubit_name_list[i]
             update_map[qname] = values
     return update_map
@@ -140,7 +153,9 @@ def s21_update(results, conf_threshold, qubit_name_list):
     Args:
         results: 分析结果
         conf_threshold: 置信度阈值
-        qubit_name_list:量子名称
+        qubit_name_list: 量子比特名称列表
+    Returns:
+        dict: 比特名与读取腔频率参数的映射字典
     """
     update_dict = {}
 
@@ -172,7 +187,7 @@ def s21peakmulti_update(results, conf_threshold, qubit_name_list, base_freq_list
         results: 分析结果列表
         conf_threshold: 置信度阈值
         qubit_name_list: 量子比特名称列表
-        base_freq_dict: 各比特基准频率字典
+        base_freq_list: 各比特基准频率列表
     Returns:
         dict: 待更新的比特-频率映射字典
     """
@@ -207,6 +222,7 @@ def s21peakmulti_update(results, conf_threshold, qubit_name_list, base_freq_list
                 )
     return update_map
 
+
 import logging
 
 def optreadfreq_update(results, raw_data, conf_threshold, qubit_name_list):
@@ -216,7 +232,7 @@ def optreadfreq_update(results, raw_data, conf_threshold, qubit_name_list):
         results: 解析后分析结果列表
         raw_data: 原始实验数据
         conf_threshold: 置信度阈值（当前逻辑未使用，保留传参）
-        qubit_name_list: 比特列表
+        qubit_name_list: 量子比特名称列表
     Returns:
         dict: {比特名: {"fread": 新频率值}}
     """
@@ -247,9 +263,9 @@ def pipulsef10_update(results, conf_threshold, qubit_name_list):
     Args:
         results: 解析后分析结果列表
         conf_threshold: 置信度阈值
-        qubit_name_list: 比特列表
+        qubit_name_list: 量子比特名称列表
     Returns:
-        dict: {qname: {"f10": val, "f21": val}}
+        dict: 比特名与f10偏置参数的映射字典
     """
     update_map = {}
 
@@ -272,14 +288,23 @@ def pipulsef10_update(results, conf_threshold, qubit_name_list):
 
             best_idx = confidences.index(max_conf)
             best_peak = peaks[best_idx]
-            f10_val = best_peak
+            f10_bias = best_peak
 
-            update_map[qname] = f10_val
+            update_map[qname] = f10_bias
             
     return update_map
 
 
 def spectrum_update(results, conf_threshold, qubit_name_list):
+    """
+    根据频谱分析结果更新量子比特 f10、f21 频率参数
+    Args:
+        results: 分析结果列表
+        conf_threshold: 置信度阈值
+        qubit_name_list: 量子比特名称列表
+    Returns:
+        dict: 比特名与f10/f21参数的映射字典
+    """
     freq_update_map = {}
     non = -0.2
     for result in results:
@@ -308,29 +333,36 @@ def spectrum_update(results, conf_threshold, qubit_name_list):
     return freq_update_map
 
 
-def timingxyz_update(results, conf_threshold, qubit_list):
+def timingxyz_update(results):
     """
     TimingXYZ 数据解析与待更新参数计算
-    :param results: 经 QubitScopeClient 解析后的结果列表
-    :param conf_threshold: 置信度阈值
-    :param qubit_list: 比特列表
-    :return: 待更新参数字典 {qubit_name: value}
+    Args:
+        results: 经 QubitScopeClient 解析后的结果列表
+    Returns:
+        dict: 待更新参数字典 {qubit_name: zd_xy值}
     """
-    update_map = {}
+    freq_update_map = {}
+    for result in results:
+        for k, v in result.items():
+            if 'status' not in k:
+                zd_xy = v['zd_xy']
+                qname = v['q_name']
+                freq_update_map[qname] = zd_xy
+
+    return freq_update_map
 
 
-    for idx, qname in enumerate(qubit_list):
-        # 此处可根据 results 内部置信度、时序值扩展解析逻辑
-        # 示例：conf = results[idx].get("confs", 0)
-        # if conf <= conf_threshold:
-        #     continue
-        update_map[qname] = {"timing_xy_star": "3.1",
-                             "timing_z_star": "3.2"}
-
-    return update_map
-
-
-def ramsey_update(results, fringe_freq, qubit_name_list, ctrl_client):
+def ramsey_update(results, fringe_freq, qubit_name_list, f10_original):
+    """
+    根据Ramsey实验结果修正量子比特f10、f21频率参数
+    Args:
+        results: 分析结果列表
+        fringe_freq: 条纹频率
+        qubit_name_list: 量子比特名称列表
+        f10_original: f10原始基准频率
+    Returns:
+        dict: 比特名与f10/f21参数的映射字典
+    """
     freq_update_map = {}
     non = -0.2
     for result in results:
@@ -342,11 +374,10 @@ def ramsey_update(results, fringe_freq, qubit_name_list, ctrl_client):
             w = params[4]
             qname = qubit_name_list[i]
             
-            f10_raw = ctrl_client.query_param(qname=qname, key="f10_star")
-            f10 = float(f10_raw)
+            
+            f10 = float(f10_original)
             deltaf = w / (2 * math.pi)
 
-            logging.info(f"fringeFreq, f10: {fringe_freq}, {f10}")
 
             # if fringe_freq > f10:
             #     target_freq = fringe_freq - deltaf
@@ -366,91 +397,49 @@ def ramsey_update(results, fringe_freq, qubit_name_list, ctrl_client):
     return freq_update_map
 
 
-def singleshot_update(data_converted, result: dict, file_idx: int = 0, visibility_threshold: float = 0.10):
+def singleshot_update(results, qubit_name_list):
     """
-    根据Scatter实验结果更新量子比特测量参数（threshold/phi）
+    根据Singleshot实验结果更新量子比特测量参数
     Args:
-        data_converted: scatter_convert转换后的实验数据
-        result: 服务器返回的Scatter结果
-        file_idx: 如果服务器同时处理了多个批次的实验数据，选择处理第几个的结果（默认0）
-        visibility_threshold: 分离度阈值（测试效果用的0.10，实际这太小了）
+        results: 服务端返回的分析结果
+        qubit_name_list: 比特名称列表
     Returns:
-        dict: 更新字典 {参数路径: 目标值}
+        dict: 更新字典 {比特名称: 目标测量参数}
     """
-    update_dict = {}
+    freq_update_map = {}
+    for result in results:
+        params_list = result['params_list']
+        threshold_list = result['threshold_norm_list']
 
-    file_result = validate_result(result, file_idx, "Scatter")
-    if file_result is None:
-        return update_dict
+        for i in range(len(qubit_name_list)):
+            if i >= len(params_list):
+                continue
+            curqubit_params = params_list[i]
+            curqubit_thres = threshold_list[i]
 
-    # 提取核心参数
-    threshold_list = file_result.get("threshold_list", [])
-    sep_score_list = file_result.get("sep_score_list", [])
-    phi_list = file_result.get("phi_list", [])
+            center0 = curqubit_params[0][-1]
+            center1 = curqubit_params[1][-1]
 
-    # 提取比特列表
-    image = data_converted.get("image", [])
-    qubits = list(image.keys()) if isinstance(image, dict) else image
-    if not qubits:
-        logging.error("data_converted无有效比特列表")
-        return update_dict
+            qname = qubit_name_list[i]
+            
+            freq_update_map[qname] = {
+                "discriminator_center0_star": center0,
+                "discriminator_center1_star": center1,
+                "discriminator_threshold_star": curqubit_thres
+            }
 
-    # 参数长度校验
-    if not sep_score_list or not phi_list:
-        logging.warning(
-            f"参数列表为空 | sep_score:{len(sep_score_list)}, phi:{len(phi_list)}, "
-            f"threshold:{len(threshold_list)}, 比特数:{len(qubits)}"
-        )
-        return update_dict
-
-    # 遍历比特更新参数
-    for idx, q in enumerate(qubits):
-        if idx >= len(sep_score_list) or idx >= len(phi_list):
-            logging.warning(f"比特{q}无匹配的Scatter参数（索引{idx}越界），跳过更新")
-            continue
-
-        sep_score = sep_score_list[idx]
-        phi = phi_list[idx]
-        threshold = threshold_list[idx] if idx < len(threshold_list) else None
-
-        # 有效性校验
-        if not isinstance(sep_score, (int, float)) or not np.isfinite(sep_score):
-            logging.warning(f"比特{q}分离度无效：{sep_score}，跳过更新")
-            continue
-        if sep_score < visibility_threshold:
-            logging.warning(f"比特{q}分离度{sep_score:.4f} < {visibility_threshold}，跳过更新")
-            continue
-        if not isinstance(phi, (int, float)) or not np.isfinite(phi):
-            logging.warning(f"比特{q}phi参数无效：{phi}，跳过更新")
-            continue
-
-        # 构建更新参数
-        param_prefix = f'gate.Measure.{q}.params'
-        if threshold is not None and isinstance(threshold, (int, float)) and np.isfinite(threshold):
-            update_dict[f'{param_prefix}.threshold'] = float(threshold)
-        update_dict[f'{param_prefix}.phi'] = float(phi)
-        update_dict[f'{param_prefix}.signal'] = 'state'
-        update_dict[f'{param_prefix}.PgPe'] = [1 - sep_score, 1 - sep_score]
-
-        # 日志输出
-        log_msg = f"Scatter更新 | 比特：{q} | 分离度：{sep_score:.4f} | Phi：{phi:.5f}"
-        if threshold is not None:
-            log_msg += f" | 阈值：{threshold:.5f}"
-        logging.info(log_msg)
-
-    # 统计日志
-    updated_qubits = len(set(k.split('.')[2] for k in update_dict)) if update_dict else 0
-    logging.info(
-        f"Scatter参数更新完成 | 总计更新{len(update_dict)}个参数 | "
-        f"涉及{updated_qubits}个比特（总比特数：{len(qubits)}）"
-    )
-
-    return update_dict
+    return freq_update_map
 
 
 def powershift_update(results, conf_threshold, qubit_name_list):
     """
     PowerShift 最优功率更新逻辑
+    Args:
+        results: 分析结果列表
+        conf_threshold: 置信度阈值
+        qubit_name_list: 量子比特名称列表
+    Returns:
+        dict: 比特名与最优功率参数的映射字典
     """
     update_map = {}
     for result in results:
@@ -485,7 +474,17 @@ def powershift_update(results, conf_threshold, qubit_name_list):
                 update_map[qname] = target_power
     return update_map
 
+
 def rabi_update(results, conf_threshold, qubit_name_list):
+    """
+    根据Rabi振荡结果更新量子比特幅值参数
+    Args:
+        results: 分析结果列表
+        conf_threshold: 置信度阈值
+        qubit_name_list: 量子比特名称列表
+    Returns:
+        dict: 比特名与最优幅值参数的映射字典
+    """
     update_amp_map = {}
     for result in results:
         peaks_list = result['peaks']
@@ -510,7 +509,7 @@ def rabi_update(results, conf_threshold, qubit_name_list):
 
 def delta_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
     """
-    根据Delta实验分析结果更新量子比特delta参数  （待测试）
+    根据Delta实验分析结果更新量子比特delta参数
     Args:
         data_converted: delta_convert转换后的实验数据
         result: 服务器返回的Delta分析结果

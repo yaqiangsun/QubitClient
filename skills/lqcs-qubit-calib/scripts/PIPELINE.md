@@ -105,7 +105,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.S21PEAKMULTI
-values = "6.590"
+values = [6.590]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -140,7 +140,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.S21PEAK
-values = "6.590"
+values = [6.590]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -180,7 +180,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.POWERSHIFT
-values = "-30"
+values = [-30]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -220,7 +220,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.S21VSFLUX
-values = "-1.5"
+values = [-1.5]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -257,7 +257,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.S21PEAK
-values = "6.5896"
+values = [6.5896]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -294,7 +294,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.SPECTRUM
-values = "3.193120459017055,3.193120459017055"
+values = [3.193120459017055, 3.193120459017055]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -333,7 +333,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.SPECTRUM_2D
-values = "3.193120459017055,3.193120459017055"
+values = [3.193120459017055, 3.193120459017055]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -393,7 +393,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.RABI
-values = "1.2,0.6"
+values = [1.2, 0.6]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -428,7 +428,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.PIPULSEF10
-values = "3.193120459017055,3.193120459017055"
+values = [3.193120459017055, 3.193120459017055]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -464,7 +464,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.PIPULSEF10
-values = "3.193120459017055,3.193120459017055"
+values = [3.193120459017055, 3.193120459017055]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -501,7 +501,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.OPTQUBITREADFREQ
-values = "6.590"
+values = [6.590]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -535,7 +535,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.OPTPIPULSE
-values = "3.193120459017055,3.193120459017055"
+values = [3.193120459017055, 3.193120459017055]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 
@@ -570,7 +570,7 @@ data = qubit_ctrl_client.run(
 ```python
 qname = qubit_name_list[0]
 task_type = CtrlTaskName.TIMINGXYZ
-values = "3.193120459017055"
+values = [3.193120459017055]
 qubit_ctrl_client.run(CtrlTaskName.UPDATE_PARAM, qname=qname, task_type=task_type, values=values)
 ```
 

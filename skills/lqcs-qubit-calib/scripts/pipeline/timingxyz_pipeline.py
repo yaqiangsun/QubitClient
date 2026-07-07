@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.lqcs-qubit-calib.scripts.pipeline.timingxyz_pipeline -q q1ld5 -ds -60 -de 60 -dn 31 -z 0.5 -u True -c 0.3
+            python -m skills.lqcs-qubit-calib.scripts.pipeline.timingxyz_pipeline -q q1ld5 -ds -60 -de 60 -dn 31 -z 0.5 -u True
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -88,9 +88,7 @@ def parse_args():
     # 参数更新开关
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
-    # 置信度阈值
-    parser.add_argument("--confidence", "-c", type=float, default=0.5,
-                        help="Confidence threshold for parameter update")
+
     return parser.parse_args()
 
 
@@ -105,9 +103,7 @@ def get_timingxyz_hdf5_res(args):
         qubit_ctrl_client = QubitCtrlClient()
 
         timing_xy_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="timing_xy_star"))
-        timing_z_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="timing_z_star"))
         
-
         # 组装实验参数
         set_params = {
             "qubits": qubit_name_list,
@@ -115,8 +111,7 @@ def get_timingxyz_hdf5_res(args):
             "delay_end": args.delay_end,
             "delay_sample_num": args.delay_sample_num,
             "zpa": args.zpa,
-            "timing_xy_star": timing_xy_original,
-            "timing_z_star": timing_z_original
+            "timing_xy_star": timing_xy_original
         }
 
         # 新建实验记录
@@ -150,7 +145,7 @@ def get_timingxyz_hdf5_res(args):
 
         # 分析数据
         analysis_result = timingxyz(raw_data)
-        print("analysis_result: ", analysis_result)
+        # print("analysis_result: ", analysis_result)
 
 
         # 绘图
@@ -169,19 +164,16 @@ def get_timingxyz_hdf5_res(args):
         # 开启更新
         if args.update:
             update_map = timingxyz_update(
-                results=analysis_result,
-                conf_threshold=args.confidence,
-                qubit_list=qubit_name_list
+                results=analysis_result
             )
-            # 主流程统一更新硬件参数
+            # 更新硬件参数
             task_type = CtrlTaskName.TIMINGXYZ
             for qn, val in update_map.items():
                 qubit_ctrl_client.update_param(qname=qn, task_type=task_type, values=[val])
 
         # 记录更新后的参数
         if update_map:
-            new_full_params["timing_xy_star"] = update_map[qubit_name_list[0]]["timing_xy_star"]
-            new_full_params["timing_z_star"] = update_map[qubit_name_list[0]]["timing_z_star"]
+            new_full_params["timing_xy_star"] = update_map[qubit_name_list[0]]
 
         # 写入最终结果
         store.update_run(

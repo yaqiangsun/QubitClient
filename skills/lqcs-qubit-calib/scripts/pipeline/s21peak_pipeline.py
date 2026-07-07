@@ -168,7 +168,7 @@ def get_s21_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=qname,
                     task_type=CtrlTaskName.S21,
-                    values=[str(new_value)]
+                    values=[new_value]
                 )
                 # 覆盖新频率到参数字典
                 new_full_params["fread_star"] = float(new_value)

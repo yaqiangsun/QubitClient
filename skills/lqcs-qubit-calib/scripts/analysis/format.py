@@ -421,6 +421,17 @@ def spectrum_convert(result):
         else:
             data_formated["image"][qubit_name] = data
             return data_formated
+        
+        # 如果是倒峰，则倒置amp
+        amp_mean = np.mean(amp)
+        amp_max = np.max(amp)
+        amp_min = np.min(amp)
+
+        upper_diff = amp_max - amp_mean
+        lower_diff = amp_mean - amp_min
+
+        if upper_diff < lower_diff:
+            amp = -amp
 
         data_formated["image"][qubit_name] = (freq, amp)
     return data_formated

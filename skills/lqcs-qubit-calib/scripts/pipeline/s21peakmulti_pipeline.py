@@ -184,7 +184,7 @@ def get_s21peakmulti_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=q,
                     task_type=CtrlTaskName.S21PEAKMULTI,
-                    values=[str(new_value)]
+                    values=[new_value]
                 )
 
         # 更新最终参数

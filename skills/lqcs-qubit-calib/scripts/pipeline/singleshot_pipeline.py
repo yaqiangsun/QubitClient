@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.lqcs-qubit-calib.scripts.pipeline.singleshot_pipeline -q q1ld5 -u True -c 0.6
+        python -m skills.lqcs-qubit-calib.scripts.pipeline.singleshot_pipeline -q q1ld5 -u True
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -71,11 +71,9 @@ def parse_args():
                         help="Target qubit list, default: q1ld5")
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
-    # 新增固定参数
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
-    parser.add_argument("--confidence", "-c", type=float, default=0.5,
-                        help="Confidence threshold for parameter update")
+
     return parser.parse_args()
 
 
@@ -88,8 +86,16 @@ def get_singleshot_hdf5_res(args):
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
+
+        discriminator_center0_star_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="discriminator_center0_star")
+        discriminator_center1_star_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="discriminator_center1_star")
+        discriminator_threshold_star_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="discriminator_threshold_star")
+
         set_params = {
-            "qubits": qubit_name_list
+            "qubits": qubit_name_list,
+            "discriminator_center0_star": discriminator_center0_star_original,
+            "discriminator_center1_star": discriminator_center1_star_original,
+            "discriminator_threshold_star": discriminator_threshold_star_original
         }
 
         run_record = PipelineResultRecord(
@@ -117,17 +123,39 @@ def get_singleshot_hdf5_res(args):
         # llm_analysis(img_save_path)
 
         # 要更新'discriminator.center0', 'discriminator.center1', 'discriminator.threshold'
-        # print("117---------", analysis_result)
-        first = analysis_result[0]
 
+        new_full_params = set_params.copy()
 
+        # 开启参数更新
+        if args.update:
+
+            # 仅计算待更新数据，不操作硬件
+            freq_update_map = singleshot_update(
+                results=analysis_result,
+                qubit_name_list=qubit_name_list
+            )
+            # 执行硬件参数更新
+            task_type = CtrlTaskName.SINGLESHOT
+            for qname, item in freq_update_map.items():
+                values = [item['discriminator_center0_star'],
+                          item['discriminator_center1_star'],
+                          item['discriminator_threshold_star']]
+                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                logging.info(f"[INFO] Update {qname}, {values}")
+
+        if freq_update_map:
+            qname = qubit_name_list[0]
+            new_full_params["discriminator_center0_star"] = freq_update_map[qname]['discriminator_center0_star']
+            new_full_params["discriminator_center1_star"] = freq_update_map[qname]['discriminator_center1_star']
+            new_full_params["discriminator_threshold_star"] = freq_update_map[qname]['discriminator_threshold_star']
         
         store.update_run(
             run_id=run_id,
             status="completed",
             analysis_result=analysis_result,
             plot_paths=plot_paths,
-            completed_at=datetime.now()
+            completed_at=datetime.now(),
+            new_params=new_full_params
         )
         logging.info("Measurement finished")
 

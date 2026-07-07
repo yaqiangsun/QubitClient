@@ -162,7 +162,7 @@ def get_rabi_hdf5_res(args):
                 qubit_ctrl_client.update_param(
                     qname=pure_name,
                     task_type=CtrlTaskName.RABI,
-                    values=str(target_value)
+                    values=[target_value]
                 )
 
         if update_amp_map:

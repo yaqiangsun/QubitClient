@@ -10,11 +10,11 @@
 import os
 import pickle
 import sys
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/quark-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
+from utils import get_pkl_content
 def main(task_key="opt"):
     base_dir = "tmp/data"
     for pkl_path in os.listdir(base_dir):

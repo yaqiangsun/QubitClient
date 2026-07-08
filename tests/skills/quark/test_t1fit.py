@@ -11,13 +11,13 @@ import os
 import sys
 import logging
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/quark-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import t1fit
-from resources.quark.analysis.visualization import plot_t1fit
+from utils import get_pkl_content
+from analysis.inception import t1fit
+from analysis.visualization import plot_t1fit
 import matplotlib.pyplot as plt
 
 

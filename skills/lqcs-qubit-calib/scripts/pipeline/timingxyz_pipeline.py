@@ -88,6 +88,10 @@ def parse_args():
     # 参数更新开关
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
+    
+    # 置信度
+    parser.add_argument("--confidence", "-c", type=float, default=0.5,
+                        help="Confidence threshold for parameter update")
 
     return parser.parse_args()
 
@@ -102,7 +106,7 @@ def get_timingxyz_hdf5_res(args):
     try:
         qubit_ctrl_client = QubitCtrlClient()
 
-        timing_xy_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="timing_xy_star"))
+        timing_xy_original = float(qubit_ctrl_client.query_param(qname=qname, key="timing_xy_star"))
         
         # 组装实验参数
         set_params = {
@@ -149,7 +153,7 @@ def get_timingxyz_hdf5_res(args):
 
 
         # 绘图
-        img_save_path = f'{save_folder}/{CtrlTaskName.TIMINGXYZ.value}_{qubit_name_list[0]}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.TIMINGXYZ.value}_{qname}_{run_id}.png'
         fig_list = plot_timingxyz(raw_data, analysis_result, save_path=img_save_path)
         
         img_save_path = os.path.abspath(img_save_path)
@@ -164,7 +168,9 @@ def get_timingxyz_hdf5_res(args):
         # 开启更新
         if args.update:
             update_map = timingxyz_update(
-                results=analysis_result
+                results=analysis_result,
+                conf=args.confidence,
+                qubit_name_list=qubit_name_list
             )
             # 更新硬件参数
             task_type = CtrlTaskName.TIMINGXYZ

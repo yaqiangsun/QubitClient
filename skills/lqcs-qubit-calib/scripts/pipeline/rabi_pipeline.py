@@ -87,9 +87,11 @@ def get_rabi_hdf5_res(args):
     task_name = CtrlTaskName.RABI.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     qubit_ctrl_client = QubitCtrlClient()
-    pigate_amp_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="PiGate_amp_star")
+    pigate_amp_star_original = qubit_ctrl_client.query_param(qname=qname, key="PiGate_amp_star")
+    pihalf_amp_star_original = qubit_ctrl_client.query_param(qname=qname, key="PiHalf_amp_star")
 
     try:
         # 1.采集数据
@@ -98,7 +100,8 @@ def get_rabi_hdf5_res(args):
             "amp_start": args.piamp_start,
             "amp_end": args.piamp_end,
             "amp_sample_num": args.piamp_samples,
-            "PiGate_amp_star": pigate_amp_original
+            "PiGate_amp_star": pigate_amp_star_original,
+            "PiHalf_amp_star": pihalf_amp_star_original
         }
 
         # 新建实验记录，移除 pipeline_type
@@ -132,8 +135,7 @@ def get_rabi_hdf5_res(args):
 
 
         # 3.绘图
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.RABI.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.RABI.value}_{qname}_{run_id}.png'
         plot_rabicos(raw_data, analysis_result, save_path=img_save_path)
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
@@ -144,9 +146,9 @@ def get_rabi_hdf5_res(args):
         new_full_params = set_params.copy()
         update_amp_map = {}
 
-        # 开启更新：使用 QubitScopeClient 解析结果，移除原字典解析逻辑
+        # 开启更新
         if args.update:
-            # 调用独立更新函数
+            # 调用更新接口
             update_amp_map = rabi_update(
                 results=analysis_result,
                 conf_threshold=args.confidence,
@@ -154,19 +156,19 @@ def get_rabi_hdf5_res(args):
             )
 
             # 下发更新参数
-            if pure_name in update_amp_map:
-                target_pigate_amp = float(update_amp_map[pure_name])
-                target_pihalf_amp = target_pigate_amp / 2
-                target_value = [target_pigate_amp, target_pihalf_amp]
+            if qname in update_amp_map:
+                target_pigate_amp_star = float(update_amp_map[qame])
+                target_pihalf_amp_star = target_pigate_amp_star / 2
+                target_values = [target_pigate_amp_star, target_pihalf_amp_star]
 
                 qubit_ctrl_client.update_param(
-                    qname=pure_name,
+                    qname=qname,
                     task_type=CtrlTaskName.RABI,
-                    values=[target_value]
+                    values=[target_values]
                 )
 
-        if update_amp_map:
-            new_full_params["PiGate_amp_star"] = update_amp_map[pure_name]
+                new_full_params["PiGate_amp_star"] = target_pigate_amp_star
+                new_full_params["PiHalf_amp_star"] = target_pihalf_amp_star
 
         store.update_run(
             run_id=run_id,

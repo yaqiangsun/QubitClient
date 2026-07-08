@@ -136,8 +136,7 @@ def get_optqubitreadfreq_hdf5_res(args):
         analysis_result = optreadfreq(raw_data)
 
         # 绘图保存，统一命名规则
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.OPTQUBITREADFREQ.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.OPTQUBITREADFREQ.value}_{qname}_{run_id}.png'
         plot_optreadfreq(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

@@ -92,12 +92,13 @@ def get_spectrum_hdf5_res(args):
     task_name = CtrlTaskName.SPECTRUM.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
-        f10_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f10_star"))
-        f21_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f21_star"))
+        f10_star_original = float(qubit_ctrl_client.query_param(qname=qname, key="f10_star"))
+        f21_star_original = float(qubit_ctrl_client.query_param(qname=qname, key="f21_star"))
 
         set_params = {
             "qubits": qubit_name_list,
@@ -107,8 +108,8 @@ def get_spectrum_hdf5_res(args):
             "zpa": args.zpa,
             "spec_amp": args.spec_amp,
             "sb_freq": args.sb_freq,
-            "f10": f10_original,
-            "f21": f21_original
+            "f10_star": f10_star_original,
+            "f21_star": f21_star_original
         }
         
 
@@ -136,8 +137,7 @@ def get_spectrum_hdf5_res(args):
         analysis_result = spectrum(raw_data)
 
         # 3.绘图
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.SPECTRUM.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.SPECTRUM.value}_{qname}_{run_id}.png'
         plot_spectrum(raw_data, analysis_result, save_path=img_save_path)
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
@@ -160,13 +160,13 @@ def get_spectrum_hdf5_res(args):
             # 执行硬件参数更新
             task_type = CtrlTaskName.SPECTRUM
             for qname, item in freq_update_map.items():
-                values = [item['f10'],item['f21']]
-                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                value_list = [item['f10_star'], item['f21_star']]
+                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=value_list)
                 logging.info(f"[INFO] Update {qname} freq, confidence: {item.get('conf', 0)}")
 
         if freq_update_map:
-            new_full_params["f10"] = freq_update_map[pure_name]['f10']
-            new_full_params["f21"] = freq_update_map[pure_name]['f21']
+            new_full_params["f10_star"] = freq_update_map[qname]['f10_star']
+            new_full_params["f21_star"] = freq_update_map[qname]['f21_star']
 
         store.update_run(
             run_id=run_id,

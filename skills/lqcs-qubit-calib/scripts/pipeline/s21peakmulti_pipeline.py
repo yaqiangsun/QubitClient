@@ -112,10 +112,11 @@ def get_s21peakmulti_hdf5_res(args):
     task_name = CtrlTaskName.S21PEAKMULTI.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
-        qname = qubit_name_list[0]
+        
         base_freq = get_value_by_qname(qname, base_freq_list)
 
         # 组装实验参数
@@ -155,8 +156,7 @@ def get_s21peakmulti_hdf5_res(args):
         analysis_result = s21peakmulti(raw_data)
 
         # 绘制频谱图
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.S21PEAKMULTI.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.S21PEAKMULTI.value}_{qname}_{run_id}.png'
         plot_s21peakmulti(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

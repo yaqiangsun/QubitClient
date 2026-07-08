@@ -91,12 +91,13 @@ def get_ramsey_hdf5_res(args):
     qubit_name_list = args.qubits
     save_folder = args.save_folder
     fringeFreq = args.fringeFreq
+    qname = qubit_name_list[0]
 
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
-        f10_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f10_star"))
-        f21_original = float(qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="f21_star"))
+        f10_star_original = float(qubit_ctrl_client.query_param(qname=qname, key="f10_star"))
+        f21_star_original = float(qubit_ctrl_client.query_param(qname=qname, key="f21_star"))
 
         set_params = {
             "qubits": qubit_name_list,
@@ -104,8 +105,8 @@ def get_ramsey_hdf5_res(args):
             "delay_end": args.delay_end,
             "delay_sample_num": args.delay_samples,
             "fringeFreq": fringeFreq,
-            "f10": f10_original,
-            "f21": f21_original
+            "f10_star": f10_star_original,
+            "f21_star": f21_star_original
         }
 
         # 新建实验记录，移除 pipeline_type
@@ -139,8 +140,7 @@ def get_ramsey_hdf5_res(args):
         analysis_result = ramsey(raw_data)
 
         # 3.绘图，统一命名规则
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY.value}_{qname}_{run_id}.png'
         plot_ramsey(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)
@@ -160,14 +160,14 @@ def get_ramsey_hdf5_res(args):
                 results=analysis_result,
                 fringe_freq=fringeFreq,
                 qubit_name_list=qubit_name_list,
-                f10_original=f10_original
+                f10_star_original=f10_star_original
             )
 
             # 下发更新参数
             for qname, info in freq_update_map.items():
-                target_freq = info["f10"]
-                f21_val = info["f21"]
-                values = [target_freq, f21_val]
+                f10_star_val = info["f10_star"]
+                f21_star_val = info["f21_star"]
+                values = [f10_star_val, f21_star_val]
                 qubit_ctrl_client.update_param(
                     qname=qname,
                     task_type=CtrlTaskName.RAMSEY,
@@ -175,8 +175,8 @@ def get_ramsey_hdf5_res(args):
                 )
 
         if freq_update_map:
-            new_full_params["f10"] = freq_update_map[pure_name]['f10']
-            new_full_params["f21"] = freq_update_map[pure_name]['f21']
+            new_full_params["f10_star"] = freq_update_map[qname]['f10_star']
+            new_full_params["f21_star"] = freq_update_map[qname]['f21_star']
 
         store.update_run(
             run_id=run_id,

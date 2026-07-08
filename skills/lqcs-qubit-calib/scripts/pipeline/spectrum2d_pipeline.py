@@ -111,6 +111,7 @@ def get_spectrum2d_hdf5_res(args):
     task_name = CtrlTaskName.SPECTRUM_2D.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
@@ -164,8 +165,8 @@ def get_spectrum2d_hdf5_res(args):
         analysis_result = nnspectrum2d(raw_data)
 
         # 绘图
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.SPECTRUM_2D.value}_{pure_name}_{run_id}.png'
+        # pure_name = qubit_name_list[0]
+        img_save_path = f'{save_folder}/{CtrlTaskName.SPECTRUM_2D.value}_{qname}_{run_id}.png'
         fig_list = plot_nnspectrum2d(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

@@ -93,6 +93,7 @@ def get_baseslope_hdf5_res(args):
     task_name = CtrlTaskName.BASESLOPE.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
@@ -138,9 +139,8 @@ def get_baseslope_hdf5_res(args):
         # 数据分析
         analysis_result = baseslope(raw_data)
 
-        # 绘制波形图，统一图片命名规则
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.BASESLOPE.value}_{pure_name}_{run_id}.png'
+        # 绘制波形图
+        img_save_path = f'{save_folder}/{CtrlTaskName.BASESLOPE.value}_{qname}_{run_id}.png'
         plot_baseslope(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

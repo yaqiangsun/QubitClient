@@ -327,41 +327,47 @@ def spectrum_update(results, conf_threshold, qubit_name_list):
             
             target_freq = best_peak
             freq_update_map[qubit_name_list[i]] = {
-                "f10": target_freq,
-                "f21": target_freq + non
+                "f10_star": target_freq,
+                "f21_star": target_freq + non
             }
     return freq_update_map
 
 
-def timingxyz_update(results):
+def timingxyz_update(results, conf, qubit_name_list):
     """
     TimingXYZ 数据解析与待更新参数计算
     Args:
         results: 经 QubitScopeClient 解析后的结果列表
+        conf: 置信度阈值，与拟合优度R2比较
     Returns:
         dict: 待更新参数字典 {qubit_name: zd_xy值}
     """
     freq_update_map = {}
     for result in results:
-        for k, v in result.items():
-            if 'status' not in k:
-                zd_xy = v['zd_xy']
-                qname = v['q_name']
+        zd_xy_list = result.get("zd_xy_list", [])
+        r2_list = result.get("r2_list", [])
+        for i in range(len(qubit_name_list)):
+            if i >= len(r2_list) or i >= len(zd_xy_list):
+                continue
+            zd_xy = zd_xy_list[i]
+            r2_value = r2_list[i]
+            qname = qubit_name_list[i]
+            if r2_value > conf:
                 freq_update_map[qname] = zd_xy
 
     return freq_update_map
 
 
-def ramsey_update(results, fringe_freq, qubit_name_list, f10_original):
+def ramsey_update(results, fringe_freq, qubit_name_list, f10_star_original):
     """
     根据Ramsey实验结果修正量子比特f10、f21频率参数
     Args:
         results: 分析结果列表
         fringe_freq: 条纹频率
         qubit_name_list: 量子比特名称列表
-        f10_original: f10原始基准频率
+        f10_star_original: f10_star原始基准频率
     Returns:
-        dict: 比特名与f10/f21参数的映射字典
+        dict: 比特名与f10_star/f21_star参数的映射字典
     """
     freq_update_map = {}
     non = -0.2
@@ -374,8 +380,7 @@ def ramsey_update(results, fringe_freq, qubit_name_list, f10_original):
             w = params[4]
             qname = qubit_name_list[i]
             
-            
-            f10 = float(f10_original)
+            f10_star = float(f10_star_original)
             deltaf = w / (2 * math.pi)
 
 
@@ -385,14 +390,14 @@ def ramsey_update(results, fringe_freq, qubit_name_list, f10_original):
             #     target_freq = fringe_freq + deltaf
 
             # FIXME:改成对f10的偏置
-            if fringe_freq > f10:
-                target_freq = f10 - deltaf
+            if fringe_freq > f10_star:
+                target_freq = f10_star - deltaf
             else:
-                target_freq = f10 + deltaf
+                target_freq = f10_star + deltaf
 
             freq_update_map[qname] = {
-                "f10": target_freq,
-                "f21": target_freq + non
+                "f10_star": target_freq,
+                "f21_star": target_freq + non
             }
     return freq_update_map
 

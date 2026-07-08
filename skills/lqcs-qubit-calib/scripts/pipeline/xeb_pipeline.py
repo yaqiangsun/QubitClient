@@ -101,6 +101,7 @@ def get_xeb_hdf5_res(args):
     task_name = CtrlTaskName.XEB.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
@@ -152,7 +153,7 @@ def get_xeb_hdf5_res(args):
         analysis_result = xeb(raw_data)
 
         # 绘图
-        img_save_path = f'{save_folder}/{CtrlTaskName.XEB.value}_{qubit_name_list[0]}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.XEB.value}_{qname}_{run_id}.png'
         fig_list = plot_xeb(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

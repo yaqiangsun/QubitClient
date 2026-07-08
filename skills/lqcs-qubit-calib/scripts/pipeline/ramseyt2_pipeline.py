@@ -83,13 +83,13 @@ def parse_args():
     # 振荡频率
     parser.add_argument("--fringe-freq", "-f", type=float, default=0.005,
                         help="Ramsey fringe frequency, default 0.005")
-    
     # 图片保存目录
     parser.add_argument("--save-folder", "-s", type=str, default=SAVE_PLOT_FOLDER,
                         help="Folder to save spectrum plot image")
-    # 新增统一参数
+    # 更新开关
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
+    # 置信度阈值
     parser.add_argument("--confidence", "-c", type=float, default=0.5,
                         help="Confidence threshold for parameter update")
     return parser.parse_args()
@@ -100,6 +100,7 @@ def get_ramsey_t2_hdf5_res(args):
     task_name = CtrlTaskName.RAMSEY_T2.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
@@ -144,8 +145,7 @@ def get_ramsey_t2_hdf5_res(args):
         analysis_result = ramseyt2(raw_data)
 
         # =========== 绘制波形图==========
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY_T2.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY_T2.value}_{qname}_{run_id}.png'
         fig_list = plot_ramseyt2(raw_data, analysis_result, save_path=img_save_path)
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]

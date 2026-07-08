@@ -208,9 +208,9 @@ def get_setpialpha_hdf5_res(args):
                 qubit_name_list=qubit_name_list
             )
             # 下发参数
-            for qname, val in update_map.items():
-                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=[val])
-                logging.info("update values: %s", val)
+            for qname, val_list in update_map.items():
+                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=val_list)
+                logging.info("update values: %s", val_list)
 
         new_full_params = set_params.copy()
 

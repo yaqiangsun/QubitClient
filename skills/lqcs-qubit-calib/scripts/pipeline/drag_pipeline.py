@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from PIL import Image
-import json
+import os
 
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
@@ -37,8 +37,7 @@ def get_drag_hdf5_res():
     # analysis_result = drag(data)
 
     # 3.绘图
-    # pure_name = qubit_name_list[0]
-    # img_save_path = f'{SAVE_PLOT_FOLDER}/t1_{pure_name}.png'
+    # img_save_path = f'{SAVE_PLOT_FOLDER}/t1_{qname}.png'
     # fig_list = plot_t1fit(data, analysis_result, save_path=img_save_path)
 
     # 4.接入大模型分析图片

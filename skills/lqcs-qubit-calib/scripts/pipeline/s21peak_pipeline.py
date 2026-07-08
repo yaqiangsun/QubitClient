@@ -100,12 +100,12 @@ def get_s21_hdf5_res(args):
     qubit_name_list = args.qubits
     save_folder = args.save_folder
     run_id = None
+    qname = qubit_name_list[0]
 
     try:
         # =========== 查询/使用传入fread参数 ===========
         qubit_ctrl_client = QubitCtrlClient()
-        qname = qubit_name_list[0]
-
+        
         if args.fread_star is not None:
             fread_star = args.fread_star
         else:
@@ -174,7 +174,6 @@ def get_s21_hdf5_res(args):
                 new_full_params["fread_star"] = float(new_value)
 
         # =========== 更新结果到存储 ======================
-
         store.update_run(
             run_id=run_id,
             status="completed",

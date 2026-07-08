@@ -97,6 +97,7 @@ def get_t2_hdf5_res(args):
     task_name = CtrlTaskName.SPINECHO_T2.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
@@ -143,7 +144,7 @@ def get_t2_hdf5_res(args):
         analysis_result = spinecho(raw_data)
 
         # 3.绘图
-        img_save_path = f'{save_folder}/{CtrlTaskName.SPINECHO_T2.value}_{qubit_name_list[0]}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.SPINECHO_T2.value}_{qname}_{run_id}.png'
         fig_list = plot_spinecho(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

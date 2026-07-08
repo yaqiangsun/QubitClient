@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
-import json
+import os
 import numpy as np
 
 # 配置日志
@@ -104,10 +104,11 @@ def get_s21vsflux_hdf5_res(args):
     task_name = CtrlTaskName.S21VSFLUX.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
-        qname = qubit_name_list[0]
+        
         task_type = CtrlTaskName.S21VSFLUX
 
         # 获取读取腔频率
@@ -158,9 +159,8 @@ def get_s21vsflux_hdf5_res(args):
         # 数据分析
         analysis_result = s21vsflux(raw_data)
 
-        # 绘制图像，命名规则统一
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.S21VSFLUX.value}_{pure_name}_{run_id}.png'
+        # 绘制图像
+        img_save_path = f'{save_folder}/{CtrlTaskName.S21VSFLUX.value}_{qname}_{run_id}.png'
         plot_s21vsflux(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)
@@ -173,10 +173,6 @@ def get_s21vsflux_hdf5_res(args):
         update_map = {}
 
         # 不更新参数
-
-        # 同步更新后的参数
-        if update_map:
-            new_full_params["fread_star"] = update_map
 
         # 任务完成，更新全量结果至存储
         store.update_run(

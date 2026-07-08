@@ -93,10 +93,10 @@ def get_powershift_hdf5_res(args):
     task_name = CtrlTaskName.POWERSHIFT.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         qubit_ctrl_client = QubitCtrlClient()
-        qname = qubit_name_list[0]
 
         # 获取读取频率
         if args.fread is not None:
@@ -154,8 +154,7 @@ def get_powershift_hdf5_res(args):
         analysis_result = powershift(raw_data)
 
         # 绘图，统一命名规则
-        pure_name = qubit_name_list[0]
-        img_save_path = f'{save_folder}/{CtrlTaskName.POWERSHIFT.value}_{pure_name}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.POWERSHIFT.value}_{qname}_{run_id}.png'
         plot_powershift(raw_data, analysis_result, save_path=img_save_path)
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
@@ -176,7 +175,6 @@ def get_powershift_hdf5_res(args):
                 qubit_name_list=qubit_name_list
             )
 
-            
             for q, target_power in update_power_map.items():
                 qubit_ctrl_client.update_param(
                     qname=q,
@@ -186,7 +184,7 @@ def get_powershift_hdf5_res(args):
                 logging.info(f"[INFO] Update {q} power to {target_power}")
 
         if update_power_map:
-            new_full_params["ReadIn_power_star"] = float(update_power_map[pure_name])
+            new_full_params["ReadIn_power_star"] = float(update_power_map[qname])
 
         # 结果入库
         store.update_run(

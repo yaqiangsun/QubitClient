@@ -82,14 +82,15 @@ def get_singleshot_hdf5_res(args):
     task_name = CtrlTaskName.SINGLESHOT.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
+    qname = qubit_name_list[0]
 
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
 
-        discriminator_center0_star_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="discriminator_center0_star")
-        discriminator_center1_star_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="discriminator_center1_star")
-        discriminator_threshold_star_original = qubit_ctrl_client.query_param(qname=qubit_name_list[0], key="discriminator_threshold_star")
+        discriminator_center0_star_original = qubit_ctrl_client.query_param(qname=qname, key="discriminator_center0_star")
+        discriminator_center1_star_original = qubit_ctrl_client.query_param(qname=qname, key="discriminator_center1_star")
+        discriminator_threshold_star_original = qubit_ctrl_client.query_param(qname=qname, key="discriminator_threshold_star")
 
         set_params = {
             "qubits": qubit_name_list,
@@ -113,7 +114,7 @@ def get_singleshot_hdf5_res(args):
         analysis_result = singleshot(raw_data)
 
         # 3.绘图
-        img_save_path = f'{save_folder}/{CtrlTaskName.SINGLESHOT.value}_{qubit_name_list[0]}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.SINGLESHOT.value}_{qname}_{run_id}.png'
         plot_singleshot(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)

@@ -30,8 +30,7 @@ def get_pulseshape_hdf5_res():
     # analysis_result = pulseshape(data)
 
     # 3.绘图
-    # pure_name = qubit_name_list[0]
-    # img_save_path = f'{SAVE_PLOT_FOLDER}/pulseshape_{pure_name}.png'
+    # img_save_path = f'{SAVE_PLOT_FOLDER}/pulseshape_{qname}.png'
     # fig_list = plot_pulseshape(data, analysis_result, save_path=img_save_path)
 
     # 4.接入大模型分析图片

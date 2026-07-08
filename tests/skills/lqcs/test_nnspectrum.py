@@ -11,13 +11,13 @@ import os
 import sys
 import logging
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/lqcs-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.lqcs.analysis.utils import get_hdf5_content
-from resources.lqcs.analysis.inception import nnspectrum
-from resources.lqcs.analysis.visualization import plot_nnspectrum
+from utils import get_hdf5_content
+from analysis.inception import nnspectrum
+from analysis.visualization import plot_nnspectrum
 import matplotlib.pyplot as plt
 
 

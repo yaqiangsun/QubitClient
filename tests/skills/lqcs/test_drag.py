@@ -11,13 +11,13 @@ import os
 import sys
 import logging
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/lqcs-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import allxy_drag
-from resources.quark.analysis.visualization import plot_drag
+from utils import get_hdf5_content
+from analysis.inception import allxy_drag
+from analysis.visualization import plot_drag
 import matplotlib.pyplot as plt
 
 
@@ -28,16 +28,10 @@ def test_drag(task_key, base_dir):
         # 提取文件名前缀
         pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
         
-        data = get_pkl_content(pkl_path)
+        data = get_hdf5_content(pkl_path)
         if data is None:
             continue
-        if "meta" not in data.keys():
-            continue
-        if "name" not in data["meta"].keys():
-            continue
-        if task_key.lower() in data["meta"]["name"].lower():
-            if len(data["meta"]["other"]["qubits"]) >= 1:
-                if task_key in "drag":
+        if task_key in "drag":
                     analysis_result = allxy_drag(data)
                     fig_list = plot_drag(data, analysis_result, save_path=f'./tmp/vis/drag_{pure_name}.png')
                     # fig_list[0].show()

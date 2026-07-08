@@ -10,13 +10,13 @@
 import os
 import sys
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/lqcs-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.lqcs.analysis.utils import get_hdf5_content
-from resources.lqcs.analysis.inception import t2fit
-from resources.lqcs.analysis.visualization import plot_t2fit
+from utils import get_hdf5_content
+from analysis.inception import t2fit
+from analysis.visualization import plot_t2fit
 
 
 def test_t2fit(task_key, base_dir):

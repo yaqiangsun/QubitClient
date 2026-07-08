@@ -11,38 +11,33 @@ import os
 import sys
 import logging
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/lqcs-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import ramsey
-from resources.quark.analysis.visualization import plot_ramsey
+from utils import get_hdf5_content
+from analysis.inception import ramsey
+from analysis.visualization import plot_ramsey
 import matplotlib.pyplot as plt
 
 
 def test_ramsey(task_key, base_dir):
-    for pkl_path in os.listdir(base_dir):
-        pkl_path = os.path.join(base_dir, pkl_path)
+    for hdf5_path in os.listdir(base_dir):
+        hdf5_path = os.path.join(base_dir, hdf5_path)
         # 提取文件名前缀
-        pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
-        data = get_pkl_content(pkl_path)
+        pure_name = os.path.splitext(os.path.basename(hdf5_path))[0]
+        data = get_hdf5_content(hdf5_path)
         if data is None:
             continue
-        if "meta" not in data.keys():
-            continue
-        if "name" not in data["meta"].keys():
-            continue
-        if "t2" or "ramsey" in data["meta"]["name"].lower():
-            if len(data["meta"]["other"]["qubits"]) >= 1:
-                if task_key in ["t2fit", "t2", "ramsey", "echo"]:
-                    print(f"正在测试 ramsey 文件：{pkl_path}")
-                    analysis_result = ramsey(data)
-                    # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
-                    fig_list = plot_ramsey(data, analysis_result, save_path=f'./tmp/vis/ramsey_{pure_name}.png')
-                    # if fig_list and len(fig_list) > 0:
-                    #     fig_list[0].show()
-                    # plt.show(block=True)
+
+        if task_key in ["t2fit", "t2", "ramsey", "echo"]:
+            print(f"正在测试 ramsey 文件：{hdf5_path}")
+            analysis_result = ramsey(data)
+            # print("分析完成，结果示例：", analysis_result.get("results", [{}])[0])
+            fig_list = plot_ramsey(data, analysis_result, save_path=f'./tmp/vis/ramsey_{pure_name}.png')
+            # if fig_list and len(fig_list) > 0:
+            #     fig_list[0].show()
+            # plt.show(block=True)
 
 
 def main():

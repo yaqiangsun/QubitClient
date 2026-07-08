@@ -11,13 +11,13 @@ import os
 import sys
 import logging
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/lqcs-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import delta          
-from resources.quark.analysis.visualization import plot_delta  
+from utils import get_hdf5_content
+from analysis.inception import delta
+from analysis.visualization import plot_delta  
 
 
 def test_delta(task_key, base_dir):
@@ -31,8 +31,8 @@ def test_delta(task_key, base_dir):
         # 提取文件名前缀（用于保存图片）
         pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
         
-        # 读取 pkl 文件
-        data = get_pkl_content(pkl_path)
+        # 读取 hdf5 文件
+        data = get_hdf5_content(pkl_path)
         if data is None:
             continue
             

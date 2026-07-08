@@ -11,13 +11,13 @@ import os
 import sys
 import logging
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../skills/lqcs-qubit-calib/scripts"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from resources.quark.analysis.utils import get_pkl_content
-from resources.quark.analysis.inception import nnpowershift
-from resources.quark.analysis.visualization import plot_nnpowershift
+from utils import get_hdf5_content
+from analysis.inception import nnpowershift
+from analysis.visualization import plot_nnpowershift
 import matplotlib.pyplot as plt
 
 
@@ -28,17 +28,11 @@ def test_nnpowershift(task_key, base_dir):
         # 提取文件名前缀
         pure_name = os.path.splitext(os.path.basename(pkl_path))[0]
         
-        data = get_pkl_content(pkl_path)
+        data = get_hdf5_content(pkl_path)
         # print(data)
         if data is None:
             continue
-        if "meta" not in data.keys():
-            continue
-        if "name" not in data["meta"].keys():
-            continue
-        if task_key.lower() in data["meta"]["name"].lower():
-            if len(data["meta"]["other"]["qubits"])>=1:
-                if task_key in ["powershift","s21"]:
+        if task_key in ["powershift","s21"]:
                     analysis_result = nnpowershift(data)
                     fig_list = plot_nnpowershift(data,analysis_result,save_path=f'./tmp/vis/nnpowershift_{pure_name}.png')
                     # fig_list[0].show()

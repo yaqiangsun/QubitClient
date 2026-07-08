@@ -61,11 +61,7 @@ def send_spinecho_npy_to_server(dir_path="data/spin_echo", batch_size=5):
                 print(f"{original_file} failed: No image data available")
                 continue
 
-            qubit_results = [
-                v for k, v in result.items()
-                if k != "status" and isinstance(v, dict) and v.get("x")
-            ] if isinstance(result, dict) else []
-            if not qubit_results:
+            if isinstance(result, dict) and not result.get("params_list"):
                 print(f"{original_file} failed: No fit data available")
                 continue
 

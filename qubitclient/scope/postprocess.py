@@ -723,17 +723,40 @@ def postprocess_result_spinecho(response, threshold):
     for item in results:
         if isinstance(item, dict) and item.get("status") == "failed":
             logging.warning("Error in request: %s", item.get("error"))
-        result_filtered = {"status": item.get("status", "success")}
-        has_valid = False
+        status = item.get("status", "failed")
+        result_filtered = {
+            "params_list": [],
+            "fit_envelope_list": [],
+            "r2_list": [],
+            "x_out_list": [],
+            "amp_out_list": [],
+            "envelope_list": [],
+            "success_list": [],
+            "t2_list": [],
+        }
 
-        for key, val in item.items():
-            if key == "status" or not isinstance(val, dict):
-                continue
-            if val.get("r2", 0) >= threshold:
-                result_filtered[key] = val
-                has_valid = True
+        for row in zip(
+            item.get("params_list", []),
+            item.get("fit_envelope_list", []),
+            item.get("r2_list", []),
+            item.get("x_out_list", []),
+            item.get("amp_out_list", []),
+            item.get("envelope_list", []),
+            item.get("success_list", []),
+            item.get("t2_list", []),
+        ):
+            params, fit_envelope, r2, x_out, amp_out, envelope, success, t2 = row
+            if r2 >= threshold:
+                result_filtered["params_list"].append(params)
+                result_filtered["fit_envelope_list"].append(fit_envelope)
+                result_filtered["r2_list"].append(r2)
+                result_filtered["x_out_list"].append(x_out)
+                result_filtered["amp_out_list"].append(amp_out)
+                result_filtered["envelope_list"].append(envelope)
+                result_filtered["success_list"].append(success)
+                result_filtered["t2_list"].append(t2)
 
-        result_filtered["status"] = result_filtered["status"] if has_valid else "failed"
+        result_filtered["status"] = status if result_filtered["params_list"] else "failed"
         results_filtered.append(result_filtered)
 
     return {"results": results_filtered}
@@ -748,17 +771,37 @@ def postprocess_result_xyz_timing(response, threshold):
     for item in results:
         if isinstance(item, dict) and item.get("status") == "failed":
             logging.warning("Error in request: %s", item.get("error"))
-        result_filtered = {"status": item.get("status", "success")}
-        has_valid = False
+        status = item.get("status", "failed")
+        result_filtered = {
+            "params_list": [],
+            "fit_data_list": [],
+            "r2_list": [],
+            "x_out_list": [],
+            "amp_out_list": [],
+            "success_list": [],
+            "zd_xy_list": [],
+        }
 
-        for key, val in item.items():
-            if key == "status" or not isinstance(val, dict):
-                continue
-            if val.get("r2", 0) >= threshold:
-                result_filtered[key] = val
-                has_valid = True
+        for row in zip(
+            item.get("params_list", []),
+            item.get("fit_data_list", []),
+            item.get("r2_list", []),
+            item.get("x_out_list", []),
+            item.get("amp_out_list", []),
+            item.get("success_list", []),
+            item.get("zd_xy_list", []),
+        ):
+            params, fit_data, r2, x_out, amp_out, success, zd_xy = row
+            if r2 >= threshold:
+                result_filtered["params_list"].append(params)
+                result_filtered["fit_data_list"].append(fit_data)
+                result_filtered["r2_list"].append(r2)
+                result_filtered["x_out_list"].append(x_out)
+                result_filtered["amp_out_list"].append(amp_out)
+                result_filtered["success_list"].append(success)
+                result_filtered["zd_xy_list"].append(zd_xy)
 
-        result_filtered["status"] = result_filtered["status"] if has_valid else "failed"
+        result_filtered["status"] = status if result_filtered["params_list"] else "failed"
         results_filtered.append(result_filtered)
 
     return {"results": results_filtered}

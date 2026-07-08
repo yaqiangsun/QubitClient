@@ -75,50 +75,47 @@ results = client.get_result(response, threshold=threshold, task_type=TaskName.TI
 
 ## 返回值格式
 
-返回的结果是一个列表，每个元素对应一个输入文件的处理结果。每个量子比特（如 `Q0`）以字典键的形式返回拟合结果。
+返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
 [
   {
-    "status": "success" | "failed",
-    "Q0": {
-      "q_name": "Q0",
-      "x": [float, ...],
-      "amp": [float, ...],
-      "fit_data": [float, ...],
-      "params": [float, ...],
-      "zd_xy": float,
-      "r2": float,
-      "success": true | false
-    },
-    "Q1": { ... }
+    "params_list": [[float, ...], ...],
+    "fit_data_list": [[float, ...], ...],
+    "r2_list": [float, ...],
+    "x_out_list": [[float, ...], ...],
+    "amp_out_list": [[float, ...], ...],
+    "success_list": [true | false, ...],
+    "zd_xy_list": [float, ...],
+    "status": "success" | "failed"
   },
   ...
 ]
 ```
 
+`params_list[i]`：第 i 个量子比特的 Erf 拟合参数  
+`fit_data_list[i]`：第 i 个量子比特的拟合曲线值  
+`x_out_list[i]` / `amp_out_list[i]`：第 i 个量子比特的延迟时间与幅度  
+`zd_xy_list[i]`：第 i 个量子比特的 XYZ 时序偏移量（ns）  
+`r2_list[i]`：第 i 个量子比特的 $R^2$ 拟合优度  
+`success_list[i]`：第 i 个量子比特拟合是否成功  
+
+量子比特顺序与输入 `image` 字典的键顺序一致。
+
 ### 字段说明
-
-**文件级字段**（`results[i]`）：
-
-| 字段名   | 类型  | 描述 |
-|----------|-------|------|
-| `status` | `str` | 该文件整体处理状态：`"success"` 或 `"failed"` |
-
-**量子比特级字段**（`results[i]["Q0"]` 等）：
 
 | 字段名           | 类型                   | 描述 |
 |------------------|------------------------|------|
-| `q_name`         | `str`                  | 量子比特名称 |
-| `x`              | `List[float]`          | 延迟时间序列（秒） |
-| `amp`            | `List[float]`          | 原始信号强度 |
-| `fit_data`       | `List[float]`          | Erf 拟合曲线值 |
-| `params`         | `List[float]`          | 拟合参数数组 |
-| `zd_xy`          | `float`                | XYZ 时序偏移量（ns） |
-| `r2`             | `float`                | $R^2$ 拟合优度 |
-| `success`        | `bool`                 | 该量子比特拟合是否成功 |
+| `params_list`    | `List[List[float]]`    | 每个量子比特的 Erf 拟合参数 |
+| `fit_data_list`  | `List[List[float]]`    | 每个量子比特的拟合曲线值 |
+| `x_out_list`     | `List[List[float]]`    | 每个量子比特的延迟时间序列（秒） |
+| `amp_out_list`   | `List[List[float]]`    | 每个量子比特的原始信号强度 |
+| `zd_xy_list`     | `List[float]`          | 每个量子比特的 XYZ 时序偏移量（ns） |
+| `r2_list`        | `List[float]`          | 每个量子比特的 $R^2$ 拟合优度 |
+| `success_list`   | `List[bool]`           | 每个量子比特拟合是否成功 |
+| `status`         | `str`                  | 处理状态：`"success"` 或 `"failed"` |
 
-> 说明：`status` 为文件级字符串状态；`success` 为量子比特级布尔值，表示单个 qubit 拟合是否成功。
+> 说明：内置 plotter 绘图时使用 `fit_data_list` 作为拟合曲线，原始数据来自输入 `dict_param["image"]`。
 
 ### 示例结果
 
@@ -127,17 +124,14 @@ results = client.get_result(response, threshold=threshold, task_type=TaskName.TI
   "type": "xyz_timing",
   "results": [
     {
-      "status": "success",
-      "Q0": {
-        "q_name": "Q0",
-        "x": [-6e-8, -4e-8, -2e-8, 0.0, 2e-8, ...],
-        "amp": [0.42, 0.55, 0.78, 0.95, 0.81, ...],
-        "fit_data": [0.40, 0.53, 0.76, 0.94, 0.83, ...],
-        "params": [0.95, 0.05, -2.0, 8.0],
-        "zd_xy": 3.193,
-        "r2": 0.9654,
-        "success": True
-      }
+      "params_list": [[0.95, 0.05, -2.0, 8.0]],
+      "fit_data_list": [[0.40, 0.53, 0.76, 0.94, 0.83, ...]],
+      "r2_list": [0.9654],
+      "x_out_list": [[-6e-8, -4e-8, -2e-8, 0.0, 2e-8, ...]],
+      "amp_out_list": [[0.42, 0.55, 0.78, 0.95, 0.81, ...]],
+      "success_list": [True],
+      "zd_xy_list": [3.193],
+      "status": "success"
     }
   ]
 }

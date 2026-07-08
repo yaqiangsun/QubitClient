@@ -75,52 +75,50 @@ results = client.get_result(response, threshold=threshold, task_type=TaskName.SP
 
 ## 返回值格式
 
-返回的结果是一个列表，每个元素对应一个输入文件的处理结果。每个量子比特（如 `Q0`）以字典键的形式返回拟合结果。
+返回的结果是一个列表，每个元素对应一个输入文件的处理结果：
 
 ```json
 [
   {
-    "status": "success" | "failed",
-    "Q0": {
-      "q_name": "Q0",
-      "x": [float, ...],
-      "amp": [float, ...],
-      "envelope": [float, ...],
-      "fit_envelope": [float, ...],
-      "params": [float, ...],
-      "T2": float,
-      "r2": float,
-      "success": true | false
-    },
-    "Q1": { ... }
+    "params_list": [[float, ...], ...],
+    "fit_envelope_list": [[float, ...], ...],
+    "r2_list": [float, ...],
+    "x_out_list": [[float, ...], ...],
+    "amp_out_list": [[float, ...], ...],
+    "envelope_list": [[float, ...], ...],
+    "success_list": [true | false, ...],
+    "t2_list": [float, ...],
+    "status": "success" | "failed"
   },
   ...
 ]
 ```
 
+`params_list[i]`：第 i 个量子比特的拟合参数  
+`fit_envelope_list[i]`：第 i 个量子比特的包络拟合曲线  
+`envelope_list[i]`：第 i 个量子比特从原始信号提取的包络  
+`x_out_list[i]` / `amp_out_list[i]`：第 i 个量子比特的时间轴与幅度  
+`t2_list[i]`：第 i 个量子比特的自旋回波 $T_2$ 弛豫时间（µs）  
+`r2_list[i]`：第 i 个量子比特的 $R^2$ 拟合优度  
+`success_list[i]`：第 i 个量子比特拟合是否成功  
+
+量子比特顺序与输入 `image` 字典的键顺序一致。
+
 ### 字段说明
 
-**文件级字段**（`results[i]`）：
+| 字段名               | 类型                   | 描述 |
+|----------------------|------------------------|------|
+| `params_list`        | `List[List[float]]`    | 每个量子比特的包络拟合参数 |
+| `fit_envelope_list`  | `List[List[float]]`    | 每个量子比特的包络拟合曲线 |
+| `envelope_list`      | `List[List[float]]`    | 每个量子比特从原始信号提取的包络 |
+| `x_out_list`         | `List[List[float]]`    | 每个量子比特的延迟时间序列 |
+| `amp_out_list`       | `List[List[float]]`    | 每个量子比特的原始信号强度 |
+| `t2_list`            | `List[float]`          | 每个量子比特的 $T_2$ 弛豫时间（µs） |
+| `r2_list`            | `List[float]`          | 每个量子比特的 $R^2$ 拟合优度 |
+| `success_list`       | `List[bool]`           | 每个量子比特拟合是否成功 |
+| `status`             | `str`                  | 处理状态：`"success"` 或 `"failed"` |
 
-| 字段名   | 类型  | 描述 |
-|----------|-------|------|
-| `status` | `str` | 该文件整体处理状态：`"success"` 或 `"failed"` |
-
-**量子比特级字段**（`results[i]["Q0"]` 等）：
-
-| 字段名           | 类型                   | 描述 |
-|------------------|------------------------|------|
-| `q_name`         | `str`                  | 量子比特名称 |
-| `x`              | `List[float]`          | 延迟时间序列 |
-| `amp`            | `List[float]`          | 原始信号强度 |
-| `envelope`       | `List[float]`          | 从原始信号提取的包络曲线 |
-| `fit_envelope`   | `List[float]`          | 对 `envelope` 拟合后的包络曲线 |
-| `params`         | `List[float]`          | 拟合参数数组 |
-| `T2`             | `float`                | 自旋回波 $T_2$ 弛豫时间（µs） |
-| `r2`             | `float`                | $R^2$ 拟合优度 |
-| `success`        | `bool`                 | 该量子比特拟合是否成功 |
-
-> 说明：`status` 为文件级字符串状态；`success` 为量子比特级布尔值，表示单个 qubit 拟合是否成功。内置 plotter 绘图时使用 `fit_envelope` 作为拟合曲线。
+> 说明：内置 plotter 绘图时使用 `fit_envelope_list` 作为拟合曲线，原始数据来自输入 `dict_param["image"]`。
 
 ### 示例结果
 
@@ -129,18 +127,15 @@ results = client.get_result(response, threshold=threshold, task_type=TaskName.SP
   "type": "spinecho",
   "results": [
     {
-      "status": "success",
-      "Q0": {
-        "q_name": "Q0",
-        "x": [0.0, 50.0, 100.0, 150.0, ...],
-        "amp": [0.95, 0.82, 0.71, 0.63, ...],
-        "envelope": [0.94, 0.83, 0.72, 0.64, ...],
-        "fit_envelope": [0.96, 0.84, 0.73, 0.64, ...],
-        "params": [0.95, 0.02, 125360.0, 0.0],
-        "T2": 125.36,
-        "r2": 0.9821,
-        "success": True
-      }
+      "params_list": [[0.95, 0.02, 125360.0, 0.0]],
+      "fit_envelope_list": [[0.96, 0.84, 0.73, 0.64, ...]],
+      "r2_list": [0.9821],
+      "x_out_list": [[0.0, 50.0, 100.0, 150.0, ...]],
+      "amp_out_list": [[0.95, 0.82, 0.71, 0.63, ...]],
+      "envelope_list": [[0.94, 0.83, 0.72, 0.64, ...]],
+      "success_list": [True],
+      "t2_list": [125.36],
+      "status": "success"
     }
   ]
 }

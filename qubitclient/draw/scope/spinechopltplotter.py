@@ -17,39 +17,30 @@ class SpinEchoDataPltPlotter(QuantumDataPltPlotter):
 
         data = dict_param.item() if isinstance(dict_param, np.ndarray) else dict_param
         image_dict = data.get("image", {})
-        image_qubits = list(image_dict.keys())
-        qubit_names = [
-            q for q in image_qubits
-            if isinstance(result, dict)
-            and isinstance(result.get(q), dict)
-            and len(result[q].get("x", [])) > 0
-            and len(result[q].get("amp", [])) > 0
-        ]
-        if not qubit_names and isinstance(result, dict):
-            qubit_names = [
-                k for k, v in result.items()
-                if k != "status" and isinstance(v, dict)
-                and len(v.get("x", [])) > 0 and len(v.get("amp", [])) > 0
-            ]
+        qubit_names = list(image_dict.keys())
 
-        n_qubits = len(qubit_names)
-        fig, axes, rows, cols = self.create_subplots(n_qubits)
+        fig, axes, rows, cols = self.create_subplots(len(qubit_names))
         axs = axes.flatten()
+
+        fit_envelope_list = result.get("fit_envelope_list", [])
+        r2_list = result.get("r2_list", [])
+        t2_list = result.get("t2_list", [])
+        x_out_list = result.get("x_out_list", [])
 
         for q_idx, q_name in enumerate(qubit_names):
             ax = axs[q_idx]
-            item = result.get(q_name)
+            item = image_dict.get(q_name)
+            if not isinstance(item, (list, tuple)) or len(item) < 2:
+                ax.axis("off")
+                continue
 
-            x = np.asarray(item.get("x", []), dtype=float)
-            amp = np.asarray(item.get("amp", []), dtype=float)
-            fit_envelope = item.get("fit_envelope")
-            t2_us = item.get("T2")
-            r2 = item.get("r2", 0.0)
+            x_raw = np.asarray(item[0], dtype=float)
+            y_raw = np.asarray(item[1], dtype=float)
 
             self.add_line(
                 ax,
-                x,
-                amp,
+                x_raw,
+                y_raw,
                 label="raw",
                 color_index=0,
                 line_style_index=0,
@@ -58,11 +49,18 @@ class SpinEchoDataPltPlotter(QuantumDataPltPlotter):
                 alpha=0.8,
             )
 
-            if fit_envelope is not None and len(fit_envelope) > 0:
+            if q_idx < len(fit_envelope_list):
+                y_fit = np.asarray(fit_envelope_list[q_idx], dtype=float)
+                if q_idx < len(x_out_list) and len(x_out_list[q_idx]) == len(y_fit):
+                    x_fit = np.asarray(x_out_list[q_idx], dtype=float)
+                elif len(y_fit) == len(x_raw):
+                    x_fit = x_raw
+                else:
+                    x_fit = np.linspace(x_raw.min(), x_raw.max(), len(y_fit))
                 self.add_line(
                     ax,
-                    x,
-                    np.asarray(fit_envelope, dtype=float),
+                    x_fit,
+                    y_fit,
                     label="fit",
                     color_index=1,
                     line_style_index=1,
@@ -72,8 +70,9 @@ class SpinEchoDataPltPlotter(QuantumDataPltPlotter):
             if handles:
                 self.add_legend(ax=ax, handles=handles, labels=labels)
 
-            if t2_us is not None:
-                text = rf"$T_2 = {t2_us:.2f}\,\mu s$" + "\n" + rf"$R^2 = {r2:.2f}$"
+            if q_idx < len(t2_list):
+                r2 = r2_list[q_idx] if q_idx < len(r2_list) else 0.0
+                text = rf"$T_2 = {t2_list[q_idx]:.2f}\,\mu s$" + "\n" + rf"$R^2 = {r2:.2f}$"
                 self.add_annotation(
                     ax,
                     text,

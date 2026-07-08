@@ -17,42 +17,30 @@ class XyzTimingDataPltPlotter(QuantumDataPltPlotter):
 
         data = dict_param.item() if isinstance(dict_param, np.ndarray) else dict_param
         image_dict = data.get("image", {})
-        image_qubits = list(image_dict.keys())
-        qubit_names = [
-            q for q in image_qubits
-            if isinstance(result, dict)
-            and isinstance(result.get(q), dict)
-            and len(result[q].get("x", [])) > 0
-            and len(result[q].get("amp", [])) > 0
-        ]
-        if not qubit_names and isinstance(result, dict):
-            qubit_names = [
-                k for k, v in result.items()
-                if k != "status" and isinstance(v, dict)
-                and len(v.get("x", [])) > 0 and len(v.get("amp", [])) > 0
-            ]
+        qubit_names = list(image_dict.keys())
 
-        n_qubits = len(qubit_names)
-        fig, axes, rows, cols = self.create_subplots(n_qubits)
+        fig, axes, rows, cols = self.create_subplots(len(qubit_names))
         axs = axes.flatten()
+
+        fit_data_list = result.get("fit_data_list", [])
+        r2_list = result.get("r2_list", [])
+        zd_xy_list = result.get("zd_xy_list", [])
+        x_out_list = result.get("x_out_list", [])
 
         for q_idx, q_name in enumerate(qubit_names):
             ax = axs[q_idx]
-            item = result.get(q_name)
+            item = image_dict.get(q_name)
+            if not isinstance(item, (list, tuple)) or len(item) < 2:
+                ax.axis("off")
+                continue
 
-            ax.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
-            ax.xaxis.major.formatter._useMathText = True
-
-            x = np.asarray(item.get("x", []), dtype=float)
-            amp = np.asarray(item.get("amp", []), dtype=float)
-            fit_data = item.get("fit_data")
-            zd_xy = item.get("zd_xy")
-            r2 = item.get("r2", 0.0)
+            y_raw = np.asarray(item[0], dtype=float)
+            x_raw = np.asarray(item[1], dtype=float)
 
             self.add_line(
                 ax,
-                x,
-                amp,
+                x_raw,
+                y_raw,
                 label="Data",
                 color_index=6,
                 line_style_index=0,
@@ -61,19 +49,27 @@ class XyzTimingDataPltPlotter(QuantumDataPltPlotter):
                 alpha=0.7,
             )
 
-            if fit_data is not None and len(fit_data) > 0:
+            if q_idx < len(fit_data_list):
+                y_fit = np.asarray(fit_data_list[q_idx], dtype=float)
+                if q_idx < len(x_out_list) and len(x_out_list[q_idx]) == len(y_fit):
+                    x_fit = np.asarray(x_out_list[q_idx], dtype=float)
+                elif len(y_fit) == len(x_raw):
+                    x_fit = x_raw
+                else:
+                    x_fit = np.linspace(x_raw.min(), x_raw.max(), len(y_fit))
                 self.add_line(
                     ax,
-                    x,
-                    np.asarray(fit_data, dtype=float),
+                    x_fit,
+                    y_fit,
                     label="Fit",
                     color_index=0,
                     line_style_index=0,
                 )
 
-            if zd_xy is not None:
-                self.add_vline(ax, zd_xy * 1e-9, label="zd_xy")
-                text = f"zd_xy={zd_xy:.3f} ns\nR²={r2:.4f}"
+            if q_idx < len(zd_xy_list):
+                self.add_vline(ax, zd_xy_list[q_idx] * 1e-9, label="zd_xy")
+                r2 = r2_list[q_idx] if q_idx < len(r2_list) else 0.0
+                text = f"zd_xy={zd_xy_list[q_idx]:.3f} ns\nR²={r2:.4f}"
                 self.add_annotation(
                     ax,
                     text,
@@ -94,7 +90,7 @@ class XyzTimingDataPltPlotter(QuantumDataPltPlotter):
             self.configure_axis(
                 ax,
                 title=f"Timing_xyz {q_name}",
-                xlabel="Time(s)",
+                xlabel="t",
                 ylabel="amp",
             )
 

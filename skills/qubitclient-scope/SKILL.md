@@ -182,6 +182,11 @@ Supported data keys: `population`, `iq_avg`, `iq`
 - `T1`: Relaxation time (µs)
 - `B`: Baseline offset
 
+**Note:**  Unit Conversion Rules
+`delay_array` is performed in seconds (s), while the output parameter T1 is presented in microseconds (µs).
+Conversion equation:
+Time (µs) = Time (s) * 10^6
+
 ---
 
 #### T2FIT
@@ -218,6 +223,11 @@ Fitting formula: $y = A \cdot e^{-(x/T2)^2 - x/T1/2} \cdot \cos(2\pi w x + \phi)
 - `T2`: Gaussian decay time (µs)
 - `w`: Oscillation angular frequency (rad/s)
 - `phi`: Initial phase (rad)
+
+**Note:**  Unit Conversion Rules
+`delay_array` is performed in seconds (s), while the output parameter T1 T2 are presented in microseconds (µs).
+Conversion equation:
+Time (µs) = Time (s) * 10^6
 
 ---
 
@@ -275,21 +285,20 @@ Fitting formula: $y = A \cdot e^{-x/T1} \cdot \cos(2\pi w x + \phi) + B$
 ```json
 {
   "type": "spinecho",
-  "results": [{
-    "status": "success" | "failed",
-    "Q0": {
-      "q_name": "Q0",                // Qubit name
-      "x": [float, ...],             // Delay time sequence
-      "amp": [float, ...],           // Raw signal amplitudes
-      "envelope": [float, ...],      // Extracted envelope curve
-      "fit_envelope": [float, ...],  // Fitted envelope curve
-      "params": [float, ...],        // Fitting parameters
-      "T2": float,                   // Spin Echo T2 time (µs)
-      "r2": float,                   // R² goodness of fit
-      "success": true | false        // Per-qubit fitting success
-    },
-    "Q1": { ... }
-  }]
+  "results": [
+  {
+    "params_list": [[float, ...], ...],     // Fitting parameters
+    "fit_envelope_list": [[float, ...], ...],// Fitted envelope curve
+    "r2_list": [float, ...],                // R² goodness of fit
+    "x_out_list": [[float, ...], ...],      // Delay time sequence
+    "amp_out_list": [[float, ...], ...],    // Raw signal amplitudes
+    "envelope_list": [[float, ...], ...],   // Extracted envelope curve
+    "success_list": [true | false, ...],    // All qubits fitting success
+    "t2_list": [float, ...],                // Spin Echo T2 time (µs)
+    "status": "success" | "failed"          // Global qubits success status
+  },
+  ...
+  ]
 }
 ```
 
@@ -576,22 +585,26 @@ Fitting formula per ZPA: $y = A \cdot e^{-x / T1} + B$
 ```json
 {
   "type": "xyz_timing",
-  "results": [{
-    "status": "success" | "failed",
-    "Q0": {
-      "q_name": "Q0",            // Qubit name
-      "x": [float, ...],         // Delay time sequence
-      "amp": [float, ...],       // Raw signal amplitudes
-      "fit_data": [float, ...],  // Erf fitted curve values
-      "params": [float, ...],    // Fitting parameters
-      "zd_xy": float,            // Timing offset (ns)
-      "r2": float,               // R² goodness of fit
-      "success": true | false    // Per-qubit fitting success
-    },
-    "Q1": { ... }
-  }]
+  "results": [
+  {
+    "params_list": [[float, ...], ...],     // Fitting parameters
+    "fit_data_list": [[float, ...], ...],   // Erf fitted curve values
+    "r2_list": [float, ...],                // R² goodness of fit
+    "x_out_list": [[float, ...], ...],      // Delay time sequence
+    "amp_out_list": [[float, ...], ...],    // Raw signal amplitudes
+    "success_list": [true | false, ...],    // All qubits fitting success status
+    "zd_xy_list": [float, ...],             // Timing offset (ns)
+    "status": "success" | "failed"          // Global success status
+  },
+  ...
+  ]
 }
 ```
+
+**Note:**  Unit Conversion Rules
+Internal computation uses second (s) as the base time unit. The final output 'zd_xy_list' is converted to nanosecond (ns).
+Conversion equation:
+Time (ns) = Time (s) * 10^9
 
 ---
 

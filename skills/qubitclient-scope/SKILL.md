@@ -4,6 +4,15 @@ description: Quantum experiment NUMERICAL curve fitting and parameter extraction
 license: MIT
 ---
 
+## Installation
+
+This skill depends on the `qubitclient` package. **Install it before running any analysis** 
+
+```bash
+pip install qubitclient
+```
+
+
 ## Overview
 
 Scope is a traditional numerical curve fitting module for quantum experiment analysis. It provides comprehensive parameter extraction tasks including peak detection, relaxation time fitting (T1/T2), oscillation analysis (Rabi, Ramsey), pulse optimization (DRAG), and 2D spectrum analysis. Unlike neural network-based approaches, Scope uses classical fitting algorithms for interpretable results.
@@ -275,7 +284,7 @@ Fitting formula: $y = A \cdot e^{-x/T1} \cdot \cos(2\pi w x + \phi) + B$
 ```python
 {
     "image": {
-        "Q0": [delay_array, amp_array],  // (delay times, signal amplitudes)
+        "Q0": [delay_array, amp_array],  // (delay time, signal amplitudes)
         "Q1": [delay_array, amp_array],
     }
 }
@@ -301,6 +310,11 @@ Fitting formula: $y = A \cdot e^{-x/T1} \cdot \cos(2\pi w x + \phi) + B$
   ]
 }
 ```
+
+**Note:**  Unit Conversion Rules
+`delay time` is performed in seconds (s), while the output parameter `t2_list` is presented in microseconds (µs).
+Conversion equation:
+Time (µs) = Time (s) * 10^6
 
 ---
 

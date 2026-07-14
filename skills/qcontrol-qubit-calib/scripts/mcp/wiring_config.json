@@ -1,0 +1,74 @@
+{
+  "device": {
+    "DAC 1": {
+      "start_delay(ns)": 0.0,
+      "address": "192.168.101.187",
+      "samplerate(GHz)": 8,
+      "rfsoc": true
+    },
+    "DAC 2": {
+      "start_delay(ns)": 0.0,
+      "address": "192.168.101.179",
+      "samplerate(GHz)": 2,
+      "rfsoc": false
+    },
+    "DAC 3": {
+      "start_delay(ns)": 0.0,
+      "address": "192.168.101.231",
+      "samplerate(GHz)": 2,
+      "rfsoc": true
+    },
+    "TRIG": {
+      "version": "v2",
+      "address": "00-09-54-1b-17-10",
+      "Network_Interface": "以太网"
+    },
+    "ADC 1": {
+      "start_delay(ns)": 0.0,
+      "address": "192.168.101.187"
+    },
+    "LOxy1": {
+      "address": "TCPIP::192.168.101.11::5025::SOCKET-1",
+      "brand": "uwave.SinolinkMultiChannel",
+      "id_number": "SLFS0308S"
+    },
+    "LOro2": {
+      "address": "TCPIP::192.168.101.11::5025::SOCKET-2",
+      "brand": "uwave.SinolinkMultiChannel",
+      "id_number": "SLFS0308S"
+    }
+  },
+  "wiring": {
+    "qr2": {
+      "z": {
+        "DAC": [
+          "DAC 3",
+          [
+            0
+          ]
+        ]
+      },
+      "xy": {
+        "DAC": [
+          "DAC 2",
+          [
+            0,
+            1
+          ]
+        ],
+        "uwave": "LOxy1"
+      },
+      "r": {
+        "ADC": "ADC 1",
+        "CH": 3,
+        "DAC": [
+          "DAC 1",
+          [
+            3
+          ]
+        ],
+        "uwave": "None"
+      }
+    }
+  }
+}

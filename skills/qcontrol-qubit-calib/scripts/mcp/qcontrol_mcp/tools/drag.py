@@ -1,6 +1,6 @@
 
 from importlib import reload
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 import json
 import numpy as np
 from labrad.units import Unit, Value, WithUnit
@@ -20,37 +20,20 @@ data_vault_path = ["", "test", "single"]
 
 
 def drag(
-    qubit: Annotated[str, "目标量子比特名称"],
-    gate_num: Annotated[int, "门数量"],
-    gate_type: Annotated[str, "门类型 X / X/2"],
-    alpha: Annotated[any, "DRAG 校正系数扫描区间"] = None,
-    pi_amp: Annotated[float, "脉冲幅度"] = None
+    qubits: Annotated[List[str], "目标量子比特名称"],
+    lamb:list[float]=[-0.5, 0.5],
+    stage:int=1,
+    N_repeat:int=1,
+    pulsePair:list[int]=[0, 1],
+    signal:str='population'
 ) -> str:
-    """
-    执行 DRAG 门标定
-    :param qubit: 目标比特名称
-    :param gate_num: 门数量
-    :param gate_type: 门类型 X / X/2
-    :param alpha: DRAG 校正系数扫描区间
-    :param pi_amp: 脉冲幅度
-    """
     
     reload(exp)
-
-    # 沿用原有默认规则：不传参时按门类型自动赋值
-    if alpha is None:
-        if gate_type == "X":
-            alpha = r[-2:2:0.00001]
-        else:
-            alpha = r[-1:1:1]
-
-    if pi_amp is None:
-        pi_amp = 0.4427
 
     raw_data = exp.drag(
         qubit_configs,
         wiring_configs,
-        qubit,
+        qubits,
         pi_amp=pi_amp,
         alpha=alpha,
         gate_num=gate_num,
@@ -59,6 +42,7 @@ def drag(
         cosine_env=False,
         read_delay=100 * ns
     )
-    latest_raw_data = raw_data
 
-    return json.dumps(raw_data, ensure_ascii=False)
+    data_list = raw_data.tolist()
+
+    return json.dumps(data_list, ensure_ascii=False)

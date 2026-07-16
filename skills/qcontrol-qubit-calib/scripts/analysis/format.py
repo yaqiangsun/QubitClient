@@ -1,0 +1,758 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2026 yaqiang.sun.
+# This source code is licensed under the license found in the LICENSE file
+# in the root directory of this source tree.
+#########################################################################
+# Author: yaqiangsun
+# Created Time: 2026/02/11 10:39:49
+########################################################################
+
+import logging
+import numpy as np
+import scipy
+
+
+def singleshot_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data)==list:
+            data_arr = np.array(data)
+            I_channel = data_arr[:, 1]
+            Q_channel = data_arr[:, 2]
+            X_channel = data_arr[:, 3]
+            Y_channel = data_arr[:, 4]
+
+        elif data.dtype.names:
+            time = data['f0']  # 时间/索引
+            I_channel = data['f1']  # Is | I
+            Q_channel = data['f2']  # Qs | I
+            X_channel = data['f3']  # Is | X
+            Y_channel = data['f4']  # Qs | X
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        s0 = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        s1 = X_channel + 1j * Y_channel  # 复数 s1 (X 通道)
+        data_formated["image"][qubit_name] = (s0, s1)
+    return data_formated
+
+
+def s21_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data)==list:
+            # 双层[[0, 1, 2, 3..7],,,20个]
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]
+            phi = data_arr[:, 2]
+            I_channel = data_arr[:, 3]
+            Q_channel = data_arr[:, 4]
+
+        elif data.dtype.names:
+            # f0 = data['f0']
+            # f1 = data['f1']
+            # f2 = data['f2']
+            # f3 = data['f3']
+            # f4 = data['f4']
+            # f5 = data['f5']
+            # f6 = data['f6']
+            # f7 = data['f7']
+            freq = data['f0']  # 时间/索引
+            amp = data['f1']
+            phi = data['f2']
+            I_channel = data['f3']  # Is | I
+            Q_channel = data['f4']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+        amp2 = np.abs(s)
+        phi2 = np.unwrap(np.angle(s))
+        phi_processed = scipy.signal.detrend(phi, type='linear')
+        phi2_processed = scipy.signal.detrend(phi2, type='linear')
+
+        data_formated["image"][qubit_name] = (freq, amp2,phi2_processed)
+
+
+    return data_formated
+
+
+def s21peakmulti_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data)==list:
+            # 双层[[0, 1, 2, 3..7],,,20个]
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]
+            phi = data_arr[:, 2]
+            I_channel = data_arr[:, 3]
+            Q_channel = data_arr[:, 4]
+
+        elif data.dtype.names:
+            # f0 = data['f0']
+            # f1 = data['f1']
+            # f2 = data['f2']
+            # f3 = data['f3']
+            # f4 = data['f4']
+            # f5 = data['f5']
+            # f6 = data['f6']
+            # f7 = data['f7']
+            freq = data['f0']  # 时间/索引
+            amp = data['f1']
+            phi = data['f2']
+            I_channel = data['f3']  # Is | I
+            Q_channel = data['f4']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+        amp2 = np.abs(s)
+        phi2 = np.unwrap(np.angle(s))
+        phi_processed = scipy.signal.detrend(phi, type='linear')
+        phi2_processed = scipy.signal.detrend(phi2, type='linear')
+
+        data_formated["image"][qubit_name] = (freq, amp2,phi2_processed)
+
+    return data_formated
+
+
+def s21vsflux_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data)==list:
+            data_arr = np.array(data)
+
+            freq = data_arr[:, 0]
+            volt = data_arr[:, 1]
+            I_channel = data_arr[:, 4]
+            Q_channel = data_arr[:, 5]
+        elif data.dtype.names:
+            f0 = data['f0']
+            f1 = data['f1']
+            f2 = data['f2']
+            f3 = data['f3']
+            f4 = data['f4']
+            f5 = data['f5']
+            f6 = data['f6']
+            f7 = data['f7']
+            f8 = data['f8']
+
+            freq = data['f0']  # 时间/索引
+            volt = data['f1']
+            I_channel = data['f4']  # Is | I
+            Q_channel = data['f5']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+        amp = np.abs(s)
+        unique_freq = np.unique(freq)  # 得到16个唯一频率值
+        unique_volt = np.unique(volt)  # 得到11个唯一电压值
+
+        n_freq = len(unique_freq)
+        n_volt = len(unique_volt)
+
+        first_n_volt_volt = volt[:n_volt]
+        is_row_major = len(np.unique(first_n_volt_volt)) == n_volt
+
+        if is_row_major:
+            # 行优先：每个频率的所有电压连续存储
+            amp_2d = amp.reshape(n_freq, n_volt)
+        else:
+            # 列优先：每个电压的所有频率连续存储
+            amp_2d = amp.reshape(n_volt, n_freq).T
+
+        # 重塑 amp 为2D
+
+        # 验证：检查 amp_2d 是否与原始数据一致
+
+        data_formated["image"][qubit_name] = (unique_freq,unique_volt, amp_2d.T)
+        # data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
+
+        assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
+        assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
+    return data_formated
+
+
+def nns21vsflux_convert(result):
+    data_formated = s21vsflux_convert(result)
+    return data_formated
+
+def powershift_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data)==list:
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]
+            volt = data_arr[:, 1]
+            I_channel = data_arr[:, 4]  # Is | I
+            Q_channel = data_arr[:, 5]  # Qs | I
+
+            s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+            amp = np.abs(s)
+            unique_freq = np.unique(freq)  # 得到16个唯一频率值
+            unique_volt = np.unique(volt)  # 得到11个唯一电压值
+
+            n_freq = len(unique_freq)
+            n_volt = len(unique_volt)
+
+            first_n_volt_volt = volt[:n_volt]
+            is_row_major = len(np.unique(first_n_volt_volt)) == n_volt
+
+            if is_row_major:
+                # 行优先：每个频率的所有电压连续存储
+                amp_2d = s.reshape(n_freq, n_volt)
+            else:
+                # 列优先：每个电压的所有频率连续存储
+                amp_2d = s.reshape(n_volt, n_freq).T
+        elif data.dtype.names:
+            f0 = data['f0']
+            f1 = data['f1']
+            f2 = data['f2']
+            f3 = data['f3']
+            f4 = data['f4']
+            f5 = data['f5']
+            f6 = data['f6']
+            f7 = data['f7']
+            f8 = data['f8']
+
+            freq = data['f0']  # 时间/索引
+            volt = data['f1']
+            I_channel = data['f4']  # Is | I
+            Q_channel = data['f5']  # Qs | I
+
+            s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+
+            amp = np.abs(s)
+            unique_freq = np.unique(freq)  # 得到16个唯一频率值
+            unique_volt = np.unique(volt)  # 得到11个唯一电压值
+
+            n_freq = len(unique_freq)
+            n_volt = len(unique_volt)
+
+            first_n_volt_volt = volt[:n_volt]
+            is_row_major = len(np.unique(first_n_volt_volt)) == n_volt
+
+            if is_row_major:
+                # 行优先：每个频率的所有电压连续存储
+                amp_2d = s.reshape(n_freq, n_volt)
+            else:
+                # 列优先：每个电压的所有频率连续存储
+                amp_2d = s.reshape(n_volt, n_freq).T
+
+            # 重塑 amp 为2D
+
+            # 验证：检查 amp_2d 是否与原始数据一致
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
+        assert len(unique_volt) > 1, "DATA ERROR: volt length must be > 1"
+        assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
+    return data_formated
+
+def t1fit_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+            p_x = data_arr[:, 2]
+            data_formated["image"][qubit_name] = (delay, p_x)
+
+        elif data.dtype.names:  # 结构化数组
+            delay = data['f0']          # 自变量：延迟时间
+            #p_i   = data['f1']          # Dependent0: P1 | I 
+            p_x = data['f2']          # Dependent1: P1 | X 
+
+            data_formated["image"][qubit_name] = (delay, p_x)
+
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+def ramseyt2_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+            amplitude = data_arr[:, 1]
+            data_formated["image"][qubit_name] = (delay, amplitude)
+
+        elif data.dtype.names:   
+            delay = data['f0']      
+            # p1    = data['f6']      
+            amplitude = data['f1']
+
+            data_formated["image"][qubit_name] = (delay, amplitude)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+def setpialpha_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            wave = data[0]
+            x = data[1]
+            conf = data[2]
+            other = data[3]
+
+            data_formated["image"][qubit_name] = (wave, x, conf, other)
+        elif data.dtype.names:   
+            wave = data['f0']      
+            x    = data['f1']      
+            conf = data['f2']
+            other = data['f3']
+
+            data_formated["image"][qubit_name] = (wave, x, conf, other)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+def t2fit_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+            amplitude = data_arr[:, 1]
+            data_formated["image"][qubit_name] = (delay, amplitude)
+
+        elif data.dtype.names:   
+            delay = data['f0']      
+            # p1    = data['f6']      
+            amplitude = data['f1']
+
+            data_formated["image"][qubit_name] = (delay, amplitude)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+def nnspectrum_convert(result):
+    data_formated = spectrum_convert(result)
+    return data_formated
+
+
+def spectrum_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data) == list:
+            data_arr = np.array(data)
+
+            freq = data_arr[:, 0]
+            amp = data_arr[:, 1]
+
+        elif data.dtype.names:
+            f0 = data['f0']
+            f1 = data['f1']
+            f2 = data['f2']
+            f3 = data['f3']
+            f4 = data['f4']
+            f5 = data['f5']
+            f6 = data['f6']
+            f7 = data['f7']
+
+            freq = data['f0']  # 时间/索引
+            amp = data['f1']
+
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+        
+        # 如果是倒峰，则倒置amp
+        amp_mean = np.mean(amp)
+        amp_max = np.max(amp)
+        amp_min = np.min(amp)
+
+        upper_diff = amp_max - amp_mean
+        lower_diff = amp_mean - amp_min
+
+        if upper_diff < lower_diff:
+            amp = -amp
+
+        data_formated["image"][qubit_name] = (freq, amp)
+    return data_formated
+
+def spectrum2d_convert(result):
+    data_formated = {"image": {}}
+
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+
+        data = result[qubit_name]
+        if type(data) == list:
+            data_arr = np.array(data)
+
+            freq = data_arr[:, 0]  # 时间/索引
+            zpa = data_arr[:, 1]
+            p1 = data_arr[:, 7]  # Is | I
+            I_channel = data_arr[:, 4]  # Is | I
+            Q_channel = data_arr[:, 5]  # Qs | I
+        elif data.dtype.names:
+            f0 = data['f0']
+            f1 = data['f1']
+            f2 = data['f2']
+            f3 = data['f3']
+            f4 = data['f4']
+            f5 = data['f5']
+            f6 = data['f6']
+            f7 = data['f7']
+            f8 = data['f8']
+
+            freq = data['f0']  # 时间/索引
+            zpa = data['f1']
+            p1 = data['f7']  # Is | I
+            I_channel = data['f4']  # Is | I
+            Q_channel = data['f5']  # Qs | I
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+
+        s = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        amp = np.abs(p1)
+        # amp = s
+        unique_freq = np.unique(freq)  # 得到16个唯一频率值
+        unique_zpa = np.unique(zpa)  # 得到11个唯一电压值
+
+        n_freq = len(unique_freq)
+        n_zpa = len(unique_zpa)
+
+        first_n_volt_volt = zpa[:n_zpa]
+        is_row_major = len(np.unique(first_n_volt_volt)) == n_zpa
+
+        if is_row_major:
+            # 行优先：每个频率的所有电压连续存储
+            amp_2d = amp.reshape(n_freq, n_zpa)
+        else:
+            # 列优先：每个电压的所有频率连续存储
+            amp_2d = amp.reshape(n_zpa, n_freq).T
+
+        # 重塑 amp 为2D
+
+        # 验证：检查 amp_2d 是否与原始数据一致
+
+        data_formated["image"][qubit_name] = (amp_2d, unique_zpa, unique_freq)
+        # data_formated["image"][qubit_name] = (unique_freq, unique_volt, amp_2d.T)
+
+        assert len(unique_zpa) > 1, "DATA ERROR: volt length must be > 1"
+        assert len(unique_freq) > 1, "DATA ERROR: freq length must be > 1"
+    return data_formated
+
+def nnspectrum2d_convert(result):
+    data_formated = spectrum2d_convert(result)
+    return data_formated
+
+
+
+def rabicos_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0]
+
+            p6 = data_arr[:, 6]
+            
+            data_formated["image"][qubit_name] = (delay, p6)
+
+        elif data.dtype.names:   
+            delay = data['f0']      
+            p1    = data['f6']      
+            # amplitude = data['f1']
+
+            data_formated["image"][qubit_name] = (delay, p1)
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+def rb_convert(result):
+    """
+    专门处理 XEB Reference 类型数据（k × m 二维结构）
+    按照用户建议：先按 k 分组，再对相同 m 的所有 k 求平均
+    """
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            m = data_arr[:, 1]
+            p1 = data_arr[:, 3]
+
+            # 1. 获取唯一的 m 值（作为最终横坐标）
+            unique_m = np.sort(np.unique(m))
+            
+            # 2. 对每个 m，收集所有 k 对应的 P1，并求平均
+            avg_p1 = np.zeros(len(unique_m))
+            
+            for i, um in enumerate(unique_m):
+                mask = (m == um)
+                avg_p1[i] = p1[mask].mean()          # 对相同 m 的所有 k 取平均
+            
+            # 可选：使用 1 - P0 作为激发态概率（根据服务器习惯选择）
+            # avg_p1 = (1.0 - p0[mask]).mean()
+            
+            # y_ref 使用零数组（reference 数据通常只有一条主曲线）
+            y_ref = np.zeros_like(avg_p1)
+            
+            # ==================== 输出格式 ====================
+            data_formated["image"][qubit_name] = [unique_m, [avg_p1, y_ref]]
+        elif data.dtype.names:
+            k  = data['f0']   # 序列组索引
+            m  = data['f1']   # 序列深度 (横坐标)
+            p0 = data['f2']   # |0> 概率
+            p1 = data['f3']   # |1> 概率
+            
+            # ==================== 关键处理逻辑 ====================
+            # 1. 获取唯一的 m 值（作为最终横坐标）
+            unique_m = np.sort(np.unique(m))
+            
+            # 2. 对每个 m，收集所有 k 对应的 P1，并求平均
+            avg_p1 = np.zeros(len(unique_m))
+            
+            for i, um in enumerate(unique_m):
+                mask = (m == um)
+                avg_p1[i] = p1[mask].mean()          # 对相同 m 的所有 k 取平均
+            
+            # 可选：使用 1 - P0 作为激发态概率（根据服务器习惯选择）
+            # avg_p1 = (1.0 - p0[mask]).mean()
+            
+            # y_ref 使用零数组（reference 数据通常只有一条主曲线）
+            y_ref = np.zeros_like(avg_p1)
+            
+            # ==================== 输出格式 ====================
+            data_formated["image"][qubit_name] = [unique_m, [avg_p1, y_ref]]
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+
+def xeb_convert(result):
+    """
+    专门处理 XEB Reference 类型数据（k × m 二维结构）
+    按照用户建议：先按 k 分组，再对相同 m 的所有 k 求平均
+    """
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        
+        if type(data)==list:
+            data_arr = np.array(data)
+            m = data_arr[:, 1]
+            p1 = data_arr[:, 3]
+
+            # ==================== 关键处理逻辑 ====================
+            # 1. 获取唯一的 m 值（作为最终横坐标）
+            unique_m = np.sort(np.unique(m))
+            
+            # 2. 对每个 m，收集所有 k 对应的 P1，并求平均
+            avg_p1 = np.zeros(len(unique_m))
+            
+            for i, um in enumerate(unique_m):
+                mask = (m == um)
+                avg_p1[i] = p1[mask].mean()          # 对相同 m 的所有 k 取平均
+            
+            # 可选：使用 1 - P0 作为激发态概率（根据服务器习惯选择）
+            # avg_p1 = (1.0 - p0[mask]).mean()
+            
+            # y_ref 使用零数组（reference 数据通常只有一条主曲线）
+            y_ref = np.zeros_like(avg_p1)
+            
+            # ==================== 输出格式 ====================
+            data_formated["image"][qubit_name] = [unique_m, [avg_p1, y_ref]]
+            
+        elif data.dtype.names:
+            k  = data['f0']   # 序列组索引
+            m  = data['f1']   # 序列深度 (横坐标)
+            p0 = data['f2']   # |0> 概率
+            p1 = data['f3']   # |1> 概率
+            
+            # ==================== 关键处理逻辑 ====================
+            # 1. 获取唯一的 m 值（作为最终横坐标）
+            unique_m = np.sort(np.unique(m))
+            
+            # 2. 对每个 m，收集所有 k 对应的 P1，并求平均
+            avg_p1 = np.zeros(len(unique_m))
+            
+            for i, um in enumerate(unique_m):
+                mask = (m == um)
+                avg_p1[i] = p1[mask].mean()          # 对相同 m 的所有 k 取平均
+            
+            # 可选：使用 1 - P0 作为激发态概率（根据服务器习惯选择）
+            # avg_p1 = (1.0 - p0[mask]).mean()
+            
+            # y_ref 使用零数组（reference 数据通常只有一条主曲线）
+            y_ref = np.zeros_like(avg_p1)
+            
+            # ==================== 输出格式 ====================
+            data_formated["image"][qubit_name] = [unique_m, [avg_p1, y_ref]]
+            
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated
+
+
+def t12dfit_convert(result):
+    data_formated = {"image": {}}
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+        if type(data) == list:
+            data_arr = np.array(data)
+            zpa = data_arr[:, 0]
+            delay = data_arr[:, 1]
+            p_arr = data_arr[:, 3]
+            # amp2 = data_arr[:, 3]
+        elif data.dtype.names:
+            zpa = data['f0']
+            delay = data['f1']
+            p_arr = data['f3']
+            # amp2 = data['f3']
+        else:
+            data_formated["image"][qubit_name] = data
+        p_arr = np.abs(p_arr)
+        unique_zpa = np.unique(zpa)  # 得到16个唯一频率值
+        unique_delay = np.unique(delay)  # 得到11个唯一电压值
+        n_zpa = len(unique_zpa)
+        n_delay = len(unique_delay)
+        first_n_zpa = zpa[:n_zpa]
+        is_row_major = len(np.unique(first_n_zpa)) == n_zpa
+        if is_row_major:
+            p_arr = p_arr.reshape(n_zpa, n_delay)
+        else:
+            p_arr = p_arr.reshape(n_zpa, n_delay).T
+        data_formated["image"][qubit_name] = (p_arr.T, unique_delay, unique_zpa,)
+    return data_formated
+
+def optreadfreq_convert(result):
+    data_formated = {"image": {}}
+    for index, qubit_name in enumerate(result.keys()):
+        qubit_name = qubit_name.strip()
+        assert isinstance(qubit_name, str) and len(qubit_name) > 0, "量子比特名不能为空"
+        data = result[qubit_name]
+        if type(data) == list:
+            data_arr = np.array(data)
+            freq = data_arr[:, 0]  # 时间/索引
+            I_channel = data_arr[:, 3]
+            Q_channel = data_arr[:, 4]
+            X_channel = data_arr[:, 7]
+            Y_channel = data_arr[:, 8]
+            dis = data_arr[:, 9]
+        elif data.dtype.names:
+            freq = data['f0']  # 时间/索引
+            I_channel = data['f3']  # Is | I
+            Q_channel = data['f4']  # Qs | I
+            X_channel = data['f7']  # Is | X
+            Y_channel = data['f8']  # Qs | X
+            dis = data['f9']  # Qs | X
+        else:
+            data_formated["image"][qubit_name] = data
+            return data_formated
+        s0 = I_channel + 1j * Q_channel  # 复数 s0 (I 通道)
+        s1 = X_channel + 1j * Y_channel  # 复数 s1 (X 通道)
+        dis_cal = np.abs(s0 - s1)
+        data_formated["image"][qubit_name] = (freq, s0, s1)
+    return data_formated
+
+
+def spinecho_convert(result):
+    """Convert LQCS SpinEchoCPMG hdf5 data to scope spinecho format."""
+    return t2fit_convert(result)
+
+
+def timingxyz_convert(result):
+    data_formated = {"image": {}}
+
+    for qubit_name, data in result.items():
+        qubit_name = qubit_name.strip()
+
+        if type(data) == list:
+            data_arr = np.array(data)
+            delay = data_arr[:, 0] * 1e-9
+            amp = data_arr[:, 1]
+            data_formated["image"][qubit_name] = (amp, delay)
+
+        elif data.dtype.names:
+            delay = data["f0"] * 1e-9
+            amp = data["f1"]
+            data_formated["image"][qubit_name] = (amp, delay)
+
+        else:
+            data_formated["image"][qubit_name] = data
+
+    return data_formated

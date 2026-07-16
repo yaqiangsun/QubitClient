@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import sys
+import os
+import csv
+import json
+import numpy as np
+
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
-import json
 from typing import Dict, Any, Optional, List
 from typing import Annotated
 from swiftmcp import mcp
@@ -15,21 +19,41 @@ V, mV, us, ns, GHz, MHz, dBm, rad, uA = [
 ]
 
 from qcontrol_mcp.tools import s21 as qcontrol_s21
-from qcontrol_mcp.tools import spectroscopy as qcontrol_spectroscopy
-from qcontrol_mcp.tools import allxy as qcontrol_allxy
-from qcontrol_mcp.tools import spectroscopy_adaptive as qcontrol_spectroscopy_adaptive
+from qcontrol_mcp.tools import spectrum as qcontrol_spectrum
+from qcontrol_mcp.tools import spectrum_2d as qcontrol_spectrum_2d
 from qcontrol_mcp.tools import pi_pulse as qcontrol_pi_pulse
 from qcontrol_mcp.tools import pi_pulse_half as qcontrol_pi_pulse_half
 from qcontrol_mcp.tools import drag as qcontrol_drag
-from qcontrol_mcp.tools import iqraw as qcontrol_iqraw
+from qcontrol_mcp.tools import singleshot as qcontrol_singleshot
 from qcontrol_mcp.tools import t1 as qcontrol_t1
 from qcontrol_mcp.tools import ramsey as qcontrol_ramsey
-from qcontrol_mcp.tools import orbit_1q as qcontrol_orbit_1q
+from qcontrol_mcp.tools import rb as qcontrol_rb
 
-# ==================== 全局初始化 ====================
 data_vault_path = ["", "test", "single"]
 
-# ------模拟 r数列-----------
+# 配置文件路径
+CONFIG_PATH = Path(__file__).parent / "qubit_config.json"
+
+
+def load_qubit_config() -> dict:
+    """加载量子比特参数 JSON"""
+    try:
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        raise RuntimeError(f"load config json fail: {str(e)}")
+
+
+def save_qubit_config(data: dict):
+    """写入量子比特参数 JSON"""
+    try:
+        with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        raise RuntimeError(f"write config json fail: {str(e)}")
+    
+
+# ------模拟r数列-----------
 class RangeObj:
     def __init__(self, start, stop, step, unit=None):
         self.start = start
@@ -51,143 +75,390 @@ class RangeMaker:
 
 r = RangeMaker()
 
-# ==============================================
-# 所有参数注解统一改为 Any，绕过 Pydantic 解析
-# ==============================================
+
+class TaskUpdateConfig:
+    """任务参数配置类"""
+    def __init__(self):
+        self._config = {
+            's21': {'params': ['readout_freq(GHz)']},
+            'spectrum': {'params': ['f10(GHz)', 'f21(GHz)']},  # f21可能不更新，如果出现双峰，左侧为f21,non计算为(左峰-右峰)*2
+            'spectrum_2d': {'params': []},
+            'singleshot': {'params': ['center |0>', 'center |1>']},  # FIXME:没有 'discriminator.threshold'
+            'rabi': {'params': ['PiGate.amp', 'pi_amp_half']},  # PiHalf.amp数值是除以2
+            'pipulsef10': {'params': ['f10(GHz)', 'f21(GHz)']},
+            'ramsey': {'params': ['f10(GHz)', 'f21(GHz)']},
+            'optqubitreadfreq': {'params': ['fread']},
+            'opt_pipulse': {'params': ['PiGate.amp', 'PiGate.alpha']},
+            'setpialpha': {'params': ['pi_amp', 'pi_alpha', 'pi_amp_half', 'pi_alpha_half']},
+            'pulseshape': {'params': []},
+            't1': {'params': []},
+        }
+        self._param_mapping = {
+            'readout_freq_star': 'readout_freq(GHz)',
+            'readout_power_star': 'readout_power(dBm)',
+            'readout_len_star': 'readout_len(us)',
+            'z_offset_star': 'z_offset',
+            'f10_star': 'f10(GHz)',
+            'f21_star': 'f21(GHz)',
+            'pi_amp_star': 'pi_amp',
+            'pi_alpha_star': 'pi_alpha',
+            'timing_xy_star': 'timing_lag_xy(ns)',
+            'center0_star': 'center |0>',
+            'center1_star': 'center |1>',
+            'pi_amp_half_star': 'pi_amp_half',
+            'pi_alpha_half_star': 'pi_alpha_half',
+            'adc_start_delay_star': 'adc_start_delay(ns)',
+            'spec_len_star': 'spec_len(us)'
+        }
+
+    def get_task_params(self, task_type):
+        if task_type not in self._config:
+            raise ValueError(f"unknown task: {task_type}")
+        return self._config[task_type]['params']
+
+    def get_original_param_name(self, mapped_name):
+        if mapped_name not in self._param_mapping:
+            raise KeyError(f"Parameter '{mapped_name}' not found in mapping")
+        return self._param_mapping[mapped_name]
+
+
+def convert_ndarray(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {k: convert_ndarray(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [convert_ndarray(i) for i in obj]
+    else:
+        return obj
+    
+    
 @mcp.tool
-async def s21(
-    qubit: Annotated[str, "目标量子比特名称"],
-    readout_freq: Annotated[Any, "读取频率"] = r[6.59:6.61:0.0002, GHz],
-    readout_power: Annotated[Any, "读取功率"] = -10 * dBm
+def get_data(rid: Annotated[int | str, "csv文件路径"]):
+    '''
+    Args:
+        rid: csv文件路径
+    '''
+    csv_file_path = rid
+    abs_path = os.path.abspath(csv_file_path)
+    result = {}
+
+    if not os.path.exists(abs_path):
+        print(f" csv文件不存在:{abs_path}")
+        return None
+
+    # 读取CSV并转为numpy数组
+    data_list = []
+    with open(abs_path, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        header = next(reader, "data")
+        title = header.split(':')[0] if isinstance(header, str) else "data"
+        
+        for row in reader:
+            row_data = [float(val) for val in row]
+            data_list.append(row_data)
+    
+    # 转为ndarray，保持和原HDF5输出结构一致
+    data = np.array(data_list)
+    result[title] = data
+    return convert_ndarray(result)
+
+@mcp.tool
+def update_param(
+    qname: Annotated[str, "量子比特名称，如 qr1、qr2"],
+    task_type: Annotated[str, "任务类型"],
+    values: Annotated[list, "待更新参数值列表，与TaskUpdateConfig中定义的任务参数列表一致"]
 ) -> str:
-    return qcontrol_s21(qubit=qubit, readout_freq=readout_freq, readout_power=readout_power)
+    """
+    读写并修改 qubit_config.json 中的量子比特参数
+    """
+
+    # load json
+    cfg = load_qubit_config()
+
+    if qname not in cfg:
+        return f"错误：量子比特 {qname} 不存在"
+    
+    TASK_UPDATE_CONFIG = TaskUpdateConfig()
+    params = TASK_UPDATE_CONFIG.get_task_params(task_type)
+
+    if len(values) != len(params):
+        raise ValueError(f"{task_type} update {len(params)} params, but got {len(values)} : {values}")
+    
+    for param_name, param_val in zip(params, values):
+        # 更新参数（支持float、数组）
+        old_val = cfg[qname].get(param_name, None)
+        cfg[qname][param_name] = param_val
+
+    # write json
+    save_qubit_config(cfg)
 
 
 @mcp.tool
-async def spectroscopy(
-    qubit: Annotated[str, "目标量子比特名称"],
-    f10: Annotated[Any, "比特本征频率"] = r[3.999:4.1:0.0000002, GHz],
-    spec_amp: Annotated[Any, "频谱幅度"] = r[2.999:3:0.0000001]
+def query_param(
+    qname: Annotated[str, "量子比特名称"],
+    key: Annotated[str, "参数标识名"]
+):
+    '''
+    Args:
+        qname: 量子比特名称
+        key: 参数标识名
+    '''
+    # load json
+    cfg = load_qubit_config()
+
+    if qname not in cfg:
+        return f"错误：量子比特 {qname} 不存在"
+    
+    TASK_UPDATE_CONFIG = TaskUpdateConfig()
+    machine_key = TASK_UPDATE_CONFIG.get_original_param_name(key)
+
+    value = cfg[qname].get(machine_key, None)
+
+    return value
+
+
+# FIXME:根据csv保存地址重新修改此接口
+def find_latest_filename(task_type):
+    ROOT_FOLDER = 'D:/DataVault/LQHL.dir/test.dir/20260324.dir/'
+    max_num = -1
+    latest_file_name = None
+    for filename in os.listdir(ROOT_FOLDER):
+        # print("filename: ", filename)
+        if not filename.endswith('.csv'):
+            continue
+        number_id = int(filename.split(' - ')[0])
+        if number_id > max_num and task_type in filename.lower():
+            max_num = number_id
+            latest_file_name = filename
+    if latest_file_name is not None:
+        print("find latest file: ", latest_file_name)
+    else:
+        return
+    csv_path = os.path.join(ROOT_FOLDER, latest_file_name)
+    return csv_path
+
+
+@mcp.tool
+def s21(
+    qubits: Annotated[list[str], "量子比特名称"] = ['Q0', 'Q1'],
+    frequency_center: Annotated[float, "中心频率，单位GHz"] = 6.5,
+    frequency_half_bandwidth: Annotated[float, "频率半带宽，单位GHz"] = 0.0005,
+    frequency_sample_num: Annotated[int, "频率采样点数"] = 101,
+):
+    '''
+    Args:
+        qubits: 量子比特名称
+        frequency_center: 中心频率，单位GHz
+        frequency_half_bandwidth: 频率半带宽，单位GHz
+        frequency_sample_num: 频率采样点数
+    '''
+    res = qcontrol_s21(qubits=qubits,
+                      frequency_center=frequency_center,
+                      frequency_half_bandwidth=frequency_half_bandwidth,
+                      frequency_sample_num=frequency_sample_num
+                      )
+    csv_path = find_latest_filename(task_type='s21')
+    return csv_path
+    
+@mcp.tool
+def spectrum(
+    qubits: Annotated[list[str], "量子比特名称"] = ['Q0', 'Q1'],
+    freq_start: Annotated[float, "频率起始值，单位GHz"] = 3.0,
+    freq_end: Annotated[float, "频率终止值，单位GHz"] = 5.0,
+    freq_sample_num: Annotated[int, "频率采样点数"] = 1000,
+    zpa: Annotated[float, "直流偏置值"] = 0,
+    spec_amp: Annotated[float, "驱动脉冲幅值"] = 0.5,
+    sb_freq: Annotated[float, "边带频率，单位GHz"] = -0.15
+):
+    '''
+    Args:
+        qubits: 量子比特名称
+        freq_start: 频率起始值，单位GHz
+        freq_end: 频率终止值，单位GHz
+        freq_sample_num: 频率采样点数
+        zpa: 直流偏置值
+        spec_amp: 驱动脉冲幅值
+        sb_freq: 边带频率，单位GHz
+    '''
+    res = qcontrol_spectrum(qubits=qubits,
+                           freq_start=freq_start,
+                           freq_end=freq_end,
+                           freq_sample_num=freq_sample_num,
+                           zpa=zpa,
+                           spec_amp=spec_amp,
+                           sb_freq=sb_freq
+                           )
+    csv_path = find_latest_filename(task_type='spectrum')
+    return csv_path
+
+
+@mcp.tool
+def spectrum_2d(
+    qubits: Annotated[list[str], "量子比特名称"] = ['Q0', 'Q1'],
+    freq_start: Annotated[float, "频率起始值，单位GHz"] = 3.0,
+    freq_end: Annotated[float, "频率终止值，单位GHz"] = 5.0,
+    freq_sample_num: Annotated[int, "频率采样点数"] = 100,
+    zpa_start: Annotated[float, "偏置起始值"] = -1,
+    zpa_end: Annotated[float, "偏置终止值"] = 1,
+    zpa_sample_num: Annotated[int, "偏置采样点数"] = 100,
+    spec_amp: Annotated[float, "驱动脉冲幅值"] = 0.5,
+    sb_freq: Annotated[float, "边带频率，单位GHz"] = -0.15
 ) -> str:
-    return qcontrol_spectroscopy(qubit=qubit, f10=f10, spec_amp=spec_amp)
+    res = qcontrol_spectrum_2d(qubits=qubits,
+                                freq_start=freq_start,
+                                freq_end=freq_end,
+                                freq_sample_num=freq_sample_num,
+                                zpa_start=zpa_start,
+                                zpa_end=zpa_end,
+                                zpa_sample_num=zpa_sample_num,
+                                spec_amp=spec_amp,
+                                sb_freq=sb_freq)
+    csv_path = find_latest_filename(task_type='spectrum_2d')
+    return csv_path
+
 
 @mcp.tool
-async def allxy(qubit: Annotated[str, "目标量子比特名称"]) -> str:
-    return qcontrol_allxy(qubit=qubit)
-
-
-@mcp.tool
-async def spectroscopy_adaptive(
-    qubit: Annotated[str, "目标量子比特名称"],
-    spec_amp: Annotated[Any, "频谱幅度"] = 0.5,
-    spec_len: Annotated[Any, "频谱时长"] = 1 * us
+def pi_pulse(
+    qubits: Annotated[list[str], "目标量子比特名称"],
+    pi_num: Annotated[int, "脉冲数量"] = None,
+    pi_amp: Annotated[Any, "脉冲幅度"] = None,
+    pi_len: Annotated[Any, "脉冲时长"] = None,
+    z_offset: Annotated[float, "Z偏移量"] = None,
+    readout_freq: Annotated[Any, "读取频率"] = None,
+    readout_power: Annotated[Any, "读取功率"] = None,
+    f10: Annotated[Any, "本征频率"] = None
 ) -> str:
-    return qcontrol_spectroscopy_adaptive(qubit=qubit, spec_amp=spec_amp, spec_len=spec_len)
 
-
-@mcp.tool
-async def pi_pulse(
-    qubit: Annotated[str, "目标量子比特名称"],
-    pi_num: Annotated[int, "脉冲数量"] = 1,
-    pi_amp: Annotated[Any, "脉冲幅度"] = r[0:1:0.02],
-    pi_len: Annotated[Any, "脉冲时长"] = 60 * ns,
-    z_offset: Annotated[float, "Z偏移量"] = 0.5,
-    readout_freq: Annotated[Any, "读取频率"] = 6.164 * GHz,
-    readout_power: Annotated[Any, "读取功率"] = -30 * dBm,
-    f10: Annotated[Any, "本征频率"] = 3.984 * GHz
-) -> str:
-    return qcontrol_pi_pulse(
-        qubit=qubit, pi_num=pi_num, pi_amp=pi_amp, pi_len=pi_len,
+    res = qcontrol_pi_pulse(
+        qubits=qubits, pi_num=pi_num, pi_amp=pi_amp, pi_len=pi_len,
         z_offset=z_offset, readout_freq=readout_freq,
         readout_power=readout_power, f10=f10
     )
 
+    csv_path = find_latest_filename(task_type='pi_pulse')
+    return csv_path
+
 
 @mcp.tool
-async def pi_pulse_half(
-    qubit: Annotated[str, "目标量子比特名称"],
+def pi_pulse_half(
+    qubits: Annotated[list[str], "目标量子比特名称"],
     pi_num: Annotated[int, "脉冲数量 1/3/5"],
-    pi_amp_half: Annotated[Any, "半脉冲幅度"] = r[1:1.1:0.000005]
+    pi_amp_half: Annotated[Any, "半脉冲幅度"] = None
 ) -> str:
-    return qcontrol_pi_pulse_half(qubit=qubit, pi_num=pi_num, pi_amp_half=pi_amp_half)
+
+    res = qcontrol_pi_pulse_half(qubits=qubits, pi_num=pi_num, pi_amp_half=pi_amp_half)
+
+    csv_path = find_latest_filename(task_type='pi_pulse_half')
+    return csv_path
 
 
 @mcp.tool
-async def drag(
-    qubit: Annotated[str, "目标量子比特名称"],
-    gate_num: Annotated[int, "门数量"],
-    gate_type: Annotated[str, "门类型 X / X/2"],
-    alpha: Annotated[Any, "DRAG 校正系数扫描区间"] = None,
-    pi_amp: Annotated[Any, "脉冲幅度"] = None
+def drag(
+    qubits: Annotated[list[str], "目标量子比特名称"],
+    lamb:list[float]=[-0.5, 0.5],
+    stage:int=1,
+    N_repeat:int=1,
+    pulsePair:list[int]=[0, 1],
+    signal:str='population'
 ) -> str:
-    return qcontrol_drag(qubit=qubit, gate_num=gate_num, gate_type=gate_type, alpha=alpha, pi_amp=pi_amp)
+    res = qcontrol_drag(qubits=qubits,
+                         lamb=lamb,
+                         stage=stage,
+                         N_repeat=N_repeat,
+                         pulsePair=pulsePair,
+                         signal=signal)
+
+    csv_path = find_latest_filename(task_type='drag')
+    return csv_path
 
 
 @mcp.tool
-async def iqraw(
-    qubit: Annotated[str, "目标量子比特名称"],
-    pi_amp: Annotated[Any, "脉冲幅度"] = 0.446,
-    pi_len: Annotated[Any, "脉冲时长"] = 30 * ns,
-    z_offset: Annotated[float, "Z偏移量"] = 0.5,
-    readout_freq: Annotated[Any, "读取频率"] = 6.6 * GHz,
-    readout_power: Annotated[Any, "读取功率"] = -100 * dBm,
-    f10: Annotated[Any, "本征频率"] = 3.984 * GHz,
-    readout_len: Annotated[Any, "读取时长"] = 2.048 * us,
-    adc_start_delay: Annotated[Any, "ADC起始延迟区间"] = r[620:650:1, ns]
+def singleshot(
+    qubits: Annotated[list[str], "目标量子比特名称"],
 ) -> str:
-    return qcontrol_iqraw(
-        qubit=qubit, pi_amp=pi_amp, pi_len=pi_len, z_offset=z_offset,
-        readout_freq=readout_freq, readout_power=readout_power,
-        f10=f10, readout_len=readout_len, adc_start_delay=adc_start_delay
+
+    res = qcontrol_singleshot(
+        qubits=qubits
     )
+    csv_path = find_latest_filename(task_type='iqraw')
+    return csv_path
 
 
 @mcp.tool
-async def t1(
-    qubit: Annotated[str, "目标量子比特名称"],
-    q_states: Annotated[List[str], "量子态列表"] = ["I", "X"],
-    delay: Annotated[Any, "延迟时长"] = 100 * us,
-    zpa: Annotated[float, "Z轴偏移量"] = None,
-    read_delay: Annotated[Any, "读取延迟"] = 100 * ns,
-    reps: Annotated[int, "采样次数"] = 3000
+def t1(
+    qubits: Annotated[list[str], "量子比特名称"] = ['Q0', 'Q1'],
+    delay_start: Annotated[int, "延时起始值，单位纳秒"] = 0,
+    delay_end: Annotated[int, "延时终止值，单位纳秒"] = 80000,
+    delay_sample_num: Annotated[int, "延时采样点数"] = 17,
+    zpa: Annotated[float, "直流偏置值"] = 0.0
+):
+    '''
+    Args:
+        qubits: 量子比特名称
+        delay_start: 延时起始值，单位纳秒
+        delay_end: 延时终止值，单位纳秒
+        delay_sample_num: 延时采样点数
+        zpa: 直流偏置值
+    '''
+    res = qcontrol_t1(qubits=qubits,
+                        delay_start=delay_start,
+                        delay_end=delay_end,
+                        delay_sample_num=delay_sample_num,
+                        zpa=zpa)
+
+    csv_path = find_latest_filename(task_type='t1')
+    return csv_path
+
+@mcp.tool
+def opt_pipulse(qubits:list[str]=['Q0','Q1'],
+                N_list:list[int]=[1, 3, 5],
+                amp_list:list[float]=None
+                ):
+    res = qcontrol_pi_pulse(qubits=qubits,
+                             N_list=N_list,
+                             amp_list=amp_list)
+    csv_path = find_latest_filename(task_type='opt_pipulse')
+    return csv_path
+
+@mcp.tool
+def ramsey(
+    qubits: Annotated[list[str], "目标量子比特名称"],
+    delay_start:float=0,
+    delay_end:float=100,
+    delay_sample_num:int=100,
+    fringeFreq:float=0.05
 ) -> str:
-    return qcontrol_t1(
-        qubit=qubit, q_states=q_states, delay=delay, zpa=zpa,
-        read_delay=read_delay, reps=reps
+
+    res = qcontrol_ramsey(
+        qubits=qubits, 
+        delay_start=delay_start, 
+        delay_end=delay_end,
+        delay_sample_num=delay_sample_num, 
+        fringeFreq=fringeFreq
     )
+    csv_path = find_latest_filename(task_type='ramsey')
+    return csv_path
 
 
 @mcp.tool
-async def ramsey(
-    qubit: Annotated[str, "目标量子比特名称"],
-    short_delay: Annotated[bool, "是否使用短延时扫描"] = True,
-    delay: Annotated[Any, "延迟扫描区间"] = None,
-    fringe_freq: Annotated[Any, "条纹频率"] = None,
-    opt_couplers: Annotated[Optional[list], "耦合器配置"] = None,
-    read_delay: Annotated[Any, "读取延迟"] = 100 * ns,
-    simultaneous: Annotated[bool, "同步采集"] = True
+def rb(qubits:list[str],
+        couplers:tuple=tuple([]),
+        stage:int=3,
+        gate:list=['ref'],
+        cycle:list=None,
+        size:int=11,
+        plot:bool=True
 ) -> str:
-    return qcontrol_ramsey(
-        qubit=qubit, short_delay=short_delay, delay=delay,
-        fringe_freq=fringe_freq, opt_couplers=opt_couplers,
-        read_delay=read_delay, simultaneous=simultaneous
+    res = qcontrol_rb(
+        qubits=qubits,
+        couplers=couplers,
+        stage=stage,
+        gate=gate,
+        cycle=cycle,
+        size=size,
+        plot=plot
     )
+    csv_path = find_latest_filename(task_type='rb')
+    return csv_path
 
-
-@mcp.tool
-async def orbit_1q(
-    qubit: Annotated[str, "目标量子比特名称"],
-    gate: Annotated[str, "门类型"] = "reference",
-    m: Annotated[Any, "随机序列长度区间"] = r[0:300:20],
-    k: Annotated[int, "随机序列数量"] = 20,
-    tbuffer: Annotated[Any, "脉冲间隔"] = 10 * ns,
-    reps: Annotated[int, "采样次数"] = 1200,
-    read_delay: Annotated[Any, "读取延迟"] = 100 * ns
-) -> str:
-    return qcontrol_orbit_1q(
-        qubit=qubit, gate=gate, m=m, k=k,
-        tbuffer=tbuffer, reps=reps, read_delay=read_delay
-    )
-
-if __name__ == "__main__":
-    mcp.run()

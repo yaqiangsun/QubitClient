@@ -1,7 +1,8 @@
 from importlib import reload
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 import json
 import numpy as np
+from qubitclient.ctrl import QubitCtrlClient
 from labrad.units import Unit, Value, WithUnit
 # from qcontrol.config import wiring_configs
 # from qcontrol.experiment import experiments as exp
@@ -18,37 +19,38 @@ data_vault_path = ["", "test", "single"]
 # qubit_configs = QConfig("qubit_config.json")
 
 
-def spectroscopy_adaptive(
-    qubit: Annotated[str, "目标量子比特名称"],
-    spec_amp: Annotated[float, "频谱幅度"] = 0.5,
-    spec_len: Annotated[WithUnit, "频谱时长"] = 1 * us
+def spectrum(
+    qubits: Annotated[List[str], "目标量子比特名称"],
+    freq_start:float=1.0,
+    freq_end:float=3.0,
+    freq_sample_num:int=200,
+    zpa:float=0,
+    spec_amp:float=0.0,
+    sb_freq:float=0
 ) -> str:
-    """
-    执行自适应频谱测量
-    :param qubit: 目标比特名称
-    :param spec_amp: 频谱幅度
-    :param spec_len: 频谱时长
-    """
+    qname = qubits[0]
+    qubit_ctrl_client = QubitCtrlClient()
+
+    f10_star = float(qubit_ctrl_client.query_param(qname=qname, key="f10_star"))
+
     reload(exp)
     dev_cfg = {
-        qubit: {
+        qname: {
+            "f10": f10_star,
             "spec_amp": spec_amp,
-            "spec_len": spec_len,
         }
     }
-    raw_data = exp.spectroscopy_adaptive(
+    raw_data = exp.spectroscopy(
         qubit_configs,
         wiring_configs,
-        qubit,
-        sb_freq=100 * MHz,
-        freq_scan=r[-0.006:0.006:0.0006, GHz],
-        zpa_scan=r[-0.8:0.19:0.2],
+        qubits,
         exp_device_configs=dev_cfg,
+        read_delay=50 * ns,
+        sb_freq=sb_freq,
         data_vault_path=data_vault_path,
-        description="",
         collect=True,
-        scan_shrink_ratio=0.3,
-        reps=300
+        reps=100
     )
+    data_list = raw_data.tolist()
 
-    return json.dumps(raw_data, ensure_ascii=False)
+    return json.dumps(data_list, ensure_ascii=False)

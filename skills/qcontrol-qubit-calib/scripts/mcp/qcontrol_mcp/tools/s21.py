@@ -1,7 +1,8 @@
 
 from importlib import reload
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 import json
+from qubitclient.ctrl import QubitCtrlClient
 import numpy as np
 from labrad.units import Unit, Value, WithUnit
 # from qcontrol.config import wiring_configs
@@ -20,21 +21,26 @@ data_vault_path = ["", "test", "single"]
 
 
 def s21(
-    qubit: Annotated[str, "目标量子比特名称"],
-    readout_freq: Annotated[any, "读取频率"] = None, # r[6.59:6.61:0.0002, GHz]
-    readout_power: Annotated[any, "读取功率"] = -10 * dBm
+    qubits: Annotated[List[str], "目标量子比特名称"],
+    frequency_center: Annotated[float, "中心频率，单位GHz"] = 6.5,
+    frequency_half_bandwidth: Annotated[float, "频率半带宽，单位GHz"] = 0.0005,
+    frequency_sample_num: Annotated[int, "频率采样点数"] = 101,
 ) -> str:
-    """
-    执行 S21 读取腔测量
-    :param qubit: 目标比特名称，如 qr2
-    :param readout_freq: 读取频率
-    :param readout_power: 读取功率
-    """
+    
+    # qubit_ctrl_client = QubitCtrlClient()
+    # qname = qubits[0]
+
+    # frequency_start = frequency_center - frequency_half_bandwidth
+    # frequency_end = frequency_center + frequency_half_bandwidth
+    # freq = np.linspace(frequency_start, frequency_end, frequency_sample_num)
+
+    # readout_power = float(qubit_ctrl_client.query_param(qname=qname, key="readout_power_star"))
+
     # reload(exp)
     
     # dev_cfg = {
     #     qubit: {
-    #         "readout_freq": readout_freq,
+    #         "readout_freq": freq,
     #         "readout_power": readout_power,
     #     }
     # }
@@ -51,5 +57,6 @@ def s21(
 
     # FIXME:模拟数据
     raw_data = np.array([-22.3, -21.8, -19.6, -17.1, -15.4, -18.9])
+    data_list = raw_data.tolist()
 
-    return json.dumps(raw_data, ensure_ascii=False)
+    return json.dumps(data_list, ensure_ascii=False)

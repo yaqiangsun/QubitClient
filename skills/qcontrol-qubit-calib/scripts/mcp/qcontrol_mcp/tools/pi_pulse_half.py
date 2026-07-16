@@ -1,7 +1,8 @@
 from importlib import reload
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 import json
 import numpy as np
+from qubitclient.ctrl import QubitCtrlClient
 from labrad.units import Unit, Value, WithUnit
 # from qcontrol.config import wiring_configs
 # from qcontrol.experiment import experiments as exp
@@ -19,29 +20,26 @@ data_vault_path = ["", "test", "single"]
 
 
 def pi_pulse_half(
-    qubit: Annotated[str, "目标量子比特名称"],
-    pi_num: Annotated[int, "脉冲数量 1/3/5"],
-    pi_amp_half: Annotated[any, "半脉冲幅度"] = None # r[1:1.1:0.000005]
+    qubits: List[str],
+    N_list:list[int]=[1, 3, 5],
+    amp_list:list[float]=None
 ) -> str:
-    """
-    执行半π脉冲测量
-    :param qubit: 目标比特名称
-    :param pi_num: 脉冲数量 1/3/5
-    :param pi_amp_half: 半脉冲幅度
-    """
     
     reload(exp)
+    qubit_ctrl_client = QubitCtrlClient()
+    qname = qubits[0]
+    pi_amp_half_star = float(qubit_ctrl_client.query_param(qname=qname, key="pi_amp_half_star"))
     dev_cfg = {
-        qubit: {
-            "pi_amp_half": pi_amp_half,
+        qubits: {
+            "pi_amp_half": pi_amp_half_star,
         }
     }
     raw_data = exp.pi_pulse_half(
         qubit_configs,
         wiring_configs,
-        qubit,
+        qubits,
         exp_device_configs=dev_cfg,
-        pi_num=pi_num,
+        pi_num=1,
         data_vault_path=data_vault_path,
         description=" ",
         collect=False,
@@ -50,4 +48,6 @@ def pi_pulse_half(
         read_delay=100 * ns
     )
 
-    return json.dumps(raw_data, ensure_ascii=False)
+    data_list = raw_data.tolist()
+
+    return json.dumps(data_list, ensure_ascii=False)

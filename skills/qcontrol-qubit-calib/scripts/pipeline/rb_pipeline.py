@@ -8,11 +8,11 @@
 ########################################################################
 
 
-"""Real optpipulse measurement pipeline, write data to storage for web UI real-time display
+"""Real rb measurement pipeline, write data to storage for web UI real-time display
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.qcontrol-qubit-calib.scripts.pipeline.pi_pulse_pipeline
+            python -m skills.qcontrol-qubit-calib.scripts.pipeline.drag_pipeline
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -34,22 +34,18 @@ from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import optpipulse
-from analysis.visualization import plot_optpipulse
-from analysis.update import optpipulse_update
+from analysis.inception import rb
+from analysis.visualization import plot_rb
+from analysis.update import rb_update
 
 DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="optpipulse Spectrum Measurement Pipeline (UI storage sync enabled)")
+    parser = argparse.ArgumentParser(description="RB Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
                         help="Target qubit name list, default: q1ld5")
-
-    parser.add_argument("--fread_star", "-f", type=float, default=None,
-                        help="Manual readout fread_star (GHz). Auto query hardware if not set.")
-
     
     # 是否根据分析结果更新参数
     parser.add_argument("--update", "-u", type=bool, default=False,
@@ -86,9 +82,9 @@ def parse_args():
 
 
 
-def get_optpipulse_res(args):
+def get_rb_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = CtrlTaskName.OPTPIPULSE.value
+    task_name = CtrlTaskName.DRAG.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
     run_id = None
@@ -98,17 +94,12 @@ def get_optpipulse_res(args):
         # =========== 查询/使用传入fread参数 ===========
         qubit_ctrl_client = QubitCtrlClient()
         
-        if args.fread_star is not None:
-            fread_star = args.fread_star
-        else:
-            fread_star = float(qubit_ctrl_client.query_param(qname=qname, key="fread_star"))
 
         # 设置实验参数
         set_params = {
             "qubits": qubit_name_list,
             "frequency_half_bandwidth": args.bandwidth,
             "frequency_sample_num": args.samples,
-            "fread_star": fread_star
         }
 
         # 新建实验记录，写入存储
@@ -118,15 +109,13 @@ def get_optpipulse_res(args):
             params=set_params
         )
         run_id = store.save_run(run_record)
-        print(f"[OPTPIPULSE] Task started run_id={run_id[:8]}")
+        print(f"[rb] Task started run_id={run_id[:8]}")
     
         # =========== 采集数据 ===========
         data_id = qubit_ctrl_client.run(
-            CtrlTaskName.OPTPIPULSE,
+            CtrlTaskName.RB,
             qubits=qubit_name_list,
-            frequency_center=set_params["fread_star"],
-            frequency_half_bandwidth=set_params["frequency_half_bandwidth"],
-            frequency_sample_num=set_params["frequency_sample_num"]
+            
         )
 
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
@@ -135,12 +124,12 @@ def get_optpipulse_res(args):
         store.update_run(run_id=run_id, raw_data_id=data_id, raw_data=raw_data)
 
         # =========== 分析 ============
-        analysis_result = optpipulse(raw_data)
+        analysis_result = rb(raw_data)
 
         # =========== 绘制波形图==========
-        img_save_path = f'{save_folder}/{CtrlTaskName.OPTPIPULSE.value}_{qubit_name_list[0]}_{run_id}.png'
+        img_save_path = f'{save_folder}/{CtrlTaskName.RB.value}_{qubit_name_list[0]}_{run_id}.png'
  
-        plot_optpipulse(raw_data, analysis_result, save_path=img_save_path)
+        plot_rb(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
@@ -152,14 +141,14 @@ def get_optpipulse_res(args):
         new_full_params = set_params.copy()
         if args.update:
 
-            update_dict = optpipulse_update(results=analysis_result, conf_threshold=args.confidence, qubit_name_list=qubit_name_list)
+            update_dict = rb_update(results=analysis_result, conf_threshold=args.confidence, qubit_name_list=qubit_name_list)
             
             for qname, info in update_dict.items():
                 new_value = info["fread_star"]
 
                 qubit_ctrl_client.update_param(
                     qname=qname,
-                    task_type=CtrlTaskName.OPTPIPULSE,
+                    task_type=CtrlTaskName.RB,
                     values=[new_value]
                 )
                 # 覆盖新频率到参数字典
@@ -191,4 +180,4 @@ def get_optpipulse_res(args):
 
 if __name__ == '__main__':
     cli_args = parse_args()
-    get_optpipulse_res(cli_args)
+    get_rb_res(cli_args)

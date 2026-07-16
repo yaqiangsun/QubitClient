@@ -7,17 +7,17 @@
 # Created Time: 2026/06/12
 ########################################################################
 
-"""Ramsey coherence scan pipeline with UI storage & cmd args
+"""Single shot readout pipeline with UI storage & cmd args
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.qcontrol-qubit-calib.scripts.pipeline.ramsey_pipeline -q q1ld5 -u True -c 0.6
+        python -m skills.qcontrol-qubit-calib.scripts.pipeline.singleshot_pipeline -q q1ld5 -u True
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
+
 import sys
 import argparse
 import uuid
-import math
 from datetime import datetime
 from pathlib import Path
 from PIL import Image
@@ -36,11 +36,11 @@ from qubitclient.storage.storage import StorageBackend
 from qubitclient.ctrl import QubitCtrlClient
 from qubitclient.ctrl import CtrlTaskName
 
-from analysis.inception import ramsey
-from analysis.visualization import plot_ramsey
-from analysis.update import ramsey_update
+from analysis.inception import singleshot
+from analysis.visualization import plot_singleshot
+from analysis.update import singleshot_update
 
-DEFAULT_SAVE_FOLDER = './tmp'
+DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 
 
 def llm_analysis(img_save_path):
@@ -66,82 +66,56 @@ def llm_analysis(img_save_path):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Ramsey Coherence Measurement Pipeline (UI storage sync enabled)")
+    parser = argparse.ArgumentParser(description="SingleShot Readout Measurement Pipeline (UI storage sync enabled)")
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
                         help="Target qubit list, default: q1ld5")
-
-    parser.add_argument("--delay-start", type=float, default=0, help="Delay start")
-    parser.add_argument("--delay-end", type=float, default=600, help="Delay end")
-    parser.add_argument("--delay-samples", type=int, default=100, help="Delay sample count")
-    parser.add_argument("--fringeFreq", type=float, default=0.005, help="Ramsey fringe frequency")
-
     parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
                         help="Plot output directory")
-    # 新增更新开关与置信度阈值
     parser.add_argument("--update", "-u", type=bool, default=False,
                         help="Whether update params based on analysis result")
-    parser.add_argument("--confidence", "-c", type=float, default=0.5,
-                        help="Confidence threshold for parameter update")
+
     return parser.parse_args()
 
 
-def get_ramsey_res(args):
+def get_singleshot_hdf5_res(args):
     store = PipelineResultStore(backend=StorageBackend.LOCAL)
-    task_name = CtrlTaskName.RAMSEY.value
+    task_name = CtrlTaskName.SINGLESHOT.value
     qubit_name_list = args.qubits
     save_folder = args.save_folder
-    fringeFreq = args.fringeFreq
     qname = qubit_name_list[0]
 
     try:
         # 1.采集数据
         qubit_ctrl_client = QubitCtrlClient()
-        f10_star_original = float(qubit_ctrl_client.query_param(qname=qname, key="f10_star"))
-        f21_star_original = float(qubit_ctrl_client.query_param(qname=qname, key="f21_star"))
+
+        discriminator_center0_star_original = qubit_ctrl_client.query_param(qname=qname, key="discriminator_center0_star")
+        discriminator_center1_star_original = qubit_ctrl_client.query_param(qname=qname, key="discriminator_center1_star")
+        discriminator_threshold_star_original = qubit_ctrl_client.query_param(qname=qname, key="discriminator_threshold_star")
 
         set_params = {
             "qubits": qubit_name_list,
-            "delay_start": args.delay_start,
-            "delay_end": args.delay_end,
-            "delay_sample_num": args.delay_samples,
-            "fringeFreq": fringeFreq,
-            "f10_star": f10_star_original,
-            "f21_star": f21_star_original
+            "discriminator_center0_star": discriminator_center0_star_original,
+            "discriminator_center1_star": discriminator_center1_star_original,
+            "discriminator_threshold_star": discriminator_threshold_star_original
         }
 
-        # 新建实验记录，移除 pipeline_type
         run_record = PipelineResultRecord(
             task_name=task_name,
             qubits=qubit_name_list,
             params=set_params
         )
         run_id = store.save_run(run_record)
-        logging.info(f"[RAMSEY] Task started run_id={run_id[:8]}")
+        logging.info(f"[SINGLESHOT] Task started run_id={run_id[:8]}")
 
-        data_id = qubit_ctrl_client.run(
-            CtrlTaskName.RAMSEY,
-            qubits=qubit_name_list,
-            delay_start=args.delay_start,
-            delay_end=args.delay_end,
-            delay_sample_num=args.delay_samples,
-            fringeFreq=fringeFreq
-        )
-        # 读取原始数据
+        data_id = qubit_ctrl_client.run(CtrlTaskName.SINGLESHOT, qubits=qubit_name_list)
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
-        # 写入原始数据
-        store.update_run(
-            run_id=run_id,
-            raw_data_id=data_id,
-            raw_data=raw_data
-        )
-
         # 2.分析数据
-        analysis_result = ramsey(raw_data)
+        analysis_result = singleshot(raw_data)
 
-        # 3.绘图，统一命名规则
-        img_save_path = f'{save_folder}/{CtrlTaskName.RAMSEY.value}_{qname}_{run_id}.png'
-        plot_ramsey(raw_data, analysis_result, save_path=img_save_path)
+        # 3.绘图
+        img_save_path = f'{save_folder}/{CtrlTaskName.SINGLESHOT.value}_{qname}_{run_id}.png'
+        plot_singleshot(raw_data, analysis_result, save_path=img_save_path)
 
         img_save_path = os.path.abspath(img_save_path)
         plot_paths = [img_save_path]
@@ -149,35 +123,33 @@ def get_ramsey_res(args):
         # 调用大模型图片分析
         # llm_analysis(img_save_path)
 
-        new_full_params = set_params.copy()
-        freq_update_map = {}
+        # 要更新'discriminator.center0', 'discriminator.center1', 'discriminator.threshold'
 
-        # 更新
+        new_full_params = set_params.copy()
+
+        # 开启参数更新
         if args.update:
 
-            # 调用更新函数
-            freq_update_map = ramsey_update(
+            # 仅计算待更新数据，不操作硬件
+            freq_update_map = singleshot_update(
                 results=analysis_result,
-                fringe_freq=fringeFreq,
-                qubit_name_list=qubit_name_list,
-                f10_star_original=f10_star_original
+                qubit_name_list=qubit_name_list
             )
-
-            # 下发更新参数
-            for qname, info in freq_update_map.items():
-                f10_star_val = info["f10_star"]
-                f21_star_val = info["f21_star"]
-                values = [f10_star_val, f21_star_val]
-                qubit_ctrl_client.update_param(
-                    qname=qname,
-                    task_type=CtrlTaskName.RAMSEY,
-                    values=values
-                )
+            # 执行硬件参数更新
+            task_type = CtrlTaskName.SINGLESHOT
+            for qname, item in freq_update_map.items():
+                values = [item['discriminator_center0_star'],
+                          item['discriminator_center1_star'],
+                          item['discriminator_threshold_star']]
+                qubit_ctrl_client.update_param(qname=qname, task_type=task_type, values=values)
+                logging.info(f"[INFO] Update {qname}, {values}")
 
         if freq_update_map:
-            new_full_params["f10_star"] = freq_update_map[qname]['f10_star']
-            new_full_params["f21_star"] = freq_update_map[qname]['f21_star']
-
+            qname = qubit_name_list[0]
+            new_full_params["discriminator_center0_star"] = freq_update_map[qname]['discriminator_center0_star']
+            new_full_params["discriminator_center1_star"] = freq_update_map[qname]['discriminator_center1_star']
+            new_full_params["discriminator_threshold_star"] = freq_update_map[qname]['discriminator_threshold_star']
+        
         store.update_run(
             run_id=run_id,
             status="completed",
@@ -186,7 +158,7 @@ def get_ramsey_res(args):
             completed_at=datetime.now(),
             new_params=new_full_params
         )
-        logging.info(f"Measurement finished, updated params: {new_full_params}")
+        logging.info("Measurement finished")
 
     except Exception as e:
         err_msg = f"Measure failed: {str(e)}"
@@ -202,4 +174,4 @@ def get_ramsey_res(args):
 
 if __name__ == '__main__':
     cli_args = parse_args()
-    get_ramsey_res(cli_args)
+    get_singleshot_hdf5_res(cli_args)

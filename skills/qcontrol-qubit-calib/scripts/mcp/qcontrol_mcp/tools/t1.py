@@ -19,41 +19,34 @@ data_vault_path = ["", "test", "single"]
 
 
 def t1(
-    qubit: Annotated[str, "目标量子比特名称"],
-    q_states: Annotated[List[str], "量子态列表"] = ["I", "X"],
-    delay: Annotated[WithUnit, "延迟时长"] = 100 * us,
-    zpa: Annotated[float, "Z轴偏移量"] = None,
-    read_delay: Annotated[WithUnit, "读取延迟"] = 100 * ns,
-    reps: Annotated[int, "采样次数"] = 3000
+    qubits: Annotated[List[str], "目标量子比特名称"],
+    delay_start: Annotated[int, "延时起始值，单位纳秒"] = 0,
+    delay_end: Annotated[int, "延时终止值，单位纳秒"] = 80000,
+    delay_sample_num: Annotated[int, "延时采样点数"] = 17,
+    zpa: Annotated[float, "直流偏置值"] = 0.0
 ) -> str:
-    """
-    执行 T1 弛豫时间测量
-    :param qubit: 目标比特名称
-    :param q_states: 量子态列表
-    :param delay: 延迟时长
-    :param zpa: Z轴偏移量，为空则从配置读取
-    :param read_delay: 读取延迟
-    :param reps: 采样次数
-    """
+
+    delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
     
     reload(exp)
+    qubit = qubits[0]
 
-    # 未传zpa时，沿用原有逻辑从配置获取
-    if zpa is None:
-        zpa = qubit_configs[qubit]["z_offset"]
+    if zpa == None:
+        zpa = float(qubit_ctrl_client.query_param(qname=qname, key="z_offset_star"))
 
     raw_data = exp.t1(
         qubit_configs,
         wiring_configs,
-        qubit,
-        q_states=q_states,
-        delay=delay,
+        qubits,
+        q_states=["I", "X"],
+        delay=delay_array,
         data_vault_path=data_vault_path,
         zpa=zpa,
         cosine_env=False,
-        read_delay=read_delay,
-        reps=reps
+        read_delay=100 * ns,
+        reps=3000
     )
-    latest_raw_data = raw_data
 
-    return json.dumps(raw_data, ensure_ascii=False)
+    data_list = raw_data.tolist()
+
+    return json.dumps(data_list, ensure_ascii=False)

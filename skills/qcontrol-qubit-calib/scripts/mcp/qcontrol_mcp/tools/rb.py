@@ -28,10 +28,11 @@ def rb(
     plot:bool=True
 ) -> str:
     reload(rb)
+    qname = qubits[0]
     raw_data = rb.orbit_1q(
         qubit_configs,
         wiring_configs,
-        qubits,
+        qname,
         data_vault_path=data_vault_path,
         m=r[0:300:20],
         k=20,
@@ -41,6 +42,7 @@ def rb(
         cosine_env=False,
         read_delay=100 * ns
     )
+    # raw_data = np.array([32.3, -21.8, -19.6, -17.1, -15.4, -18.9])
 
     data_list = raw_data.tolist()
 

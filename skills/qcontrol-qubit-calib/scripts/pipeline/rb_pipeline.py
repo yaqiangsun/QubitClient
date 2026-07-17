@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example:
-            python -m skills.qcontrol-qubit-calib.scripts.pipeline.drag_pipeline
+            python -m skills.qcontrol-qubit-calib.scripts.pipeline.rb_pipeline
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -46,6 +46,11 @@ def parse_args():
     # 被测比特列表
     parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
                         help="Target qubit name list, default: q1ld5")
+    parser.add_argument("--gate", "-g", type=str, nargs="+", default=["reference"],
+                        help="gate")
+    
+    parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
+                        help="Plot output directory")
     
     # 是否根据分析结果更新参数
     parser.add_argument("--update", "-u", type=bool, default=False,
@@ -98,8 +103,8 @@ def get_rb_res(args):
         # 设置实验参数
         set_params = {
             "qubits": qubit_name_list,
-            "frequency_half_bandwidth": args.bandwidth,
-            "frequency_sample_num": args.samples,
+            "gate": args.gate,
+
         }
 
         # 新建实验记录，写入存储
@@ -115,7 +120,7 @@ def get_rb_res(args):
         data_id = qubit_ctrl_client.run(
             CtrlTaskName.RB,
             qubits=qubit_name_list,
-            
+            gate=args.gate
         )
 
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)

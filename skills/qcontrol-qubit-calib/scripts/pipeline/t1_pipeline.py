@@ -12,7 +12,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. cmd params example: (-dn must be bigger than 10)
-            python -m skills.qcontrol-qubit-calib.scripts.pipeline.t1_pipeline -q q1ld5
+            python -m skills.qcontrol-qubit-calib.scripts.pipeline.t1_pipeline
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 

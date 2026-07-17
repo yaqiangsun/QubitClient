@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.qcontrol-qubit-calib.scripts.pipeline.spectrum_pipeline -q q1ld5 -u True  -c 0.6 -fs 3 -fe 5 -fn 500 -sa 0.7
+        python -m skills.qcontrol-qubit-calib.scripts.pipeline.spectrum_pipeline
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -68,8 +68,8 @@ def llm_analysis(img_save_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Qubit Spectrum Measurement Pipeline (UI storage sync enabled)")
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
-                        help="Target qubit list, default: q1ld5")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["qr1"],
+                        help="Target qubit list, default: qr1")
     parser.add_argument("--freq-start", "-fs", type=float, default=3.0, help="Scan freq start")
     parser.add_argument("--freq-end", "-fe", type=float, default=5.0, help="Scan freq end")
     parser.add_argument("--freq-samples", "-fn", type=int, default=1000, help="Frequency sample count")
@@ -132,7 +132,6 @@ def get_spectrum_res(args):
             sb_freq=args.sb_freq
         )
 
-        # FIXME:待确定
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
         # 2.分析数据

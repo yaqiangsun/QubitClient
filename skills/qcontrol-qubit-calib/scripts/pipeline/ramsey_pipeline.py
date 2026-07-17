@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.qcontrol-qubit-calib.scripts.pipeline.ramsey_pipeline -q q1ld5 -u True -c 0.6
+        python -m skills.qcontrol-qubit-calib.scripts.pipeline.ramsey_pipeline -q qr1 -u True -c 0.6
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 import sys
@@ -126,6 +126,7 @@ def get_ramsey_res(args):
             delay_sample_num=args.delay_samples,
             fringeFreq=fringeFreq
         )
+
         # 读取原始数据
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 

@@ -11,6 +11,15 @@ import logging
 import numpy as np
 import math
 
+def rabi_update():
+    pass
+
+def rabihalf_update():
+    pass
+
+def rb_update():
+    pass
+
 
 def optpipulse_update(data_converted, result: dict, file_idx: int = 0, conf_threshold: float = 0.7):
     """

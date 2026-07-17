@@ -27,13 +27,14 @@ def ramsey(
 ) -> str:
 
     reload(exp)
+    qname = qubits[0]
 
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
 
     raw_data = exp.ramsey(
         qubit_configs,
         wiring_configs,
-        qubits,
+        qname,
         opt_couplers=None,
         delay=delay_array,
         fringe_freq=fringeFreq,
@@ -42,6 +43,9 @@ def ramsey(
         read_delay=100 * ns,
         simultaneous=True
     )
+
+    # 模拟数据
+    # raw_data = np.array([16.3, -21.8, -19.6, -17.1, -15.4, -18.9])
 
     data_list = raw_data.tolist()
 

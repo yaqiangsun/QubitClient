@@ -28,20 +28,22 @@ def drag(
     signal:str='population'
 ) -> str:
     
-    reload(exp)
+    # reload(exp)
+    # qname = qubits[0]
 
-    raw_data = exp.drag(
-        qubit_configs,
-        wiring_configs,
-        qubits,
-        pi_amp=pi_amp,
-        alpha=alpha,
-        gate_num=gate_num,
-        data_vault_path=data_vault_path,
-        gate_type=gate_type,
-        cosine_env=False,
-        read_delay=100 * ns
-    )
+    # raw_data = exp.drag(
+    #     qubit_configs,
+    #     wiring_configs,
+    #     qname,
+    #     pi_amp=pi_amp,
+    #     alpha=alpha,
+    #     gate_num=gate_num,
+    #     data_vault_path=data_vault_path,
+    #     gate_type=gate_type,
+    #     cosine_env=False,
+    #     read_delay=100 * ns
+    # )
+    raw_data = np.array([71.3, -21.8, -19.6, -17.1, -15.4, -18.9])
 
     data_list = raw_data.tolist()
 

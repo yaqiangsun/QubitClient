@@ -24,7 +24,7 @@ from qubitclient import handle_exceptions, control_api_execution
 
 from .format import s21_convert,s21vsflux_convert, ramseyt2_convert, t12dfit_convert, \
                     singleshot_convert, nnspectrum2d_convert, spectrum2d_convert, \
-                    nns21vsflux_convert,t1fit_convert, setpialpha_convert,\
+                    nns21vsflux_convert,t1fit_convert, setpialpha_convert, drag_convert,\
                     t2fit_convert,nnspectrum_convert,\
                     spectrum_convert, powershift_convert, s21peakmulti_convert, rb_convert, rabicos_convert, xeb_convert,optreadfreq_convert,\
                     spinecho_convert, timingxyz_convert
@@ -212,4 +212,10 @@ def plot_spinecho(data, results, save_path):
 def plot_timingxyz(data, results, save_path):
     data = timingxyz_convert(data)
     fig_list = plot_template(data, results, save_path, task_type=TaskName.TIMINGXYZ)
+    return fig_list
+
+@handle_exceptions
+def plot_drag(data, results, save_path):
+    data = drag_convert(data)
+    fig_list = plot_template(data, results, save_path, task_type=TaskName.DRAG)
     return fig_list

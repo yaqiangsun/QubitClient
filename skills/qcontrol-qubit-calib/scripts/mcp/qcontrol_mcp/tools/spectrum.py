@@ -43,7 +43,7 @@ def spectrum(
     raw_data = exp.spectroscopy(
         qubit_configs,
         wiring_configs,
-        qubits,
+        qname,
         exp_device_configs=dev_cfg,
         read_delay=50 * ns,
         sb_freq=sb_freq,
@@ -51,6 +51,7 @@ def spectrum(
         collect=True,
         reps=100
     )
+    # raw_data = np.array([72.3, -21.8, -19.6, -17.1, -15.4, -18.9])
     data_list = raw_data.tolist()
 
     return json.dumps(data_list, ensure_ascii=False)

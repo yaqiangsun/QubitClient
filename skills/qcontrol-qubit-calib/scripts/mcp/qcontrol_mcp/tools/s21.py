@@ -47,7 +47,7 @@ def s21(
     # raw_data = exp.s21(
     #     qubit_configs,
     #     wiring_configs,
-    #     [qubit],
+    #     [qname],
     #     exp_device_configs=dev_cfg,
     #     sb_freq=100 * MHz,
     #     data_vault_path=data_vault_path,
@@ -55,8 +55,8 @@ def s21(
     #     reps=300
     # )
 
-    # FIXME:模拟数据
-    raw_data = np.array([-22.3, -21.8, -19.6, -17.1, -15.4, -18.9])
+    # 模拟数据
+    raw_data = np.array([-2.3, -21.8, -19.6, -17.1, -15.4, -18.9])
     data_list = raw_data.tolist()
 
     return json.dumps(data_list, ensure_ascii=False)

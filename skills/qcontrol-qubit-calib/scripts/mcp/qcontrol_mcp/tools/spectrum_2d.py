@@ -47,7 +47,7 @@ def spectrum_2d(
     raw_data = exp.spectroscopy_adaptive(
         qubit_configs,
         wiring_configs,
-        qubits,
+        qname,
         sb_freq=sb_freq,
         freq_scan=freq_arr,
         zpa_scan=zpa_arr,
@@ -58,6 +58,7 @@ def spectrum_2d(
         scan_shrink_ratio=0.3,
         reps=300
     )
+    # raw_data = np.array([9.3, -21.8, -19.6, -17.1, -15.4, -18.9])
 
     data_list = raw_data.tolist()
 

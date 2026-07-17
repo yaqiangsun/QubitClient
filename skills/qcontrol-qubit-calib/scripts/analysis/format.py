@@ -11,6 +11,9 @@ import logging
 import numpy as np
 import scipy
 
+def drag_convert():
+    pass
+
 
 def singleshot_convert(result):
     data_formated = {"image": {}}

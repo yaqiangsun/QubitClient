@@ -11,7 +11,7 @@
 Usage:
     1. Start UI server first: qubitclient ui start
     2. Example:
-        python -m skills.qcontrol-qubit-calib.scripts.pipeline.singleshot_pipeline -q q1ld5 -u True
+        python -m skills.qcontrol-qubit-calib.scripts.pipeline.singleshot_pipeline
     3. Launch the browser: http://localhost:8581/ to verify the display.
 """
 
@@ -108,6 +108,7 @@ def get_singleshot_hdf5_res(args):
         logging.info(f"[SINGLESHOT] Task started run_id={run_id[:8]}")
 
         data_id = qubit_ctrl_client.run(CtrlTaskName.SINGLESHOT, qubits=qubit_name_list)
+
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
         # 2.分析数据

@@ -44,8 +44,12 @@ DEFAULT_SAVE_FOLDER = './tmp/db/result/image'
 def parse_args():
     parser = argparse.ArgumentParser(description="Drag Measurement Pipeline (UI storage sync enabled)")
     # 被测比特列表
-    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["q1ld5"],
-                        help="Target qubit name list, default: q1ld5")
+    parser.add_argument("--qubits", "-q", type=str, nargs="+", default=["qr1"],
+                        help="Target qubit name list, default: qr1")
+    
+
+    parser.add_argument("--save-folder", "-s", type=str, default=DEFAULT_SAVE_FOLDER,
+                        help="Plot output directory")
     
     # 是否根据分析结果更新参数
     parser.add_argument("--update", "-u", type=bool, default=False,
@@ -97,9 +101,7 @@ def get_drag_res(args):
 
         # 设置实验参数
         set_params = {
-            "qubits": qubit_name_list,
-            "frequency_half_bandwidth": args.bandwidth,
-            "frequency_sample_num": args.samples,
+            "qubits": qubit_name_list
         }
 
         # 新建实验记录，写入存储
@@ -114,9 +116,10 @@ def get_drag_res(args):
         # =========== 采集数据 ===========
         data_id = qubit_ctrl_client.run(
             CtrlTaskName.DRAG,
-            qubits=qubit_name_list,
-            
+            qubits=qubit_name_list
         )
+
+        print("取到： ", data_id)
 
         raw_data = qubit_ctrl_client.run(CtrlTaskName.DATA, rid=data_id)
 
@@ -137,22 +140,8 @@ def get_drag_res(args):
         # =========== 接入大模型分析图片 ===========
         # llm_analysis(img_save_path)
 
-        # =========== 自动更新参数 ==============
-        new_full_params = set_params.copy()
-        if args.update:
-
-            update_dict = drag_update(results=analysis_result, conf_threshold=args.confidence, qubit_name_list=qubit_name_list)
-            
-            for qname, info in update_dict.items():
-                new_value = info["fread_star"]
-
-                qubit_ctrl_client.update_param(
-                    qname=qname,
-                    task_type=CtrlTaskName.DRAG,
-                    values=[new_value]
-                )
-                # 覆盖新频率到参数字典
-                new_full_params["fread_star"] = float(new_value)
+        # =========== 不更新参数 ==============
+        
 
         # =========== 更新结果到存储 ======================
         store.update_run(
@@ -160,10 +149,8 @@ def get_drag_res(args):
             status="completed",
             analysis_result=analysis_result,
             plot_paths=plot_paths,
-            completed_at=datetime.now(),
-            new_params=new_full_params
+            completed_at=datetime.now()
         )
-        print(f"测量完成，更新： {new_full_params}")
 
     except Exception as e:
         err_msg = f"测量异常：{str(e)}"

@@ -20,18 +20,19 @@ data_vault_path = ["", "test", "single"]
 # qubit_configs = QConfig("qubit_config.json")
 
 
-def pi_pulse(
+def rabi(
     qubits: List[str],
-    N_list:list[int]=[1, 3, 5],
-    amp_list:list[float]=None
+    piamp_start:float=0,
+    piamp_end:float=2,
+    piamp_sample_num:int=16,
+    pi_len: float=50.0
 ) -> str:
     qubit_ctrl_client = QubitCtrlClient()
     qname = qubits[0]
 
-    pi_amp_star = float(qubit_ctrl_client.query_param(qname=qname, key="pi_amp_star"))
-    pi_len_star = float(qubit_ctrl_client.query_param(qname=qname, key="pi_len_star"))
-    z_offset_star = float(qubit_ctrl_client.query_param(qname=qname, key="z_offset_star"))
+    pi_amp_arr = np.linspace(piamp_start, piamp_end, piamp_sample_num)
 
+    z_offset_star = float(qubit_ctrl_client.query_param(qname=qname, key="z_offset_star"))
     readout_freq_star = float(qubit_ctrl_client.query_param(qname=qname, key="readout_freq_star"))
     readout_power_star = float(qubit_ctrl_client.query_param(qname=qname, key="readout_power_star"))
     f10_star = float(qubit_ctrl_client.query_param(qname=qname, key="f10_star"))
@@ -39,8 +40,8 @@ def pi_pulse(
     reload(exp)
     dev_cfg = {
         qname: {
-            "pi_amp": pi_amp_star,
-            "pi_len": pi_len_star,
+            "pi_amp": pi_amp_arr,
+            "pi_len": pi_len,
             "z_offset": z_offset_star,
             "readout_freq": readout_freq_star,
             "readout_power": readout_power_star,
@@ -60,6 +61,9 @@ def pi_pulse(
         reps=300,
         read_delay=200 * ns
     )
+
+    # 模拟数据
+    # raw_data = np.array([-142.3, -21.8, -19.6, -17.1, -15.4, -18.9])
 
     data_list = raw_data.tolist()
 

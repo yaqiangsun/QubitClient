@@ -29,7 +29,7 @@ def t1(
     delay_array = np.linspace(delay_start, delay_end, delay_sample_num)
     
     reload(exp)
-    qubit = qubits[0]
+    qname = qubits[0]
 
     if zpa == None:
         zpa = float(qubit_ctrl_client.query_param(qname=qname, key="z_offset_star"))
@@ -37,7 +37,7 @@ def t1(
     raw_data = exp.t1(
         qubit_configs,
         wiring_configs,
-        qubits,
+        qname,
         q_states=["I", "X"],
         delay=delay_array,
         data_vault_path=data_vault_path,
@@ -46,6 +46,8 @@ def t1(
         read_delay=100 * ns,
         reps=3000
     )
+
+    # raw_data = np.array([72.3, -21.8, -19.6, -17.1, -15.4, -18.9])
 
     data_list = raw_data.tolist()
 

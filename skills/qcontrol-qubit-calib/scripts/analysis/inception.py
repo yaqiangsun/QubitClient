@@ -14,7 +14,7 @@ from qubitclient import handle_exceptions, control_api_execution
 
 
 from .format import s21_convert,s21vsflux_convert,  ramseyt2_convert, t12dfit_convert, nnspectrum2d_convert, spectrum2d_convert,\
-                    singleshot_convert, setpialpha_convert,\
+                    singleshot_convert, setpialpha_convert, drag_convert, \
                     nns21vsflux_convert,t1fit_convert,\
                     t2fit_convert,nnspectrum_convert,\
                     spectrum_convert, powershift_convert, s21peakmulti_convert,rb_convert,rabicos_convert, xeb_convert,optreadfreq_convert,\
@@ -223,4 +223,11 @@ def spinecho(image):
 def timingxyz(image):
     image = timingxyz_convert(image)
     results = scope_template(image, task_type=TaskName.TIMINGXYZ, threshold=-1)
+    return results
+
+@control_api_execution(enable_api=ENABLE_API)
+@handle_exceptions
+def drag(image):
+    image = drag_convert(image)
+    results = scope_template(image, task_type=TaskName.DRAG, threshold=-1)
     return results

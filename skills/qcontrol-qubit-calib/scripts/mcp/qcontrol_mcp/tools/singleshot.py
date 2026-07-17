@@ -65,6 +65,8 @@ def singleshot(
         read_delay=100 * ns
     )
 
+    # raw_data = np.array([32.3, -21.8, -19.6, -17.1, -15.4, -18.9])
+
     data_list = raw_data.tolist()
 
     return json.dumps(data_list, ensure_ascii=False)

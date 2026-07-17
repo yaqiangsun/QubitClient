@@ -60,6 +60,7 @@ class CtrlTaskName(Enum):
     TIMINGXYZ = 'timingxyz'
     PULSESHAPE = 'pulseshape'
     SETPIALPHA = 'setpialpha'
+    RABIHALF = "rabihalf"
     # reflection
     IQRAW = "singleshot"
     SPECTROSCOPY = "spectrum"
@@ -182,6 +183,21 @@ def rabi(qubits:list[str]=['Q0','Q1'],
                       piamp_end=piamp_end,
                       piamp_sample_num=piamp_sample_num,
                       pi_len=pi_len)
+    return result
+
+@task_register
+def rabihalf(qubits:list[str]=['Q0','Q1'],
+         piamp_half_start=0,
+         piamp_half_end=2,
+         piamp_half_sample_num=16,
+         pi_len_half=50,
+         *args, **kwargs):
+    result = call_mcp("rabihalf",
+                      qubits=qubits,
+                      piamp_half_start=piamp_half_start,
+                      piamp_half_end=piamp_half_end,
+                      piamp_half_sample_num=piamp_half_sample_num,
+                      pi_len_half=pi_len_half)
     return result
 
 @task_register

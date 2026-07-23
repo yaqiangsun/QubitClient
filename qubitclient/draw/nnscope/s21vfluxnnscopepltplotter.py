@@ -18,7 +18,7 @@ class S21VfluxNNScopeDataPltPlotter(QuantumDataPltPlotter):
     def __init__(self):
         super().__init__("s21vfluxnnscope")
     def plot_result_npy(self, **kwargs):
-        s21vflux_labels = {0:"cos_light",1:"cos_dark",2:"line_light",3:"line_dark"}
+        s21vflux_labels = {0:"cos",1:"line"}
 
         results = kwargs.get('result')
         data_ndarray = kwargs.get('dict_param')

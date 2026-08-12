@@ -16,6 +16,7 @@
 # Created Time: 2025/10/20 18:24:01
 ########################################################################
 
+import json
 import os
 import os
 import sys
@@ -24,7 +25,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-
+from qubitclient.scope.utils.data_parser import load_npy_file
 from qubitclient import QubitNNScopeClient
 from qubitclient import NNTaskName
 from qubitclient.nnscope.utils.data_parser import load_npz_file
@@ -35,33 +36,49 @@ from qubitclient.draw.plymanager import QuantumPlotPlyManager #using plotly draw
 
 
 
-def send_s21vflux_npy_to_server(file_path = None):
-
-    # dict_list, name_list = convert_spectrum_npy2npz(file_path)
-    base_name = os.path.basename(file_path)
-
-    # 分割文件名和扩展名，返回文件名部分
-    savename = os.path.splitext(base_name)[0]
-    client = QubitNNScopeClient()
+def send_s21vflux_npy_to_server(dir_path = None):
+    # get all file in dir
+    savenamelist=[]
+    file_names = os.listdir(dir_path)
     
-    # 1.使用从文件路径加载后的对象，格式为np.ndarray，多个组合成list
-    import numpy as np
-    data_ndarray = np.load(file_path, allow_pickle=True)
+    file_path_list = []
+    for file_name in file_names:
+        if file_name.endswith('.npy'):
+            savenamelist.append(os.path.splitext(file_name)[0])
+            file_path = os.path.join(dir_path, file_name)
+            file_path_list.append(file_path)
+    if len(file_path_list) == 0:
+        return
+    
+    client = QubitNNScopeClient()
 
-    # data_dict = data_ndarray.item() if isinstance(data_ndarray, np.ndarray) else data_ndarray
-    dict_list=[data_ndarray]
+    dict_list = []
+    for file_path in file_path_list:
+        content = load_npy_file(file_path)
+        # content = content[0]
+        dict_list.append(content)  
+    
     response = client.request(file_list=dict_list,task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.AUTO)
     # 2.从文件路径直接加载
     # response = client.request(file_list=[file_path],task_type=NNTaskName.S21VSFLUX,curve_type=CurveType.COSINE)
-    threshold = 0.5
+    threshold = 0.1
     results = client.get_result(response, threshold=threshold, task_type=NNTaskName.S21VSFLUX.value)
 
+    ply_plot_manager = QuantumPlotPlyManager()
+    plt_plot_manager = QuantumPlotPltManager()
+
     for idx, (result, dict_param) in enumerate(zip(results, dict_list)):
-        save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VSFLUX.value}_{savename}"
+        # write result to json
+        json_path = f'./tmp/result_json/{NNTaskName.S21VSFLUX.value}_{savenamelist[idx]}.json'
+        content = {"params_list": result["params_list"], "linepoints_list": result["linepoints_list"]}
+        with open(json_path, 'w') as f:
+            json.dump(content, f)
+                    
+        save_path_prefix = f"./tmp/client/result_{NNTaskName.S21VSFLUX.value}_{savenamelist[idx]}"
         save_path_png = save_path_prefix + ".png"
         save_path_html = save_path_prefix + ".html"
-        plot_manager = QuantumPlotPlyManager()
-        plot_manager.plot_quantum_data(
+        
+        ply_plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=NNTaskName.S21VSFLUX.value,
             save_path=save_path_html,
@@ -69,8 +86,7 @@ def send_s21vflux_npy_to_server(file_path = None):
             dict_param=dict_param
         )
 
-        plot_manager = QuantumPlotPltManager()
-        plot_manager.plot_quantum_data(
+        plt_plot_manager.plot_quantum_data(
             data_type='npy',
             task_type=NNTaskName.S21VSFLUX.value,
             save_path=save_path_png,
@@ -82,13 +98,9 @@ def send_s21vflux_npy_to_server(file_path = None):
 
 
 
-
-
-
 def main():
-    file_path = "tmp/yaqiangsun/qubit_examples/s21vflux/tmp0dcd82ea.py_6844.npy"
-    send_s21vflux_npy_to_server(file_path)
-
+    base_dir = "tmp/yaqiangsun/qubit_examples/s21vsflux"
+    send_s21vflux_npy_to_server(base_dir)
 
 
 if __name__ == "__main__":

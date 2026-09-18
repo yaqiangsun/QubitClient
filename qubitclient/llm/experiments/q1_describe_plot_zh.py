@@ -6,93 +6,88 @@
 # Author: yaqiang.sun
 # Created Time: 2026/04/21
 ########################################################################
-
 """
 Q1: 描述图表任务 (中文版)
-
 描述图像中的图表类型、坐标轴、范围和主要特征
 """
-
 # ========== 独立 Prompt 字符串定义 ==========
-
 # Standard prompt for single-image plots
-PROMPT_STANDARD = """请以JSON格式描述图像<image>中的图表。
-
+PROMPT_STANDARD = """强制要求：所有坐标轴标签、数值说明、图表特征描述文字必须全部使用中文，禁止英文。
+请以JSON格式描述图像<image>中的图表。
 必需字段：
 {
   "plot_type": "scatter" | "line" | "heatmap" | "histogram",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "main_features": string
+  "x_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "y_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "main_features": "使用中文完整描述图表关键特征"
 }"""
 
 # Two-image prompt
-PROMPT_TWO_IMAGES = """请以JSON格式描述每张图像<image>。
-
+PROMPT_TWO_IMAGES = """强制要求：所有坐标轴标签、数值说明、图表特征描述文字必须全部使用中文，禁止英文。
+请以JSON格式描述每张图像<image>。
 此条目包含2张图像。请按顺序提供一个包含每张图像对应对象的JSON数组。
-
 每张图像的必需字段：
 {
   "plot_type": "scatter" | "line" | "heatmap" | "histogram",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "main_features": string
+  "x_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "y_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "main_features": "使用中文完整描述图表关键特征"
 }"""
 
 # MOT loading / tweezer array prompt
-PROMPT_CAMERA_IMAGE = """请以JSON格式描述图像<image>中的图表。
-
+PROMPT_CAMERA_IMAGE = """强制要求：所有坐标轴标签、单位、图像特征描述文字必须全部使用中文，禁止英文。
+请以JSON格式描述图像<image>中的图表。
 必需字段：
 {
   "plot_type": "image" | "heatmap" | "scatter",
-  "x_axis": {"label": string, "unit": string},
-  "y_axis": {"label": string, "unit": string},
-  "colorbar": {"label": string},
-  "main_features": string
+  "x_axis": {"label": 中文坐标轴名称, "unit": "中文单位"},
+  "y_axis": {"label": 中文坐标轴名称, "unit": "中文单位"},
+  "colorbar": {"label": 中文色标名称},
+  "main_features": "使用中文完整描述图像关键特征"
 }"""
 
 # Tweezer array prompt (no colorbar)
-PROMPT_TWEEZER = """请以JSON格式描述图像<image>中的图表。
-
+PROMPT_TWEEZER = """强制要求：所有坐标轴标签、单位、图像特征描述文字必须全部使用中文，禁止英文。
+请以JSON格式描述图像<image>中的图表。
 必需字段：
 {
   "plot_type": "image" | "heatmap" | "scatter",
-  "x_axis": {"label": string, "unit": string},
-  "y_axis": {"label": string, "unit": string},
-  "main_features": string
+  "x_axis": {"label": 中文坐标轴名称, "unit": "中文单位"},
+  "y_axis": {"label": 中文坐标轴名称, "unit": "中文单位"},
+  "main_features": "使用中文完整描述图像关键特征"
 }"""
 
 # Charge tomography prompt
-PROMPT_CHARGE_TOMOGRAPHY = """请以JSON格式描述图像<image>中的图表。
-
+PROMPT_CHARGE_TOMOGRAPHY = """强制要求：所有坐标轴标签、数值说明、图表特征描述文字必须全部使用中文，禁止英文。
+请以JSON格式描述图像<image>中的图表。
 必需字段：
 {
   "plot_type": "heatmap" | "line" | "scatter",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "colorbar": {"label": string},
-  "main_features": string
+  "x_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "y_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "colorbar": {"label": 中文色标名称},
+  "main_features": "使用中文完整描述图表关键特征"
 }"""
 
 # Aliases for compatibility
 PROMPT_COUPLER_FLUX = PROMPT_STANDARD
+
 # Special case for cz_benchmarking (different field name)
-PROMPT_CZ_BENCHMARKING = """请以JSON格式描述每张图像<image>。
-
+PROMPT_CZ_BENCHMARKING = """强制要求：所有坐标轴标签、数值说明、图表特征描述文字必须全部使用中文，禁止英文。
+请以JSON格式描述每张图像<image>。
 此条目包含2张图像。请按顺序提供一个包含每张图像对应对象的JSON数组。
-
 每个对象的必需字段：
 {
   "plot_type": "scatter" | "line" | "heatmap" | "histogram",
-  "x_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "y_axis": {"label": string, "scale": "linear" | "log", "range": [min, max]},
-  "main_features": string
+  "x_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "y_axis": {"label": 中文坐标轴名称, "scale": "linear" | "log", "range": [最小值, 最大值]},
+  "main_features": "使用中文完整描述图表关键特征"
 }"""
+
 PROMPT_DRAG = PROMPT_STANDARD
 PROMPT_GMM = PROMPT_STANDARD
 PROMPT_MICROWAVE_RAMSEY = PROMPT_STANDARD
 PROMPT_MOT_LOADING = PROMPT_CAMERA_IMAGE
-
 # Aliases for remaining experiments
 PROMPT_PINCHOFF = PROMPT_STANDARD
 PROMPT_PINGPONG = PROMPT_STANDARD
@@ -124,9 +119,7 @@ PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
 PROMPT_RB = PROMPT_STANDARD
 
-
 # ========== Prompt 字典映射 ==========
-
 DESCRIBE_PLOT_PROMPTS_ZH = {
     "coupler_flux": PROMPT_COUPLER_FLUX,
     "cz_benchmarking": PROMPT_CZ_BENCHMARKING,
@@ -164,11 +157,9 @@ DESCRIBE_PLOT_PROMPTS_ZH = {
     "rb": PROMPT_RB,
 }
 
-
 def get_describe_plot_prompt_zh(experiment_family: str) -> str:
     """获取描述图表的中文专属 prompt"""
     return DESCRIBE_PLOT_PROMPTS_ZH.get(experiment_family, DESCRIBE_PLOT_PROMPTS_ZH["rabi"])
-
 
 __all__ = [
     "DESCRIBE_PLOT_PROMPTS_ZH",

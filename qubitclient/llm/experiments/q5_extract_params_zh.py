@@ -6,217 +6,196 @@
 # Author: yaqiang.sun
 # Created Time: 2026/04/21
 ########################################################################
-
 """
 Q5: 提取参数任务 (中文版)
-
-从图表中提取指定参数
+从图表中提取指定参数，所有文字说明、描述内容全部使用中文表述
 """
-
 # ========== 独立 Prompt 字符串定义 ==========
-
 # Special case: prompt includes background (different from experiment_background field)
-PROMPT_COUPLER_FLUX = """这是可调耦合器谱：我们绘制耦合器频率响应与施加的磁通偏置的关系。每张图有两个面板（左和右），每个面板显示不同的量子比特。有三个频率分支被两个避免交叉分隔。
-
+PROMPT_COUPLER_FLUX = """强制要求：所有解释、说明文字全部使用中文。
+这是可调耦合器谱：我们绘制耦合器频率响应与施加的磁通偏置的关系。每张图有两个面板（左和右），每个面板显示不同的量子比特。有三个频率分支被两个避免交叉分隔。
 从该耦合器磁通图<image>中提取以下参数。
-
 以JSON格式报告：
 {"crossing_voltages_V": [float, float], "left_fig_branch_freqs_GHz": [float, float, float], "right_fig_branch_freqs_GHz": [float, float, float]}
-
 crossing_voltages_V: 两个发生避免交叉的偏置电压，从左到右排序。
-left/right_fig_branch_freqs_GHz: 每个面板中三个分支的 plateau 频率，沿电压轴从左到右排序。如果拟合太差无法读取，使用 "Unreliable"。"""
+left/right_fig_branch_freqs_GHz: 每个面板中三个分支的平台频率，沿电压轴从左到右排序。如果拟合太差无法读取，使用 "Unreliable"。"""
 
-PROMPT_CZ_BENCHMARKING = """从该CZ基准测试数据<image>中提取以下参数。
-
+PROMPT_CZ_BENCHMARKING = """强制要求：所有解释、说明文字全部使用中文。
+从该CZ基准测试数据<image>中提取以下参数。
 从标题中读取位点/量子比特对索引（例如，'Sites (9, 11)'）。
 从标题中读取不确定性（括号表示法，例如，'0.9955 (4)' 表示 0.9955 +/- 0.0004）。
-
 以JSON格式报告：
 {"site_indices": [int, int], "retention_per_cz": float, "retention_per_cz_unc": float, "cycle_polarization": float, "cycle_polarization_unc": float, "chi_squared_retention": float | null, "chi_squared_polarization": float | null, "max_circuit_depth": int}"""
 
-PROMPT_DRAG = """从该DRAG校准图<image>中提取以下参数。
-
+PROMPT_DRAG = """强制要求：所有解释、说明文字全部使用中文。
+从该DRAG校准图<image>中提取以下参数。
 以JSON格式报告：
 {"optimal_alpha_inv": float, "intersection_clear": true | false}"""
 
-PROMPT_GMM = """从该GMM图<image>中提取以下参数。
-
+PROMPT_GMM = """强制要求：所有解释、说明文字全部使用中文。
+从该GMM图<image>中提取以下参数。
 以JSON格式报告：
 {"separation": "well-separated" | "touching" | "overlapping", "cluster0_center": [I, Q], "cluster1_center": [I, Q]}"""
 
-PROMPT_MICROWAVE_RAMSEY = """从该微波Ramsey图<image>中提取以下参数。
-
+PROMPT_MICROWAVE_RAMSEY = """强制要求：所有解释、说明文字全部使用中文。
+从该微波Ramsey图<image>中提取以下参数。
 从标题中读取失谐及其不确定性（+/- 表示法）。
-
 以JSON格式报告：
 {"detuning_Hz": float | null, "detuning_Hz_unc": float | null, "contrast": float, "retention_min": float}"""
 
-PROMPT_MOT_LOADING = """从该MOT图像<image>中提取云参数。
-
+PROMPT_MOT_LOADING = """强制要求：所有解释、说明文字全部使用中文。
+从该MOT图像<image>中提取云参数。
 以JSON格式报告：
 {"has_cloud": true | false, "center_x": int, "center_y": int, "cloud_present": true | false}
-
 - has_cloud: 是否可以看到明显的原子云
 - center_x: 云中心的近似 x 坐标（像素）
 - center_y: 云中心的近似 y 坐标（像素）
 - cloud_present: 与 has_cloud 相同（用于验证）
-
 如果看不到云，报告中心坐标为 0。"""
 
-PROMPT_PINCHOFF = """从该夹断测量<image>中提取关键转变索引。
-
+PROMPT_PINCHOFF = """强制要求：所有解释、说明文字全部使用中文。
+从该夹断测量<image>中提取关键转变索引。
 x轴显示门电压索引（0-40，共41个点）。
 识别三个关键位置作为索引值：
-
 以JSON格式报告：
 {"cut_off_index": int | null, "transition_index": int | null, "saturation_index": int | null}
-
-- saturation_index: 电流首次达到其高 plateau（饱和区）的索引
+- saturation_index: 电流首次达到其高平台（饱和区）的索引
 - transition_index: 转变区域中点的索引
-- cut_off_index: 电流达到其低 plateau（器件夹断）的索引
-
+- cut_off_index: 电流达到其低平台（器件夹断）的索引
 如果转变不够清晰无法识别这些索引，使用 null。"""
 
-PROMPT_PINGPONG = """从该PingPong测量<image>中提取以下参数。
-
+PROMPT_PINGPONG = """强制要求：所有解释、说明文字全部使用中文。
+从该PingPong测量<image>中提取以下参数。
 以JSON格式报告：
 {"error_per_gate": float | null, "accumulation_type": "linear" | "oscillatory" | "none"}"""
 
-PROMPT_QUBIT_FLUX_SPECTROSCOPY = """从该量子比特谱图<image>中提取以下参数。
-
+PROMPT_QUBIT_FLUX_SPECTROSCOPY = """强制要求：所有解释、说明文字全部使用中文。
+从该量子比特谱图<image>中提取以下参数。
 以JSON格式报告：
 {"num_resonances": int, "resonance_freq_GHz": float}"""
 
-PROMPT_QUBIT_SPECTROSCOPY = """从该谱图<image>中提取以下参数。
-
+PROMPT_QUBIT_SPECTROSCOPY = """强制要求：所有解释、说明文字全部使用中文。
+从该谱图<image>中提取以下参数。
 以JSON格式报告：
 {"num_resonances": int, "resonance_freq_GHz": float, "resonance_type": "peak" | "dip"}"""
 
 # Special case: prompt includes background (different version from experiment_background field)
-PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """这是一个二维量子比特谱实验，测试标准的transmon量子比特（负非谐性，所以f02/2出现在比f01更低的频率）：我们同时扫描驱动功率和频率来绘制量子比特跃迁图。成功的结果会显示清晰的跃迁线（f01，可选地还有f02/2）以及明显的功率依赖性。
-
+PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """强制要求：所有解释、说明文字全部使用中文。
+这是一个二维量子比特谱实验，测试标准的transmon量子比特（负非谐性，所以f02/2出现在比f01更低的频率）：我们同时扫描驱动功率和频率来绘制量子比特跃迁图。成功的结果会显示清晰的跃迁线（f01，可选地还有f02/2）以及明显的功率依赖性。
 从该二维量子比特谱图<image>中提取以下参数。
-
 以JSON格式报告：
 {"f01_MHz": float | null, "transitions_visible": "f01_only" | "f01_f02half" | "none", "power_regime": "optimal" | "high" | "none", "measurement_usable": bool}"""
 
-PROMPT_RABI = """从该Rabi振荡图<image>中提取以下参数。
-
+PROMPT_RABI = """强制要求：所有解释、说明文字全部使用中文。
+从该Rabi振荡图<image>中提取以下参数。
 以JSON格式报告：
 {"periods_visible": float, "amplitude_decay": "stable" | "decaying" | "growing", "signal_quality": "clean" | "noisy" | "distorted"}"""
 
-PROMPT_RABI_HW = """从该Rabi振荡图<image>中提取以下参数。
-
+PROMPT_RABI_HW = """强制要求：所有解释、说明文字全部使用中文。
+从该Rabi振荡图<image>中提取以下参数。
 以JSON格式报告：
 {"periods_visible": float, "amplitude_decay": "stable" | "decaying" | "growing", "signal_quality": "clean" | "noisy" | "distorted"}"""
 
-PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """分析该Ramsey电荷层析扫描<image]中的电荷跳跃事件。
-
+PROMPT_RAMSEY_CHARGE_TOMOGRAPHY = """强制要求：所有解释、说明文字全部使用中文。
+分析该Ramsey电荷层析扫描<image>中的电荷跳跃事件。
 分类是否检测到任何电荷跳跃事件，如果是，提取位置和大小。
-
 以JSON格式报告：
 {"event_detected": true | false, "jump_count": int, "jump_positions": [int, ...], "jump_sizes_mV": [float, ...]}
-
 - event_detected: 是否可以看到任何电荷跳跃事件
 - jump_count: 电荷跳跃事件的总数（水平不连续）
 - jump_positions: 发生跳跃的扫描编号列表（近似值）
 - jump_sizes_mV: 每个检测到的跳跃的估计电荷跳跃大小（mV）"""
 
-PROMPT_RAMSEY_FREQ_CAL = """从该Ramsey测量<image>中提取以下参数。
-
+PROMPT_RAMSEY_FREQ_CAL = """强制要求：所有解释、说明文字全部使用中文。
+从该Ramsey测量<image>中提取以下参数。
 以JSON格式报告：
 {"T2_star_us": float | null, "detuning_MHz": float | null, "fringes_visible": int}"""
 
-PROMPT_RAMSEY_T2STAR = """从该Ramsey测量<image>中提取以下参数。
-
+PROMPT_RAMSEY_T2STAR = """强制要求：所有解释、说明文字全部使用中文。
+从该Ramsey测量<image>中提取以下参数。
 以JSON格式报告：
 {"T2_star_us": float | null, "detuning_MHz": float | null, "fringes_visible": int}"""
 
-PROMPT_RES_SPEC = """从该谐振器谱图<image>中提取以下参数。
-
+PROMPT_RES_SPEC = """强制要求：所有解释、说明文字全部使用中文。
+从该谐振器谱图<image>中提取以下参数。
 以JSON格式报告：
 {"resonance_freq_GHz": float | null, "contrast": float | null}"""
 
-PROMPT_RYDBERG_RAMSEY = """从该Rydberg Ramsey图<image>中提取以下参数。
-
+PROMPT_RYDBERG_RAMSEY = """强制要求：所有解释、说明文字全部使用中文。
+从该Rydberg Ramsey图<image>中提取以下参数。
 从标题/头部读取不确定性（+/- 表示法或括号表示法）。
-
 以JSON格式报告：
 {"frequency_MHz": float, "frequency_MHz_unc": float, "T2_us": float, "T2_us_unc": float, "RChi2": float, "frequency_noise_kHz": float | null}"""
 
-PROMPT_RYDBERG_SPECTROSCOPY = """从该Rydberg谱图<image>中提取以下参数。
-
+PROMPT_RYDBERG_SPECTROSCOPY = """强制要求：所有解释、说明文字全部使用中文。
+从该Rydberg谱图<image>中提取以下参数。
 如果图显示多个位点/面板，报告一个JSON数组，每个位点一个对象。
 从图中读取位点索引标签（例如，153、171）。从标题/头部读取不确定性（+/- 或括号表示法）。
-
 以JSON格式报告（对象数组，每个位点一个）：
 [{"site_index": int, "f0_kHz": float, "f0_kHz_unc": float, "t_ns": float, "t_ns_unc": float, "f_Rabi_MHz": float, "f_Rabi_MHz_unc": float, "chi_squared": float}]"""
 
-PROMPT_T1 = """从该T1衰减图<image>中提取以下参数。
-
+PROMPT_T1 = """强制要求：所有解释、说明文字全部使用中文。
+从该T1衰减图<image>中提取以下参数。
 以JSON格式报告：
 {"T1_us": float | null, "decay_visible": true | false}"""
 
-PROMPT_T1_FLUCTUATIONS = """从该T1波动测量<image>中提取以下参数。
-
+PROMPT_T1_FLUCTUATIONS = """强制要求：所有解释、说明文字全部使用中文。
+从该T1波动测量<image>中提取以下参数。
 以JSON格式报告：
 {"classification": "stable" | "telegraphic" | "random_walk", "mean_t1_us": float}"""
 
-PROMPT_TWEEZER_ARRAY = """检查该光镊阵列相机图像<image>。
-
+PROMPT_TWEEZER_ARRAY = """强制要求：所有解释、说明文字全部使用中文。
+检查该光镊阵列相机图像<image>。
 提取以下属性。
-
 以JSON格式报告：
 {"grid_regularity": "regular" | "irregular", "spot_uniformity": "uniform" | "non-uniform", "aberration_corrected": true | false}"""
 
-
 # ========== Not in QCalEval ==========
-PROMPT_S21 = """从该S21透射图<image>中提取以下参数。
-
+PROMPT_S21 = """强制要求：所有解释、说明文字全部使用中文。
+从该S21透射图<image>中提取以下参数。
 以JSON格式报告：
 {"resonance_freq_GHz": float | null, "contrast": float | null, "phase_slope_deg_GHz": float | null}"""
 
-PROMPT_RABICOS = """从该功率Rabi振荡图<image>中提取以下参数。
-
+PROMPT_RABICOS = """强制要求：所有解释、说明文字全部使用中文。
+从该功率Rabi振荡图<image>中提取以下参数。
 以JSON格式报告：
 {"rabi_rate_MHz": float | null, "pi_amp": float | null, "pi_half_amp": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
 
-PROMPT_RAMSEY = """从该Ramsey振荡图<image>中提取以下参数。
-
+PROMPT_RAMSEY = """强制要求：所有解释、说明文字全部使用中文。
+从该Ramsey振荡图<image>中提取以下参数。
 以JSON格式报告：
 {"detuning_Hz": float | null, "t2_star_us": float | null, "contrast": float | null, "oscillation_quality": "good" | "moderate" | "poor" | "none"}"""
 
-PROMPT_S21VSFLUX = """从该S21 vs Flux 二维图<image>中提取以下参数。
-
+PROMPT_S21VSFLUX = """强制要求：所有解释、说明文字全部使用中文。
+从该S21 vs Flux 二维图<image>中提取以下参数。
 以JSON格式报告：
 {"center_freq_GHz": float | null, "freq_vs_bias_slope": float | null, "dispersion_shift_MHz": float | null, "resonance_quality": "good" | "moderate" | "poor" | "none"}"""
 
-PROMPT_POWERSHIFT = """从该功率偏移图<image>中提取以下参数。
-
+PROMPT_POWERSHIFT = """强制要求：所有解释、说明文字全部使用中文。
+从该功率偏移图<image>中提取以下参数。
 以JSON格式报告：
 {"low_power_freq_GHz": float | null, "power_shift_MHz": float | null, "kerr_coefficient_kHz": float | null, "linearity": "good" | "moderate" | "poor" | "none"}"""
 
-PROMPT_SPECTRUM_2D = """从该二维量子比特谱图<image>中提取以下参数。
-
+PROMPT_SPECTRUM_2D = """强制要求：所有解释、说明文字全部使用中文。
+从该二维量子比特谱图<image>中提取以下参数。
 以JSON格式报告：
 {"idle_freq_GHz": float | null, "freq_range_GHz": float | null, "calibration_curve_quality": "good" | "moderate" | "poor" | "none", "z_tunability": "high" | "moderate" | "low" | "none"}"""
 
-PROMPT_OPTPIPULSE = """从该Opt_pi脉冲校准图<image>中提取以下参数。
-
+PROMPT_OPTPIPULSE = """强制要求：所有解释、说明文字全部使用中文。
+从该Opt_pi脉冲校准图<image>中提取以下参数。
 以JSON格式报告：
 {"pi_amp_relative": float | null, "contrast": float | null, "checkerboard_quality": "good" | "moderate" | "poor" | "none", "n_range": int}"""
 
 PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
-PROMPT_RB = """从该随机基准测试图<image>中提取以下参数。
 
+PROMPT_RB = """强制要求：所有解释、说明文字全部使用中文。
+从该随机基准测试图<image>中提取以下参数。
 以JSON格式报告：
 {"survival_probability_per_clifford": float, "average_gate_error_rate": float, "decay_constant": float | null, "fit_quality": "good" | "moderate" | "poor" | "none"}"""
 
-
 # ========== Prompt 字典映射 ==========
-
 EXTRACT_PARAMS_PROMPTS_ZH = {
     "coupler_flux": PROMPT_COUPLER_FLUX,
     "cz_benchmarking": PROMPT_CZ_BENCHMARKING,
@@ -254,11 +233,9 @@ EXTRACT_PARAMS_PROMPTS_ZH = {
     "rb": PROMPT_RB,
 }
 
-
 def get_extract_params_prompt_zh(experiment_family: str) -> str:
     """获取提取参数的中文专属 prompt"""
     return EXTRACT_PARAMS_PROMPTS_ZH.get(experiment_family, EXTRACT_PARAMS_PROMPTS_ZH["rabi"])
-
 
 __all__ = [
     "EXTRACT_PARAMS_PROMPTS_ZH",

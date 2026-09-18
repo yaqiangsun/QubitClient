@@ -6,40 +6,44 @@
 # Author: yaqiang.sun
 # Created Time: 2026/04/21
 ########################################################################
-
 """
 Q4: 评估拟合任务 (中文版)
-
 评估数据拟合是否可用于参数提取
 """
-
 # ========== 独立 Prompt 字符串定义 ==========
+# Standard assess fit prompt 完整版中文规范
+PROMPT_STANDARD = """评估此图中<image>数据的拟合是否可靠，能否用于提取实验参数。
+可选分类：
+- 可靠 (Reliable)
+- 不可靠 (Unreliable)
+- 无拟合数据 (No fit)
 
-# Standard assess fit prompt
-PROMPT_STANDARD = """评估此图中<image>数据的拟合是否可靠，可用于参数提取。
+硬性输出要求：
+1. 严格按照下方中文键名格式返回JSON，键名禁止修改为英文；
+2. 【Assessment】只能从上文三个中文选项里挑选；
+3. 【Reason】必须全程使用中文描述，禁止英文；
 
-选项：
-- Reliable (可靠)
-- Unreliable (不可靠)
-- No fit (无拟合)
-
-请按以下格式提供答案：
-Assessment: <your choice>
-Reason: <brief explanation>"""
+固定输出格式：
+Assessment: <你的中文选项>
+Reason: <简短中文解释>"""
 
 # Special case for qubit_spectroscopy_power_frequency (has background)
 PROMPT_QUBIT_SPECTROSCOPY_POWER_FREQUENCY = """这是一个二维量子比特谱实验，测试标准的transmon量子比特（负非谐性，所以f02/2出现在比f01更低的频率）：我们同时扫描驱动功率和频率来绘制量子比特跃迁图。成功的结果会显示清晰的跃迁线（f01，可选地还有f02/2）以及明显的功率依赖性。
 
 评估这些图中<image>、<image>和<image>数据的拟合是否可靠，可用于参数提取。
+可选分类：
+- 可靠 (Reliable)
+- 不可靠 (Unreliable)
+- 无拟合数据 (No fit)
 
-选项：
-- Reliable (可靠)
-- Unreliable (不可靠)
-- No fit (无拟合)
+硬性输出要求：
+1. 严格按照下方中文键名格式返回JSON，键名禁止修改为英文；
+2. 【Assessment】只能从上文三个中文选项里挑选；
+3. 【Reason】必须全程使用中文描述，禁止英文；
 
-请按以下格式提供答案：
-Assessment: <your choice>
-Reason: <brief explanation>"""
+固定输出格式：
+Assessment: <你的中文选项>
+Reason: <简短中文解释>"""
 
 # Aliases for all experiments
 PROMPT_COUPLER_FLUX = PROMPT_STANDARD
@@ -64,7 +68,6 @@ PROMPT_RYDBERG_SPECTROSCOPY = PROMPT_STANDARD
 PROMPT_T1 = PROMPT_STANDARD
 PROMPT_T1_FLUCTUATIONS = PROMPT_STANDARD
 PROMPT_TWEEZER_ARRAY = PROMPT_STANDARD
-
 # ========== Not in QCalEval ==========
 PROMPT_S21 = PROMPT_STANDARD
 PROMPT_SPECTRUM_2D = PROMPT_STANDARD
@@ -77,11 +80,7 @@ PROMPT_SINGLESHOT = PROMPT_GMM
 PROMPT_SPECTRUM = PROMPT_QUBIT_SPECTROSCOPY
 PROMPT_T2 = PROMPT_RAMSEY_T2STAR
 PROMPT_RB = PROMPT_STANDARD
-
-
-
 # ========== Prompt 字典映射 ==========
-
 ASSESS_FIT_PROMPTS_ZH = {
     "coupler_flux": PROMPT_COUPLER_FLUX,
     "cz_benchmarking": PROMPT_CZ_BENCHMARKING,
@@ -119,11 +118,9 @@ ASSESS_FIT_PROMPTS_ZH = {
     "rb": PROMPT_RB,
 }
 
-
 def get_assess_fit_prompt_zh(experiment_family: str) -> str:
     """获取评估拟合的中文专属 prompt"""
     return ASSESS_FIT_PROMPTS_ZH.get(experiment_family, ASSESS_FIT_PROMPTS_ZH["rabi"])
-
 
 __all__ = [
     "ASSESS_FIT_PROMPTS_ZH",

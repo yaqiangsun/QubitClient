@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "QubitClient Results Panel",
+    "description": "Embeds the QubitClient pipeline results page (default http://127.0.0.1:8581/) in the right sidebar and gives the model a tool to read pipeline runs."
+  }
+}

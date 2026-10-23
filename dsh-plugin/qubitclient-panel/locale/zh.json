@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "QubitClient 结果面板",
+    "description": "把 QubitClient 的 pipeline 结果页面（默认 http://127.0.0.1:8581/）嵌进右侧栏，并给模型一个读取运行结果的工具。"
+  }
+}

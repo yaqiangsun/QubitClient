@@ -45,6 +45,7 @@
   <a href="#-功能特性">功能特性</a> •
   <a href="#-安装">安装</a> •
   <a href="#-快速开始">快速开始</a> •
+  <a href="#-结果页与-dsh-集成">结果页 / DSH</a> •
   <a href="#-支持的任务类型">任务类型</a> •
   <a href="#-文档与示例">文档</a> •
   <a href="#-许可证">许可证</a>
@@ -68,6 +69,7 @@
 - ⚡ **批量处理**：轻松同时处理多个数据文件，提高工作效率。
 - 🔌 **易于集成**：简洁的 API 设计，可快速融入现有项目流程。
 - 🤝 **MCP 协议支持**：基于 MCP 协议的实时量子测量任务控制，实现实验自动化。
+- 🖥️ **结果可视化与 DSH 集成**：内置 pipeline 结果 Web UI（SSE 实时刷新），并提供 DeepSeek Harness 插件把结果面板嵌进右侧栏。
 - 🤖 **LLM/VLM 集成**：支持大语言模型和视觉语言模型，用于量子测量数据分析与决策。
   - 🟢 **Google Gemma 4**：支持 `google/gemma-4-E4B-it` 模型
   - 🔵 **NVIDIA Ising**：支持 `nv-community/Ising-Calibration-1-35B-A3B` 模型，专为量子校准设计
@@ -322,6 +324,63 @@ images = gen.chat(
 images[0].save("enhanced.png")
 ```
 
+## 🖥️ 结果页与 DSH 集成
+
+pipeline 脚本把每次运行写进 `tmp/db/result/pipeline/*.json`，项目自带的结果页服务会把它们实时推成一张卡片瀑布流。
+既可以在浏览器里单独打开，也可以通过 DeepSeek Harness（下称 DSH）插件嵌进它的右侧栏，写代码和看结果不用来回切窗口。
+
+### 启动结果页
+
+```bash
+pip install -e ".[ui]"      # fastapi / uvicorn
+qubitclient ui start        # 默认 http://localhost:8581/
+qubitclient ui start --port 9000
+```
+
+| 能力 | 说明 |
+|---|---|
+| 实时列表 | 每 2 秒扫 `tmp/db/result/pipeline/`，新增或更新的记录经 SSE 推到页面 |
+| 卡片缩略图 | `GET /api/plots/{run_id}/{i}` 直接返回拟合图 PNG |
+| 详情 | 点卡片查看参数、分析结果与原始 JSON |
+| 依赖 | 单页内联 CSS/JS，无 CDN，离线可用 |
+
+> 启动时工作目录要在仓库根：读取侧固定按 `cwd/tmp/db/result` 取数，`--storage-root` 目前只影响 SSE 监听目录。
+
+### DSH 插件（`dsh-plugin/`）
+
+把上面这个结果页搬进 DSH 的右侧栏，并让模型能直接读到 pipeline 记录。
+
+| 能力 | 位置 |
+|---|---|
+| 结果面板 | 右侧栏 tab「QubitClient 结果」：原样嵌入结果页（卡片流 / SSE / 详情） |
+| 状态徽标 | 输入框下方显示服务在线状态、记录总数、最近一次任务，一键打开面板 |
+| 模型工具 | `qubitclient_results`：按任务名与条数读取运行记录（任务、状态、比特、时间、图数、错误） |
+
+安装（一次性，装进本机 DSH 的 profile）：
+
+```powershell
+# 仓库根目录
+powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/install.ps1
+# 重启 DSH 后，右侧栏「新建 tab」里会出现「QubitClient 结果」
+```
+
+卸载：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/uninstall.ps1
+```
+
+配置与限制：
+
+| 项 | 说明 |
+|---|---|
+| 服务地址 | DSH 侧默认 `http://127.0.0.1:8581`；换端口时改 `dsh-plugin/qubitclient-panel/cordis.patch.yml` 的 `config.baseUrl`，并在面板的离线提示里改一次浏览器侧地址 |
+| 未启动服务 | 面板显示启动指引与地址编辑框，不影响 DSH 其他功能 |
+| 深链 | 结果页暂不支持 `?run=` 直达某次运行，详情需在面板内点卡片 |
+| 主题 | 面板保持结果页自己的样式，不跟随 DSH 明暗主题 |
+
+详见 [dsh-plugin/README.md](dsh-plugin/README.md) 与 [结果页文档](docs/ui/README.md)。
+
 ## 📋 支持的任务类型
 
 ### 🧠 NNScope 任务
@@ -496,6 +555,7 @@ python tests/generate/test_generate.py
 ## 📝 更新日志
 
 ### 近期更新
+- 🖥️ **新增结果页 DSH 集成**：`dsh-plugin/` 把 pipeline 结果页嵌入 DeepSeek Harness 右侧栏，并提供 `qubitclient_results` 工具供模型读取运行记录
 - 🎨 **新增图像生成模块**：支持文本生成图像、图像编辑、Chat API 图像生成（Qwen-Image、DALL-E 等）
 - 🐳 **新增 Docker 服务部署**：新增 `qubitclient serve` 命令，支持一键初始化和启动 qubitscope、qubitserving、proxy 三个服务
 - 🤖 **新增 VLM 模型支持**：

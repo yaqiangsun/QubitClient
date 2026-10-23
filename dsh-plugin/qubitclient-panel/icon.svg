@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="QubitClient">
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="#1f6feb" opacity="0.12"/>
+  <circle cx="24" cy="24" r="5" fill="#1f6feb"/>
+  <ellipse cx="24" cy="24" rx="16" ry="7" fill="none" stroke="#1f6feb" stroke-width="2.4" transform="rotate(35 24 24)"/>
+  <ellipse cx="24" cy="24" rx="16" ry="7" fill="none" stroke="#1f6feb" stroke-width="2.4" opacity="0.55" transform="rotate(-35 24 24)"/>
+  <circle cx="36.5" cy="15.5" r="2.6" fill="#f0883e"/>
+</svg>

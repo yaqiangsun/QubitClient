@@ -1,0 +1,11 @@
+# 本 bundle 的补丁层：安装并选中这个 bundle 后，Loader 会把下面这行插进 profile 的插件树。
+# - id    插件行唯一标识（同一 profile 内不能重复）
+# - name  可被 import 的包名（= package.json 的 name）
+# - config 传给 Host 半 apply(ctx, config) 的对象；Client 半不读它（浏览器侧用下面的默认值/
+#          localStorage 覆盖，见 client.js 的 URL_KEY）
+- insert:
+    - id: qubitclient-panel
+      name: '@qubitclient/dsh-panel'
+      config:
+        # QubitClient 结果页服务地址；Host 工具 qubitclient_results 用它取数
+        baseUrl: 'http://127.0.0.1:8581'

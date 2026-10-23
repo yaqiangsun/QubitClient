@@ -25,6 +25,52 @@ powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/install.p
 
 面板里就是原样的结果页：卡片瀑布流、SSE 实时新增、点卡片看参数与图。
 
+## 从 GitHub 安装（不发布 npm）
+
+本插件是纯 JS，没有构建产物与 `prepare` 脚本，因此不需要 pnpm 的 `allowBuilds` 授权。
+
+```powershell
+# 精确到 commit，装的就是校验过的那份代码（推荐）
+dsh plugin --profile desktop add "git+https://github.com/yaqiangsun/QubitClient.git#<commit-sha>&path:/dsh-plugin/qubitclient-panel"
+
+# 也可以跟分支（内容会随推送变化）
+dsh plugin --profile desktop add "git+https://github.com/yaqiangsun/QubitClient.git#main&path:/dsh-plugin/qubitclient-panel"
+```
+
+同样的 spec 也可以粘贴到 DSH「插件 → 已安装 → 安装」里。装完重启 DSH。
+
+## 让插件被市场收录
+
+DSH **没有官方插件市场，也没有仓库爬虫**：发现页只列用户自己添加的索引源。所以"被索引到"= 你发布一份索引 JSON，别人把它的 URL 加进来。
+
+本仓库自带一份符合 format 1 的索引：
+
+```
+https://raw.githubusercontent.com/yaqiangsun/QubitClient/main/dsh-plugin/market-index.json
+```
+
+别人的操作路径：插件页 →「实验性插件」旁「更多」→ 启用**自定义插件市场** → 「发现」→ 添加索引源 → 粘贴上面的 URL → 安装。
+
+索引由脚本生成，固定到当前 git commit（内容不会随推送漂移）：
+
+```powershell
+node dsh-plugin/scripts/make-market-index.mjs
+# 可选：--repo https://github.com/<you>/<repo>
+```
+
+每次发版/推送后重跑一次并提交 `market-index.json` 即可。索引里的 `source` 是
+`git+https://…/QubitClient.git#<commit>&path:/dsh-plugin/qubitclient-panel`，与上面的安装命令一致。
+
+想进一步提高命中率（可选，按投入排序）：
+
+| 动作 | 效果 |
+|---|---|
+| 仓库 About 写清楚「DSH plugin: QubitClient results panel」，加 topics `dsh-plugin` `deepseek-harness` | 第三方 hub / GitHub 搜索能命中；topic 是社区约定，DSH 自身不爬 |
+| 发布到 npm（`npm publish --access public`）并把索引 `source` 改成 `{"type":"npm"}` | 用户可 `dsh plugin add @qubitclient/dsh-panel@0.1.0`，不依赖 git 与 commit 固定 |
+| 把索引托管在 GitHub Pages / 自己的域名 | 索引 URL 更稳定，也方便以后放多个插件（一份索引可列多个） |
+| 把插件拆成独立仓库 | 仓库根就是插件，`dsh plugin add github:you/repo` 更直观；当前 monorepo 必须带 `path:` |
+
+
 ## 卸载
 
 ```powershell

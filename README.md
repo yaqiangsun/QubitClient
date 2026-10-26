@@ -364,14 +364,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/install.p
 # 重启 DSH 后，右侧栏「新建 tab」里会出现「QubitClient 结果」
 ```
 
-也可以直接从 GitHub 安装（纯 JS，无需构建）：
-
-```powershell
-dsh plugin --profile desktop add "git+https://github.com/yaqiangsun/QubitClient.git#<commit>&path:/dsh-plugin/qubitclient-panel"
-```
-
-插件市场索引（format 1）见 `dsh-plugin/market-index.json`；在 DSH「插件 → 发现」里添加它的
-[raw URL](https://raw.githubusercontent.com/yaqiangsun/QubitClient/main/dsh-plugin/market-index.json) 即可看到本插件。
+也可以在 DSH「插件 → 发现」里直接安装（本仓库带插件市场索引 `dsh-plugin/market-index.json`）。
 
 卸载：
 

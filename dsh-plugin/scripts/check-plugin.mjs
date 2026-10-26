@@ -68,7 +68,11 @@ if (bundle) {
 
 // ---- 3. locale ----------------------------------------------------------
 console.log('\n[3/5] locale')
-const localeDir = path.join(pkgDir, 'locale')
+// locale 目录可能在子目录里（根目录清单只转发 exports），因此从 exports 推导。
+const localeExport = manifest.exports?.['./locale/*.json']
+const localeDir = localeExport
+  ? path.join(pkgDir, localeExport.slice(0, localeExport.indexOf('*')))
+  : path.join(pkgDir, 'locale')
 if (fs.existsSync(localeDir)) {
   for (const file of fs.readdirSync(localeDir).filter((f) => f.endsWith('.json'))) {
     const doc = JSON.parse(fs.readFileSync(path.join(localeDir, file), 'utf8'))

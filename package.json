@@ -1,0 +1,29 @@
+{
+  "name": "@qubitclient/dsh-panel",
+  "version": "0.1.0",
+  "description": "DSH 插件：把 QubitClient 的 pipeline 结果页面（http://127.0.0.1:8581/）融合进右侧栏 tab，并给模型一个读取结果的工具。",
+  "type": "module",
+  "main": "./dsh-plugin/qubitclient-panel/index.js",
+  "exports": {
+    ".": "./dsh-plugin/qubitclient-panel/index.js",
+    "./client": "./dsh-plugin/qubitclient-panel/client.js",
+    "./locale/*.json": "./dsh-plugin/qubitclient-panel/locale/*.json",
+    "./icon": "./dsh-plugin/qubitclient-panel/icon.svg"
+  },
+  "files": [
+    "dsh-plugin/qubitclient-panel"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./dsh-plugin/qubitclient-panel/cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  }
+}

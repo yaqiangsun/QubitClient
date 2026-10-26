@@ -348,28 +348,29 @@ qubitclient ui start --port 9000
 
 ### DSH 插件（`dsh-plugin/`）
 
-把上面这个结果页搬进 DSH 的右侧栏，并让模型能直接读到 pipeline 记录。
+把上面这个结果页搬进 DSH 的右侧栏，并让模型能直接读到 pipeline 记录。npm 包：`qubitclient-dsh-panel`。
 
-| 能力 | 位置 |
+| 能力 | 说明 |
 |---|---|
 | 结果面板 | 右侧栏 tab「QubitClient 结果」：原样嵌入结果页（卡片流 / SSE / 详情） |
 | 状态徽标 | 输入框下方显示服务在线状态、记录总数、最近一次任务，一键打开面板 |
 | 模型工具 | `qubitclient_results`：按任务名与条数读取运行记录（任务、状态、比特、时间、图数、错误） |
 
-安装（已发布到 npm，包名 `qubitclient-dsh-panel`）：
+安装（三条命令，都在仓库根执行）：
 
 ```powershell
-dsh plugin add qubitclient-dsh-panel
-# 重启 DSH 后，右侧栏「新建 tab」里会出现「QubitClient 结果」
+pip install -e ".[ui]"                 # 前置：结果页依赖（一次性）
+qubitclient ui start                   # 前置：启动结果页服务（默认 http://127.0.0.1:8581/）
+dsh plugin add qubitclient-dsh-panel   # 装插件；之后重启 DSH，右侧栏「新建 tab」里出现「QubitClient 结果」
 ```
 
-也可以在 DSH「插件 → 发现」里直接搜索安装。
+也可以在 DSH「插件 → 发现」里搜索安装。
 
 卸载：
 
 ```powershell
 dsh plugin remove qubitclient-dsh-panel
-# 再从 profile 的 dsh.profile.bundles 里删掉 qubitclient-dsh-panel（或在 DSH「插件」页取消勾选）
+# 再从 profile 的 dsh.profile.bundles 里删掉 qubitclient-dsh-panel（或在 DSH「插件」页取消勾选），重启 DSH
 ```
 
 配置与限制：

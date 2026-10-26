@@ -11,6 +11,13 @@
 - npm 包：`qubitclient-dsh-panel`
 - 源码：`dsh-plugin/qubitclient-panel/`（QubitClient 本体无需改动）
 
+## 效果
+
+![QubitClient 结果面板嵌在 DSH 右侧栏，底部是状态徽标](../asset/dsh_support.png)
+
+右侧栏是原样嵌入的结果页（任务卡片 + 曲线图，随服务端 SSE 实时刷新）；输入框下方那枚徽标显示服务状态，
+点「打开面板」/「聚焦面板」在右侧栏开或聚焦这个 tab。
+
 ## 前置条件
 
 | 步骤 | 命令 |

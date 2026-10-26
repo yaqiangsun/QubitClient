@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "@qubitclient/dsh-panel",
+      "name": "qubitclient-dsh-panel",
       "title": {
         "en": "QubitClient Results Panel",
         "zh": "QubitClient 结果面板"
@@ -38,11 +38,11 @@
       "versions": [
         {
           "version": "0.1.0",
-          "publishTimestamp": 1792748482,
+          "publishTimestamp": 1792999631,
           "source": {
             "type": "git",
             "url": "https://github.com/yaqiangsun/QubitClient",
-            "commit": "a62a89508233caa9d45063fe149732db635865fe",
+            "commit": "82c50c42366c21c7f4db117d2a3654a6f3114200",
             "path": "dsh-plugin/qubitclient-panel"
           }
         }

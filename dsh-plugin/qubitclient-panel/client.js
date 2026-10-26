@@ -129,13 +129,17 @@ window.__ModuleLoader__.load({
       return 'var(--dsw-alias-state-warn-primary)'
     }
 
-    function healthLabel(health) {
+    // compact：输入框徽标位置窄，省掉记录条数，只留「最近一次任务」。
+    function healthLabel(health, options = {}) {
+      const compact = options.compact === true
       if (health.status === 'online') {
         const latest = health.latest
-        const tail = latest
-          ? ` · 共 ${health.total} 条 · 最近 ${latest.taskName || '未知任务'}（${latest.status || '?'}）`
-          : ' · 暂无记录'
-        return `已连接${tail}`
+        if (!latest) return '已连接 · 暂无记录'
+        const task = latest.taskName || '未知任务'
+        const state = latest.status || '?'
+        return compact
+          ? `已连接 · ${task}（${state}）`
+          : `已连接 · 共 ${health.total} 条 · 最近 ${task}（${state}）`
       }
       if (health.status === 'offline') return `未连接：${health.error || '无法访问'}`
       return '正在连接…'
@@ -434,7 +438,7 @@ window.__ModuleLoader__.load({
           { style: styles.dock },
           h('span', { style: { ...styles.dot, background: healthColor(health.status) } }),
           h('span', { style: styles.dockText }, 'QubitClient 结果'),
-          h('span', { style: { color: 'var(--dsw-alias-label-secondary)' } }, healthLabel(health)),
+          h('span', { style: { color: 'var(--dsw-alias-label-secondary)' } }, healthLabel(health, { compact: true })),
           h(
             'button',
             { type: 'button', style: styles.linkButton, onClick: openPanel },

@@ -1,6 +1,6 @@
 {
   "name": "qubitclient-dsh-panel",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "DSH 插件：把 QubitClient 的 pipeline 结果页面（http://127.0.0.1:8581/）融合进右侧栏 tab，并给模型一个读取结果的工具。",
   "type": "module",
   "license": "GPL-3.0",

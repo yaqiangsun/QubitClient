@@ -299,6 +299,11 @@ if (!clientTarget) {
             call && definition && call.kind === definition.kind && typeof call.options?.params?.url === 'string'
               ? ok(`「打开面板」调用 openTab(${call.kind}, {params:{url:${call.options.params.url}}})`)
               : bad('「打开面板」没有按预期调用 openTab(kind, {params})')
+            const text = collectText(tree)
+            text.includes('共')
+              ? bad('输入框徽标不该显示记录条数（太长）')
+              : ok('徽标文案精简（不显示记录条数）')
+            text.includes('QubitClient 结果') ? ok('徽标保留插件名') : bad('徽标缺少插件名')
           }
         } catch (error) {
           bad(`输入框徽标渲染/点击抛错: ${error.message}`)
@@ -339,9 +344,17 @@ if (!clientTarget) {
   }
 }
 
+/** 收集假 React 元素树里的可见文字。 */
+function collectText(node) {
+  if (node === null || node === undefined) return ''
+  if (typeof node === 'string') return node
+  if (typeof node !== 'object') return ''
+  const children = Array.isArray(node.children) ? node.children : []
+  return children.map(collectText).join('')
+}
+
 /** 在假 React 元素树里按可见文字找按钮。 */
-function findButton(node, label) {
-  if (!node || typeof node !== 'object') return undefined
+function findButton(node, label) {  if (!node || typeof node !== 'object') return undefined
   if (node.type === 'button' && node.children) {
     const text = node.children
       .map((child) => (typeof child === 'string' ? child : ''))

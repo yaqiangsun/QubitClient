@@ -1,8 +1,25 @@
 {
-  "name": "@qubitclient/dsh-panel",
+  "name": "qubitclient-dsh-panel",
   "version": "0.1.0",
   "description": "DSH 插件：把 QubitClient 的 pipeline 结果页面（http://127.0.0.1:8581/）融合进右侧栏 tab，并给模型一个读取结果的工具。",
   "type": "module",
+  "license": "GPL-3.0",
+  "author": "Yaqiang Sun <sunyaking@163.com>",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "quantum-computing",
+    "pipeline",
+    "results"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaqiangsun/QubitClient.git",
+    "directory": "dsh-plugin/qubitclient-panel"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dsh-plugin/qubitclient-panel/index.js",
   "exports": {
     ".": "./dsh-plugin/qubitclient-panel/index.js",

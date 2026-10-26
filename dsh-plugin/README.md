@@ -45,6 +45,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/uninstall
 | 面板显示「结果页服务未连接」 | 先 `qubitclient ui start`；也可在面板里改地址后「保存并重试」 |
 | 换了端口 | 改 `qubitclient-panel/cordis.patch.yml` 的 `config.baseUrl`，面板里再改一次地址，重启 DSH |
 | 面板里看不到今天的运行 | 服务进程 cwd 要在仓库根（读取侧按 `cwd/tmp/db/result` 取数） |
-| 装了但重启没出现 | `dsh.profile.bundles` 里缺 `@qubitclient/dsh-panel` |
+| 装了但重启没出现 | `dsh.profile.bundles` 里缺 `qubitclient-dsh-panel` |
 | 面板不跟随明暗主题 | 有意为之：保持结果页自己的样式 |
 

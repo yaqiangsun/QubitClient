@@ -4,7 +4,7 @@
 // 的 package.json 来判定 dsh.bundle，而本仓库根是 Python 包（pyproject.toml），
 // 插件实现放在 dsh-plugin/qubitclient-panel/。根清单只做两件事：
 //   1. 让扫描器在根目录读到 dsh.bundle.patch；
-//   2. 让 cordis.patch.yml 里 insert 的 name（@qubitclient/dsh-panel）能被解析到，
+//   2. 让 cordis.patch.yml 里 insert 的 name（qubitclient-dsh-panel）能被解析到，
 //      并把 exports 转发到子目录里的真实实现。
 // 它不是第二份事实源：内容全部由子包 package.json 推导，改完子包重跑本脚本即可。
 //
@@ -50,6 +50,15 @@ const manifest = {
   version: pluginPkg.version,
   description: pluginPkg.description,
   type: pluginPkg.type,
+  license: 'GPL-3.0',
+  author: 'Yaqiang Sun <sunyaking@163.com>',
+  keywords: ['dsh-plugin', 'deepseek-harness', 'quantum-computing', 'pipeline', 'results'],
+  repository: {
+    type: 'git',
+    url: 'git+https://github.com/yaqiangsun/QubitClient.git',
+    directory: path.relative(repoRoot, pluginDir).split(path.sep).join('/'),
+  },
+  publishConfig: { access: 'public' },
   main: exports['.'],
   exports,
   files: [path.relative(repoRoot, pluginDir).split(path.sep).join('/')],

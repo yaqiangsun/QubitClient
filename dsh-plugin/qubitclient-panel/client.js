@@ -20,13 +20,13 @@
  * React 从模块表 require('react') 拿。
  */
 window.__ModuleLoader__.load({
-  id: '@qubitclient/dsh-panel',
+  id: 'qubitclient-dsh-panel',
   factory(require) {
     const React = require('react')
     const h = React.createElement
 
     /** 本插件在右侧栏 tab 系统里的实现 id（全局唯一；同时也是正文插槽的 key）。 */
-    const PANEL_ID = '@qubitclient/dsh-panel/results'
+    const PANEL_ID = 'qubitclient-dsh-panel/results'
     /** tab 的类型名；页类型按 kind 打开，不需要 patterns。 */
     const PANEL_KIND = 'qubitclient-results'
     /** 结果页服务默认地址（与 index.js / cordis.patch.yml 的默认值保持一致）。 */

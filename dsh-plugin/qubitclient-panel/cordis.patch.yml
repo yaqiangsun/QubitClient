@@ -5,7 +5,7 @@
 #          localStorage 覆盖，见 client.js 的 URL_KEY）
 - insert:
     - id: qubitclient-panel
-      name: '@qubitclient/dsh-panel'
+      name: 'qubitclient-dsh-panel'
       config:
         # QubitClient 结果页服务地址；Host 工具 qubitclient_results 用它取数
         baseUrl: 'http://127.0.0.1:8581'

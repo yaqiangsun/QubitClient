@@ -13,11 +13,10 @@ qubitclient ui start      # 仓库根目录执行
 ## 2. 安装
 
 ```powershell
-# 仓库根目录
-powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/install.ps1
+dsh plugin add qubitclient-dsh-panel
 ```
 
-或在 DSH「插件 → 发现」里被自动发现后直接点安装。装完**重启 DSH**（Host 半只有重启才加载），页面再 Ctrl+R。
+或在 DSH「插件 → 发现」里搜索安装。装完**重启 DSH**（Host 半只有重启才加载），页面再 Ctrl+R。
 
 装好后：
 
@@ -35,8 +34,10 @@ node dsh-plugin/scripts/check-plugin.mjs .    # 根目录清单
 ## 4. 卸载
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/uninstall.ps1
+dsh plugin remove qubitclient-dsh-panel
 ```
+
+再从 profile 的 `dsh.profile.bundles` 里删掉 `qubitclient-dsh-panel`（或在 DSH「插件」页取消勾选）；同样要重启 DSH 才生效。
 
 ## 常见问题
 

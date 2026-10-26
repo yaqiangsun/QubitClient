@@ -356,20 +356,20 @@ qubitclient ui start --port 9000
 | 状态徽标 | 输入框下方显示服务在线状态、记录总数、最近一次任务，一键打开面板 |
 | 模型工具 | `qubitclient_results`：按任务名与条数读取运行记录（任务、状态、比特、时间、图数、错误） |
 
-安装（一次性，装进本机 DSH 的 profile）：
+安装（已发布到 npm，包名 `qubitclient-dsh-panel`）：
 
 ```powershell
-# 仓库根目录
-powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/install.ps1
+dsh plugin add qubitclient-dsh-panel
 # 重启 DSH 后，右侧栏「新建 tab」里会出现「QubitClient 结果」
 ```
 
-也可以在 DSH「插件 → 发现」里直接安装（本仓库带插件市场索引 `dsh-plugin/market-index.json`）。
+也可以在 DSH「插件 → 发现」里直接搜索安装。
 
 卸载：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File dsh-plugin/scripts/uninstall.ps1
+dsh plugin remove qubitclient-dsh-panel
+# 再从 profile 的 dsh.profile.bundles 里删掉 qubitclient-dsh-panel（或在 DSH「插件」页取消勾选）
 ```
 
 配置与限制：

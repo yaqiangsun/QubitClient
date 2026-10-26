@@ -192,7 +192,10 @@ if (!clientTarget) {
     createElement: (type, props, ...children) => ({ type, props, children }),
     Fragment: Symbol('Fragment'),
     useState: (initial) => [typeof initial === 'function' ? initial() : initial, () => {}],
-    useEffect: () => {},
+    // 挂载期效果立即执行（清理函数丢弃）：这样才能验证「面板挂载 → 徽标改文案」。
+    useEffect: (effect) => {
+      effect()
+    },
     useMemo: (factory) => factory(),
     useCallback: (fn) => fn,
     useRef: (value) => ({ current: value }),
@@ -207,7 +210,16 @@ if (!clientTarget) {
     localStorage: { getItem: () => null, setItem: () => {} },
     open: () => {},
   }
-  const sandbox = { window, console, fetch: async () => ({ ok: false, status: 503, json: async () => ({}) }) }
+  const sandbox = {
+    window,
+    console,
+    fetch: async () => ({ ok: false, status: 503, json: async () => ({}) }),
+    // 组件里的轮询/延迟只是注册，这里不需要真跑，给空实现避免 "setTimeout is not defined"。
+    setTimeout: () => 0,
+    clearTimeout: () => {},
+    setInterval: () => 0,
+    clearInterval: () => {},
+  }
   try {
     vm.runInNewContext(source, sandbox, { filename: clientTarget })
   } catch (error) {
@@ -273,6 +285,26 @@ if (!clientTarget) {
       body ? ok(`注册到插槽 sidebar.right.pane.tab（key=${body.entry.options.key}）`) : bad('没有注册 tab 正文')
 
       const definition = tabTypes[0]
+
+      // 徽标：面板没打开时显示「打开面板」，点了要真的调用 openTab(kind, {params})
+      if (dock) {
+        try {
+          const tree = dock.entry.Component({})
+          const button = findButton(tree, '打开面板')
+          if (!button) {
+            bad('输入框徽标里找不到「打开面板」按钮（面板未打开时应显示它）')
+          } else {
+            button.props.onClick()
+            const call = openCalls[0]
+            call && definition && call.kind === definition.kind && typeof call.options?.params?.url === 'string'
+              ? ok(`「打开面板」调用 openTab(${call.kind}, {params:{url:${call.options.params.url}}})`)
+              : bad('「打开面板」没有按预期调用 openTab(kind, {params})')
+          }
+        } catch (error) {
+          bad(`输入框徽标渲染/点击抛错: ${error.message}`)
+        }
+      }
+
       if (!definition) {
         bad('没有注册右侧栏 tab 类型')
       } else {
@@ -293,24 +325,14 @@ if (!clientTarget) {
         } catch (error) {
           bad(`tab 正文渲染抛错: ${error.message}`)
         }
-      }
-
-      // 徽标上的「打开面板」应真的调用 ctx.sidebarRight.openTab(kind, { params })
-      if (dock) {
-        try {
-          const tree = dock.entry.Component({})
-          const button = findButton(tree, '打开面板')
-          if (!button) {
-            bad('输入框徽标里找不到「打开面板」按钮')
-          } else {
-            button.props.onClick()
-            const call = openCalls[0]
-            call && definition && call.kind === definition.kind && typeof call.options?.params?.url === 'string'
-              ? ok(`「打开面板」调用 openTab(${call.kind}, {params:{url:${call.options.params.url}}})`)
-              : bad('「打开面板」没有按预期调用 openTab(kind, {params})')
+        // 面板挂载之后，徽标不该再喊「打开面板」
+        if (dock) {
+          try {
+            const reopened = findButton(dock.entry.Component({}), '聚焦面板')
+            reopened ? ok('面板已挂载 → 徽标改为「聚焦面板」') : bad('面板已挂载但徽标仍显示「打开面板」')
+          } catch (error) {
+            bad(`徽标二次渲染抛错: ${error.message}`)
           }
-        } catch (error) {
-          bad(`输入框徽标渲染/点击抛错: ${error.message}`)
         }
       }
     }

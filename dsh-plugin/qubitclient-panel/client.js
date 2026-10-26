@@ -279,6 +279,43 @@ window.__ModuleLoader__.load({
       )
     }
 
+    // ---- 面板挂载状态（徽标据此把「打开面板」换成「聚焦面板」） -------------
+    // 挂载即视为已打开：keepMounted 只保证切 tab/切会话时不重建 iframe，
+    // 用户关掉 tab 时正文会卸载，所以挂载数就是「当前有几个结果面板开着」。
+    function createPanelPresence() {
+      let mounted = 0
+      const listeners = new Set()
+      const emit = () => {
+        for (const listener of listeners) listener()
+      }
+      return {
+        get: () => mounted > 0,
+        enter() {
+          mounted += 1
+          emit()
+          return () => {
+            mounted = Math.max(0, mounted - 1)
+            emit()
+          }
+        },
+        subscribe(listener) {
+          listeners.add(listener)
+          return () => listeners.delete(listener)
+        },
+      }
+    }
+    const panelPresence = createPanelPresence()
+
+    function usePanelOpen() {
+      const [open, setOpen] = React.useState(panelPresence.get)
+      React.useEffect(() => {
+        // 订阅期间状态可能已变，先对齐一次再监听。
+        setOpen(panelPresence.get())
+        return panelPresence.subscribe(() => setOpen(panelPresence.get()))
+      }, [])
+      return open
+    }
+
     // ---- 右侧栏 tab 正文 --------------------------------------------------
     function QubitResultsPanel(props) {
       const useTabInfo = props && props.useTabInfo
@@ -293,6 +330,9 @@ window.__ModuleLoader__.load({
       const [draftUrl, setDraftUrl] = React.useState(pageUrl)
       const [health, recheck] = useResultsHealth(pageUrl, 15000)
       const [reloadToken, setReloadToken] = React.useState(0)
+
+      // 本面板挂载期间向徽标报「已打开」，卸载（关掉 tab）时自动撤销。
+      React.useEffect(() => panelPresence.enter(), [])
 
       const reload = React.useCallback(() => {
         setReloadToken((value) => value + 1)
@@ -386,13 +426,20 @@ window.__ModuleLoader__.load({
       return function QubitDock() {
         const [pageUrl] = React.useState(readPageUrl)
         const [health] = useResultsHealth(pageUrl, 30000)
+        // 面板已开着就别再喊「打开面板」：同一动作改成「聚焦面板」，
+        // 侧栏被收起时点它仍会把面板调出来。
+        const panelOpen = usePanelOpen()
         return h(
           'div',
           { style: styles.dock },
           h('span', { style: { ...styles.dot, background: healthColor(health.status) } }),
           h('span', { style: styles.dockText }, 'QubitClient 结果'),
           h('span', { style: { color: 'var(--dsw-alias-label-secondary)' } }, healthLabel(health)),
-          h('button', { type: 'button', style: styles.linkButton, onClick: openPanel }, '打开面板'),
+          h(
+            'button',
+            { type: 'button', style: styles.linkButton, onClick: openPanel },
+            panelOpen ? '聚焦面板' : '打开面板',
+          ),
         )
       }
     }
